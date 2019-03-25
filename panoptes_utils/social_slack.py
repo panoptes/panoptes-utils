@@ -1,6 +1,6 @@
 import requests
 
-from pocs.utils.logger import get_root_logger
+from panoptes_utils.logger import get_root_logger
 
 
 class SocialSlack(object):

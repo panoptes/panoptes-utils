@@ -11,7 +11,7 @@ from tempfile import gettempdir
 import time
 from warnings import warn
 
-from pocs.utils.config import load_config
+from panoptes_utils.config import load_config
 
 # We don't want to create multiple root loggers that are "identical",
 # so track the loggers in a dict keyed by a tuple of:

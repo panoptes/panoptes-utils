@@ -10,9 +10,9 @@ from glob import glob
 from bson.objectid import ObjectId
 from pymongo.errors import ConnectionFailure
 
-from pocs.utils import current_time
-from pocs.utils import serializers as json_util
-from pocs.utils.config import load_config
+from panoptes_utils import current_time
+from panoptes_utils import serializers as json_util
+from panoptes_utils.config import load_config
 
 
 class AbstractPanDB(metaclass=abc.ABCMeta):
@@ -39,8 +39,8 @@ class AbstractPanDB(metaclass=abc.ABCMeta):
         if collection not in self.collection_names:
             msg = 'Collection type {!r} not available'.format(collection)
             self._warn(msg)
-            # Can't import pocs.utils.error earlier
-            from pocs.utils.error import InvalidCollection
+            # Can't import panoptes_utils.error earlier
+            from panoptes_utils.error import InvalidCollection
             raise InvalidCollection(msg)
 
     @abc.abstractclassmethod

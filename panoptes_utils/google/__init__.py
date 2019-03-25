@@ -1,6 +1,6 @@
 import warnings
 
-from pocs.utils.google.storage import PanStorage
+from panoptes_utils.google.storage import PanStorage
 
 
 def is_authenticated():

@@ -12,7 +12,7 @@ def focus_metric(data, merit_function='vollath_F4', **kwargs):
     Args:
         data (numpy array) -- 2D array to calculate the focus metric for.
         merit_function (str/callable) -- Name of merit function (if in
-            pocs.utils.images) or a callable object.
+            panoptes_utils.images) or a callable object.
 
     Returns:
         scalar: result of calling merit function on data
@@ -22,7 +22,7 @@ def focus_metric(data, merit_function='vollath_F4', **kwargs):
             merit_function = globals()[merit_function]
         except KeyError:
             raise KeyError(
-                "Focus merit function '{}' not found in pocs.utils.images!".format(merit_function))
+                "Focus merit function '{}' not found in panoptes_utils.images!".format(merit_function))
 
     return merit_function(data, **kwargs)
 

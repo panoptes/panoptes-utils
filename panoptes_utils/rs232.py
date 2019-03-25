@@ -6,8 +6,8 @@ import serial
 from serial.tools.list_ports import comports as get_comports
 import time
 
-from pocs.utils.logger import get_root_logger
-from pocs.utils.error import BadSerialConnection
+from panoptes_utils.logger import get_root_logger
+from panoptes_utils.error import BadSerialConnection
 
 
 def _parse_json(line, logger, min_error_pos=0):
@@ -59,7 +59,7 @@ class SerialData(object):
         >>> from pocs.tests.serial_handlers.protocol_buffers import ResetBuffers
 
         # Import our serial utils
-        >>> from pocs.utils.rs232 import SerialData
+        >>> from panoptes_utils.rs232 import SerialData
 
         # Connect to our fake buffered device
         >>> device_listener = SerialData(port='buffers://')
@@ -113,7 +113,7 @@ class SerialData(object):
             retry_limit: Number of times to try readline() calls in read().
             retry_delay: Delay between readline() calls in read().
             logger (`logging.logger` or None, optional): A logger instance. If left as None
-                then `pocs.utils.logger.get_root_logger` will be called.
+                then `panoptes_utils.logger.get_root_logger` will be called.
 
         Raises:
             ValueError: If the serial parameters are invalid (e.g. a negative baudrate).

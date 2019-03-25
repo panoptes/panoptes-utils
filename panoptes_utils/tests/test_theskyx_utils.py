@@ -3,8 +3,8 @@ import pytest
 
 from mocket import Mocket
 
-from pocs.utils import error
-from pocs.utils.theskyx import TheSkyX
+from panoptes_utils import error
+from panoptes_utils.theskyx import TheSkyX
 
 
 @pytest.fixture(scope="function")

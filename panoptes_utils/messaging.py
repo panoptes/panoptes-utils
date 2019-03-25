@@ -10,9 +10,8 @@ from bson import ObjectId
 from json import dumps
 from json import loads
 
-from pocs.utils import current_time
-from pocs.utils import CountdownTimer
-from pocs.utils.logger import get_root_logger
+from panoptes_utils import current_time
+from panoptes_utils.logger import get_root_logger
 
 
 class PanMessaging(object):

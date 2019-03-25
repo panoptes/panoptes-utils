@@ -2,9 +2,9 @@ import pytest
 import os
 import shutil
 
-from pocs.utils.error import GoogleCloudError
-from pocs.utils.google import is_authenticated
-from pocs.utils.google.storage import PanStorage, upload_observation_to_bucket
+from panoptes_utils.error import GoogleCloudError
+from panoptes_utils.google import is_authenticated
+from panoptes_utils.google.storage import PanStorage, upload_observation_to_bucket
 
 
 pytestmark = pytest.mark.skipif(

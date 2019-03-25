@@ -43,7 +43,7 @@ def current_time(flatten=False, datetime=False, pretty=False):
         '2000-01-01 00:00:00'
 
         >>> del os.environ['POCSTIME']
-        >>> from pocs.utils import current_time
+        >>> from panoptes_utils import current_time
         >>> now = current_time()
         >>> now                               # doctest: +SKIP
         <Time object: scale='utc' format='datetime' value=2018-10-07 22:29:03.009873>
@@ -89,7 +89,7 @@ def flatten_time(t):
     .. doctest::
 
         >>> from astropy.time import Time
-        >>> from pocs.utils import flatten_time
+        >>> from panoptes_utils import flatten_time
         >>> t0 = Time('1999-12-31 23:59:59')
         >>> t0.isot
         '1999-12-31T23:59:59.000'
@@ -199,7 +199,7 @@ def get_free_space(dir=None):
 
     .. doctest::
 
-        >>> from pocs.utils import get_free_space
+        >>> from panoptes_utils import get_free_space
         >>> get_free_space()
         <Quantity ... Gbyte>
 
@@ -238,7 +238,7 @@ def string_to_params(opts):
         `param='42'` will keep the value as the string `'42'`.
 
 
-    >>> from pocs.utils import string_to_params
+    >>> from panoptes_utils import string_to_params
     >>> args, kwargs = string_to_params("parg1 parg2 key1=a_str key2=2 key2='2' key3=03")
     >>> args
     ['parg1', 'parg2']
@@ -296,7 +296,7 @@ def load_module(module_name):
 
     .. doctest::
 
-        >>> from pocs.utils import load_module
+        >>> from panoptes_utils import load_module
         >>> camera = load_module('pocs.camera.simulator')
         >>> camera.__package__
         'pocs.camera'
@@ -310,7 +310,7 @@ def load_module(module_name):
     Raises:
         error.NotFound: If module cannot be imported.
     """
-    from pocs.utils import error
+    from panoptes_utils import error
     try:
         module = resolve_name(module_name)
     except ImportError:

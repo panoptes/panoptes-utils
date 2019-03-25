@@ -4,7 +4,7 @@ from contextlib import suppress
 
 from astropy import units as u
 from pocs import hardware
-from pocs.utils import listify
+from panoptes_utils import listify
 from warnings import warn
 
 

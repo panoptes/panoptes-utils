@@ -1,6 +1,6 @@
 import ctypes
 
-from pocs.utils import error
+from panoptes_utils import error
 
 
 def load_library(name, path=None, logger=None):
@@ -18,7 +18,7 @@ def load_library(name, path=None, logger=None):
         ctypes.CDLL
 
     Raises:
-        pocs.utils.error.NotFound: raised if library_path not given & find_libary fails to
+        panoptes_utils.error.NotFound: raised if library_path not given & find_libary fails to
             locate the library.
         OSError: raises if the ctypes.CDLL loader cannot load the library.
     """

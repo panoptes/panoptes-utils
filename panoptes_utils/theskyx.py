@@ -1,7 +1,7 @@
 import socket
 
-from pocs.utils import error
-from pocs.utils.logger import get_root_logger
+from panoptes_utils import error
+from panoptes_utils.logger import get_root_logger
 
 
 class TheSkyX(object):

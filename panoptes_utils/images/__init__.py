@@ -17,10 +17,10 @@ from glob import glob
 from copy import copy
 from dateutil import parser as date_parser
 
-from pocs.utils import current_time
-from pocs.utils import error
-from pocs.utils.images import fits as fits_utils
-from pocs.utils.images import focus as focus_utils
+from panoptes_utils import current_time
+from panoptes_utils import error
+from panoptes_utils.images import fits as fits_utils
+from panoptes_utils.images import focus as focus_utils
 
 palette = copy(colormap.inferno)
 palette.set_over('w', 1.0)

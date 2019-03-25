@@ -5,12 +5,12 @@ import time
 from datetime import datetime as dt
 from astropy import units as u
 
-from pocs.utils import current_time
-from pocs.utils import DelaySigTerm
-from pocs.utils import listify
-from pocs.utils import load_module
-from pocs.utils import CountdownTimer
-from pocs.utils import error
+from panoptes_utils import current_time
+from panoptes_utils import DelaySigTerm
+from panoptes_utils import listify
+from panoptes_utils import load_module
+from panoptes_utils import CountdownTimer
+from panoptes_utils import error
 from pocs.camera import list_connected_cameras
 
 
