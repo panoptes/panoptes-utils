@@ -96,20 +96,3 @@ def test_make_pretty_image_cr2_fail():
             img_utils.make_pretty_image(tmpfile, title='some text', link_latest=False)
         with pytest.raises(error.InvalidCommand):
             img_utils.make_pretty_image(tmpfile, verbose=True)
-
-
-def test_clean_observation_dir(data_dir):
-    # First make a dir and put some files in it
-    with tempfile.TemporaryDirectory() as tmpdir:
-        # Copy fits files
-        for f in glob('{}/solved.*'.format(data_dir)):
-            shutil.copy(f, tmpdir)
-
-        assert len(glob('{}/solved.*'.format(tmpdir))) == 2
-
-        # Make some jpgs
-        for f in glob('{}/*.fits'.format(tmpdir)):
-            img_utils.make_pretty_image(f)
-
-        # Cleanup
-        img_utils.clean_observation_dir(tmpdir, verbose=True)
