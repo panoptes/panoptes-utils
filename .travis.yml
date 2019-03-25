@@ -1,0 +1,44 @@
+dist: trusty
+sudo: required
+language: python
+python:
+  - "3.6"
+  - "3.7"
+env:
+    - PANDIR=$HOME
+before_install:
+    - mkdir -p $PANDIR/logs
+    - mkdir -p $PANDIR/astrometry/data
+
+addons:
+  apt:
+    packages:
+    - gphoto2
+    - libcairo2-dev
+    - libnetpbm10-dev
+    - netpbm
+    - libpng12-dev
+    - libjpeg-dev
+    - python-numpy
+    - python-pyfits
+    - python-dev
+    - zlib1g-dev
+    - libbz2-dev
+    - swig
+    - cfitsio-dev
+install:
+  - cd $PANDIR
+
+  - pip install -r requirements.txt
+  - pip install -r docs/requirements.txt
+  - pip install -e .
+  - python pocs/utils/data.py --folder $PANDIR/astrometry/data
+script:
+  - coverage run $(which pytest) -v --test-databases all
+  - coverage combine
+cache:
+  pip: true
+  directories:
+    - $PANDIR/astrometry/
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

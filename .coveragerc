@@ -1,0 +1,17 @@
+[run]
+branch = True
+concurrency =
+    multiprocessing
+    threading
+    subprocess
+source =
+    panoptes_utils
+parallel = True
+
+[report]
+exclude_lines =
+    pragma: no cover
+
+ignore_errors = True
+omit =
+    tests/*
