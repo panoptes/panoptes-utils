@@ -11,7 +11,6 @@ from panoptes_utils import listify
 from panoptes_utils import load_module
 from panoptes_utils import CountdownTimer
 from panoptes_utils import error
-from pocs.camera import list_connected_cameras
 
 
 def test_error(capsys):
@@ -65,19 +64,6 @@ def test_pretty_time():
     # This will increment one second - see docs
     t3 = current_time(datetime=True)
     assert t3 == dt(2016, 8, 13, 10, 0, 2)
-
-
-def test_list_connected_cameras():
-    ports = list_connected_cameras()
-    assert isinstance(ports, list)
-
-
-def test_has_camera_ports():
-    ports = list_connected_cameras()
-    assert isinstance(ports, list)
-
-    for port in ports:
-        assert port.startswith('usb:')
 
 
 def test_countdown_timer_bad_input():
