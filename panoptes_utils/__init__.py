@@ -4,6 +4,7 @@ import shutil
 import signal
 import time
 
+import numpy as np
 from astropy import units as u
 from astropy.coordinates import AltAz
 from astropy.coordinates import ICRS
@@ -407,3 +408,17 @@ def get_quantity_value(quantity, unit=None):
         return quantity.value
     else:
         return quantity
+
+
+def moving_average(data_set, periods=3):
+    """Moving average.
+
+    Args:
+        data_set (`numpy.array`): An array of values over which to perform the moving average.
+        periods (int, optional): Number of periods.
+
+    Returns:
+        `numpy.array`: An array of the computed averages.
+    """
+    weights = np.ones(periods) / periods
+    return np.convolve(data_set, weights, mode='same')

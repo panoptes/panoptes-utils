@@ -13,13 +13,11 @@ from astropy.wcs import WCS
 from astropy.io.fits import open as open_fits
 from astropy.visualization import (PercentileInterval, LogStretch, ImageNormalize)
 
-from glob import glob
 from copy import copy
 from dateutil import parser as date_parser
 
 from panoptes_utils import current_time
 from panoptes_utils import error
-from panoptes_utils.images import fits as fits_utils
 from panoptes_utils.images import focus as focus_utils
 
 palette = copy(colormap.inferno)
