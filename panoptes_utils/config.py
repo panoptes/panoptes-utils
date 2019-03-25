@@ -3,7 +3,6 @@ import yaml
 from contextlib import suppress
 
 from astropy import units as u
-from pocs import hardware
 from panoptes_utils import listify
 from warnings import warn
 
@@ -81,9 +80,6 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
                     _add_to_conf(config, local_version)
                 except Exception:
                     warn("Problem with local config file {}, skipping".format(local_version))
-
-    if simulator is not None:
-        config['simulator'] = hardware.get_simulator_names(simulator=simulator)
 
     if parse:
         config = _parse_config(config)

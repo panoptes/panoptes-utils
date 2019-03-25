@@ -1,8 +1,5 @@
 import sys
-
-from panoptes_utils.logger import get_root_logger
-
-logger = get_root_logger()
+import logging
 
 
 class PanError(Exception):
@@ -13,7 +10,7 @@ class PanError(Exception):
         self.msg = msg
 
         if self.msg:
-            logger.error(str(self))
+            logging.error(str(self))
 
         if exit:
             self.exit_program(self.msg)
