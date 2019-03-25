@@ -9,6 +9,8 @@ except ImportError:
 from configparser import ConfigParser
 from distutils.command.build_py import build_py
 
+from panoptes_utils.version import __version__
+
 # Get some values from the setup.cfg
 conf = ConfigParser()
 conf.read(['setup.cfg'])
@@ -24,7 +26,7 @@ PACKAGENAME = metadata.get('package_name', 'packagename')
 URL = metadata.get('url', 'https://projectpanoptes.org')
 
 setup(name=PACKAGENAME,
-      version="0.0.1",
+      version=__version__,
       description=DESCRIPTION,
       long_description=LONG_DESCRIPTION,
       author=AUTHOR,

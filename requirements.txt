@@ -4,7 +4,7 @@ matplotlib >= 3.0.0
 mocket
 numpy >= 1.12.1, !=1.15.3
 pyserial >= 3.1.1
-acpython_dateutil >= 2.5.3
+python_dateutil >= 2.5.3
 PyYAML >= 3.11
 pyzmq >= 15.3.0
 scipy >= 0.17.1
