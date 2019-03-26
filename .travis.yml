@@ -16,7 +16,7 @@ before_install:
 install:
   - cd $TRAVIS_BUILD_DIR
   - pip install -r requirements.txt
-  - python setup.py install
+  - pip install -e ".[google,testing]"
 script:
   - python setup.py test
 after_success:

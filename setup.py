@@ -25,6 +25,8 @@ LONG_DESCRIPTION = metadata.get('long_description', '')
 PACKAGENAME = metadata.get('package_name', 'packagename')
 URL = metadata.get('url', 'https://projectpanoptes.org')
 
+testing_modules = ['pytest', 'pytest-cov', 'coverage', 'coveralls', 'codecov', 'pycodestyle']
+
 setup(name=PACKAGENAME,
       version=__version__,
       description=DESCRIPTION,
@@ -34,7 +36,8 @@ setup(name=PACKAGENAME,
       license=LICENSE,
       url=URL,
       keywords=KEYWORDS,
-      tests_require=['pytest', 'pytest-cov', 'coverage', 'coveralls', 'codecov'],
+      setup_requires=['pytest-runner'],
+      tests_require=testing_modules,
       # List additional groups of dependencies here (e.g. development
       # dependencies). You can install these using the following syntax,
       # for example:
@@ -43,7 +46,7 @@ setup(name=PACKAGENAME,
           'google': ['google-cloud', 'google-cloud-storage'],
           'mongo': ['pymongo'],
           'social': ['requests', 'tweepy'],
-          'test': ['coverage', 'coveralls', 'codecov', 'pycodestyle'],
+          'test': testing_modules,
       },
       packages=find_packages(exclude=['tests', 'test_*']),
       classifiers=[
