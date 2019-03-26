@@ -12,7 +12,6 @@ import pytest
 import subprocess
 import time
 
-from pocs import hardware
 from panoptes_utils.database import PanDB
 from panoptes_utils.logger import get_root_logger
 from panoptes_utils.messaging import PanMessaging
@@ -23,20 +22,8 @@ _all_databases = ['mongo', 'file', 'memory']
 
 
 def pytest_addoption(parser):
-    hw_names = ",".join(hardware.get_all_names()) + ' (or all for all hardware)'
     db_names = ",".join(_all_databases) + ' (or all for all databases)'
     group = parser.getgroup("PANOPTES pytest options")
-    group.addoption(
-        "--with-hardware",
-        nargs='+',
-        default=[],
-        help=("A comma separated list of hardware to test. List items can include: " + hw_names))
-    group.addoption(
-        "--without-hardware",
-        nargs='+',
-        default=[],
-        help=("A comma separated list of hardware to NOT test. " + "List items can include: " +
-              hw_names))
     group.addoption(
         "--solve",
         action="store_true",
@@ -55,54 +42,6 @@ def pytest_addoption(parser):
         default=['file'],
         help=("Test databases in the list. List items can include: " + db_names +
               ". Note that travis-ci will test all of them by default."))
-
-
-def pytest_collection_modifyitems(config, items):
-    """Modify tests to skip or not based on cli options.
-
-    Certain tests should only be run when the appropriate hardware is attached.
-    Other tests fail if real hardware is attached (e.g. they expect there is no
-    hardware). The names of the types of hardware are in hardware.py, but
-    include 'mount' and 'camera'. For a test that requires a mount, for
-    example, the test should be marked as follows:
-
-    `@pytest.mark.with_mount`
-
-    And the same applies for the names of other types of hardware.
-    For a test that requires that there be no cameras attached, mark the test
-    as follows:
-
-    `@pytest.mark.without_camera`
-    """
-
-    # without_hardware is a list of hardware names whose tests we don't want to run.
-    without_hardware = hardware.get_simulator_names(
-        simulator=config.getoption('--without-hardware'))
-
-    # with_hardware is a list of hardware names for which we have that hardware attached.
-    with_hardware = hardware.get_simulator_names(simulator=config.getoption('--with-hardware'))
-
-    for name in without_hardware:
-        # User does not want to run tests that interact with hardware called name,
-        # whether it is marked as with_name or without_name.
-        if name in with_hardware:
-            print('Warning: {!r} in both --with-hardware and --without-hardware'.format(name))
-            with_hardware.remove(name)
-        skip = pytest.mark.skip(reason="--without-hardware={} specified".format(name))
-        with_keyword = 'with_' + name
-        without_keyword = 'without_' + name
-        for item in items:
-            if with_keyword in item.keywords or without_keyword in item.keywords:
-                item.add_marker(skip)
-
-    for name in hardware.get_all_names(without=with_hardware):
-        # We don't have hardware called name, so find all tests that need that
-        # hardware and mark it to be skipped.
-        skip = pytest.mark.skip(reason="Test needs --with-hardware={} option to run".format(name))
-        keyword = 'with_' + name
-        for item in items:
-            if keyword in item.keywords:
-                item.add_marker(skip)
 
 
 def pytest_runtest_logstart(nodeid, location):
