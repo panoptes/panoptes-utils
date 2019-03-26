@@ -46,7 +46,7 @@ setup(name=PACKAGENAME,
           'google': ['google-cloud', 'google-cloud-storage'],
           'mongo': ['pymongo'],
           'social': ['requests', 'tweepy'],
-          'test': testing_modules,
+          'testing': testing_modules,
       },
       packages=find_packages(exclude=['tests', 'test_*']),
       classifiers=[
