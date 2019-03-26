@@ -1,44 +1,25 @@
-dist: trusty
 sudo: required
 language: python
 python:
   - "3.6"
   - "3.7"
-env:
-    - PANDIR=$HOME
-before_install:
-    - mkdir -p $PANDIR/logs
-    - mkdir -p $PANDIR/astrometry/data
-
-addons:
-  apt:
-    packages:
-    - gphoto2
-    - libcairo2-dev
-    - libnetpbm10-dev
-    - netpbm
-    - libpng12-dev
-    - libjpeg-dev
-    - python-numpy
-    - python-pyfits
-    - python-dev
-    - zlib1g-dev
-    - libbz2-dev
-    - swig
-    - cfitsio-dev
-install:
-  - cd $PANDIR
-
-  - pip install -r requirements.txt
-  - pip install -r docs/requirements.txt
-  - pip install -e .
-  - python pocs/utils/data.py --folder $PANDIR/astrometry/data
-script:
-  - coverage run $(which pytest) -v --test-databases all
-  - coverage combine
 cache:
-  pip: true
-  directories:
-    - $PANDIR/astrometry/
+  - pip
+env:
+  - POCS=/var/panoptes/POCS PANDIR=/var/panoptes
+before_install:
+    - sudo mkdir /var/panoptes && sudo chmod 777 /var/panoptes
+    - mkdir $PANDIR/POCS
+    - mkdir $PANDIR/logs
+    - pip install coveralls
+    - pip install -U pip
+install:
+  - cd $TRAVIS_BUILD_DIR
+  - pip install -r requirements.txt
+  - python setup.py install
+script:
+  - python setup.py test
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.7* ]]; then
+        bash <(curl -s https://codecov.io/bash);
+    fi
