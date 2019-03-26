@@ -82,7 +82,7 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
                     warn("Problem with local config file {}, skipping".format(local_version))
 
     if parse:
-        config = _parse_config(config)
+        config = parse_config(config)
 
     return config
 
@@ -112,7 +112,7 @@ def save_config(path, config, overwrite=True):
             f.write(yaml.dump(config))
 
 
-def _parse_config(config):
+def parse_config(config):
     # Add units to our location
     if 'location' in config:
         loc = config['location']
