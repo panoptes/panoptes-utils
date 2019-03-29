@@ -19,7 +19,7 @@ addons:
     packages:
     - astrometry.net
     - cfitsio
-    - cfitsio-dev    
+    - libcfitsio-dev
     - libbz2-dev
     - libjpeg-dev
     - libnetpbm10-dev
