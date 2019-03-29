@@ -275,7 +275,7 @@ def save_environ():
 
 @pytest.fixture(scope='session')
 def data_dir():
-    return os.path.join(os.getenv('PANDIR'), 'panoptes_utils', 'tests', 'data')
+    return os.path.join(os.getenv('PANDIR'), 'panoptes_utils', 'panoptes_utils', 'tests', 'data')
 
 
 @pytest.fixture(scope='session')
