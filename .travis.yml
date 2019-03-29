@@ -17,13 +17,15 @@ before_install:
 addons:
   apt:
     packages:
-    - libnetpbm10-dev
-    - netpbm
-    - libpng12-dev
-    - libjpeg-dev
-    - zlib1g-dev
-    - libbz2-dev
+    - astrometry.net
+    - cfitsio
     - cfitsio-dev    
+    - libbz2-dev
+    - libjpeg-dev
+    - libnetpbm10-dev
+    - libpng12-dev
+    - netpbm
+    - zlib1g-dev
 install:
   - cd $TRAVIS_BUILD_DIR
   - echo $TRAVIS_BUILD_DIR
