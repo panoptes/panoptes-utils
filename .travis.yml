@@ -9,9 +9,10 @@ env:
   - POCS=/var/panoptes/POCS PANDIR=/var/panoptes
 before_install:
     - sudo mkdir /var/panoptes && sudo chmod 777 /var/panoptes
-    - ln -s $TRAVIS_BUILD_DIR $PANDIR/panoptes_utils/
+    - mkdir $PANDIR/panoptes_utils
     - mkdir $PANDIR/POCS
     - mkdir $PANDIR/logs
+    - ln -s $TRAVIS_BUILD_DIR $PANDIR/panoptes_utils/
     - pip install coveralls
     - pip install -U pip
 install:
