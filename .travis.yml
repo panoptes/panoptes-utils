@@ -12,6 +12,16 @@ before_install:
     - ln -s $TRAVIS_BUILD_DIR/ $PANDIR/
     - pip install coveralls
     - pip install -U pip
+addons:
+  apt:
+    packages:
+    - libnetpbm10-dev
+    - netpbm
+    - libpng12-dev
+    - libjpeg-dev
+    - zlib1g-dev
+    - libbz2-dev
+    - cfitsio-dev    
 install:
   - cd $TRAVIS_BUILD_DIR
   - echo $TRAVIS_BUILD_DIR
