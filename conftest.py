@@ -1,4 +1,4 @@
-# This is in the root POCS directory so that pytest will recognize the
+# This is in the root PANDIR directory so that pytest will recognize the
 # options added below without having to also specify pocs/test, or a
 # one of the tests in that directory, on the command line; i.e. pytest
 # doesn't load pocs/tests/conftest.py until after it has searched for
@@ -204,7 +204,7 @@ def messaging_ports():
 
 @pytest.fixture(scope='function')
 def message_forwarder(messaging_ports):
-    cmd = os.path.join(os.getenv('POCS'), 'scripts', 'run_messaging_hub.py')
+    cmd = os.path.join(os.getenv('PANDIR'), 'panoptes_utils', 'scripts', 'run_messaging_hub.py')
     args = [cmd]
     # Note that the other programs using these port pairs consider
     # them to be pub and sub, in that order, but the forwarder sees things
@@ -265,7 +265,7 @@ def save_environ():
 
 @pytest.fixture(scope='session')
 def data_dir():
-    return os.path.join(os.getenv('POCS'), 'pocs', 'tests', 'data')
+    return os.path.join(os.getenv('PANDIR'), 'panoptes_utils', 'tests', 'data')
 
 
 @pytest.fixture(scope='session')

@@ -16,9 +16,9 @@ def skyx(request):
     """
 
     # Use `--with-hardware thesky` on cli to run without mock
-    Mocket.enable('theskyx', '{}/pocs/tests/data'.format(os.getenv('POCS')))
-    # if 'theskyx' in pytest.config.getoption('--with-hardware'):
-        # Mocket.disable()
+    Mocket.enable('theskyx', '{}/panoptes_utils/tests/data'.format(os.getenv('PANDIR')))
+    if 'theskyx' in pytest.config.getoption('--with-hardware'):
+        Mocket.disable()
 
     theskyx = TheSkyX(connect=False)
 
@@ -31,8 +31,8 @@ def test_default_connect():
     If not running with a real connection then use Mocket
     """
     # Use `--with-hardware thesky` on cli to run without mock
-    # if 'theskyx' not in pytest.config.getoption('--with-hardware'):
-    Mocket.enable('theskyx', '{}/pocs/tests/data'.format(os.getenv('POCS')))
+    if 'theskyx' not in pytest.config.getoption('--with-hardware'):
+        Mocket.enable('theskyx', '{}/panoptes_utils/tests/data'.format(os.getenv('PANDIR')))
 
     skyx = TheSkyX()
     assert skyx.is_connected is True
