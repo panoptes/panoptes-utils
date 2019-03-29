@@ -11,7 +11,7 @@ before_install:
     - sudo mkdir /var/panoptes && sudo chmod 777 /var/panoptes
     - mkdir $PANDIR/POCS
     - mkdir $PANDIR/logs
-    - mkdir $PANDIR/POCS/tests/data
+    - mkdir -p $PANDIR/POCS/tests/data
     - pip install coveralls
     - pip install -U pip
 install:
