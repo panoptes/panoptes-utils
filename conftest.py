@@ -25,6 +25,16 @@ def pytest_addoption(parser):
     db_names = ",".join(_all_databases) + ' (or all for all databases)'
     group = parser.getgroup("PANOPTES pytest options")
     group.addoption(
+        "--with-hardware",
+        nargs='+',
+        default=[],
+        help=("A comma separated list of hardware to test."))
+    group.addoption(
+        "--without-hardware",
+        nargs='+',
+        default=[],
+        help=("A comma separated list of hardware to NOT test. "))
+    group.addoption(
         "--solve",
         action="store_true",
         default=False,
