@@ -5,9 +5,8 @@ python:
 cache:
   - pip
 env:
-  - POCS=/var/panoptes/POCS PANDIR=/var/panoptes
+  - PANDIR=$HOME
 before_install:
-    - sudo mkdir /var/panoptes && sudo chmod 777 /var/panoptes
     - mkdir $PANDIR/panoptes_utils
     - mkdir $PANDIR/POCS
     - mkdir $PANDIR/logs
@@ -16,6 +15,9 @@ before_install:
     - pip install -U pip
 install:
   - cd $TRAVIS_BUILD_DIR
+  - echo $TRAVIS_BUILD_DIR
+  - ls -l $TRAVIS_BUILD_DIR
+  - ls -l $HOME
   - pip install -r requirements.txt
   - pip install -e ".[google,testing,mongo,social]"
 script:
