@@ -7,7 +7,6 @@ cache:
 env:
   - PANDIR=$HOME
 before_install:
-    - mkdir $PANDIR/panoptes_utils
     - mkdir $PANDIR/POCS
     - mkdir $PANDIR/logs
     - ln -s $TRAVIS_BUILD_DIR/ $PANDIR/

@@ -17,7 +17,7 @@ def skyx(request):
 
     # Use `--with-hardware thesky` on cli to run without mock
     Mocket.enable('theskyx',
-                  '{}/panoptes_utils/panoptes_utils/tests/data'.format(os.getenv('PANDIR')))
+                  '{}/panoptes-utils/panoptes_utils/tests/data'.format(os.getenv('PANDIR')))
     if 'theskyx' in pytest.config.getoption('--with-hardware'):
         Mocket.disable()
 
@@ -34,7 +34,7 @@ def test_default_connect():
     # Use `--with-hardware thesky` on cli to run without mock
     if 'theskyx' not in pytest.config.getoption('--with-hardware'):
         Mocket.enable(
-            'theskyx', '{}/panoptes_utils/panoptes_utils/tests/data'.format(os.getenv('PANDIR')))
+            'theskyx', '{}/panoptes-utils/panoptes_utils/tests/data'.format(os.getenv('PANDIR')))
 
     skyx = TheSkyX()
     assert skyx.is_connected is True
