@@ -1,6 +1,6 @@
 # PANOPTES development container
 
-FROM marketplace.gcr.io/google/ubuntu1804 as build-env
+FROM python:3-slim-stretch AS build-env
 MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
 
 ARG pan_dir=/var/panoptes
@@ -16,7 +16,6 @@ ENV SOLVE_FIELD=/usr/bin/solve-field
 ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR ${PANDIR}/panoptes-utils/
-
 COPY . ${PANDIR}/panoptes-utils/
 
 # Note that pocs-base has the default ubuntu environment, so
@@ -40,4 +39,4 @@ RUN rm /bin/sh && ln -s /bin/bash /bin/sh \
     && python3 panoptes_utils/data.py \
     && pip3 install -e ".[google,social,testing,mongo]"
 
-CMD ["/bin/bash"]
+CMD ["python"]
