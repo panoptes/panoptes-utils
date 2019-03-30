@@ -1,6 +1,6 @@
 #!/bin/bash -e 
 
-export PYTHONPATH="$PYTHONPATH:$POCS/scripts/coverage"
+export PYTHONPATH="$PYTHONPATH:$POCS/scripts/testing/coverage"
 export COVERAGE_PROCESS_START=.coveragerc
 coverage run $(which pytest) -v --test-databases all
 coverage combine
