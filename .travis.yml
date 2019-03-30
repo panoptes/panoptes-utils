@@ -1,35 +1,9 @@
-dist: xenial
-sudo: required
 language: python
-python:
-  - "3.6"
-  - "3.7"
-cache:
-  - pip
-env:
-  - PANDIR=$HOME
+
+services:
+  - docker
+
 before_install:
-    - mkdir $PANDIR/POCS
-    - mkdir $PANDIR/logs
-    - ln -s $TRAVIS_BUILD_DIR/ $PANDIR/
-    - pip install coveralls
-    - pip install -U pip
-addons:
-  apt:
-    packages:
-    - astrometry.net
-    - cfitsio
-    - libcfitsio-dev
-install:
-  - cd $TRAVIS_BUILD_DIR
-  - echo $TRAVIS_BUILD_DIR
-  - ls -l $TRAVIS_BUILD_DIR
-  - ls -l $HOME
-  - pip install -r requirements.txt
-  - pip install -e ".[google,testing,mongo,social]"
-script:
-  - python setup.py test
-after_success:
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then
-        bash <(curl -s https://codecov.io/bash);
-    fi
+    - docker pull gcr.io/panoptes-survey/panoptes-utils
+    - ci_env=`bash <(curl -s https://codecov.io/env)`
+    - docker run -it $ci_env gcr.io/panoptes-survey/panoptes-utils python3 setup.py test && /bin/bash <(curl -s https://codecov.io/bash)
