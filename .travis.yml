@@ -2,7 +2,8 @@ language: minimal
 services:
   - docker
 before_install:
+    - ci_env=`bash <(curl -s https://codecov.io/env)`
     - docker pull gcr.io/panoptes-survey/panoptes-utils
 install: true  # skips install
 script:
-    - docker run -it $ci_env gcr.io/panoptes-survey/panoptes-utils python3 setup.py test
+    - docker run -it $ci_env gcr.io/panoptes-survey/panoptes-utils python3 setup.py test && bash <(curl -s https://codecov.io/bash)
