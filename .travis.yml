@@ -5,5 +5,4 @@ services:
 
 before_install:
     - docker pull gcr.io/panoptes-survey/panoptes-utils
-    - ci_env=`bash <(curl -s https://codecov.io/env)`
-    - docker run -it $ci_env gcr.io/panoptes-survey/panoptes-utils python3 setup.py test && /bin/bash <(curl -s https://codecov.io/bash)
+    - docker run -it $ci_env gcr.io/panoptes-survey/panoptes-utils python3 setup.py test
