@@ -1,6 +1,6 @@
 # PANOPTES development container
 
-FROM python:3-slim-stretch AS build-env
+FROM python:3.7-slim-stretch AS build-env
 MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
 
 ARG pan_dir=/var/panoptes
@@ -35,7 +35,7 @@ RUN rm /bin/sh && ln -s /bin/bash /bin/sh \
     && mkdir -p $PANLOG \
     && mkdir -p ${PANDIR}/astrometry/data \
     && echo "add_path /var/panoptes/astrometry/data" >> /etc/astrometry.cfg \
-    && pip3 install -Ur requirements.txt \
+    && pip3 install --no-cache-dir -r requirements.txt \
     && python3 panoptes_utils/data.py \
     && pip3 install -e ".[google,social,testing,mongo]"
 
