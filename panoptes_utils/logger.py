@@ -1,6 +1,7 @@
 import collections
 import datetime
 import json
+import yaml
 import logging
 import logging.config
 import os
@@ -11,7 +12,7 @@ from tempfile import gettempdir
 import time
 from warnings import warn
 
-from panoptes_utils.config import load_config
+from panoptes_utils.config import parse_config
 
 # We don't want to create multiple root loggers that are "identical",
 # so track the loggers in a dict keyed by a tuple of:
@@ -196,7 +197,7 @@ def get_root_logger(profile='panoptes', log_config=None):
     """
 
     # Get log info from config
-    log_config = log_config if log_config else load_config('log').get('logger', {})
+    log_config = log_config if log_config else load_default()
 
     # If we already created a logger for this profile and log_config, return that.
     logger_key = (profile, json.dumps(log_config, sort_keys=True))
@@ -276,3 +277,62 @@ def get_root_logger(profile='panoptes', log_config=None):
     # when the log rotates too!
     all_loggers[logger_key] = logger
     return logger
+
+
+def load_default():
+    return parse_config(yaml.load(DEFAULT_CONFIG))
+
+
+DEFAULT_CONFIG = """
+version: 1
+use_utc: True
+formatters:
+  simple:
+    format: '%(asctime)s - %(message)s'
+    datefmt: '%H:%M:%S'
+  detail:
+    style: '{'
+    format: '{levelname:.1s}{asctime}.{msecs:03.0f} {filename:>25s}:{lineno:03d}] {message}'
+    datefmt: '%m%d %H:%M:%S'
+handlers:
+  all:
+    class: logging.handlers.TimedRotatingFileHandler
+    level: DEBUG
+    formatter: detail
+    when: W6
+    backupCount: 4
+  info:
+    class: logging.handlers.TimedRotatingFileHandler
+    level: INFO
+    formatter: detail
+    when: W6
+    backupCount: 4
+  warn:
+    class: logging.handlers.TimedRotatingFileHandler
+    level: WARNING
+    formatter: detail
+    when: W6
+    backupCount: 4
+  error:
+    class: logging.handlers.TimedRotatingFileHandler
+    level: ERROR
+    formatter: detail
+    when: W6
+    backupCount: 4
+loggers:
+  all:
+    handlers: [all]
+    propagate: true
+  info:
+    handlers: [info]
+    propagate: true
+  warn:
+    handlers: [warn]
+    propagate: true
+  error:
+    handlers: [error]
+    propagate: true
+root:
+  level: DEBUG
+  handlers: [all, warn]
+"""

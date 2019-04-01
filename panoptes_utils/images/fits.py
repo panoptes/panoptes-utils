@@ -25,7 +25,8 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
     if verbose:
         print("Entering solve_field")
 
-    solve_field_script = os.path.join(os.getenv('POCS'), 'scripts', 'solve_field.sh')
+    solve_field_script = os.path.join(
+        os.getenv('PANDIR'), 'panoptes-utils', 'scripts', 'solve_field.sh')
 
     if not os.path.exists(solve_field_script):  # pragma: no cover
         raise error.InvalidSystemCommand(
