@@ -71,8 +71,8 @@ def test_delete(storage):
 
 def test_upload_observation_to_bucket(storage):
     dir_name = os.path.join(
-        os.environ['POCS'],
-        'pocs', 'tests', 'data'
+        os.environ['PANDIR'],
+        'panoptes_utils', 'tests', 'data'
     )
 
     # We copy all the files to a temp dir and then upload that to get

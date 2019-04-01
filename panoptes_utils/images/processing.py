@@ -36,6 +36,15 @@ def get_rgb_cube(cube):
 
 
 def get_rgb_data(data, **kwargs):
+    """Given a data cube of images, split into RGB channels and return hyper-cube
+
+    Args:
+        data (`numpy.array`): A three dimensional (width by height by time) set of images.
+        **kwargs: Optional arguments passed to `get_rgb_masks`.
+
+    Returns:
+        `numpy.ma.array`: A masked array corresponding to the RGB split files.
+    """
     rgb_masks = get_rgb_masks(data, **kwargs)
 
     assert rgb_masks is not None
@@ -75,8 +84,7 @@ def get_rgb_masks(data, separate_green=False, mask_path=None, force_new=False, v
         TYPE: Description
     """
     if mask_path is None:
-        mask_path = os.path.join(os.environ['PANDIR'],
-                                 f'rgb_masks_{data.shape[0]}_{data.shape[1]}.npz')
+        mask_path = f'rgb_masks_{data.shape[0]}_{data.shape[1]}.npz'
 
     logging.debug('Mask path: {}'.format(mask_path))
 
