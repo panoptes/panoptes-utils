@@ -26,7 +26,7 @@ PACKAGENAME = metadata.get('package_name', 'packagename')
 URL = metadata.get('url', 'https://projectpanoptes.org')
 
 modules = {
-    'google': ['google-cloud', 'google-cloud-storage'],
+    'google': ['google-cloud', 'google-cloud-storage', 'psycopg2-binary'],
     'mongo': ['pymongo'],
     'social': ['requests', 'tweepy'],
     'testing': ['pytest', 'pytest-cov', 'coverage', 'coveralls', 'codecov', 'pycodestyle'],

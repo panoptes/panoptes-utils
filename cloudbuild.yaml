@@ -1,34 +1,52 @@
 steps:
+
+# Set up multiarch support
 - name: 'gcr.io/cloud-builders/docker'
-  id: 'amd64'
+  id: 'register-qemu'
+  args:
+  - 'run'
+  - '--privileged'
+  - 'multiarch/qemu-user-static:register'
+  - '--reset'
+  waitFor: ['-']  
+
+
+# Builds
+# AMD Build  
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'x86_64'
   args:
   - 'build'
-  - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:amd64'
+  - '--build-arg=PYARCH=x86_64'
+  - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:x86_64'
   - '.'
-  waitFor: ['-']
-- name: 'gcr.io/cloud-builders/docker'
-  id: 'push-amd64'
-  args:
-  - 'push'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:amd64'
-  waitFor: ['amd64']
-  
+  waitFor: ['register-qemu']
+# ARM Build (e.g. Raspberry Pi)  
 - name: 'gcr.io/cloud-builders/docker'
   id: 'arm'
   args:
   - 'build'
-  - '-f'
-  - 'Dockerfile.rpi'
-  - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:arm32v7'
+  - '--build-arg=PYARCH=armhf'
+  - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:armhf'
   - '.'
-  waitFor: ['-']
+  waitFor: ['register-qemu']
+
+# Push
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'push-x86_64'
+  args:
+  - 'push'
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:x86_64'
+  waitFor: ['x86_64']
 - name: 'gcr.io/cloud-builders/docker'
   id: 'push-arm'
   args:
   - 'push'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:arm32v7'
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:armhf'
   waitFor: ['arm']
 
+# Manifest file for multiarch
 - name: 'gcr.io/cloud-builders/docker'
   id: 'manifest'
   env:
@@ -37,10 +55,9 @@ steps:
   - 'manifest'
   - 'create'
   - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:arm32v7'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:amd64' 
-  waitFor: ['push-amd64', 'push-arm']
-
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:armhf'
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:x86_64' 
+  waitFor: ['push-x86_64', 'push-arm']
 - name: 'gcr.io/cloud-builders/docker'
   id: 'annotate-manifest'
   env:
@@ -49,11 +66,12 @@ steps:
   - 'manifest'
   - 'annotate'
   - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:arm32v7'
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:armhf'
   - '--os=linux'
   - '--arch=arm'
   waitFor: ['manifest']
 
+# Push manifest file
 - name: 'gcr.io/cloud-builders/docker'
   id: 'push-manifest'
   env:
@@ -64,7 +82,6 @@ steps:
   - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
   waitFor: ['annotate-manifest']
 
-
 images:
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:amd64'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:arm32v7'
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:x86_64'
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:armhf'

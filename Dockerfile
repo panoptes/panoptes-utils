@@ -1,6 +1,7 @@
 # PANOPTES development container
+ARG PYARCH=x86_64
 
-FROM python:3.7-slim-stretch AS build-env
+FROM multiarch/ubuntu-core:${PYARCH}-bionic AS build-env
 MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
 
 ARG pan_dir=/var/panoptes
@@ -18,16 +19,15 @@ ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR ${PANDIR}/panoptes-utils/
 COPY . ${PANDIR}/panoptes-utils/
 
-# Note that pocs-base has the default ubuntu environment, so
-# we need to specify python3 so we don't get python2
-
-# Use "bash" as replacement for "sh"
-# Note: I don't think this is the preferred way to do this anymore
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh \
-    && apt-get update \
+RUN apt-get update \
     && apt-get --yes install \
         astrometry.net \
+        dcraw \
+        exiftool \
         libcfitsio-dev \
+        libfreetype6-dev \
+        libpng-dev \
+        pkg-config \
         python3-pip \
         wget \
     && rm -rf /var/lib/apt/lists/* \
@@ -39,4 +39,4 @@ RUN rm /bin/sh && ln -s /bin/bash /bin/sh \
     && python3 panoptes_utils/data.py \
     && pip3 install -e ".[google,social,testing,mongo]"
 
-CMD ["python"]
+CMD ["python3"]
