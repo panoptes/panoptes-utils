@@ -1,10 +1,13 @@
 import os
 import yaml
 from contextlib import suppress
+import requests
 
 from astropy import units as u
-from panoptes_utils import listify
 from warnings import warn
+
+from panoptes_utils import listify
+from panoptes_utils.serializers import dumps as dump_json
 
 
 def load_config(config_files=None, simulator=None, parse=True, ignore_local=False):
@@ -139,6 +142,35 @@ def parse_config(config):
                 config['directories'][dir_name] = abs_dir
 
     return config
+
+
+def get_config(url='http://127.0.0.1:5000/get-config', key=None, parse=True):
+    config_entry = requests.post(url, json={'key': key}).json()
+
+    if parse:
+        if key is not None:
+            parse_config({key: config_entry})
+        else:
+            parse_config(config_entry)
+
+    return config_entry
+
+
+def set_config(key, new_value, url='http://127.0.0.1:5000/set-config', parse=True):
+
+    post_json = dump_json({'key': key, 'value': new_value})
+    print(post_json)
+
+    config_entry = requests.post(url, data=post_json, headers={
+                                 'Content-Type': 'application/json'}).json()
+
+    if parse:
+        if key is not None:
+            parse_config({key: config_entry})
+        else:
+            parse_config(config_entry)
+
+    return config_entry
 
 
 def _add_to_conf(config, fn):

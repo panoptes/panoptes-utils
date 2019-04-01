@@ -1,7 +1,18 @@
-from bson import json_util
+import orjson
+
+from astropy import units as u
 
 
-def dumps(obj):
+def _serializer(obj):
+    if isinstance(obj, u.Quantity):
+        return obj.value
+
+
+def to_string(*args, **kwargs):
+    return dumps(*args, **kwargs)
+
+
+def dumps(obj, use_yaml=False):
     """Dump an object to JSON.
 
     Args:
@@ -10,11 +21,15 @@ def dumps(obj):
     Returns:
         str: Serialized representation of object.
     """
-    return json_util.dumps(obj)
+    return orjson.dumps(obj, default=_serializer).decode('utf8')
+
+
+def to_object(*args, **kwargs):
+    return loads(*args, **kwargs)
 
 
 def loads(msg):
-    """Load an object from JSON.
+    """Load an object from JSON or YAML.
 
     Args:
         msg (str): A serialized string representation of object.
@@ -22,7 +37,7 @@ def loads(msg):
     Returns:
         dict: The loaded object.
     """
-    return json_util.loads(msg)
+    return orjson.loads(msg)
 
 
 def dumps_file(fn, obj, clobber=False):
@@ -43,7 +58,7 @@ def dumps_file(fn, obj, clobber=False):
         mode = 'a'
 
     with open(fn, mode) as f:
-        f.write(dumps(obj) + "\n")
+        f.write(orjson.dumps(obj, default=_serializer) + "\n")
 
     return fn
 
@@ -60,6 +75,6 @@ def loads_file(file_path):
     """
     obj = None
     with open(file_path, 'r') as f:
-        obj = loads(f.read())
+        obj = orjson.loads(f.read())
 
     return obj
