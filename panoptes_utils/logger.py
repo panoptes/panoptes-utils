@@ -280,7 +280,7 @@ def get_root_logger(profile='panoptes', log_config=None):
 
 
 def load_default():
-    return parse_config(yaml.load(DEFAULT_CONFIG))
+    return parse_config(yaml.full_load(DEFAULT_CONFIG))
 
 
 DEFAULT_CONFIG = """
