@@ -12,7 +12,7 @@ from pymongo.errors import ConnectionFailure
 
 from panoptes_utils import current_time
 from panoptes_utils import serializers as json_util
-from panoptes_utils.config import load_config
+from panoptes_utils.config.client import get_config
 
 
 class AbstractPanDB(metaclass=abc.ABCMeta):
@@ -168,7 +168,7 @@ class PanDB(object):
             raise ValueError('db_name, a string, must be provided and not empty')
 
         if db_type is None:
-            db_type = load_config()['db']['type']
+            db_type = get_config('db.type')
 
         if not isinstance(db_type, str) and db_type:
             raise ValueError('db_type, a string, must be provided and not empty')
