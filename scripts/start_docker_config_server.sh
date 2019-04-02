@@ -17,12 +17,10 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-FNAME=$1
-TITLE="${2}"
-
 docker run --rm \
 	--name config_server \
 	-p 6563:6563 \
 	-v /var/panoptes:/var/panoptes \
 	gcr.io/panoptes-survey/panoptes-utils \
 	python3 scripts/run_config_server.py --public
+	
