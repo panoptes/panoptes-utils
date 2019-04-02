@@ -91,7 +91,10 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
 
 
 def save_config(path, config, overwrite=True):
-    """Save config to yaml file
+    """Save config to local yaml file.
+
+    This will save any entries into the `path_local.yaml` file to avoid clobbering
+    what comes from the version control.
 
     Args:
         path (str): Path to save, can be relative or absolute. See Notes
@@ -101,9 +104,15 @@ def save_config(path, config, overwrite=True):
             to generate a warning for existing config. Defaults to True
             for updates.
     """
+    # Check for extension.
     if not path.endswith('.yaml'):
         path = '{}.yaml'.format(path)
 
+    # Check for _local name.
+    if not path.endswith('_local.yaml'):
+        path = '{}_local.yaml'.format(path)
+
+    # Check full path location
     if not path.startswith('/'):
         config_dir = '{}/conf_files'.format(os.getenv('PANDIR'))
         path = os.path.join(config_dir, path)
@@ -176,7 +185,7 @@ def set_config(key, new_value, url='http://127.0.0.1:5000/set-config', parse=Tru
 def _add_to_conf(config, fn):
     try:
         with open(fn, 'r') as f:
-            c = yaml.load(f.read())
+            c = yaml.full_load(f.read())
             if c is not None and isinstance(c, dict):
                 config.update(c)
     except IOError:  # pragma: no cover
