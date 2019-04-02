@@ -3,7 +3,7 @@ from panoptes_utils.serializers import dumps as dump_json
 from panoptes_utils.config import parse_config
 
 
-def get_config(host='127.0.0.1', port='6563', key=None, parse=True):
+def get_config(key=None, host='127.0.0.1', port='6563', parse=True):
     """Get a config item from the config server.
 
     Return the config entry for the given `key`. If `key=None` (default), return
