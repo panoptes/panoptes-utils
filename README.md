@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.com/panoptes/panoptes-utils.svg?branch=master)](https://travis-ci.com/panoptes/panoptes-utils)
+[![codecov](https://codecov.io/gh/panoptes/panoptes-utils/branch/master/graph/badge.svg)](https://codecov.io/gh/panoptes/panoptes-utils)
+
 # PANOPTES Utils
 
 Utility functions for use within the PANOPTES ecosystem and for general astronomical processing.
@@ -23,6 +26,7 @@ pip install "panoptes-utils[all]"
 <a href="#" name='services'></a>
 
 ### Config Server
+<a href="#" name='config-server'></a>
 
 A simple config param server. Runs as a Flask microservice that delivers JSON documents
 in response to requests for config key items. To start the service (in a Docker container), run:
