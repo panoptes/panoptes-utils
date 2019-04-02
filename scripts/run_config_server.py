@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask import request
 from flask import jsonify
@@ -27,9 +28,6 @@ class CustomJSONEncoder(JSONEncoder):
 
 app.json_encoder = CustomJSONEncoder
 
-config = load_config(config_files=['/var/panoptes/POCS/conf_files/pocs.yaml'])
-cut_config = Cut(config)
-
 
 @app.route('/get-config', methods=['GET', 'POST'])
 def get_config_entry():
@@ -45,12 +43,12 @@ def get_config_entry():
 
         if key is None:
             # Return all
-            show_config = config
+            show_config = app.config['POCS']
         else:
-            show_config = cut_config.get(key, None)
+            show_config = app.config['POCS_cut'].get(key, None)
     else:
         # Return entire config
-        show_config = config
+        show_config = app.config['POCS']
 
     return jsonify(show_config)
 
@@ -64,9 +62,9 @@ def set_config_entry():
         if key is not None:
             val = req_data['value']
 
-            cut_config.update({key: val})
+            app.config['POCS_cut'].update({key: val})
 
-            return jsonify(cut_config.get(key))
+            return jsonify(app.config['POCS_cut'].get(key))
 
     return jsonify({
         'success': False,
@@ -83,12 +81,26 @@ if __name__ == '__main__':
     parser.add_argument('--port', default=8888, type=int, help='Local port.')
     parser.add_argument('--public', default=False, action='store_true',
                         help='If server should be public, default False.')
+    parser.add_argument('--config-file', dest='config_files', type=str, action='append')
     parser.add_argument('--debug', default=False, action='store_true', help='Debug')
     args = parser.parse_args()
 
     # Set public
     if args.public and args.host == '127.0.0.1':
         args.host = '0.0.0.0'
+
+    if not args.config_files:
+        # Look for main pocs file
+        pocs_conf_dir = os.path.join(os.getenv('PANDIR'), 'POCS', 'conf_files')
+
+        if os.path.isdir(pocs_conf_dir):
+            print('Using default POCS config files')
+            args.config_files = os.path.join(pocs_conf_dir, 'pocs')
+        else:
+            print('No config files given')
+
+    app.config['POCS'] = load_config(config_files=args.config_files)
+    app.config['POCS_cut'] = Cut(app.config['POCS'])
 
     app.run(
         host=args.host,

@@ -93,7 +93,7 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
 def save_config(path, config, overwrite=True):
     """Save config to local yaml file.
 
-    This will save any entries into the `path_local.yaml` file to avoid clobbering
+    This will save any entries into the `<path>_local.yaml` file to avoid clobbering
     what comes from the version control.
 
     Args:
@@ -125,6 +125,18 @@ def save_config(path, config, overwrite=True):
 
 
 def parse_config(config):
+    """Parse the config dictionary for common objects.
+
+    Currently only parses the following:
+        * `location` for units in degrees.
+        * `directories` for relative path names.
+
+    Args:
+        config (dict): Config items.
+
+    Returns:
+        dict: Config items but with objects.
+    """
     # Add units to our location
     if 'location' in config:
         loc = config['location']
