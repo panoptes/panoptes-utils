@@ -1,87 +1,20 @@
 steps:
-
-# Set up multiarch support
+# Build
 - name: 'gcr.io/cloud-builders/docker'
-  id: 'register-qemu'
-  args:
-  - 'run'
-  - '--privileged'
-  - 'multiarch/qemu-user-static:register'
-  - '--reset'
-  waitFor: ['-']  
-
-
-# Builds
-# AMD Build  
-- name: 'gcr.io/cloud-builders/docker'
-  id: 'x86_64'
+  id: 'main-build'
   args:
   - 'build'
-  - '--build-arg=PYARCH=x86_64'
-  - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:x86_64'
+  - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:latest'
   - '.'
-  waitFor: ['register-qemu']
-# ARM Build (e.g. Raspberry Pi)  
-- name: 'gcr.io/cloud-builders/docker'
-  id: 'arm'
-  args:
-  - 'build'
-  - '--build-arg=PYARCH=armhf'
-  - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:armhf'
-  - '.'
-  waitFor: ['register-qemu']
+  waitFor: ['-']
 
 # Push
-
 - name: 'gcr.io/cloud-builders/docker'
-  id: 'push-x86_64'
+  id: 'push-latest'
   args:
   - 'push'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:x86_64'
-  waitFor: ['x86_64']
-- name: 'gcr.io/cloud-builders/docker'
-  id: 'push-arm'
-  args:
-  - 'push'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:armhf'
-  waitFor: ['arm']
-
-# Manifest file for multiarch
-- name: 'gcr.io/cloud-builders/docker'
-  id: 'manifest'
-  env:
-  - 'DOCKER_CLI_EXPERIMENTAL=enabled'
-  args:
-  - 'manifest'
-  - 'create'
   - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:armhf'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:x86_64' 
-  waitFor: ['push-x86_64', 'push-arm']
-- name: 'gcr.io/cloud-builders/docker'
-  id: 'annotate-manifest'
-  env:
-  - 'DOCKER_CLI_EXPERIMENTAL=enabled'
-  args:
-  - 'manifest'
-  - 'annotate'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:armhf'
-  - '--os=linux'
-  - '--arch=arm'
-  waitFor: ['manifest']
-
-# Push manifest file
-- name: 'gcr.io/cloud-builders/docker'
-  id: 'push-manifest'
-  env:
-  - 'DOCKER_CLI_EXPERIMENTAL=enabled'
-  args:
-  - 'manifest'
-  - 'push'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
-  waitFor: ['annotate-manifest']
+  waitFor: ['main-build']
 
 images:
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:x86_64'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:armhf'
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
