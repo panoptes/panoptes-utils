@@ -1,5 +1,6 @@
 astroplan
 astropy >= 3.0.0
+Flask
 matplotlib >= 3.0.0
 mocket
 numpy >= 1.12.1, !=1.15.3

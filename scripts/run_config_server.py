@@ -15,9 +15,10 @@ if __name__ == '__main__':
         description='Start the config server for PANOPTES')
     parser.add_argument('--host', default='127.0.0.1', type=str,
                         help='Host name, defaults to local interface.')
-    parser.add_argument('--port', default=8888, type=int, help='Local port.')
+    parser.add_argument('--port', default=6563, type=int, help='Local port, default 6563')
     parser.add_argument('--public', default=False, action='store_true',
-                        help='If server should be public, default False.')
+                        help='If server should be public, default False. '
+                        'Note: inside a docker container set this to True to expose to host.')
     parser.add_argument('--config-file', dest='config_files', type=str, action='append')
     parser.add_argument('--debug', default=False, action='store_true', help='Debug')
     args = parser.parse_args()
