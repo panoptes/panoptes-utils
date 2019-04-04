@@ -27,7 +27,7 @@ def config_server(host, port):
                        'run_config_server.py'
                        )
     args = [cmd, '--host', host, '--port', port, '--config-file',
-            os.path.join(os.getenv('PANDIR'), 'panoptes_utils', '.travis.yaml')]
+            os.path.join(os.getenv('PANDIR'), 'panoptes_utils', '.travis.yml')]
 
     proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # Give the server a second to start
