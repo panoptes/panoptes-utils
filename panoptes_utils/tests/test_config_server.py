@@ -26,7 +26,8 @@ def config_server(host, port):
                        'scripts',
                        'run_config_server.py'
                        )
-    args = [cmd, '--host', host, '--port', port]
+    args = [cmd, '--host', host, '--port', port, '--config-file',
+            os.path.join(os.getenv('PANDIR'), 'panoptes_utils', '.travis.yaml')]
 
     proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # Give the server a second to start
@@ -39,9 +40,10 @@ def test_config_client(config_server, host, port):
     # If None then server is still running.
     assert config_server.poll() is None
 
-    loc = get_config(key='location', host=host, port=port)
-    assert loc['horizon'] == 30 * u.degree
+    do_install = get_config(key='install', host=host, port=port)
+    assert do_install
 
-    assert set_config('location.horizon', 47, host=host, port=port) == 47
+    assert set_config('location.horizon', 47 * u.degree, host=host, port=port) == 47 * u.degree
 
+    assert get_config('location.horizon', host=host, port=port) == 47 * u.degree
     assert get_config('location.horizon', host=host, port=port, parse=False) == 47
