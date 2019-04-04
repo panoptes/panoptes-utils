@@ -4,6 +4,8 @@ services:
 before_install:
     - ci_env=`bash <(curl -s https://codecov.io/env)`
     - docker pull gcr.io/panoptes-survey/panoptes-utils
+    - docker pull gcr.io/panoptes-survey/pocs
 install: true  # skips install
 script:
+    - docker run -it -d /var/panoptes:/var/panoptes gcr.io/panoptes-survey/pocs
     - docker run -it -v $TRAVIS_BUILD_DIR:/var/panoptes/panoptes-utils $ci_env gcr.io/panoptes-survey/panoptes-utils scripts/testing/run_tests.sh
