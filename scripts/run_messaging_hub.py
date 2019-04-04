@@ -5,7 +5,7 @@ import sys
 import threading
 import time
 
-from panoptes_utils.config import load_config
+from panoptes_utils.config.client import get_config
 from panoptes_utils.logger import get_root_logger
 from panoptes_utils.messaging import PanMessaging
 
@@ -131,7 +131,11 @@ if __name__ == '__main__':
         sub_and_pub_pairs.append((sub, pub))
 
     if args.from_config:
-        config = load_config(config_files=['pocs'])
+        try:
+            config = get_config()
+        except Exception:
+            arg_error('Invalid config. Is the config server running?')
+
         add_pair(config['messaging']['cmd_port'])
         add_pair(config['messaging']['msg_port'])
 
