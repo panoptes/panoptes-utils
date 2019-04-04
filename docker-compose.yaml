@@ -1,0 +1,41 @@
+version: '3.2'
+services:
+  config-server:
+    image: gcr.io/panoptes-survey/panoptes-utils
+    container_name: config_server
+    privileged: true
+    env_file: env_file
+    ports:
+      - target: 6563
+        published: 6563
+        protocol: tcp
+        mode: host    
+    volumes:
+      - pandir:/var/panoptes
+    command: bash -c "python3 scripts/run_config_server.py --public"
+  messaging:
+    image: gcr.io/panoptes-survey/panoptes-utils
+    container_name: messaging-hub
+    privileged: true
+    env_file: env_file
+    depends_on:
+      - "config-server"        
+    ports:
+      - target: 6500
+        published: 6500
+        protocol: tcp
+        mode: host    
+      - target: 6510
+        published: 6510
+        protocol: tcp
+        mode: host            
+    volumes:
+      - pandir:/var/panoptes
+    command: bash -c "python3 scripts/run_messaging_hub.py --from-config"
+volumes:
+    pandir:
+      driver: local
+      driver_opts:
+        type: none
+        device: /var/panoptes
+        o: bind
