@@ -11,7 +11,7 @@ from panoptes_utils.config.client import set_config
 
 @pytest.fixture(scope='module')
 def host():
-    return 'config-server'
+    return 'localhost'
 
 
 @pytest.fixture(scope='module')
@@ -35,13 +35,13 @@ def config_server(host, port):
     proc.terminate()
 
 
-def test_config_client(config_server, port):
+def test_config_client(config_server, host, port):
     # If None then server is still running.
     assert config_server.poll() is None
 
-    loc = get_config(key='location', port=port)
+    loc = get_config(key='location', host=host, port=port)
     assert loc['horizon'] == 30 * u.degree
 
-    assert set_config('location.horizon', 47, port=port) == 47
+    assert set_config('location.horizon', 47, host=host, port=port) == 47
 
-    assert get_config('location.horizon', parse=False) == 47
+    assert get_config('location.horizon', host=host, port=port, parse=False) == 47

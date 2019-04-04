@@ -19,7 +19,7 @@ def get_config(key=None, host='config-server', port='6563', parse=True):
         30 * u.degree
         >>> get_config(key='location.horizon', parse=False)
         30
-        >>> get_config(key='cameras.devices[0].model')
+        >>> get_config(key='cameras.defaultsgevices[0].model')
         'canon_gphoto2'
 
     Args:
