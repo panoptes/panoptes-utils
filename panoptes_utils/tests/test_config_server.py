@@ -40,6 +40,8 @@ def test_config_client(config_server, host, port):
     # If None then server is still running.
     assert config_server.poll() is None
 
+    assert get_config(host=host, port=port)  # Make sure we get anyting
+
     do_install = get_config(key='install', host=host, port=port)
     assert do_install
 
