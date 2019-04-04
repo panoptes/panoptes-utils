@@ -10,18 +10,23 @@ from panoptes_utils.config.client import set_config
 
 
 @pytest.fixture(scope='module')
+def host():
+    return 'config-server'
+
+
+@pytest.fixture(scope='module')
 def port():
     return '6563'
 
 
 @pytest.fixture(scope='module')
-def config_server(port):
+def config_server(host, port):
     cmd = os.path.join(os.getenv('PANDIR'),
                        'panoptes-utils',
                        'scripts',
                        'run_config_server.py'
                        )
-    args = [cmd, '--port', port]
+    args = [cmd, '--host', host, '--port', port]
 
     proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # Give the server a second to start
