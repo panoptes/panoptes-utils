@@ -4,7 +4,8 @@ services:
     image: gcr.io/panoptes-survey/panoptes-utils
     container_name: config_server
     privileged: true
-    env_file: env_file
+    env_file: 
+      - ${PANDIR}/env_file
     ports:
       - target: 6563
         published: 6563
@@ -17,7 +18,7 @@ services:
     image: gcr.io/panoptes-survey/panoptes-utils
     container_name: messaging-hub
     privileged: true
-    env_file: env_file
+    env_file: ${PANDIR}/env_file
     depends_on:
       - "config-server"        
     ports:
