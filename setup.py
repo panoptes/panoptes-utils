@@ -34,6 +34,7 @@ setup(name=PACKAGENAME,
       license=LICENSE,
       url=URL,
       keywords=KEYWORDS,
+      setup_requires=['pytest-runner'],
       tests_require=['pytest', 'pytest-cov', 'coverage', 'coveralls', 'codecov'],
       # List additional groups of dependencies here (e.g. development
       # dependencies). You can install these using the following syntax,
