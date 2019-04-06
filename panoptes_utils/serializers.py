@@ -45,16 +45,25 @@ def from_json(msg):
 
 
 def _parse_quantities(obj):
+    """Parse the incoming object for astropy quantities.
+
+    If `obj` is a dict with exactly two keys named `unit` and `value, then attempt
+    to parse into a valid `astropy.unit.Quantity`. If fail, simply return object
+    as is.
+
+    Args:
+        obj (dict): Object to check for quantities.
+
+    Returns:
+        dict: Same as `obj` but with objects converted to quantities.
+    """
     # If there are exactly two keys
-    keys = sorted(list(obj.keys()))
-    if keys == ['unit', 'value']:
+    try:
         return obj['value'] * u.Unit(obj['unit'])
-    else:
-        for k in keys:
+    except Exception:
+        for k in obj.keys():
             if isinstance(obj[k], dict):
-                new_obj = _parse_quantities(obj[k])
-                if new_obj is not None:
-                    obj[k] = new_obj
+                obj[k] = _parse_quantities(obj[k])
 
         return obj
 
