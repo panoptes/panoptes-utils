@@ -19,6 +19,9 @@ def to_json(obj):
     >>> to_json({"numpy_array": np.arange(10)})
     '{"numpy_array":[0,1,2,3,4,5,6,7,8,9]}'
 
+    >>> to_json({"current_time": current_time()})
+    '{"current_time":"2019-04-06 10:15:22.378408"}'
+
     Args:
         obj (any): The object to be converted to JSON, usually a dict.
 
@@ -31,8 +34,8 @@ def to_json(obj):
 def from_json(msg):
     """Convert a JSON string into a Python object.
 
-    This will automatically handle `datetime` objects as well as `astropy.units.Quantity`
-    values when stored as a `{"value": val, "unit": unit}` format.
+    Astropy quanitites will be converted from a `{"value": val, "unit": unit}` format.
+    Time-like values are *not* parsed, however see example below.
 
     >>> from panoptes_utils.serializers import from_json
     >>> config_str = '{"location":{"name":"Mauna Loa","elevation":{"value":3397.0,"unit":"m"}}}'
@@ -49,6 +52,13 @@ def from_json(msg):
     <Quantity 42. d>
     >>> horizon['horizon'].decompose()
     <Quantity 3628800. s>
+
+    >>> time_str = to_json({"current_time": current_time()})
+    >>> from_json(time_str)['current_time']
+    '...-...-...T...:...:...'
+    >>> from astropy.time import Time
+    >>> Time(from_json(time_str)['current_time'])
+    <Time object: scale='utc' format='isot' value=...>
 
     Args:
         msg (str): The JSON string representation of the object.
