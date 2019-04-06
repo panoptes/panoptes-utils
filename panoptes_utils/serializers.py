@@ -1,5 +1,6 @@
 import orjson
 
+import numpy as np
 from astropy import units as u
 
 
@@ -14,6 +15,9 @@ def to_json(obj):
     >>> config = { "location": { "name": "Mauna Loa", "elevation": 3397 * u.meter } }
     >>> to_json(config)
     '{"location":{"name":"Mauna Loa","elevation":{"value":3397.0,"unit":"m"}}}'
+
+    >>> to_json({"numpy_array": np.arange(10)})
+    '{"numpy_array":[0,1,2,3,4,5,6,7,8,9]}'
 
     Args:
         obj (any): The object to be converted to JSON, usually a dict.
@@ -83,3 +87,5 @@ def _parse_quantities(obj):
 def _serializer(obj):
     if isinstance(obj, u.Quantity):
         return {'value': obj.value, 'unit': obj.unit.name}
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
