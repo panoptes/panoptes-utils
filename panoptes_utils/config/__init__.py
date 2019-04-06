@@ -1,7 +1,7 @@
 import os
-import yaml
 from contextlib import suppress
 
+from astropy.io.misc import yaml
 from astropy import units as u
 from warnings import warn
 
@@ -166,7 +166,7 @@ def parse_config(config):
 def _add_to_conf(config, fn):
     try:
         with open(fn, 'r') as f:
-            c = yaml.full_load(f.read())
+            c = yaml.load(f.read())
             if c is not None and isinstance(c, dict):
                 config.update(c)
     except IOError:  # pragma: no cover

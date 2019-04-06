@@ -1,5 +1,5 @@
 import requests
-from panoptes_utils.serializers import dumps as dump_json
+from astropy.io.misc import yaml
 from panoptes_utils.config import parse_config
 
 
@@ -73,7 +73,7 @@ def set_config(key, new_value, host='config-server', port='6563', parse=True):
     """
     url = f'http://{host}:{port}/set-config'
 
-    post_json = dump_json({'key': key, 'value': new_value})
+    post_json = yaml.dump({'key': key, 'value': new_value})
 
     response = requests.post(url, data=post_json, headers={'Content-Type': 'application/json'})
 

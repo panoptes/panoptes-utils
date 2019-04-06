@@ -5,7 +5,7 @@ from astropy import units as u
 
 def _serializer(obj):
     if isinstance(obj, u.Quantity):
-        return obj.value
+        return {'value': obj.value, 'unit': obj.unit.name}
 
 
 def to_string(*args, **kwargs):

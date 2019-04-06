@@ -16,7 +16,7 @@ def host():
 
 @pytest.fixture(scope='module')
 def port():
-    return '6563'
+    return 6563
 
 
 @pytest.fixture(scope='module')
@@ -29,7 +29,7 @@ def config_server(host, port):
     args = [cmd, '--host', host, '--port', port]
 
     proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    # Give the server a second to start
+
     time.sleep(1)
     yield proc
     proc.terminate()
@@ -39,11 +39,8 @@ def test_config_client(config_server, host, port):
     # If None then server is still running.
     assert config_server.poll() is None
 
-    assert get_config(host=host, port=port)  # Make sure we get anything
+    assert get_config(host=host, port=port) == {}
 
-    loc = get_config(key='location', host=host, port=port)
-    assert loc['horizon'] == 47 * u.degree
-
-    assert set_config('location.horizon', 47, host=host, port=port) == 47
+    assert set_config('location.horizon', 47 * u.degree, host=host, port=port) == 47
     assert get_config('location.horizon', host=host, port=port) == 47 * u.degree
     assert get_config('location.horizon', host=host, port=port, parse=False) == 47
