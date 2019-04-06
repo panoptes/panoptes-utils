@@ -21,7 +21,7 @@ def to_json(obj):
 
     >>> from panoptes_utils import current_time
     >>> to_json({"current_time": current_time()})
-    '{"current_time":...-...-... ...:...:..."}'
+    '{"current_time":...-...-...T...:...:..."}'
 
     Args:
         obj (any): The object to be converted to JSON, usually a dict.
