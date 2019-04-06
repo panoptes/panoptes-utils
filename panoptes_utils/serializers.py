@@ -19,8 +19,9 @@ def to_json(obj):
     >>> to_json({"numpy_array": np.arange(10)})
     '{"numpy_array":[0,1,2,3,4,5,6,7,8,9]}'
 
+    >>> from panoptes_utils import current_time
     >>> to_json({"current_time": current_time()})
-    '{"current_time":"2019-04-06 10:15:22.378408"}'
+    '{"current_time":...-...-... ...:...:..."}'
 
     Args:
         obj (any): The object to be converted to JSON, usually a dict.
@@ -53,7 +54,8 @@ def from_json(msg):
     >>> horizon['horizon'].decompose()
     <Quantity 3628800. s>
 
-    >>> time_str = to_json({"current_time": current_time()})
+    >>> from panoptes_utils import current_time
+    >>> time_str = to_json({"current_time": current_time().datetime})
     >>> from_json(time_str)['current_time']
     '...-...-...T...:...:...'
     >>> from astropy.time import Time
