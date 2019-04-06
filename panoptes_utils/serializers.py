@@ -6,6 +6,9 @@ from astropy import units as u
 def to_json(obj):
     """Convert a Python object to a JSON string.
 
+    Will handle `datetime` objects as well as `astropy.unit.Quantity` objects.
+    Astropy quantities will be converted to a dict: `{"value": val, "unit": unit}`.
+
     >>> from panoptes_utils.serializers import to_json
     >>> from astropy import units as u
     >>> config = { "location": { "name": "Mauna Loa", "elevation": 3397 * u.meter } }
@@ -23,6 +26,9 @@ def to_json(obj):
 
 def from_json(msg):
     """Convert a JSON string into a Python object.
+
+    This will automatically handle `datetime` objects as well as `astropy.units.Quantity`
+    values when stored as a `{"value": val, "unit": unit}` format.
 
     >>> from panoptes_utils.serializers import from_json
     >>> config_str = '{"location":{"name":"Mauna Loa","elevation":{"value":3397.0,"unit":"m"}}}'
