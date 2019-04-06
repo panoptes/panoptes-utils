@@ -35,6 +35,18 @@ def from_json(msg):
     >>> from_json(config_str)
     {'location': {'name': 'Mauna Loa', 'elevation': <Quantity 3397. m>}}
 
+    # Invalid values will be returned as is.
+    >>> serializers.from_json('{"horizon":{"value":42.0,"unit":"degr"}}')
+    serializers.from_json('{"horizon":{"value":42.0,"unit":"degr"}}')
+
+    # Be careful with short unit names!
+    >>> horizon = serializers.from_json('{"horizon":{"value":42.0,"unit":"d"}}')
+    >>> horizon['horizon']
+    <Quantity 42. d>
+    >>> horizon['horizon'].decompose()
+    <Quantity 3628800. s>
+
+
     Args:
         msg (str): The JSON string representation of the object.
 
