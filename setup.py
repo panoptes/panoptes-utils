@@ -6,6 +6,8 @@ try:
 except ImportError:
     from distutils.core import setup
 
+import itertools
+
 from configparser import ConfigParser
 from distutils.command.build_py import build_py
 
@@ -53,6 +55,7 @@ setup(name=PACKAGENAME,
           'mongo': modules['mongo'],
           'social': modules['social'],
           'testing': modules['testing'],
+          'all': list(set(itertools.chain.from_iterable(modules.values())))
       },
       packages=find_packages(exclude=['tests', 'test_*']),
       classifiers=[
