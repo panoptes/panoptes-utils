@@ -50,7 +50,6 @@ def from_json(msg):
     >>> horizon['horizon'].decompose()
     <Quantity 3628800. s>
 
-
     Args:
         msg (str): The JSON string representation of the object.
 
@@ -89,3 +88,5 @@ def _serializer(obj):
         return {'value': obj.value, 'unit': obj.unit.name}
     elif isinstance(obj, np.ndarray):
         return obj.tolist()
+
+    return str(obj)
