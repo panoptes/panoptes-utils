@@ -25,6 +25,14 @@ LONG_DESCRIPTION = metadata.get('long_description', '')
 PACKAGENAME = metadata.get('package_name', 'packagename')
 URL = metadata.get('url', 'https://projectpanoptes.org')
 
+modules = {
+    'google': ['google-cloud', 'google-cloud-storage', 'psycopg2-binary'],
+    'mongo': ['pymongo'],
+    'social': ['requests', 'tweepy'],
+    'testing': ['pytest', 'pytest-cov', 'coverage', 'coveralls', 'codecov', 'pycodestyle'],
+}
+
+
 setup(name=PACKAGENAME,
       version=__version__,
       description=DESCRIPTION,
@@ -41,10 +49,10 @@ setup(name=PACKAGENAME,
       # for example:
       # $ pip install -e .[dev,test]
       extras_require={
-          'google': ['google-cloud', 'google-cloud-storage'],
-          'mongo': ['pymongo'],
-          'social': ['requests', 'tweepy'],
-          'test': ['coverage', 'coveralls', 'codecov', 'pycodestyle'],
+          'google': modules['google'],
+          'mongo': modules['mongo'],
+          'social': modules['social'],
+          'testing': modules['testing'],
       },
       packages=find_packages(exclude=['tests', 'test_*']),
       classifiers=[

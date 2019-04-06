@@ -11,7 +11,7 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
     """Load configuation information
 
     This function supports loading of a number of different files. If no options
-    are passed to `config_files` then the default `$POCS/conf_files/pocs.yaml`
+    are passed to `config_files` then the default `$PANDIR/conf_files/pocs.yaml`
     will be loaded. See Notes for additional information.
 
     Notes:
@@ -19,18 +19,18 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
         * `config_files` is a list and loaded in order, so the first entry
             will have any values overwritten by similarly named keys in
             the second entry.
-        * Entries can be placed in the `$POCS/conf_files` folder and
+        * Entries can be placed in the `$PANDIR/conf_files` folder and
             should be passed as just the file name, e.g.
             [`weather.yaml`, `email.yaml`] for loading
-            `$POCS/conf_files/weather.yaml` and `$POCS/conf_files/email.yaml`
+            `$PANDIR/conf_files/weather.yaml` and `$PANDIR/conf_files/email.yaml`
         * The `.yaml` extension will be added if not present, so list can
             be written as just ['weather', 'email'].
         * `config_files` can also be specified by an absolute path, which
             can exist anywhere on the filesystem.
         * Local versions of files can override built-in versions and are
-            automatically loaded if placed in the `$POCS/conf_files` folder.
+            automatically loaded if placed in the `$PANDIR/conf_files` folder.
             The files have a `<>_local.yaml` name, where `<>` is the built-in
-            file. So a `$POCS/conf_files/pocs_local.yaml` will override any
+            file. So a `$PANDIR/conf_files/pocs_local.yaml` will override any
             setting in the default `pocs.yaml` file.
         * Local files can be ignored (mostly for testing purposes) with the
             `ignore_local` parameter.
@@ -56,7 +56,7 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
 
     config = dict()
 
-    config_dir = '{}/conf_files'.format(os.getenv('POCS'))
+    config_dir = '{}/conf_files'.format(os.getenv('PANDIR'))
 
     for f in config_files:
         if not f.endswith('.yaml'):
@@ -82,7 +82,7 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
                     warn("Problem with local config file {}, skipping".format(local_version))
 
     if parse:
-        config = _parse_config(config)
+        config = parse_config(config)
 
     return config
 
@@ -102,7 +102,7 @@ def save_config(path, config, overwrite=True):
         path = '{}.yaml'.format(path)
 
     if not path.startswith('/'):
-        config_dir = '{}/conf_files'.format(os.getenv('POCS'))
+        config_dir = '{}/conf_files'.format(os.getenv('PANDIR'))
         path = os.path.join(config_dir, path)
 
     if os.path.exists(path) and not overwrite:
@@ -112,7 +112,7 @@ def save_config(path, config, overwrite=True):
             f.write(yaml.dump(config))
 
 
-def _parse_config(config):
+def parse_config(config):
     # Add units to our location
     if 'location' in config:
         loc = config['location']
