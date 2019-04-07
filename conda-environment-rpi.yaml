@@ -1,0 +1,20 @@
+name: panoptes
+channels:
+  - rpi
+  - nodefaults
+dependencies:
+  - python=3
+  - numpy
+  - scipy
+  - zeromq
+  - pyzmq
+  - pyyaml
+  - tornado
+  - readline
+  - scipy
+  - scikit-image
+  - scikit-learn
+  - psutil
+  - pandas
+  - pip:
+    - -r /var/panoptes/panoptes-utils/requirements.txt

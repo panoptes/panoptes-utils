@@ -1,4 +1,4 @@
-FROM amd64/python:3.7-slim AS build-env
+FROM balenalib/armv7hf-ubuntu-python:3-latest-run
 MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
 
 ARG pan_dir=/var/panoptes
@@ -25,15 +25,20 @@ RUN apt-get update \
         libfreetype6-dev \
         libpng-dev \
         pkg-config \
-        python3-pip \
         wget \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p $POCS \
     && mkdir -p $PANLOG \
     && mkdir -p ${PANDIR}/astrometry/data \
     && echo "add_path /var/panoptes/astrometry/data" >> /etc/astrometry.cfg \
-    && pip3 install --no-cache-dir -r requirements.txt \
-    && python3 panoptes_utils/data.py \
-    && pip3 install -e ".[all]"
+    && cd $HOME \
+    && wget https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv7l.sh -O berry.sh \
+    && chmod +x berry.sh \
+    && ./berry.sh -b -p /var/panoptes/conda \
+    && echo "export PATH=/var/panoptes/conda/bin:$PATH" \
+    && /bin/bash -c "source /var/panoptes/conda/bin/activate" \
+    && /var/panoptes/conda/bin/conda env create -f /var/panoptes/panoptes-utils/conda-environment-rpi.yaml \
+    && /var/panoptes/conda/bin/python panoptes_utils/data.py \
+    && /var/panoptes/conda/bin/pip install -e ".[all]"
 
-CMD ["python3"]
+CMD ["python"]
