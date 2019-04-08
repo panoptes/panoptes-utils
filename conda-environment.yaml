@@ -1,9 +1,9 @@
-name: panoptes
+name: panoptes-env
 channels:
   - rpi
-  - nodefaults
 dependencies:
   - python=3
+  - astropy
   - numpy
   - scipy
   - zeromq
@@ -15,6 +15,5 @@ dependencies:
   - scikit-image
   - scikit-learn
   - psutil
-  - pandas
   - pip:
     - -r /var/panoptes/panoptes-utils/requirements.txt
