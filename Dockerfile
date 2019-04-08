@@ -45,6 +45,7 @@ ARG conda_url
 RUN wget --quiet ${conda_url} -O ~/conda.sh && \
     /bin/bash ~/conda.sh -b -p /opt/conda && \
     rm ~/conda.sh && \
+    /opt/conda/bin/conda update -n root -c defaults conda && \
     /opt/conda/bin/conda clean -tipsy && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.zshrc && \

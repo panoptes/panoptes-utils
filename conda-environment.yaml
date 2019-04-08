@@ -2,19 +2,19 @@ name: panoptes-env
 channels:
   - rpi
 dependencies:
-  - python=3
   - astropy
-  - numpy
-  - scipy
   - jupyterlab
-  - zeromq
-  - pyzmq
+  - numpy
+  - psutil
+  - python=3
   - pyyaml
-  - tornado
+  - pyzmq
   - readline
-  - scipy
   - scikit-image
   - scikit-learn
-  - psutil
+  - scipy
+  - tornado
+  - zeromq
   - pip:
-    - requirements.txt
+    - -r /var/panoptes/panoptes-utils/requirements.txt
+    - -e ".[all]"
