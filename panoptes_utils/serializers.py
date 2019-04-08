@@ -1,65 +1,104 @@
-from bson import json_util
+import orjson
+
+import numpy as np
+from astropy import units as u
 
 
-def dumps(obj):
-    """Dump an object to JSON.
+def to_json(obj):
+    """Convert a Python object to a JSON string.
+
+    Will handle `datetime` objects as well as `astropy.unit.Quantity` objects.
+    Astropy quantities will be converted to a dict: `{"value": val, "unit": unit}`.
+
+    >>> from panoptes_utils.serializers import to_json
+    >>> from astropy import units as u
+    >>> config = { "location": { "name": "Mauna Loa", "elevation": 3397 * u.meter } }
+    >>> to_json(config)
+    '{"location":{"name":"Mauna Loa","elevation":{"value":3397.0,"unit":"m"}}}'
+
+    >>> to_json({"numpy_array": np.arange(10)})
+    '{"numpy_array":[0,1,2,3,4,5,6,7,8,9]}'
+
+    >>> from panoptes_utils import current_time
+    >>> to_json({"current_time": current_time()})
+    '{"current_time":...-...-...T...:...:..."}'
 
     Args:
-        obj (dict): An object to serialize.
+        obj (any): The object to be converted to JSON, usually a dict.
 
     Returns:
-        str: Serialized representation of object.
+        str: The JSON string representation of the object.
     """
-    return json_util.dumps(obj)
+    return orjson.dumps(obj, default=_serializer).decode('utf8')
 
 
-def loads(msg):
-    """Load an object from JSON.
+def from_json(msg):
+    """Convert a JSON string into a Python object.
+
+    Astropy quanitites will be converted from a `{"value": val, "unit": unit}` format.
+    Time-like values are *not* parsed, however see example below.
+
+    >>> from panoptes_utils.serializers import from_json
+    >>> config_str = '{"location":{"name":"Mauna Loa","elevation":{"value":3397.0,"unit":"m"}}}'
+    >>> from_json(config_str)
+    {'location': {'name': 'Mauna Loa', 'elevation': <Quantity 3397. m>}}
+
+    # Invalid values will be returned as is.
+    >>> from_json('{"horizon":{"value":42.0,"unit":"degr"}}')
+    {'horizon': {'value': 42.0, 'unit': 'degr'}}
+
+    # Be careful with short unit names!
+    >>> horizon = from_json('{"horizon":{"value":42.0,"unit":"d"}}')
+    >>> horizon['horizon']
+    <Quantity 42. d>
+    >>> horizon['horizon'].decompose()
+    <Quantity 3628800. s>
+
+    >>> from panoptes_utils import current_time
+    >>> time_str = to_json({"current_time": current_time().datetime})
+    >>> from_json(time_str)['current_time']
+    '...-...-...T...:...:...'
+    >>> from astropy.time import Time
+    >>> Time(from_json(time_str)['current_time'])
+    <Time object: scale='utc' format='isot' value=...>
 
     Args:
-        msg (str): A serialized string representation of object.
+        msg (str): The JSON string representation of the object.
 
     Returns:
         dict: The loaded object.
     """
-    return json_util.loads(msg)
+    return _parse_quantities(orjson.loads(msg))
 
 
-def dumps_file(fn, obj, clobber=False):
-    """Convenience warpper to dump an object to a a file.
+def _parse_quantities(obj):
+    """Parse the incoming object for astropy quantities.
 
-    Args:
-        fn (str): Path of filename where object representation will be saved.
-        obj (dict): An object to serialize.
-        clobber (bool, optional): If object should be overwritten or appended to.
-            Defaults to False, which will append to file.
-
-    Returns:
-        str: Filename of the file that was written to.
-    """
-    if clobber is True:
-        mode = 'w'
-    else:
-        mode = 'a'
-
-    with open(fn, mode) as f:
-        f.write(dumps(obj) + "\n")
-
-    return fn
-
-
-def loads_file(file_path):
-    """Convenience wrapper to load an object from a file.
+    If `obj` is a dict with exactly two keys named `unit` and `value, then attempt
+    to parse into a valid `astropy.unit.Quantity`. If fail, simply return object
+    as is.
 
     Args:
-        file_path (str): Path of filename that contains a serialization of the
-            the object.
+        obj (dict): Object to check for quantities.
 
     Returns:
-        dict: The loaded object from the given file.
+        dict: Same as `obj` but with objects converted to quantities.
     """
-    obj = None
-    with open(file_path, 'r') as f:
-        obj = loads(f.read())
+    # If there are exactly two keys
+    try:
+        return obj['value'] * u.Unit(obj['unit'])
+    except Exception:
+        for k in obj.keys():
+            if isinstance(obj[k], dict):
+                obj[k] = _parse_quantities(obj[k])
 
-    return obj
+        return obj
+
+
+def _serializer(obj):
+    if isinstance(obj, u.Quantity):
+        return {'value': obj.value, 'unit': obj.unit.name}
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+
+    return str(obj)
