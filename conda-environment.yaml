@@ -1,6 +1,7 @@
 name: panoptes-env
 channels:
   - rpi
+  - astropy
 dependencies:
   - astropy
   - jupyterlab
@@ -16,5 +17,5 @@ dependencies:
   - tornado
   - zeromq
   - pip:
-    - -r /var/panoptes/panoptes-utils/requirements.txt
+    - -r requirements.txt
     - -e ".[all]"
