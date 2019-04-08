@@ -6,7 +6,6 @@ ARG base_image
 FROM $base_image AS base-image
 MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
 
-ARG conda_url
 ARG pan_dir=/var/panoptes
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
@@ -17,45 +16,51 @@ ENV POCS ${PANDIR}/POCS
 ENV PANUSER root
 ENV SOLVE_FIELD=/usr/bin/solve-field
 ENV DEBIAN_FRONTEND=noninteractive
-# ENV conda_url $conda_url
 
 WORKDIR ${PANDIR}/panoptes-utils/
 COPY . ${PANDIR}/panoptes-utils/
 
 # System packages
-RUN apt-get update && \
+RUN mkdir -p $POCS && \
+    mkdir -p ${PANDIR}/logs && \
+    mkdir -p ${PANDIR}/astrometry/data && \
+    mkdir -p ${PANDIR}/images && \
+    apt-get update && \
     apt-get install -y \
-        wget bzip2 ca-certificates pkg-config \
+        wget bzip2 ca-certificates pkg-config zsh git \
         astrometry.net dcraw exiftool \
         libcfitsio-dev libfreetype6-dev libpng-dev && \
+    # Oh My ZSH. :)
+    chsh -s /bin/zsh && \
+    sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)" && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    echo "add_path /var/panoptes/astrometry/data" >> /etc/astrometry.cfg
+
+FROM base-image AS conda-install
+
+ARG conda_url
 
 # Conda install
 RUN wget --quiet ${conda_url} -O ~/conda.sh && \
     /bin/bash ~/conda.sh -b -p /opt/conda && \
     rm ~/conda.sh && \
     /opt/conda/bin/conda clean -tipsy && \
-    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate" >> ~/.bashrc && \
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.zshrc && \
+    /opt/conda/bin/conda env create -f /var/panoptes/panoptes-utils/conda-environment.yaml && \
+    echo "/opt/conda/bin/conda activate panoptes-env" >> ~/.bashrc && \
+    echo "/opt/conda/bin/conda activate panoptes-env" >> ~/.zshrc
     # End miniconda items
-    mkdir -p $POCS \
-    && mkdir -p ${PANDIR}/logs \
-    && mkdir -p ${PANDIR}/astrometry/data \
-    && mkdir -p ${PANDIR}/images \
-    && echo "add_path /var/panoptes/astrometry/data" >> /etc/astrometry.cfg
+
+FROM conda-install AS utils-install
 
 # New RUN line so we don't keep rebuilding previous.
 # Also installs pip requirements.txt
 # Also installs panoptes-utils
-RUN conda env create -f /var/panoptes/panoptes-utils/conda-environment.yaml \
-    && conda activate panoptes-env \
-    && echo "conda activate panoptes-env" >> ~/.bashrc \
-    && cd ${PANDIR}/panoptes-utils \
-    && python setup.py devel \
+RUN /bin/bash -c "python setup.py devel" \
     # Download astrometry.net files 
     # TODO add cron job for IERS data download
-    && python panoptes_utils/data.py
+    && /bin/bash -c "python panoptes_utils/data.py"
 
 CMD ["python"]

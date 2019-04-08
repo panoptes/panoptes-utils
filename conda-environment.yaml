@@ -6,6 +6,7 @@ dependencies:
   - astropy
   - numpy
   - scipy
+  - jupyterlab
   - zeromq
   - pyzmq
   - pyyaml
