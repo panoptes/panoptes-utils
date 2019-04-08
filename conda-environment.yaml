@@ -6,6 +6,7 @@ dependencies:
   - astropy
   - jupyterlab
   - numpy
+  - pip
   - psutil
   - python=3
   - pyyaml
