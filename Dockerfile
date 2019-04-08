@@ -58,9 +58,8 @@ FROM conda-install AS utils-install
 # New RUN line so we don't keep rebuilding previous.
 # Also installs pip requirements.txt
 # Also installs panoptes-utils
-RUN /bin/bash -c "python setup.py devel" \
-    # Download astrometry.net files 
-    # TODO add cron job for IERS data download
-    && /bin/bash -c "python panoptes_utils/data.py"
+# Download astrometry.net files 
+# TODO add cron job for IERS data download
+RUN /bin/bash -c "conda activate panoptes-env && python setup.py devel && python panoptes_utils/data.py"
 
 CMD ["python"]
