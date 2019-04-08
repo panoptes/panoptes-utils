@@ -17,4 +17,4 @@ dependencies:
   - scikit-learn
   - psutil
   - pip:
-    - -r /var/panoptes/panoptes-utils/requirements.txt
+    - requirements.txt
