@@ -53,7 +53,7 @@ steps:
   args:
   - 'manifest'
   - 'create'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:${COMMIT_SHA}'
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
   - 'gcr.io/${PROJECT_ID}/panoptes-utils:arm32v7'
   - 'gcr.io/${PROJECT_ID}/panoptes-utils:amd64' 
   waitFor: ['push-amd64', 'push-arm']
@@ -65,7 +65,7 @@ steps:
   args:
   - 'manifest'
   - 'annotate'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:${COMMIT_SHA}'
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
   - 'gcr.io/${PROJECT_ID}/panoptes-utils:arm32v7'
   - '--os=linux'
   - '--arch=arm'
@@ -79,7 +79,7 @@ steps:
   args:
   - 'manifest'
   - 'push'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:${COMMIT_SHA}'
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
   waitFor: ['annotate-manifest']
 images:
   - 'gcr.io/${PROJECT_ID}/panoptes-utils:amd64'

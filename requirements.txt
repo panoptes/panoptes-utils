@@ -1,15 +1,15 @@
 astroplan
-astropy >= 3.1
+astropy
 docker-compose
 Flask
-matplotlib >= 3.0.0
+matplotlib
 mocket
-numpy >= 1.12.1, !=1.15.3
+numpy
 psycopg2-binary
-pyserial >= 3.1.1
-python_dateutil >= 2.5.3
+pyserial
+python_dateutil
 PyYAML >= 3.11
-pyzmq >= 15.3.0
+pyzmq
 scalpl
 scikit-image
-scipy >= 0.17.1
+scipy
