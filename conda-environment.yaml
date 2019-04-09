@@ -3,15 +3,17 @@ channels:
   - rpi
   - astropy
 dependencies:
+  - python=3
   - astropy
   - cffi
+  - ipywidgets
+  - jupyter_console
   - jupyterlab
   - libffi
   - matplotlib
   - numpy
   - pip
   - psutil
-  - python=3
   - pyyaml
   - pyzmq
   - readline

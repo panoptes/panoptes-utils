@@ -51,17 +51,10 @@ RUN wget --quiet ${conda_url} -O ~/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.zshrc && \
     /opt/conda/bin/conda env create -f conda-environment.yaml && \
     echo "/opt/conda/bin/conda activate panoptes-env" >> ~/.bashrc && \
-    echo "/opt/conda/bin/conda activate panoptes-env" >> ~/.zshrc
+    echo "/opt/conda/bin/conda activate panoptes-env" >> ~/.zshrc && \
     # End miniconda items
-
-# FROM conda-install AS utils-install
-
-# New RUN line so we don't keep rebuilding previous.
-# Also installs pip requirements.txt
-# Also installs panoptes-utils
-# Download astrometry.net files 
-# TODO add cron job for IERS data download
-# RUN /opt/conda/env/panoptes-env/python3 setup.py devel \
-    # && /opt/conda/env/panoptes-env/python3 panoptes_utils/data.py
+    # Download astrometry.net files 
+    # TODO add cron job for IERS data download
+    /opt/conda/env/panoptes-env/python3 panoptes_utils/data.py --wide-field --narrow-field
 
 CMD ["/bin/zsh"]
