@@ -1,4 +1,5 @@
 import orjson
+from ruamel.yaml import YAML
 
 import numpy as np
 from astropy import units as u
@@ -69,6 +70,24 @@ def from_json(msg):
         dict: The loaded object.
     """
     return _parse_quantities(orjson.loads(msg))
+
+
+def to_yaml(obj):
+    """Serialize a Python object to a YAML string.
+
+    Args:
+        obj (object): The object to be converted to be serialized.
+    """
+    pass
+
+
+def from_yaml(msg):
+    """Convert a YAML string into a Python object.
+    
+    Args:
+        msg (str): The YAML string representation of the object.
+    """
+    pass
 
 
 def _parse_quantities(obj):
