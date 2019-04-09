@@ -4,7 +4,9 @@ channels:
   - astropy
 dependencies:
   - astropy
+  - cffi
   - jupyterlab
+  - libffi
   - numpy
   - pip
   - psutil
