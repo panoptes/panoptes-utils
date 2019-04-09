@@ -52,6 +52,8 @@ RUN wget --quiet ${conda_url} -O ~/conda.sh && \
     /opt/conda/bin/conda env create -f conda-environment.yaml && \
     /opt/conda/bin/conda clean --all --yes && \
     /opt/conda/bin/conda clean -tipsy && \
+    /opt/conda/bin/conda init bash && \
+    /opt/conda/bin/conda init zsh && \
     echo "/opt/conda/bin/conda activate panoptes-env" >> ~/.bashrc && \
     echo "/opt/conda/bin/conda activate panoptes-env" >> ~/.zshrc && \
     # End miniconda items
