@@ -85,23 +85,20 @@ pygments_style = 'lovelace'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_materialdesign_theme'
+
+html_theme = 'guillotina'
+
+
+def setup(app):
+    import sphinx_guillotina_theme
+    sphinx_guillotina_theme.setup(app)
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
 # html_theme_options = {}
-html_theme_options = {
-    'logo_only': True,
-    'style_external_links': True,
-    # Toc options
-    'collapse_navigation': True,
-    'sticky_navigation': True,
-    'navigation_depth': 4,
-    'includehidden': True,
-    'titles_only': False
-}
+
 
 html_logo = '_static/pan-title-black-transparent.png'
 
