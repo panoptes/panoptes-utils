@@ -50,11 +50,12 @@ RUN wget --quiet ${conda_url} -O ~/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.zshrc && \
     /opt/conda/bin/conda env create -f conda-environment.yaml && \
+    /opt/conda/bin/conda clean --all --yes && \
     echo "/opt/conda/bin/conda activate panoptes-env" >> ~/.bashrc && \
     echo "/opt/conda/bin/conda activate panoptes-env" >> ~/.zshrc && \
     # End miniconda items
     # Download astrometry.net files 
     # TODO add cron job for IERS data download
-    /opt/conda/env/panoptes-env/python3 panoptes_utils/data.py --wide-field --narrow-field
+    /opt/conda/envs/panoptes-env/python panoptes_utils/data.py --wide-field --narrow-field
 
 CMD ["/bin/zsh"]
