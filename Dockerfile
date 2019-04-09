@@ -29,7 +29,7 @@ RUN mkdir -p $POCS && \
     apt-get install -y \
         wget bzip2 ca-certificates pkg-config zsh git \
         astrometry.net dcraw exiftool \
-        libcfitsio-dev libfreetype6-dev libpng-dev && \
+        libcfitsio-dev libfreetype6-dev libpng-dev libpq-dev && \
     # Oh My ZSH. :)
     chsh -s /bin/zsh && \
     sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)" && \
