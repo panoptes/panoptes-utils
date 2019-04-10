@@ -1,9 +1,10 @@
 astroplan
 astropy
+google-cloud
+google-cloud-storage
 docker-compose
 Flask
 matplotlib
-mocket
 numpy
 psycopg2-binary
 pyserial

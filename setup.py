@@ -2,9 +2,9 @@
 # Licensed under an MIT style license - see LICENSE.txt
 
 try:
-    from setuptools import setup, find_packages
+  from setuptools import setup, find_packages
 except ImportError:
-    from distutils.core import setup
+  from distutils.core import setup
 
 import itertools
 
@@ -31,7 +31,15 @@ modules = {
     'google': ['google-cloud', 'google-cloud-storage', 'psycopg2-binary'],
     'mongo': ['pymongo'],
     'social': ['requests', 'tweepy'],
-    'testing': ['pytest', 'pytest-cov', 'coverage', 'coveralls', 'codecov', 'pycodestyle'],
+    'testing': [
+        'codecov',
+        'coverage',
+        'coveralls',
+        'mocket'
+        'pycodestyle',
+        'pytest',
+        'pytest-cov',
+    ],
 }
 
 

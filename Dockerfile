@@ -46,6 +46,8 @@ RUN /opt/conda/bin/conda env create -f conda-environment.yaml && \
     echo "conda activate panoptes-env" >> ~/.bashrc && \
     echo "conda activate panoptes-env" >> ~/.zshrc && \
     # End miniconda items
+    cd ${PANDIR}/panoptes-utils && \
+    pip install -e ".[google,testing,social]" && \
     # Download astrometry.net files 
     # TODO add cron job for IERS data download
     /opt/conda/envs/panoptes-env/bin/python panoptes_utils/data.py --wide-field --narrow-field
