@@ -15,8 +15,7 @@ steps:
   id: 'amd64'
   args:
   - 'build'
-  - '--build-arg=base_image=debian:latest'
-  - '--build-arg=conda_url=https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh'
+  - '--build-arg=base_image=continuumio/miniconda3'
   - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:amd64'
   - '.'
   waitFor: ['register-qemu']
@@ -25,6 +24,8 @@ steps:
   id: 'arm32v7'
   args:
   - 'build'
+  - '-f'
+  - 'Dockerfile.rpi'
   - '--build-arg=base_image=balenalib/armv7hf-ubuntu-python:3-latest-run'
   - '--build-arg=conda_url=https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv7l.sh'
   - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:arm32v7'
