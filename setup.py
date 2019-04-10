@@ -2,9 +2,9 @@
 # Licensed under an MIT style license - see LICENSE.txt
 
 try:
-  from setuptools import setup, find_packages
+    from setuptools import setup, find_packages
 except ImportError:
-  from distutils.core import setup
+    from distutils.core import setup
 
 import itertools
 
@@ -27,15 +27,21 @@ LONG_DESCRIPTION = metadata.get('long_description', '')
 PACKAGENAME = metadata.get('package_name', 'packagename')
 URL = metadata.get('url', 'https://projectpanoptes.org')
 
+requirements = list()
+requirements_fn = 'requirements.txt'
+with open(requirements_fn) as f:
+    requirements = f.read().splitlines()
+
 modules = {
     'google': ['google-cloud', 'google-cloud-storage', 'psycopg2-binary'],
     'mongo': ['pymongo'],
+    'required': requirements,
     'social': ['requests', 'tweepy'],
     'testing': [
         'codecov',
         'coverage',
         'coveralls',
-        'mocket'
+        'mocket',
         'pycodestyle',
         'pytest',
         'pytest-cov',
@@ -58,6 +64,7 @@ setup(name=PACKAGENAME,
       # dependencies). You can install these using the following syntax,
       # for example:
       # $ pip install -e .[dev,test]
+      install_requires=modules['required'],
       extras_require={
           'google': modules['google'],
           'mongo': modules['mongo'],
@@ -74,9 +81,8 @@ setup(name=PACKAGENAME,
           'Operating System :: POSIX',
           'Programming Language :: C',
           'Programming Language :: Python :: 3',
-          'Programming Language :: Python :: 3.3',
-          'Programming Language :: Python :: 3.4',
-          'Programming Language :: Python :: 3.5',
+          'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: 3.7',
           'Programming Language :: Python :: 3 :: Only',
           'Topic :: Scientific/Engineering :: Astronomy',
           'Topic :: Scientific/Engineering :: Physics',

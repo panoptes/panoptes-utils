@@ -9,7 +9,7 @@ numpy
 psycopg2-binary
 pyserial
 python_dateutil
-PyYAML >= 3.11
+PyYAML
 pyzmq
 scalpl
 scikit-image
