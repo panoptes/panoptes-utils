@@ -44,7 +44,7 @@ modules = {
         'mocket',
         'pycodestyle',
         'pytest',
-        'pytest-cov<2.6',
+        'pytest-cov',
     ],
 }
 
