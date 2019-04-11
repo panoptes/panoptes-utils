@@ -1,4 +1,4 @@
-import orjson
+import json
 
 import numpy as np
 from astropy import units as u
@@ -14,14 +14,14 @@ def to_json(obj):
     >>> from astropy import units as u
     >>> config = { "location": { "name": "Mauna Loa", "elevation": 3397 * u.meter } }
     >>> to_json(config)
-    '{"location":{"name":"Mauna Loa","elevation":{"value":3397.0,"unit":"m"}}}'
+    '{"location": {"name": "Mauna Loa", "elevation": {"value": 3397.0, "unit": "m"}}}'
 
     >>> to_json({"numpy_array": np.arange(10)})
-    '{"numpy_array":[0,1,2,3,4,5,6,7,8,9]}'
+    '{"numpy_array": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}'
 
     >>> from panoptes_utils import current_time
     >>> to_json({"current_time": current_time()})       # doctest: +SKIP
-    '{"current_time":"2019-03-27T16:42:01.001"}'
+    '{"current_time": "2019-04-08 22:19:28.402198"}'
 
     Args:
         obj (any): The object to be converted to JSON, usually a dict.
@@ -29,7 +29,7 @@ def to_json(obj):
     Returns:
         str: The JSON string representation of the object.
     """
-    return orjson.dumps(obj, default=_serializer).decode('utf8')
+    return json.dumps(obj, default=_serializer)
 
 
 def from_json(msg):
@@ -70,7 +70,7 @@ def from_json(msg):
     Returns:
         dict: The loaded object.
     """
-    return _parse_quantities(orjson.loads(msg))
+    return _parse_quantities(json.loads(msg))
 
 
 def _parse_quantities(obj):
