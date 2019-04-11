@@ -17,8 +17,8 @@ ENV PANUSER root
 ENV SOLVE_FIELD=/usr/bin/solve-field
 ENV DEBIAN_FRONTEND=noninteractive
 
-WORKDIR ${PANDIR}/panoptes-utils/
-COPY . ${PANDIR}/panoptes-utils/
+WORKDIR ${PANDIR}
+COPY . ${PANDIR}
 
 # System packages
 RUN mkdir -p $POCS && \
@@ -36,20 +36,3 @@ RUN mkdir -p $POCS && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     echo "add_path /var/panoptes/astrometry/data" >> /etc/astrometry.cfg
-
-FROM base-image AS conda-install
-
-# Conda install
-RUN /opt/conda/bin/conda env create -f conda-environment.yaml && \
-    /opt/conda/bin/conda clean --all --yes && \
-    /opt/conda/bin/conda clean -tipsy && \
-    echo "conda activate panoptes-env" >> ~/.bashrc && \
-    echo "conda activate panoptes-env" >> ~/.zshrc && \
-    # End miniconda items
-    cd ${PANDIR}/panoptes-utils && \
-    /opt/conda/envs/panoptes-env/bin/pip install -e ".[all]" && \
-    # Download astrometry.net files 
-    # TODO add cron job for IERS data download
-    /opt/conda/envs/panoptes-env/bin/python panoptes_utils/data.py --wide-field --narrow-field
-
-CMD ["/bin/zsh"]

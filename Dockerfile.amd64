@@ -3,7 +3,6 @@ ARG arch=amd64
 FROM gcr.io/panoptes-survey/panoptes-base:$arch AS base-image
 MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
 
-ARG conda_url
 ARG pan_dir=/var/panoptes
 ENV PANDIR $pan_dir
 
@@ -11,14 +10,7 @@ WORKDIR ${PANDIR}/panoptes-utils/
 COPY . ${PANDIR}/panoptes-utils/
 
 # Conda install
-RUN wget --quiet ${conda_url} -O ~/conda.sh && \
-    /bin/bash ~/conda.sh -b -p /opt/conda && \
-    rm ~/conda.sh && \
-    /opt/conda/bin/conda update -n root -c defaults conda && \
-    /opt/conda/bin/conda clean -tipsy && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.zshrc && \
-    /opt/conda/bin/conda env create -f conda-environment.yaml && \
+RUN /opt/conda/bin/conda env create -f conda-environment.yaml && \
     /opt/conda/bin/conda clean --all --yes && \
     /opt/conda/bin/conda clean -tipsy && \
     echo "conda activate panoptes-env" >> ~/.bashrc && \
