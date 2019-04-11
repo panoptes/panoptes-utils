@@ -1,4 +1,4 @@
-import orjson
+import json
 from ruamel.yaml import YAML
 
 import numpy as np
@@ -15,14 +15,14 @@ def to_json(obj):
     >>> from astropy import units as u
     >>> config = { "location": { "name": "Mauna Loa", "elevation": 3397 * u.meter } }
     >>> to_json(config)
-    '{"location":{"name":"Mauna Loa","elevation":{"value":3397.0,"unit":"m"}}}'
+    '{"location": {"name": "Mauna Loa", "elevation": {"value": 3397.0, "unit": "m"}}}'
 
     >>> to_json({"numpy_array": np.arange(10)})
-    '{"numpy_array":[0,1,2,3,4,5,6,7,8,9]}'
+    '{"numpy_array": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}'
 
     >>> from panoptes_utils import current_time
-    >>> to_json({"current_time": current_time()})
-    '{"current_time":...-...-...T...:...:..."}'
+    >>> to_json({"current_time": current_time()})       # doctest: +SKIP
+    '{"current_time": "2019-04-08 22:19:28.402198"}'
 
     Args:
         obj (any): The object to be converted to JSON, usually a dict.
@@ -30,7 +30,7 @@ def to_json(obj):
     Returns:
         str: The JSON string representation of the object.
     """
-    return orjson.dumps(obj, default=_serializer).decode('utf8')
+    return json.dumps(obj, default=_serializer)
 
 
 def from_json(msg):
@@ -57,11 +57,11 @@ def from_json(msg):
 
     >>> from panoptes_utils import current_time
     >>> time_str = to_json({"current_time": current_time().datetime})
-    >>> from_json(time_str)['current_time']
-    '...-...-...T...:...:...'
+    >>> from_json(time_str)['current_time']         # doctest: +SKIP
+    '2019-04-08 22:20:00.575477'
     >>> from astropy.time import Time
-    >>> Time(from_json(time_str)['current_time'])
-    <Time object: scale='utc' format='isot' value=...>
+    >>> Time(from_json(time_str)['current_time'])   # doctest: +SKIP
+    <Time object: scale='utc' format='iso' value=2019-04-08 22:20:00.575>
 
     Args:
         msg (str): The JSON string representation of the object.
@@ -69,7 +69,7 @@ def from_json(msg):
     Returns:
         dict: The loaded object.
     """
-    return _parse_quantities(orjson.loads(msg))
+    return _parse_quantities(json.loads(msg))
 
 
 def to_yaml(obj):
@@ -83,7 +83,7 @@ def to_yaml(obj):
 
 def from_yaml(msg):
     """Convert a YAML string into a Python object.
-    
+
     Args:
         msg (str): The YAML string representation of the object.
     """
