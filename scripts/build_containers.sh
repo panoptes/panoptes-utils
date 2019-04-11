@@ -1,4 +1,5 @@
 #!/bin/bash -e
+SOURCE_DIR=${PANDIR}/panoptes-utils
 
-COMMIT_SHA=$(git rev-parse HEAD) gcloud builds submit --timeout="5h" --config cloudbuild.yaml --async .
+gcloud builds submit --timeout="5h" --config ${SOURCE_DIR}/cloudbuild.yaml --async ${SOURCE_DIR}
 
