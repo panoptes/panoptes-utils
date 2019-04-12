@@ -1,6 +1,5 @@
 astroplan
 astropy
-google-cloud
 google-cloud-storage
 docker-compose
 Flask
@@ -8,7 +7,7 @@ matplotlib
 numpy
 psycopg2-binary
 pyserial
-python_dateutil
+python-dateutil
 PyYAML
 pyzmq
 scalpl

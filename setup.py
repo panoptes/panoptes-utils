@@ -59,6 +59,7 @@ setup(name=PACKAGENAME,
       license=LICENSE,
       url=URL,
       keywords=KEYWORDS,
+      python_requires='>=3.6',
       setup_requires=['pytest-runner'],
       tests_require=modules['testing'],
       # List additional groups of dependencies here (e.g. development

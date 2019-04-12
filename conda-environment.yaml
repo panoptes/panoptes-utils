@@ -2,15 +2,23 @@ name: panoptes-env
 channels:
   - rpi
   - astropy
+  - conda-forge
 dependencies:
   - python=3
+  - astroplan
   - astropy
   - cffi
+  - docker-compose
+  - Flask
+  - google-cloud-storage
   - libffi
-  - matplotlib
+  - matplotlib>3.0.0
   - numpy
   - pip
-  - pyyaml
+  - psycopg2
+  - pyserial
+  - python-dateutil
+  - PyYAML
   - pyzmq
   - readline
   - scikit-image
@@ -18,3 +26,5 @@ dependencies:
   - scipy
   - tornado
   - zeromq
+  - pip:
+    - scalpl
