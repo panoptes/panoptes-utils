@@ -114,6 +114,9 @@ now points to the file on the host machine.
 
 ### Building Docker Images
 
-> TODO: Add info about building. The short story is you can call `scripts/build_containers.sh` to build
-them in the Google cloud builder. At some point this will become automatic as part of our testing and build
-process.
+`scripts/build_containers.sh` builds:
+* `cloudbuild-base.yaml` uses `Dockerfile` to create a `panoptes-base` image. (enabled with `--base`) 
+* `cloudbuild-utils.yaml` uses `Dockerfile.utils.[amd64|rpi]` to create a `panoptes-utils` image.
+  * Uses `conda-environment-[amd64|rpi.yaml` to create a conda environment called `panoptes-env`
+
+`.travis.yaml` uses `panoptes-utils` image to run `scripts/testing/run_tests.sh` with the $TRAVIS_BUILD_DIR mapped to the working dir for the module.
