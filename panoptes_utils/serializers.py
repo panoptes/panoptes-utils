@@ -1,8 +1,35 @@
 import json
 from ruamel.yaml import YAML
+from ruamel.yaml.compat import StringIO
 
 import numpy as np
 from astropy import units as u
+
+
+class StringYAML(YAML):
+    def dump(self, data, stream=None, **kwargs):
+        """YAML class that can dump to a string.
+
+        This is taken from the documentation:
+
+        https://yaml.readthedocs.io/en/latest/example.html#output-of-dump-as-a-string
+
+        Args:
+            data (object): An object, usually dict-like.
+            stream (None|stream, optional): A stream object to write the YAML.
+                If default `None`, return value as string.
+            **kw: Keywords passed to the `dump` function.
+
+        Returns:
+            str: The serialized object string.
+        """
+        inefficient = False
+        if stream is None:
+            inefficient = True
+            stream = StringIO()
+        YAML.dump(self, data, stream, **kwargs)
+        if inefficient:
+            return stream.getvalue()
 
 
 def to_json(obj):
@@ -30,7 +57,7 @@ def to_json(obj):
     Returns:
         str: The JSON string representation of the object.
     """
-    return json.dumps(obj, default=_serializer)
+    return json.dumps(obj, default=_serialize_object)
 
 
 def from_json(msg):
@@ -69,28 +96,55 @@ def from_json(msg):
     Returns:
         dict: The loaded object.
     """
-    return _parse_quantities(json.loads(msg))
+    return _parse_objects(json.loads(msg))
 
 
-def to_yaml(obj):
+def to_yaml(obj, **kwargs):
     """Serialize a Python object to a YAML string.
+
+    Examples:
+
+        See the examples in `from_yaml`.
 
     Args:
         obj (object): The object to be converted to be serialized.
+        stream (None|stream-like, optional): The stream to write the object to,
+            default `sys.stdout`.
     """
-    pass
+    yaml = StringYAML()
+
+    obj = _serialize_all_objects(obj)
+
+    return yaml.dump(obj, **kwargs)
 
 
 def from_yaml(msg):
     """Convert a YAML string into a Python object.
 
+    This is a thin-wrapper around `ruamel.YAML.load`.
+
+    Examples:
+
+        >>> config_str = """
+        name: Generic PANOPTES Unit
+        pan_id: PAN000   
+        
+        location:
+            name: Mauna Loa Observatory
+            latitude: 19.54 # Degrees
+            longitude: -155.58 # Degrees
+            elevation: 3400.0 # Meters
+        """
+        >>> config = from_yaml(config_str)
+
+
     Args:
         msg (str): The YAML string representation of the object.
     """
-    pass
+    return YAML().load(msg)
 
 
-def _parse_quantities(obj):
+def _parse_objects(obj):
     """Parse the incoming object for astropy quantities.
 
     If `obj` is a dict with exactly two keys named `unit` and `value, then attempt
@@ -109,15 +163,30 @@ def _parse_quantities(obj):
     except Exception:
         for k in obj.keys():
             if isinstance(obj[k], dict):
-                obj[k] = _parse_quantities(obj[k])
+                obj[k] = _parse_objects(obj[k])
 
         return obj
 
 
-def _serializer(obj):
+def _serialize_all_objects(obj):
+    for k, v in obj.items():
+        # If it is a dict, send parse all its elements
+        if isinstance(v, dict):
+            obj[k] = _serialize_all_objects(v)
+        else:
+            obj[k] = _serialize_object(v, default=None)
+
+    return obj
+
+
+def _serialize_object(obj, default=str):
     if isinstance(obj, u.Quantity):
         return {'value': obj.value, 'unit': obj.unit.name}
     elif isinstance(obj, np.ndarray):
         return obj.tolist()
 
-    return str(obj)
+    # If we are given a default object type, e.g. str
+    if default is not None:
+        return default(obj)
+
+    return obj
