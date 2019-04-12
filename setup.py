@@ -43,7 +43,7 @@ modules = {
         'coveralls',
         'mocket',
         'pycodestyle',
-        'pytest',
+        'pytest>=3.6',
         'pytest-cov',
         'pytest-remotedata>=0.3.1'
     ],
