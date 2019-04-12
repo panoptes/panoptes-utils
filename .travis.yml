@@ -8,4 +8,8 @@ before_install:
     - docker pull gcr.io/panoptes-survey/panoptes-utils
 install: true  # skips install
 script:
-    - docker run -it -v $TRAVIS_BUILD_DIR:/var/panoptes/panoptes-utils $ci_env gcr.io/panoptes-survey/panoptes-utils scripts/testing/run_tests.sh
+    - docker run -it 
+      $ci_env 
+      -v $TRAVIS_BUILD_DIR:/var/panoptes/panoptes-utils 
+      gcr.io/panoptes-survey/panoptes-utils
+      /bin/bash -c "source activate panoptes-env && scripts/testing/run_tests.sh"
