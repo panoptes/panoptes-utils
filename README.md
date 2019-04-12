@@ -8,6 +8,8 @@ Utility functions for use within the PANOPTES ecosystem and for general astronom
 ## Install
 <a href="#" name='install'></a>
 
+> :bulb: See [Docker](#docker) for ways to run that `panoptes-utils` without install.
+
 To install type:
 
 ```bash
@@ -27,6 +29,7 @@ pip install "panoptes-utils[all]"
 ```
 
 ## Docker
+<a name="docker"></a>
 
 **image**: A pre-built and configured Docker application (i.e. virtualized OS environment with a running application). A Dockerfile will build an image. You download an image of the app. There is only one version of each image on your machine (although images support "tags", e.g. "latest", so you can have multiple tagged copies).  
 
