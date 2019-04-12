@@ -19,7 +19,7 @@ RUN wget --quiet ${conda_url} -O ~/conda.sh && \
     /opt/conda/bin/conda clean -tipsy && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.zshrc && \
-    /opt/conda/bin/conda env create -f conda-environment.yaml -n $env_name && \
+    /opt/conda/bin/conda env create -f conda-environment-rpi.yaml -n $env_name && \
     /opt/conda/bin/conda clean --all --yes && \
     /opt/conda/bin/conda clean -tipsy && \
     echo "source activate $env_name" >> ~/.bashrc && \

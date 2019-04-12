@@ -28,12 +28,17 @@ pip install "panoptes-utils[all]"
 
 ## Docker
 
+**image**: A pre-built and configured Docker application (i.e. virtualized OS environment with a running application). A Dockerfile will build an image. You download images of the app. There is only one version of each image on the machine (although images support "tags", e.g. "latest").
+**container**: A running instance of an image. You can run many copies of a single image.
+
 This repository creates two seaparate Docker images which act as the base for the other PANOPTES
 images.  The first image (`panoptes-base`) is just the base operating system and system utilities but none of the
 PANOPTES software. The second image (`panoptes-utils`) builds off the first image but adds the contents
 of this repository.
 
-There are two flavors for each image, `amd64` and `arm32v7` (Raspberry Pi).
+There are two flavors for each image, which are tagged `amd64` and `arm32v7` (Raspberry Pi). A
+[manifest](https://docs.docker.com/engine/reference/commandline/manifest/) file is created, which means
+that you can simply pull `latest` and Docker will figure out which flavor you need.
 
 ##### panoptes-base
 
@@ -95,3 +100,5 @@ docker run --rm -it \
 Here we map all of $PANDIR to the corresponding directory inside the running container. Since the 
 container had the module installed in development mode, this means that the code running in the container
 now points to the file on the host machine.
+
+### Building Docker Images

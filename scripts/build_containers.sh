@@ -7,5 +7,5 @@ if [[ $* == *--base* ]]; then
 fi
 
 echo "Build Utils"
-gcloud builds submit --timeout="5h" --config ${SOURCE_DIR}/cloudbuild-utils.yaml ${SOURCE_DIR}
+gcloud builds submit --timeout="5h" --config ${SOURCE_DIR}/cloudbuild-utils.yaml --async ${SOURCE_DIR}
 
