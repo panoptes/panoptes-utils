@@ -35,4 +35,4 @@ RUN mkdir -p $POCS && \
     sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)" && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    echo "add_path /var/panoptes/astrometry/data" >> /etc/astrometry.cfg
+    echo "add_path ${PANDIR}/astrometry/data" >> /etc/astrometry.cfg

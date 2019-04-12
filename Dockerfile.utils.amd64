@@ -3,6 +3,7 @@ ARG arch=amd64
 FROM gcr.io/panoptes-survey/panoptes-base:$arch AS base-image
 MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
 
+ARG env_name=panoptes-env
 ARG pan_dir=/var/panoptes
 ENV PANDIR $pan_dir
 
@@ -10,16 +11,16 @@ WORKDIR ${PANDIR}/panoptes-utils/
 COPY . ${PANDIR}/panoptes-utils/
 
 # Conda install
-RUN /opt/conda/bin/conda env create -f conda-environment.yaml && \
+RUN /opt/conda/bin/conda env create -f conda-environment.yaml -n $env_name && \
     /opt/conda/bin/conda clean --all --yes && \
     /opt/conda/bin/conda clean -tipsy && \
-    echo "source activate panoptes-env" >> ~/.bashrc && \
-    echo "source activate panoptes-env" >> ~/.zshrc && \
+    echo "source activate $env_name" >> ~/.bashrc && \
+    echo "source activate $env_name" >> ~/.zshrc && \
     # End miniconda items
     cd ${PANDIR}/panoptes-utils && \
-    /opt/conda/envs/panoptes-env/bin/pip install -e ".[all]" && \
+    /opt/conda/envs/$env_name/bin/pip install -e ".[all]" && \
     # Download astrometry.net files 
     # TODO add cron job for IERS data download
-    /opt/conda/envs/panoptes-env/bin/python panoptes_utils/data.py --wide-field --narrow-field
+    /opt/conda/envs/$env_name/bin/python panoptes_utils/data.py --wide-field --narrow-field
 
 CMD ["/bin/zsh"]
