@@ -102,3 +102,7 @@ container had the module installed in development mode, this means that the code
 now points to the file on the host machine.
 
 ### Building Docker Images
+
+> TODO: Add info about building. The short story is you can call `scripts/build_containers.sh` to build
+them in the Google cloud builder. At some point this will become automatic as part of our testing and build
+process.
