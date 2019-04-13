@@ -1,11 +1,9 @@
 astroplan
 astropy
-google-cloud-storage
 docker-compose
 Flask
 matplotlib
 numpy
-psycopg2-binary
 pyserial
 python-dateutil
 PyYAML
