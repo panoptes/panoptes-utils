@@ -12,7 +12,6 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV SHELL /bin/bash
 ENV ENV /root/.bashrc
 ENV PANDIR $pan_dir
-ENV POCS ${PANDIR}/POCS
 ENV PANUSER root
 ENV SOLVE_FIELD=/usr/bin/solve-field
 ENV DEBIAN_FRONTEND=noninteractive
