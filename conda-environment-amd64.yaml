@@ -10,6 +10,7 @@ dependencies:
   - docker-compose
   - Flask
   - google-cloud-storage
+  - jupyter_console  
   - libffi
   - matplotlib>3.0.0
   - numpy
