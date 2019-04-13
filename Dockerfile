@@ -18,7 +18,6 @@ ENV SOLVE_FIELD=/usr/bin/solve-field
 ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR ${PANDIR}
-COPY . ${PANDIR}
 
 # System packages
 RUN mkdir -p $POCS && \
