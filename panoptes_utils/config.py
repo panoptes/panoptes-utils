@@ -14,7 +14,8 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
     are passed to `config_files` then the default `$PANDIR/conf_files/pocs.yaml`
     will be loaded. See Notes for additional information.
 
-    Notes:
+    .. note::
+
         The `config_files` parameter supports a number of options:
         * `config_files` is a list and loaded in order, so the first entry
             will have any values overwritten by similarly named keys in
