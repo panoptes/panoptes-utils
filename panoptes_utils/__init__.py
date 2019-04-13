@@ -23,39 +23,36 @@ def current_time(flatten=False, datetime=False, pretty=False):
         variable will also be incremented by one second so that subsequent
         calls to this function will generate monotonically increasing times.
 
-        Operation of POCS from `$POCS/bin/pocs_shell` will clear the POCSTIME
-        variable.
+        **Operation of POCS from $POCS/bin/pocs_shell will clear the POCSTIME variable.**
+
+        .. doctest::
+
+            >>> os.environ['POCSTIME'] = '1999-12-31 23:59:59'
+            >>> party_time = current_time(pretty=True)
+            >>> party_time
+            '1999-12-31 23:59:59'
+
+            # Next call is one second later when using $POCSTIME.
+            >>> y2k = current_time(pretty=True)
+            >>> y2k
+            '2000-01-01 00:00:00'
+
 
     Note:
         The time returned from this function is **not** timezone aware. All times
         are UTC.
 
-
     .. doctest::
 
-        >>> os.environ['POCSTIME'] = '1999-12-31 23:59:59'
-        >>> party_time = current_time(pretty=True)
-        >>> party_time
-        '1999-12-31 23:59:59'
-
-        # Next call is one second later
-        >>> y2k = current_time(pretty=True)
-        >>> y2k
-        '2000-01-01 00:00:00'
-
-        >>> del os.environ['POCSTIME']
         >>> from panoptes_utils import current_time
-        >>> now = current_time()
-        >>> now                               # doctest: +SKIP
+        >>> current_time()                # doctest: +SKIP
         <Time object: scale='utc' format='datetime' value=2018-10-07 22:29:03.009873>
 
-        >>> now = current_time(datetime=True)
-        >>> now                               # doctest: +SKIP
+        >>> current_time(datetime=True)   # doctest: +SKIP
         datetime.datetime(2018, 10, 7, 22, 29, 26, 594368)
 
-        >>> now = current_time(pretty=True)
-        >>> now                               # doctest: +SKIP
-        2018-10-07 22:29:51
+        >>> current_time(pretty=True)     # doctest: +SKIP
+        '2018-10-07 22:29:51'
 
 
     Returns:
@@ -198,11 +195,9 @@ def listify(obj):
 def get_free_space(dir=None):
     """Return the amoung of freespace in gigabytes for given dir.
 
-    .. doctest::
-
-        >>> from panoptes_utils import get_free_space
-        >>> get_free_space()
-        <Quantity ... Gbyte>
+    >>> from panoptes_utils import get_free_space
+    >>> get_free_space()        # doctest: +SKIP
+    <Quantity 10.245 Gbyte>
 
     Args:
         dir (str, optional): Path to directory. If None defaults to $PANDIR.
@@ -232,8 +227,8 @@ def string_to_params(opts):
 
     A list of items can be passed by specifying the keyword argument multiple times.
 
-
     Note:
+
         This function will attempt to parse keyword values as floats if possible.
         If a string is required include a single quote around the value, e.g.
         `param='42'` will keep the value as the string `'42'`.
@@ -251,6 +246,7 @@ def string_to_params(opts):
     True
     >>> kwargs['key2'][1] == '2'
     True
+
     >>> args, kwargs = string_to_params('--key1=val1 --key1-2=val1-2')
     >>> kwargs
     {'key1': 'val1', 'key1-2': 'val1-2'}
@@ -261,8 +257,8 @@ def string_to_params(opts):
 
     Returns:
         tuple(list, dict): Returns a list of positional parameters and a dictionary
-            of keyword arguments. These correspond to the *args and **kwargs that
-            a typical function would receive.
+        of keyword arguments. These correspond to the *args and **kwargs that
+        a typical function would receive.
     """
     args = []
     kwargs = {}
@@ -295,12 +291,10 @@ def string_to_params(opts):
 def load_module(module_name):
     """Dynamically load a module.
 
-    .. doctest::
-
-        >>> from panoptes_utils import load_module
-        >>> camera = load_module('pocs.camera.simulator')
-        >>> camera.__package__
-        'pocs.camera'
+    >>> from panoptes_utils import load_module
+    >>> camera = load_module('pocs.camera.simulator')
+    >>> camera.__package__
+    'pocs.camera'
 
     Args:
         module_name (str): Name of module to import.
@@ -350,10 +344,13 @@ class DelaySigTerm(contextlib.ContextDecorator):
 
     This allows one to avoid having SIGTERM interrupt a
     critical block of code, such as saving to a database.
-    For example:
 
+    Example:
+
+        ..
         with DelaySigTerm():
             db.WriteCurrentRecord(record)
+
     """
     # TODO(jamessynge): Consider generalizing as DelaySignal(signum).
 
