@@ -1,8 +1,10 @@
+from contextlib import suppress
 import json
 from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
 
 import numpy as np
+from astropy.time import Time
 from astropy import units as u
 
 
@@ -16,14 +18,19 @@ class StringYAML(YAML):
 
         See https://yaml.readthedocs.io/en/latest/example.html#output-of-dump-as-a-string.
 
+        Note:
+
+            This class should not be used directly but instead is instantiated as
+            part of the yaml convenience methods below.
+
         Args:
-            data (object): An object, usually dict-like.
-            stream (None|stream, optional): A stream object to write the YAML.
+            data (`object`): An object, usually dict-like.
+            stream (`None` | stream, optional): A stream object to write the YAML.
                 If default `None`, return value as string.
             **kwargs: Keywords passed to the `dump` function.
 
         Returns:
-            str: The serialized object string.
+            `str`: The serialized object string.
         """
         inefficient = False
         if stream is None:
@@ -58,10 +65,10 @@ def to_json(obj):
             '{"current_time": "2019-04-08 22:19:28.402198"}'
 
     Args:
-        obj (any): The object to be converted to JSON, usually a dict.
+        obj (`object`): The object to be converted to JSON, usually a dict.
 
     Returns:
-        str: The JSON string representation of the object.
+        `str`: The JSON string representation of the object.
     """
     return json.dumps(obj, default=_serialize_object)
 
@@ -102,10 +109,10 @@ def from_json(msg):
             <Time object: scale='utc' format='isot' value=2019-04-08T06:43:28.232>
 
     Args:
-        msg (str): The JSON string representation of the object.
+        msg (`str`): The JSON string representation of the object.
 
     Returns:
-        dict: The loaded object.
+        `dict`: The loaded object.
     """
     return _parse_objects(json.loads(msg))
 
@@ -113,14 +120,42 @@ def from_json(msg):
 def to_yaml(obj, **kwargs):
     """Serialize a Python object to a YAML string.
 
-    Examples:
+    This will properly serialize the following:
 
-        See the examples in `from_yaml`.
+        * `datetime.datetime`
+        * `astropy.time.Time`
+        * `astropy.units.Quantity`
+
+    Examples:
+        Also see the examples `from_yaml`.
+
+        .. doctest::
+
+            >>> import os
+            >>> os.environ['POCSTIME'] = '1999-12-31 23:49:49'
+            >>> from panoptes_utils import current_time
+            >>> t0 = current_time()
+            >>> t0
+            <Time object: scale='utc' format='iso' value=1999-12-31 23:49:49.000>
+
+            >>> to_yaml({'astropy time -> astropy time': t0})
+            "astropy time -> astropy time: '1999-12-31T23:49:49.000'\\n"
+
+            >>> to_yaml({'datetime -> astropy time': t0.datetime})
+            "datetime -> astropy time: '1999-12-31T23:49:49.000'\\n"
+
+            >>> # Can pass a `stream` parameter to save to file
+            >>> with open('temp.yaml', 'w') as f:           # doctest: +SKIP
+            ...     to_yaml({'my_object': 42}, stream=f)
+
 
     Args:
-        obj (object): The object to be converted to be serialized.
-        stream (None|stream-like, optional): The stream to write the object to,
-            default `sys.stdout`.
+        obj (`object`): The object to be converted to be serialized.
+        **kwargs: Arguments passed to `ruamel.yaml.dump`. See Examples.
+
+
+    Returns:
+        `str`: The YAML string representation of the object.
     """
     yaml = StringYAML()
 
@@ -178,10 +213,10 @@ def from_yaml(msg):
             True
 
     Args:
-        msg (str): The YAML string representation of the object.
+        msg (`str`): The YAML string representation of the object.
 
     Returns:
-        ordereddict: The ordered dict representing the YAML string, with appropriate
+        `collections.OrderedDict`: The ordered dict representing the YAML string, with appropriate
             object deserialization.
     """
     return _parse_objects(YAML().load(msg))
@@ -195,12 +230,17 @@ def _parse_objects(obj):
     as is.
 
     Args:
-        obj (dict): Object to check for quantities.
+        obj (`dict`): Object to check for quantities.
 
     Returns:
-        dict: Same as `obj` but with objects converted to quantities.
+        `dict`: Same as `obj` but with objects converted to quantities.
     """
-    # If there are exactly two keys
+    # Try to turn into a time
+    with suppress(ValueError):
+        if isinstance(Time(obj), Time):
+            return Time(obj)
+
+    # If there are exactly two keys - astropy.units.Quantity
     try:
         return obj['value'] * u.Unit(obj['unit'])
     except Exception:
@@ -227,6 +267,10 @@ def _serialize_object(obj, default=str):
         return {'value': obj.value, 'unit': obj.unit.name}
     elif isinstance(obj, np.ndarray):
         return obj.tolist()
+
+    with suppress(ValueError):
+        if isinstance(Time(obj), Time):
+            return Time(obj).isot
 
     # If we are given a default object type, e.g. str
     if default is not None:
