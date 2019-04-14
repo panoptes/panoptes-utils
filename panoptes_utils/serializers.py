@@ -10,15 +10,17 @@ class StringYAML(YAML):
     def dump(self, data, stream=None, **kwargs):
         """YAML class that can dump to a string.
 
-        This is taken from the documentation:
+        By default the YAML parser doesn't serialize directly to a string. This
+        class is a small wrapper to output StreamIO as a string if no stream is
+        provided.
 
-        https://yaml.readthedocs.io/en/latest/example.html#output-of-dump-as-a-string
+        See https://yaml.readthedocs.io/en/latest/example.html#output-of-dump-as-a-string.
 
         Args:
             data (object): An object, usually dict-like.
             stream (None|stream, optional): A stream object to write the YAML.
                 If default `None`, return value as string.
-            **kw: Keywords passed to the `dump` function.
+            **kwargs: Keywords passed to the `dump` function.
 
         Returns:
             str: The serialized object string.
@@ -38,18 +40,22 @@ def to_json(obj):
     Will handle `datetime` objects as well as `astropy.unit.Quantity` objects.
     Astropy quantities will be converted to a dict: `{"value": val, "unit": unit}`.
 
-    >>> from panoptes_utils.serializers import to_json
-    >>> from astropy import units as u
-    >>> config = { "location": { "name": "Mauna Loa", "elevation": 3397 * u.meter } }
-    >>> to_json(config)
-    '{"location": {"name": "Mauna Loa", "elevation": {"value": 3397.0, "unit": "m"}}}'
+    Examples:
 
-    >>> to_json({"numpy_array": np.arange(10)})
-    '{"numpy_array": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}'
+        .. doctest::
 
-    >>> from panoptes_utils import current_time
-    >>> to_json({"current_time": current_time()})       # doctest: +SKIP
-    '{"current_time": "2019-04-08 22:19:28.402198"}'
+            >>> from panoptes_utils.serializers import to_json
+            >>> from astropy import units as u
+            >>> config = { "name": "Mauna Loa", "elevation": 3397 * u.meter }
+            >>> to_json(config)
+            '{"name": "Mauna Loa", "elevation": {"value": 3397.0, "unit": "m"}}'
+
+            >>> to_json({"numpy_array": np.arange(10)})
+            '{"numpy_array": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}'
+
+            >>> from panoptes_utils import current_time
+            >>> to_json({"current_time": current_time()})       # doctest: +SKIP
+            '{"current_time": "2019-04-08 22:19:28.402198"}'
 
     Args:
         obj (any): The object to be converted to JSON, usually a dict.
@@ -66,31 +72,34 @@ def from_json(msg):
     Astropy quanitites will be converted from a ``{"value": val, "unit": unit}`` format.
     Time-like values are *not* parsed, however see example below.
 
-    .. doctest::
+    Examples:
 
-        >>> from panoptes_utils.serializers import from_json
-        >>> config_str = '{"location":{"name":"Mauna Loa","elevation":{"value":3397.0,"unit":"m"}}}'
-        >>> from_json(config_str)
-        {'location': {'name': 'Mauna Loa', 'elevation': <Quantity 3397. m>}}
+        .. doctest::
 
-        # Invalid values will be returned as is.
-        >>> from_json('{"horizon":{"value":42.0,"unit":"degr"}}')
-        {'horizon': {'value': 42.0, 'unit': 'degr'}}
+            >>> from panoptes_utils.serializers import from_json
+            >>> config_str = '{"name":"Mauna Loa","elevation":{"value":3397.0,"unit":"m"}}'
+            >>> from_json(config_str)
+            {'name': 'Mauna Loa', 'elevation': <Quantity 3397. m>}
 
-        # Be careful with short unit names!
-        >>> horizon = from_json('{"horizon":{"value":42.0,"unit":"d"}}')
-        >>> horizon['horizon']
-        <Quantity 42. d>
-        >>> horizon['horizon'].decompose()
-        <Quantity 3628800. s>
+            # Invalid values will be returned as is.
+            >>> from_json('{"horizon":{"value":42.0,"unit":"degr"}}')
+            {'horizon': {'value': 42.0, 'unit': 'degr'}}
 
-        >>> from panoptes_utils import current_time
-        >>> time_str = to_json({"current_time": current_time().datetime})
-        >>> from_json(time_str)['current_time']         # doctest: +SKIP
-        2019-04-08T06:43:28.232406
-        >>> from astropy.time import Time
-        >>> Time(from_json(time_str)['current_time'])   # doctest: +SKIP
-        <Time object: scale='utc' format='isot' value=2019-04-08T06:43:28.232>
+            # Be careful with short unit names!
+            >>> horizon = from_json('{"horizon":{"value":42.0,"unit":"d"}}')
+            >>> horizon['horizon']
+            <Quantity 42. d>
+            >>> horizon['horizon'].decompose()
+            <Quantity 3628800. s>
+
+            >>> from panoptes_utils import current_time
+            >>> time_str = to_json({"current_time": current_time().datetime})
+            >>> from_json(time_str)['current_time']         # doctest: +SKIP
+            2019-04-08T06:43:28.232406
+
+            >>> from astropy.time import Time
+            >>> Time(from_json(time_str)['current_time'])   # doctest: +SKIP
+            <Time object: scale='utc' format='isot' value=2019-04-08T06:43:28.232>
 
     Args:
         msg (str): The JSON string representation of the object.
@@ -123,27 +132,59 @@ def to_yaml(obj, **kwargs):
 def from_yaml(msg):
     """Convert a YAML string into a Python object.
 
-    This is a thin-wrapper around `ruamel.YAML.load`.
+    This is a thin-wrapper around `ruamel.YAML.load` that also parses the results
+    looking for `astropy.units.Quantity` objects.
+
+    Comments are preserved as long as the object remains YAML (lost on conversion
+    to JSON, for example).
 
     Examples:
+        Note how comments in the YAML are preserved.
 
-        >>> config_str = """
-        name: Generic PANOPTES Unit
-        pan_id: PAN000   
-        
-        location:
-            name: Mauna Loa Observatory
-            latitude: 19.54 # Degrees
-            longitude: -155.58 # Degrees
-            elevation: 3400.0 # Meters
-        """
-        >>> config = from_yaml(config_str)
+        .. doctest::
 
+            >>> config_str = '''name: Generic PANOPTES Unit
+            ... pan_id: PAN000
+            ...
+            ... location:
+            ...   latitude:
+            ...     value: 19.54
+            ...     unit: deg
+            ...   longitude:
+            ...     value: -155.58
+            ...     unit: deg
+            ...   name: Mauna Loa Observatory  # Can be anything
+            ... '''
+
+            >>> config = from_yaml(config_str)
+            >>> config['location']['latitude']
+            <Quantity 19.54 deg>
+
+            >>> yaml_config = to_yaml(config)
+            >>> yaml_config                  # doctest: +SKIP
+            ''' name: Generic PANOPTES Unit
+            ... pan_id: PAN000  # CHANGE NAME
+            ...
+            ... location:
+            ...   latitude:
+            ...     value: 19.54
+            ...     unit: deg
+            ...   longitude:
+            ...     value: -155.58
+            ...     unit: deg
+            ...   name: Mauna Loa Observatory  # Can be anything
+            ... '''
+            >>> yaml_config == config_str
+            True
 
     Args:
         msg (str): The YAML string representation of the object.
+
+    Returns:
+        ordereddict: The ordered dict representing the YAML string, with appropriate
+            object deserialization.
     """
-    return YAML().load(msg)
+    return _parse_objects(YAML().load(msg))
 
 
 def _parse_objects(obj):
