@@ -19,6 +19,10 @@ RUN /opt/conda/bin/conda update -n base -c defaults conda && \
     /opt/conda/bin/conda clean --all --yes && \
     /opt/conda/bin/conda clean -tipsy && \
     # End miniconda items
+    # Activate environment by default
+    echo "conda activate $env_name" >> ~/.bashrc && \
+    echo "conda activate $env_name" >> ~/.zshrc && \
+    # Install module
     cd ${PANDIR}/panoptes-utils && \
     /opt/conda/envs/$env_name/bin/pip install -e ".[all]" && \
     # Download astrometry.net files 

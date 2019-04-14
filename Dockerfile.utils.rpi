@@ -22,9 +22,11 @@ RUN wget --quiet ${conda_url} -O ~/conda.sh && \
     /opt/conda/bin/conda env create -f conda-environment-rpi.yaml -n $env_name && \
     /opt/conda/bin/conda clean --all --yes && \
     /opt/conda/bin/conda clean -tipsy && \
+    # End miniconda items
+    # Activate environment by default
     echo "conda activate $env_name" >> ~/.bashrc && \
     echo "conda activate $env_name" >> ~/.zshrc && \
-    # End miniconda items
+    # Install module
     cd ${PANDIR}/panoptes-utils && \
     /opt/conda/envs/$env_name/bin/pip install -e ".[all]" && \
     # Download astrometry.net files 
