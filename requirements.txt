@@ -8,6 +8,7 @@ pyserial
 python-dateutil
 PyYAML
 pyzmq
+ruamel.yaml>=0.15
 scalpl
 scikit-image
 scipy
