@@ -7,11 +7,13 @@ FROM $base_image AS base-image
 MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
 
 ARG pan_dir=/var/panoptes
+ARG pocs_dir=${pan_dir}/POCS
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV SHELL /bin/bash
 ENV ENV /root/.bashrc
 ENV PANDIR $pan_dir
+ENV POCS $pocs_dir
 ENV PANUSER root
 ENV SOLVE_FIELD=/usr/bin/solve-field
 ENV DEBIAN_FRONTEND=noninteractive
@@ -19,7 +21,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR ${PANDIR}
 
 # System packages
-RUN mkdir -p $POCS && \
+RUN mkdir -p ${POCS} && \
     mkdir -p ${PANDIR}/logs && \
     mkdir -p ${PANDIR}/astrometry/data && \
     mkdir -p ${PANDIR}/images && \
