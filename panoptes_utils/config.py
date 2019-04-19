@@ -1,10 +1,11 @@
 import os
-import yaml
 from contextlib import suppress
+from warnings import warn
 
 from astropy import units as u
+
 from panoptes_utils import listify
-from warnings import warn
+from panoptes_utils import serializers
 
 
 def load_config(config_files=None, simulator=None, parse=True, ignore_local=False):
@@ -110,7 +111,7 @@ def save_config(path, config, overwrite=True):
         warn("Path exists and overwrite=False: {}".format(path))
     else:
         with open(path, 'w') as f:
-            f.write(yaml.dump(config))
+            serializers.to_yaml(config, stream=f)
 
 
 def parse_config(config):
@@ -145,7 +146,7 @@ def parse_config(config):
 def _add_to_conf(config, fn):
     try:
         with open(fn, 'r') as f:
-            c = yaml.load(f.read())
+            c = serializers.from_yaml(f)
             if c is not None and isinstance(c, dict):
                 config.update(c)
     except IOError:  # pragma: no cover
