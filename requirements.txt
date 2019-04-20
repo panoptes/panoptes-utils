@@ -1,12 +1,11 @@
 astroplan
 astropy
-docker-compose
 Flask
 matplotlib
 numpy
 pyserial
 python-dateutil
-PyYAML<4.3,>=3.10
+PyYAML
 pyzmq
 ruamel.yaml>=0.15
 scalpl
