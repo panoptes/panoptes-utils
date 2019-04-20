@@ -2,7 +2,7 @@ import pytest
 
 from astropy import units as u
 
-from panoptes_utils import serializers as json_utils
+from panoptes_utils import serializers
 
 
 @pytest.fixture(scope='function')
@@ -37,13 +37,16 @@ def obj():
     }
 
 
-def test_loads(obj):
-    assert json_utils.to_string(obj)
-
-
-def test_dumps(obj):
-    config_str = json_utils.to_string(obj)
-
-    config = json_utils.to_object(config_str)
+def test_roundtrip_json(obj):
+    config_str = serializers.to_json(obj)
+    config = serializers.from_json(config_str)
     assert config['name'] == obj['name']
-    assert config['location']['latitude'] * u.degree == obj['location']['latitude']
+    assert config['location']['latitude'] == obj['location']['latitude']
+
+
+def test_roundtrip_yaml(obj):
+    config_str = serializers.to_yaml(obj)
+    config = serializers.from_yaml(config_str)
+    assert config['name'] == obj['name']
+    assert config['location']['latitude'].value == obj['location']['latitude']['value']
+    assert config['location']['latitude'].unit == obj['location']['latitude']['unit']
