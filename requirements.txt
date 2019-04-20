@@ -1,6 +1,5 @@
 astroplan
 astropy
-docker-compose
 Flask
 matplotlib
 numpy
