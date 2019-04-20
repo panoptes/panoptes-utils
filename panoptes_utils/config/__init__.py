@@ -1,11 +1,11 @@
 import os
 from contextlib import suppress
-
-from astropy.io.misc import yaml
-from astropy import units as u
 from warnings import warn
 
+from astropy import units as u
+
 from panoptes_utils import listify
+from panoptes_utils import serializers
 
 
 def load_config(config_files=None, simulator=None, parse=True, ignore_local=False):
@@ -15,7 +15,8 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
     are passed to `config_files` then the default `$PANDIR/conf_files/pocs.yaml`
     will be loaded. See Notes for additional information.
 
-    Notes:
+    .. note::
+
         The `config_files` parameter supports a number of options:
         * `config_files` is a list and loaded in order, so the first entry
             will have any values overwritten by similarly named keys in
@@ -119,7 +120,7 @@ def save_config(path, config, overwrite=True):
         warn("Path exists and overwrite=False: {}".format(path))
     else:
         with open(path, 'w') as f:
-            f.write(yaml.dump(config))
+            serializers.to_yaml(config, stream=f)
 
 
 def parse_config(config):
@@ -166,7 +167,7 @@ def parse_config(config):
 def _add_to_conf(config, fn):
     try:
         with open(fn, 'r') as f:
-            c = yaml.load(f.read())
+            c = serializers.from_yaml(f)
             if c is not None and isinstance(c, dict):
                 config.update(c)
     except IOError:  # pragma: no cover

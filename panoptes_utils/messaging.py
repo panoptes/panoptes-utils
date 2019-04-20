@@ -2,8 +2,6 @@ import datetime
 import re
 import zmq
 
-import yaml
-
 from astropy import units as u
 from astropy.time import Time
 from bson import ObjectId
@@ -12,6 +10,7 @@ from json import loads
 
 from panoptes_utils import current_time
 from panoptes_utils.logger import get_root_logger
+from panoptes_utils.serializers import from_yaml
 
 
 class PanMessaging(object):
@@ -242,7 +241,7 @@ class PanMessaging(object):
             try:
                 msg_obj = loads(msg)
             except Exception:
-                msg_obj = yaml.load(msg)
+                msg_obj = from_yaml(msg)
 
         return topic, msg_obj
 

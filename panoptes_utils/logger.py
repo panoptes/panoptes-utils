@@ -1,7 +1,6 @@
 import collections
 import datetime
 import json
-import yaml
 import logging
 import logging.config
 import os
@@ -13,6 +12,8 @@ import time
 from warnings import warn
 
 from panoptes_utils.config import parse_config
+from panoptes_utils.serializers import from_yaml
+
 
 # We don't want to create multiple root loggers that are "identical",
 # so track the loggers in a dict keyed by a tuple of:
@@ -280,7 +281,7 @@ def get_root_logger(profile='panoptes', log_config=None):
 
 
 def load_default():
-    return parse_config(yaml.full_load(DEFAULT_CONFIG))
+    return parse_config(from_yaml(DEFAULT_CONFIG))
 
 
 DEFAULT_CONFIG = """

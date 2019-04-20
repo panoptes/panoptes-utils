@@ -336,13 +336,13 @@ def funpack(*args, **kwargs):
     """Unpack a FITS file.
 
     Note:
-        This is a thin-wrapper around the `fpack` function
-        with the `unpack=True` option specified. See `fpack`
+        This is a thin-wrapper around the ~fpack function
+        with the `unpack=True` option specified. See ~fpack
         documentation for details.
 
     Args:
-        *args: Arguments passed to `fpack`.
-        **kwargs: Keyword arguments passed to `fpack`.
+        *args: Arguments passed to ~fpack.
+        **kwargs: Keyword arguments passed to ~fpack.
 
     Returns:
         str: Path to uncompressed FITS file.

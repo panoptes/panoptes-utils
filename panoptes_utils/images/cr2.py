@@ -22,25 +22,26 @@ def cr2_to_fits(
         fits_headers={},
         remove_cr2=False,
         **kwargs):  # pragma: no cover
-    """ Convert a CR2 file to FITS
+    """Convert a CR2 file to FITS
 
-    This is a convenience function that first converts the CR2 to PGM via `cr2_to_pgm`.
+    This is a convenience function that first converts the CR2 to PGM via ~cr2_to_pgm.
     Also adds keyword headers to the FITS file.
 
     Note:
         The intermediate PGM file is automatically removed
 
     Arguments:
-        cr2_fname {str} -- Name of CR2 file to be converted
-        **kwargs {dict} -- Additional keywords to be used
+        cr2_fname (str): Name of the CR2 file to be converted.
+        fits_fname (str, optional): Name of the FITS file to output. Default is `None`, in which
+            case the `cr2_fname` is used as the base.
+        overwrite (bool, optional): Overwrite existing FITS, default False.
+        headers (dict, optional): Header data added to the FITS file.
+        fits_headers (dict, optional): Header data added to the FITS file without filtering.
+        remove_cr2 (bool, optional): If CR2 should be removed after processing, default False.
+        **kwargs: Description
 
-    Keyword Arguments:
-        fits_fname {str} -- Name of FITS file to output. If None (default), the `cr2_fname` is used
-            as base (default: {None})
-        overwrite {bool} -- A bool indicating if existing FITS should be overwritten (default: {False})
-        headers {dict} -- Header data that is filtered and added to the FITS header.
-        fits_headers {dict} -- Header data that is added to the FITS header without filtering.
-        remove_cr2 {bool} -- A bool indicating if the CR2 should be removed (default: {False})
+    Returns:
+        str: The full path to the generated FITS file.
 
     """
 
