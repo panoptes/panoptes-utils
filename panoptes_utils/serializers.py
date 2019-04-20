@@ -114,6 +114,7 @@ def from_json(msg):
     Returns:
         `dict`: The loaded object.
     """
+
     return _parse_objects(json.loads(msg))
 
 
@@ -219,6 +220,7 @@ def from_yaml(msg):
         `collections.OrderedDict`: The ordered dict representing the YAML string, with appropriate
             object deserialization.
     """
+
     return _parse_objects(YAML().load(msg))
 
 
