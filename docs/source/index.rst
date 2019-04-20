@@ -12,5 +12,7 @@ PANOPTES Utilities
 
    panoptes_utils
 
+.. 	mdinclude:: README.md
+
 
 * :ref:`modindex`
