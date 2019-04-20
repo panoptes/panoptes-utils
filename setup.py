@@ -8,6 +8,8 @@ except ImportError:
 
 import itertools
 
+import itertools
+
 from configparser import ConfigParser
 from distutils.command.build_py import build_py
 
