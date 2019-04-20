@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-* Dockerfile and cloudbuild.yaml support amd64 and arm platforms
-  * Script for building containers in GCR.
+* Docker containers created:
+	* `panoptes-base` for base OS and system packages, including astrometry.net and friends.
+	* `panoptes-utils` for container containing base utilities.
+	* Script for building containers in GCR.
 
 ### Changed
 * **Minimum Python version is 3.6**
