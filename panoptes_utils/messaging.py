@@ -119,7 +119,7 @@ class PanMessaging(object):
                 done_fn()
 
     @classmethod
-    def create_publisher(cls, port, bind=False, connect=True):
+    def create_publisher(cls, port, bind=False, connect=True, host='localhost'):
         """ Create a publisher
 
         Args:
@@ -130,21 +130,21 @@ class PanMessaging(object):
         """
         obj = cls()
 
-        obj.logger.debug("Creating publisher. Binding to port {} ".format(port))
+        obj.logger.debug(f"Creating publisher on {host}:{port}")
 
         socket = obj.context.socket(zmq.PUB)
 
         if bind:
-            socket.bind('tcp://*:{}'.format(port))
+            socket.bind(f'tcp://*:{port}')
         elif connect:
-            socket.connect('tcp://localhost:{}'.format(port))
+            socket.connect(f'tcp://{host}:{port}')
 
         obj.socket = socket
 
         return obj
 
     @classmethod
-    def create_subscriber(cls, port, topic='', bind=False, connect=True):
+    def create_subscriber(cls, port, topic='', bind=False, connect=True, host='localhost'):
         """ Create a listener
 
         Args:
@@ -153,17 +153,17 @@ class PanMessaging(object):
 
         """
         obj = cls()
-        obj.logger.debug("Creating subscriber. Port: {} \tTopic: {}".format(port, topic))
+        obj.logger.debug(f"Creating subscriber on {host}:{port} \tTopic: {topic}")
 
         socket = obj.context.socket(zmq.SUB)
 
         if bind:
             try:
-                socket.bind('tcp://*:{}'.format(port))
+                socket.bind(f'tcp://*:{port}')
             except zmq.error.ZMQError:
                 obj.logger.debug('Problem binding port {}'.format(port))
         elif connect:
-            socket.connect('tcp://localhost:{}'.format(port))
+            socket.connect(f'tcp://{host}:{port}')
 
         socket.setsockopt_string(zmq.SUBSCRIBE, topic)
 
