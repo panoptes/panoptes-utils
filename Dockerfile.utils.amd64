@@ -24,6 +24,7 @@ RUN /opt/conda/bin/conda update -n base -c defaults conda && \
     echo "conda activate $env_name" >> ~/.zshrc && \
     # Install module
     cd ${PANDIR}/panoptes-utils && \
+    /opt/conda/envs/$env_name/bin/pip install -r requirements.txt && \
     /opt/conda/envs/$env_name/bin/pip install -e ".[all]" && \
     # Download astrometry.net files 
     # TODO add cron job for IERS data download
