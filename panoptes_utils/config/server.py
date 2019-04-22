@@ -5,6 +5,7 @@ from flask.json import JSONEncoder
 
 from astropy import units as u
 
+from panoptes_utils.config import save_config
 
 app = Flask(__name__)
 
@@ -63,9 +64,13 @@ def set_config_entry():
 
             app.config['POCS_cut'].update({key: val})
 
+            # Config has been modified so save to file
+            save_config(app.config['config_file'], app.config['POCS'])
+
             return jsonify(app.config['POCS_cut'].get(key))
 
     return jsonify({
         'success': False,
         'msg': "Invalid. Need json request: {'key': <config_entry>, 'value': <new_values>}"
     })
+
