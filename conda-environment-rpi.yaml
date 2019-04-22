@@ -25,5 +25,4 @@ dependencies:
     - scalpl
     - google-cloud-storage
     - psycopg2-binary
-    - docker-compose
     - astroplan

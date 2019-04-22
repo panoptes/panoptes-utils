@@ -7,7 +7,6 @@ dependencies:
   - astroplan
   - astropy
   - cffi
-  - docker-compose
   - Flask
   - google-cloud-storage
   - jupyter_console  
