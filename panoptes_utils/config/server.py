@@ -58,19 +58,15 @@ def set_config_entry():
     if request.is_json:
         req_data = request.get_json()
 
-        key = req_data.get('key', None)
-        if key is not None:
-            val = req_data['value']
+        app.config['POCS_cut'].update(req_data)
 
-            app.config['POCS_cut'].update({key: val})
+        # Config has been modified so save to file
+        if app.config['auto_save'] and app.config['config_file'] is not None:
+            save_config(app.config['config_file'], app.config['POCS_cut'].data)
 
-            # Config has been modified so save to file
-            save_config(app.config['config_file'], app.config['POCS'])
-
-            return jsonify(app.config['POCS_cut'].get(key))
+        return jsonify(req_data)
 
     return jsonify({
         'success': False,
         'msg': "Invalid. Need json request: {'key': <config_entry>, 'value': <new_values>}"
     })
-

@@ -118,10 +118,14 @@ def save_config(path, config, overwrite=True):
         config_dir = os.path.join(os.environ['PANDIR'], 'conf_files')
         base = os.path.join(config_dir, base)
 
-    if os.path.exists(path) and not overwrite:
-        warn("Path exists and overwrite=False: {}".format(path))
+    full_path = f'{base}{ext}'
+
+    if os.path.exists(full_path) and not overwrite:
+        warn("Path exists and overwrite=False: {}".format(full_path))
     else:
-        with open(path, 'w') as f:
+        # Create directory if does not exist
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
+        with open(full_path, 'w') as f:
             serializers.to_yaml(config, stream=f)
 
 

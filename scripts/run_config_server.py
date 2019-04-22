@@ -20,7 +20,10 @@ if __name__ == '__main__':
                         help='If server should be public, default False. '
                         'Note: inside a docker container set this to True to expose to host.')
     parser.add_argument('--config-file', dest='config_file', type=str,
+                        default=os.path.join(os.environ['PANDIR'], 'conf_files', 'pocs.yaml'),
                         help="Config file, default $PANDIR/conf_files/pocs.yaml")
+    parser.add_argument('--no-save', default=False, action='store_true',
+                        help='Config entries are saved automatically by default.')
     parser.add_argument('--debug', default=False, action='store_true', help='Debug')
     args = parser.parse_args()
 
@@ -28,18 +31,19 @@ if __name__ == '__main__':
     if args.public and args.host == '127.0.0.1':
         args.host = '0.0.0.0'
 
-    if not args.config_files:
+    if not args.config_file:
         # Look for $PANDIR/conf_files/.
         conf_dir = os.path.join(os.getenv('PANDIR'), 'conf_files')
 
         if os.path.isdir(conf_dir):
             print(f'Using default config files from {conf_dir}/pocs.yaml')
-            args.config_files = os.path.join(conf_dir, 'pocs')
+            args.config_file = os.path.join(conf_dir, 'pocs')
         else:
             print('No config files given')
 
-    app.config['config_file'] = args.config_files
-    app.config['POCS'] = load_config(config_files=args.config_files)
+    app.config['auto_save'] = not args.no_save
+    app.config['config_file'] = args.config_file
+    app.config['POCS'] = load_config(config_files=args.config_file)
     app.config['POCS_cut'] = Cut(app.config['POCS'])
 
     app.run(
