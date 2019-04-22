@@ -103,18 +103,20 @@ def save_config(path, config, overwrite=True):
             to generate a warning for existing config. Defaults to True
             for updates.
     """
-    # Check for extension.
-    if not path.endswith('.yaml'):
-        path = '{}.yaml'.format(path)
+    # Make sure ends with '_local.yaml'
+    base, ext = os.path.splitext(path)
+
+    # Always want .yaml
+    ext = '.yaml'
 
     # Check for _local name.
-    if not path.endswith('_local.yaml'):
-        path = '{}_local.yaml'.format(path)
+    if not base.endswith('_local'):
+        base = f'{base}_local'
 
     # Check full path location
-    if not path.startswith('/'):
-        config_dir = '{}/conf_files'.format(os.getenv('PANDIR'))
-        path = os.path.join(config_dir, path)
+    if not base.startswith('/'):
+        config_dir = os.path.join(os.environ['PANDIR'], 'conf_files')
+        base = os.path.join(config_dir, base)
 
     if os.path.exists(path) and not overwrite:
         warn("Path exists and overwrite=False: {}".format(path))
