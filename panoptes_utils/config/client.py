@@ -1,5 +1,6 @@
 import requests
 from panoptes_utils.config import parse_config
+from panoptes_utils import serializers
 
 
 def get_config(key=None, host='config-server', port='6563', parse=True):
@@ -72,8 +73,10 @@ def set_config(key, new_value, host='config-server', port='6563', parse=True):
     """
     url = f'http://{host}:{port}/set-config'
 
+    json_str = serializers.to_json({'key': key, 'value': new_value})
+
     response = requests.post(url,
-                             json={'key': key, 'value': new_value},
+                             data=json_str,
                              headers={'Content-Type': 'application/json'}
                              )
 

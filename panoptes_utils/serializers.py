@@ -115,7 +115,7 @@ def from_json(msg):
         `dict`: The loaded object.
     """
 
-    return _parse_objects(json.loads(msg))
+    return _parse_all_objects(json.loads(msg))
 
 
 def to_yaml(obj, **kwargs):
@@ -221,11 +221,11 @@ def from_yaml(msg):
             object deserialization.
     """
 
-    return _parse_objects(YAML().load(msg))
+    return _parse_all_objects(YAML().load(msg))
 
 
-def _parse_objects(obj):
-    """Parse the incoming object for astropy quantities.
+def _parse_all_objects(obj):
+    """Recursively parse the incoming object for astropy quantities.
 
     If `obj` is a dict with exactly two keys named `unit` and `value, then attempt
     to parse into a valid `astropy.unit.Quantity`. If fail, simply return object
@@ -248,7 +248,7 @@ def _parse_objects(obj):
     except Exception:
         for k in obj.keys():
             if isinstance(obj[k], dict):
-                obj[k] = _parse_objects(obj[k])
+                obj[k] = _parse_all_objects(obj[k])
 
         return obj
 

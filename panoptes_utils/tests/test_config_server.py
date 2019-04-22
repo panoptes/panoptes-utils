@@ -16,7 +16,7 @@ def host():
 
 @pytest.fixture(scope='module')
 def port():
-    return 6563
+    return '6563'
 
 
 @pytest.fixture(scope='module')
@@ -39,8 +39,14 @@ def test_config_client(config_server, host, port):
     # If None then server is still running.
     assert config_server.poll() is None
 
-    assert get_config(host=host, port=port) == {}
+    assert isinstance(get_config(host=host, port=port), dict)
 
-    assert set_config('location.horizon', 47 * u.degree, host=host, port=port) == 47
+    assert set_config('location.horizon', 47 * u.degree, host=host,
+                      port=port) == {'unit': 'deg', 'value': 47.0}
+
+    # With  parsing
     assert get_config('location.horizon', host=host, port=port) == 47 * u.degree
-    assert get_config('location.horizon', host=host, port=port, parse=False) == 47
+
+    # Without parsing
+    assert get_config('location.horizon', host=host, port=port,
+                      parse=False) == {'unit': 'deg', 'value': 47.0}
