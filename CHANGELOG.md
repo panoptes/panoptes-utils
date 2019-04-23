@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 	* `panoptes-base` for base OS and system packages, including astrometry.net and friends.
 	* `panoptes-utils` for container containing base utilities.
 	* Script for building containers in GCR.
+* Consistent JSON and YAML serializers.
 
 ### Changed
 * **Minimum Python version is 3.6**
