@@ -11,8 +11,14 @@ ENV PANDIR $pan_dir
 WORKDIR ${PANDIR}/panoptes-utils/
 COPY . ${PANDIR}/panoptes-utils/
 
-# Conda install
-RUN wget --quiet ${conda_url} -O ~/conda.sh && \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        gcc && \
+    # Cleanup apt.
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    # Conda install	
+    wget --quiet ${conda_url} -O ~/conda.sh && \
     /bin/bash ~/conda.sh -b -p /opt/conda && \
     rm ~/conda.sh && \
     /opt/conda/bin/conda update -n root -c defaults conda && \
@@ -28,9 +34,11 @@ RUN wget --quiet ${conda_url} -O ~/conda.sh && \
     echo "conda activate $env_name" >> ~/.zshrc && \
     # Install module
     cd ${PANDIR}/panoptes-utils && \
+    /opt/conda/envs/$env_name/bin/pip install -r requirements.txt && \
     /opt/conda/envs/$env_name/bin/pip install -e ".[all]" && \
     # Download astrometry.net files 
     # TODO add cron job for IERS data download
     /opt/conda/envs/$env_name/bin/python panoptes_utils/data.py --wide-field --narrow-field
 
 CMD ["/bin/zsh"]
+

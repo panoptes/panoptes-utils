@@ -26,13 +26,15 @@ RUN mkdir -p ${POCS} && \
     mkdir -p ${PANDIR}/astrometry/data && \
     mkdir -p ${PANDIR}/images && \
     apt-get update && \
-    apt-get install -y \
+    apt-get install -y --no-install-recommends \
         wget bzip2 ca-certificates pkg-config zsh git \
         astrometry.net dcraw exiftool \
         libcfitsio-dev libfreetype6-dev libpng-dev libpq-dev && \
     # Oh My ZSH. :)
     chsh -s /bin/zsh && \
     sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)" && \
+    # Cleanup apt.
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
+    # We will download index files later but setup config now.
     echo "add_path ${PANDIR}/astrometry/data" >> /etc/astrometry.cfg
