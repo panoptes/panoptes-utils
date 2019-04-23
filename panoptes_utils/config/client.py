@@ -3,7 +3,7 @@ from panoptes_utils.config import parse_config
 from panoptes_utils import serializers
 
 
-def get_config(key=None, host='config-server', port='6563', parse=True):
+def get_config(key=None, host='localhost', port='6563', parse=True):
     """Get a config item from the config server.
 
     Return the config entry for the given `key`. If `key=None` (default), return
@@ -38,7 +38,7 @@ def get_config(key=None, host='config-server', port='6563', parse=True):
     response = requests.post(url, json={'key': key})
 
     if not response.ok:
-        raise Exception(f'Cannot access config server')
+        raise Exception(f'Cannot access config server: {response.content}')
 
     config_entry = response.json()
 
@@ -51,7 +51,7 @@ def get_config(key=None, host='config-server', port='6563', parse=True):
     return config_entry
 
 
-def set_config(key, new_value, host='config-server', port='6563', parse=True):
+def set_config(key, new_value, host='localhost', port='6563', parse=True):
     """Set config item in config server.
 
     Given a `key` entry, update the config to match. The `key` is a dot accessible
@@ -73,7 +73,7 @@ def set_config(key, new_value, host='config-server', port='6563', parse=True):
     """
     url = f'http://{host}:{port}/set-config'
 
-    json_str = serializers.to_json({'key': key, 'value': new_value})
+    json_str = serializers.to_json({key: new_value})
 
     response = requests.post(url,
                              data=json_str,

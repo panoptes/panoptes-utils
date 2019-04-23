@@ -17,8 +17,8 @@ class CustomJSONEncoder(JSONEncoder):
             if isinstance(obj, u.Quantity):
                 return obj.value
             iterable = iter(obj)
-        except TypeError:
-            pass
+        except TypeError as e:
+            print(f"Can't serialize {obj}")
         else:
             return list(iterable)
         return JSONEncoder.default(self, obj)
@@ -62,7 +62,7 @@ def set_config_entry():
 
         # Config has been modified so save to file
         if app.config['auto_save'] and app.config['config_file'] is not None:
-            save_config(app.config['config_file'], app.config['POCS_cut'].data)
+            save_config(app.config['config_file'], app.config['POCS_cut'].copy())
 
         return jsonify(req_data)
 

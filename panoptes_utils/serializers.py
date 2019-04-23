@@ -165,7 +165,7 @@ def to_yaml(obj, **kwargs):
     return yaml.dump(obj, **kwargs)
 
 
-def from_yaml(msg):
+def from_yaml(msg, parse=True):
     """Convert a YAML string into a Python object.
 
     This is a thin-wrapper around `ruamel.YAML.load` that also parses the results
@@ -221,7 +221,12 @@ def from_yaml(msg):
             object deserialization.
     """
 
-    return _parse_all_objects(YAML().load(msg))
+    obj = YAML().load(msg)
+
+    if parse:
+        obj = _parse_all_objects(obj)
+
+    return obj
 
 
 def _parse_all_objects(obj):
@@ -237,19 +242,22 @@ def _parse_all_objects(obj):
     Returns:
         `dict`: Same as `obj` but with objects converted to quantities.
     """
+    if isinstance(obj, dict):
+        if 'value' and 'unit' in obj:
+            return obj['value'] * u.Unit(obj['unit'])
+
+        for k in obj.keys():
+            obj[k] = _parse_all_objects(obj[k])
+
     # Try to turn into a time
     with suppress(ValueError):
         if isinstance(Time(obj), Time):
             return Time(obj)
 
-    # If there are exactly two keys - astropy.units.Quantity
     try:
-        return obj['value'] * u.Unit(obj['unit'])
+        # Try to parse as quantity
+        return u.Quantity(obj)
     except Exception:
-        for k in obj.keys():
-            if isinstance(obj[k], dict):
-                obj[k] = _parse_all_objects(obj[k])
-
         return obj
 
 
@@ -266,7 +274,11 @@ def _serialize_all_objects(obj):
 
 def _serialize_object(obj, default=str):
     if isinstance(obj, u.Quantity):
-        return {'value': obj.value, 'unit': obj.unit.name}
+        try:
+            return {'value': obj.value, 'unit': obj.unit.name}
+        except AttributeError:
+            print(f'Error with {obj}')
+            return {'value': obj.value}
     elif isinstance(obj, np.ndarray):
         return obj.tolist()
 

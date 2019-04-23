@@ -79,12 +79,9 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
             local_version = os.path.join(config_dir, f.replace('.', '_local.'))
             if os.path.exists(local_version):
                 try:
-                    _add_to_conf(config, local_version)
+                    _add_to_conf(config, local_version, parse=parse)
                 except Exception:
                     warn("Problem with local config file {}, skipping".format(local_version))
-
-    if parse:
-        config = parse_config(config)
 
     return config
 
@@ -126,6 +123,7 @@ def save_config(path, config, overwrite=True):
         # Create directory if does not exist
         os.makedirs(os.path.dirname(full_path), exist_ok=True)
         with open(full_path, 'w') as f:
+            print(config)
             serializers.to_yaml(config, stream=f)
 
 
@@ -143,21 +141,7 @@ def parse_config(config):
         dict: Config items but with objects.
     """
     # Add units to our location
-    if 'location' in config:
-        loc = config['location']
-
-        for angle in [
-            'latitude',
-            'longitude',
-            'horizon',
-            'flat_horizon',
-            'focus_horizon',
-            'observe_horizon'
-        ]:
-            with suppress(KeyError):
-                loc[angle] = loc[angle] * u.degree
-
-        loc['elevation'] = loc.get('elevation', 0) * u.meter
+    config = serializers._parse_all_objects(config)
 
     # Prepend the base directory to relative dirs
     if 'directories' in config:
@@ -170,10 +154,10 @@ def parse_config(config):
     return config
 
 
-def _add_to_conf(config, fn):
+def _add_to_conf(config, fn, parse=False):
     try:
         with open(fn, 'r') as f:
-            c = serializers.from_yaml(f)
+            c = serializers.from_yaml(f, parse=parse)
             if c is not None and isinstance(c, dict):
                 config.update(c)
     except IOError:  # pragma: no cover
