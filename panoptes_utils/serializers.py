@@ -41,7 +41,7 @@ class StringYAML(YAML):
             return stream.getvalue()
 
 
-def to_json(obj):
+def to_json(obj, **kwargs):
     """Convert a Python object to a JSON string.
 
     Will handle `datetime` objects as well as `astropy.unit.Quantity` objects.
@@ -66,11 +66,12 @@ def to_json(obj):
 
     Args:
         obj (`object`): The object to be converted to JSON, usually a dict.
+        **kwargs: Keyword arguments passed to `json.dumps`.
 
     Returns:
         `str`: The JSON string representation of the object.
     """
-    return json.dumps(obj, default=_serialize_object)
+    return json.dumps(obj, default=_serialize_object, **kwargs)
 
 
 def from_json(msg):
