@@ -28,7 +28,7 @@ RUN mkdir -p ${POCS} && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
         wget bzip2 ca-certificates pkg-config zsh git \
-        astrometry.net dcraw exiftool \
+        astrometry.net dcraw exiftool libcfitsio-dev libcfitsio-bin \
         libcfitsio-dev libfreetype6-dev libpng-dev libpq-dev && \
     # Oh My ZSH. :)
     chsh -s /bin/zsh && \
