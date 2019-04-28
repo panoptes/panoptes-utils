@@ -9,15 +9,17 @@ Utility functions for use within the PANOPTES ecosystem and for general astronom
 ## Install
 <a href="#" name='install'></a>
 
+> :bulb: See [Docker](#docker) for ways to run that `panoptes-utils` without install.
+
 To install type:
 
-```
+```bash
 pip install panoptes-utils
 ```
 
 There are also a number of optional dependencies, which can be installed as following:
 
-```
+```bash
 pip install "panoptes-utils[google,mongo,social,test]"
 -or-
 pip install "panoptes-utils[all]"
@@ -39,7 +41,7 @@ scripts/start_docker_config_server.sh
 The server can be queried/set in python:
 
 ```python
-from panopes_utils.config.client import get_config, set_config
+from panoptes_utils.config.client import get_config, set_config
 
 # Set new horizon limit
 set_config('location.horizon', 45)
@@ -47,3 +49,11 @@ set_config('location.horizon', 45)
 # Get the second camera model
 get_config('cameras.devices[1].model')
 ```
+
+## Docker
+<a name="docker"></a>
+
+Docker containers are available for running the `panoptes-utils` module, which also serve as the
+base container for all other PANOPTES related containers.
+
+See our [Docker documentation](docker.html) for details.
