@@ -9,20 +9,30 @@ Utility functions for use within the PANOPTES ecosystem and for general astronom
 ## Install
 <a href="#" name='install'></a>
 
+> :bulb: See [Docker](#docker) for ways to run that `panoptes-utils` without install.
+
 To install type:
 
-```
+```bash
 pip install panoptes-utils
 ```
 
 There are also a number of optional dependencies, which can be installed as following:
 
-```
-pip install panoptes-utils[google,mongo,social,test]
+```bash
+pip install "panoptes-utils[google,mongo,social,test]"
 ```
 
-## Utils
-<a href="#" name='utils'></a>
+Or, simply:
 
-The utilities are divided up into sections. Some of the sections require optional
-dependencies (e.g. the Google Cloud items). See [Install](#install) for details.
+```bash
+pip install "panoptes-utils[all]"
+```
+
+## Docker
+<a name="docker"></a>
+
+Docker containers are available for running the `panoptes-utils` module, which also serve as the
+base container for all other PANOPTES related containers.
+
+See our [Docker documentation](docker.html) for details.

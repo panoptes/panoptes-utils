@@ -24,6 +24,6 @@ dependencies:
   - pip:
     - scalpl
     - google-cloud-storage
-    - psycopg2-binary
-    - docker-compose
+    - psycopg2
     - astroplan
+
