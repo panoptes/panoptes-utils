@@ -41,14 +41,80 @@ scripts/run_config_server.py
 The server can be queried/set in python:
 
 ```python
-from panoptes_utils.config.client import get_config, set_config
-from astropy import units as u
+>>> from panoptes_utils.config import client
 
-# Set new horizon limit
-set_config('location.horizon', 45 * u.deg)
+>>> client.get_config('location.horizon')
+30.0
+
+>>> client.set_config('location.horizon', 45)
+{'location.horizon': 45.0}
+
+>>> client.get_config('location.horizon')
+45.0
+
+>>> from astropy import units as u
+>>> client.set_config('location.horizon', 45 * u.deg)
+{'location.horizon': <Quantity 45. deg>}
+
+>>> client.get_config('location.horizon')
+<Quantity 45. deg>
+
+>>> client.get_config('location')
+{'elevation': 3400.0,
+ 'flat_horizon': -6.0,
+ 'focus_horizon': -12.0,
+ 'gmt_offset': -600.0,
+ 'horizon': <Quantity 45. deg>,
+ 'latitude': 19.54,
+ 'longitude': -155.58,
+ 'name': 'Mauna Loa Observatory',
+ 'observe_horizon': -18.0,
+ 'timezone': 'US/Hawaii'}
 
 # Get the second camera model
-get_config('cameras.devices[1].model')
+>>> client.get_config('cameras.devices[1].model')
+'canon_gphoto2'
+```
+
+Since the Flask microservice just deals with JSON documents, you can also use
+[httpie](https://httpie.org/) and [jq](https://stedolan.github.io/jq/) from the command line to view
+or manipulate the configuration:
+
+Get entire config, pipe through jq and select just location.
+
+```bash
+$ http :6563/get-config | jq '.location'                                                                                                                                                                      
+{
+  "elevation": 3400,
+  "flat_horizon": -6,
+  "gmt_offset": -600,
+  "horizon": "45 deg",
+  "latitude": 19.54,
+  "longitude": -155.58,
+  "name": "Mauna Loa Observatory",
+  "observe_horizon": -18,
+  "timezone": "US/Hawaii"
+}
+```
+
+`jq` can easily manipulate the json documents. Here we pipe the original output into `jq`, change two of the values, then pipe
+the output back into the `set-config` endpoint provided by our Flask microservice. This will update the configuration on the server
+and return the updated configuration back to the user. We simply pipe this through `jq` yet again for an easy display of the new values. 
+(Note the `jq` pipe `|` inside the single quotes see [jq](https://stedolan.github.io/jg/) for details.)
+
+```bash
+$ http :6563/get-config | jq '.location.horizon="37 deg" | .location.name="New Location"' | http :6563/set-config | jq '.location'
+{
+  "elevation": 3400,
+  "flat_horizon": -6,
+  "gmt_offset": -600,
+  "horizon": "37 deg",
+  "latitude": 19.54,
+  "longitude": -155.58,
+  "name": "New Location",
+  "observe_horizon": -18,
+  "timezone": "US/Hawaii"
+}
 ```
 
 ### Messaging Hub
