@@ -35,7 +35,7 @@ A simple config param server. Runs as a Flask microservice that delivers JSON do
 in response to requests for config key items. To start the service (in a Docker container), run:
 
 ```bash
-scripts/start_docker_config_server.sh
+scripts/run_config_server.py
 ```
 
 The server can be queried/set in python:
@@ -51,10 +51,21 @@ set_config('location.horizon', 45 * u.deg)
 get_config('cameras.devices[1].model')
 ```
 
+### Messaging Hub
+<a href="#" name='messaging-hub'></a>
+
+The messaging hub is responsible for relaying zeromq messages between the various components of a
+PANOPTES system. Running the Messaging Hub will set up a forwarding service that allows for an arbitrary
+number of publishers and subscribers.
+
+```bash
+scripts/run_messaging_hub.py --from-config
+```
+
 ## Docker
 <a name="docker"></a>
 
-Docker containers are available for running the `panoptes-utils` module, which also serve as the
-base container for all other PANOPTES related containers.
+Docker containers are available for running the `panoptes-utils` module and associated services, which
+also serve as the base container for all other PANOPTES related containers.
 
 See our [Docker documentation](https://panoptes-utils.readthedocs.io/en/latest/docker.html) for details.
