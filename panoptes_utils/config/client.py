@@ -1,5 +1,4 @@
 import requests
-from panoptes_utils.config import parse_config
 from panoptes_utils import serializers
 
 
@@ -12,7 +11,6 @@ def get_config(key=None, host='localhost', port='6563', parse=True):
     Nested keys can be specified as a string, as per [scalpl](https://pypi.org/project/scalpl/).
 
     Examples:
-
         >>> get_config(key='name')
         'PAN000'
         >>> get_config(key='location.horizon')
@@ -26,7 +24,8 @@ def get_config(key=None, host='localhost', port='6563', parse=True):
         key (str): The key to update, see Examples in `get_config` for details.
         host (str, optional): The config server host, defaults to '127.0.0.1'.
         port (str, optional): The config server port, defaults to 6563.
-        parse (bool, optional): If the returned response should be parsed.
+        parse (bool, optional): If response should be parsed by
+            `~panoptes_utils.serializers.from_json`, default True.
 
     Returns:
         dict: The corresponding config entry.
@@ -40,13 +39,10 @@ def get_config(key=None, host='localhost', port='6563', parse=True):
     if not response.ok:
         raise Exception(f'Cannot access config server: {response.content}')
 
-    config_entry = response.json()
-
     if parse:
-        if key is not None:
-            parse_config({key: config_entry})
-        else:
-            parse_config(config_entry)
+        config_entry = serializers.from_json(response.content.decode('utf8'))
+    else:
+        config_entry = response.json()
 
     return config_entry
 
@@ -63,7 +59,8 @@ def set_config(key, new_value, host='localhost', port='6563', parse=True):
         new_value (scalar|object): The new value for the key, can be any serializable object.
         host (str, optional): The config server host, defaults to '127.0.0.1'.
         port (str, optional): The config server port, defaults to 6563.
-        parse (bool, optional): If the returned response should be parsed.
+        parse (bool, optional): If response should be parsed by
+            `~panoptes_utils.serializers.from_json`, default True.
 
     Returns:
         dict: The updated config entry.
@@ -83,12 +80,9 @@ def set_config(key, new_value, host='localhost', port='6563', parse=True):
     if not response.ok:
         raise Exception(f'Cannot access config server: {response.text}')
 
-    config_entry = response.json()
-
     if parse:
-        if key is not None:
-            parse_config({key: config_entry})
-        else:
-            parse_config(config_entry)
+        config_entry = serializers.from_json(response.content.decode('utf8'))
+    else:
+        config_entry = response.json()
 
     return config_entry

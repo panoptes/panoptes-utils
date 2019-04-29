@@ -250,14 +250,22 @@ def _parse_all_objects(obj):
         for k in obj.keys():
             obj[k] = _parse_all_objects(obj[k])
 
+    if isinstance(obj, bool):
+        return bool(obj)
+
     # Try to turn into a time
     with suppress(ValueError):
         if isinstance(Time(obj), Time):
             return Time(obj)
 
+    # Try to parse as quantity
     try:
-        # Try to parse as quantity
-        return u.Quantity(obj)
+        quantity = u.Quantity(obj)
+        # If it ends up dimensionless just return obj.
+        if str(quantity.unit) == '':
+            return quantity.value
+        else:
+            return quantity
     except Exception:
         return obj
 
@@ -273,16 +281,16 @@ def _serialize_all_objects(obj):
     return obj
 
 
-def _serialize_object(obj, default=str):
+def _serialize_object(obj, default=None):
+    # Astropy Quantity.
     if isinstance(obj, u.Quantity):
-        try:
-            return {'value': obj.value, 'unit': obj.unit.name}
-        except AttributeError:
-            print(f'Error with {obj}')
-            return {'value': obj.value}
-    elif isinstance(obj, np.ndarray):
+        return str(obj)
+
+    # Numpy array.
+    if isinstance(obj, np.ndarray):
         return obj.tolist()
 
+    # Astropy Time-like (including datetime).
     with suppress(ValueError):
         if isinstance(Time(obj), Time):
             return Time(obj).isot

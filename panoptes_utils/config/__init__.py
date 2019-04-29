@@ -1,8 +1,5 @@
 import os
-from contextlib import suppress
 from warnings import warn
-
-from astropy import units as u
 
 from panoptes_utils import listify
 from panoptes_utils import serializers
@@ -70,7 +67,7 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
             path = f
 
         try:
-            _add_to_conf(config, path)
+            _add_to_conf(config, path, parse=parse)
         except Exception as e:
             warn("Problem with config file {}, skipping. {}".format(path, e))
 
@@ -83,7 +80,7 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
                 except Exception:
                     warn("Problem with local config file {}, skipping".format(local_version))
 
-    return config
+    return parse_config(config)
 
 
 def save_config(path, config, overwrite=True):
@@ -140,9 +137,6 @@ def parse_config(config):
     Returns:
         dict: Config items but with objects.
     """
-    # Add units to our location
-    config = serializers._parse_all_objects(config)
-
     # Prepend the base directory to relative dirs
     if 'directories' in config:
         base_dir = os.getenv('PANDIR')

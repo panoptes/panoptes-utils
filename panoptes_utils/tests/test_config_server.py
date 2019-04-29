@@ -42,11 +42,10 @@ def test_config_client(config_server, host, port):
     assert isinstance(get_config(host=host, port=port), dict)
 
     assert set_config('location.horizon', 47 * u.degree, host=host,
-                      port=port) == {'unit': 'deg', 'value': 47.0}
+                      port=port) == {'location.horizon': 47 * u.degree}
 
-    # With  parsing
+    # With parsing
     assert get_config('location.horizon', host=host, port=port) == 47 * u.degree
 
     # Without parsing
-    assert get_config('location.horizon', host=host, port=port,
-                      parse=False) == {'unit': 'deg', 'value': 47.0}
+    assert get_config('location.horizon', host=host, port=port, parse=False) == '47.0 deg'

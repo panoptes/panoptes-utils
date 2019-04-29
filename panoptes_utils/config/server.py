@@ -3,9 +3,8 @@ from flask import request
 from flask import jsonify
 from flask.json import JSONEncoder
 
-from astropy import units as u
-
 from panoptes_utils.config import save_config
+from panoptes_utils.serializers import _serialize_object
 
 app = Flask(__name__)
 
@@ -13,15 +12,7 @@ app = Flask(__name__)
 class CustomJSONEncoder(JSONEncoder):
 
     def default(self, obj):
-        try:
-            if isinstance(obj, u.Quantity):
-                return obj.value
-            iterable = iter(obj)
-        except TypeError as e:
-            print(f"Can't serialize {obj}")
-        else:
-            return list(iterable)
-        return JSONEncoder.default(self, obj)
+        return _serialize_object(obj)
 
 
 app.json_encoder = CustomJSONEncoder
