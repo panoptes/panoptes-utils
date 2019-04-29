@@ -6,6 +6,8 @@
 
 Utility functions for use within the PANOPTES ecosystem and for general astronomical processing.
 
+See the full documentation at: https://panoptes-utils.readthedocs.io
+
 ## Install
 <a href="#" name='install'></a>
 
