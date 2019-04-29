@@ -87,8 +87,9 @@ $ http :6563/get-config | jq '.location'
 {
   "elevation": 3400,
   "flat_horizon": -6,
+  "focus_horizon": -12,
   "gmt_offset": -600,
-  "horizon": "45 deg",
+  "horizon": "45.0 deg",
   "latitude": 19.54,
   "longitude": -155.58,
   "name": "Mauna Loa Observatory",
@@ -107,6 +108,7 @@ $ http :6563/get-config | jq '.location.horizon="37 deg" | .location.name="New L
 {
   "elevation": 3400,
   "flat_horizon": -6,
+  "focus_horizon": -12,
   "gmt_offset": -600,
   "horizon": "37 deg",
   "latitude": 19.54,
