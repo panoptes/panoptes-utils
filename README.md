@@ -32,7 +32,7 @@ pip install "panoptes-utils[all]"
 <a href="#" name='config-server'></a>
 
 A simple config param server. Runs as a Flask microservice that delivers JSON documents
-in response to requests for config key items. To start the service (in a Docker container), run:
+in response to requests for config key items. To start the service run:
 
 ```bash
 scripts/run_config_server.py
