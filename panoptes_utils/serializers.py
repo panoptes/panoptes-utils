@@ -1,4 +1,5 @@
 from contextlib import suppress
+from copy import deepcopy
 import json
 from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
@@ -41,7 +42,7 @@ class StringYAML(YAML):
             return stream.getvalue()
 
 
-def to_json(obj):
+def to_json(obj, **kwargs):
     """Convert a Python object to a JSON string.
 
     Will handle `datetime` objects as well as `astropy.unit.Quantity` objects.
@@ -55,7 +56,7 @@ def to_json(obj):
             >>> from astropy import units as u
             >>> config = { "name": "Mauna Loa", "elevation": 3397 * u.meter }
             >>> to_json(config)
-            '{"name": "Mauna Loa", "elevation": {"value": 3397.0, "unit": "m"}}'
+            '{"name": "Mauna Loa", "elevation": "3397.0 m"}'
 
             >>> to_json({"numpy_array": np.arange(10)})
             '{"numpy_array": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}'
@@ -66,11 +67,12 @@ def to_json(obj):
 
     Args:
         obj (`object`): The object to be converted to JSON, usually a dict.
+        **kwargs: Keyword arguments passed to `json.dumps`.
 
     Returns:
         `str`: The JSON string representation of the object.
     """
-    return json.dumps(obj, default=_serialize_object)
+    return json.dumps(obj, default=_serialize_object, **kwargs)
 
 
 def from_json(msg):
@@ -115,7 +117,7 @@ def from_json(msg):
         `dict`: The loaded object.
     """
 
-    return _parse_objects(json.loads(msg))
+    return _parse_all_objects(json.loads(msg))
 
 
 def to_yaml(obj, **kwargs):
@@ -160,12 +162,12 @@ def to_yaml(obj, **kwargs):
     """
     yaml = StringYAML()
 
-    obj = _serialize_all_objects(obj)
+    obj = _serialize_all_objects(deepcopy(obj))
 
     return yaml.dump(obj, **kwargs)
 
 
-def from_yaml(msg):
+def from_yaml(msg, parse=True):
     """Convert a YAML string into a Python object.
 
     This is a thin-wrapper around `ruamel.YAML.load` that also parses the results
@@ -183,12 +185,8 @@ def from_yaml(msg):
             ... pan_id: PAN000
             ...
             ... location:
-            ...   latitude:
-            ...     value: 19.54
-            ...     unit: deg
-            ...   longitude:
-            ...     value: -155.58
-            ...     unit: deg
+            ...   latitude: 19.54 deg
+            ...   longitude: -155.58 deg
             ...   name: Mauna Loa Observatory  # Can be anything
             ... '''
 
@@ -202,12 +200,8 @@ def from_yaml(msg):
             ... pan_id: PAN000  # CHANGE NAME
             ...
             ... location:
-            ...   latitude:
-            ...     value: 19.54
-            ...     unit: deg
-            ...   longitude:
-            ...     value: -155.58
-            ...     unit: deg
+            ...   latitude: 19.54 deg
+            ...   longitude: value: -155.58 deg
             ...   name: Mauna Loa Observatory  # Can be anything
             ... '''
             >>> yaml_config == config_str
@@ -221,11 +215,16 @@ def from_yaml(msg):
             object deserialization.
     """
 
-    return _parse_objects(YAML().load(msg))
+    obj = YAML().load(msg)
+
+    if parse:
+        obj = _parse_all_objects(obj)
+
+    return obj
 
 
-def _parse_objects(obj):
-    """Parse the incoming object for astropy quantities.
+def _parse_all_objects(obj):
+    """Recursively parse the incoming object for astropy quantities.
 
     If `obj` is a dict with exactly two keys named `unit` and `value, then attempt
     to parse into a valid `astropy.unit.Quantity`. If fail, simply return object
@@ -237,19 +236,31 @@ def _parse_objects(obj):
     Returns:
         `dict`: Same as `obj` but with objects converted to quantities.
     """
+    if isinstance(obj, dict):
+        if 'value' and 'unit' in obj:
+            with suppress(ValueError):
+                return obj['value'] * u.Unit(obj['unit'])
+
+        for k in obj.keys():
+            obj[k] = _parse_all_objects(obj[k])
+
+    if isinstance(obj, bool):
+        return bool(obj)
+
     # Try to turn into a time
     with suppress(ValueError):
         if isinstance(Time(obj), Time):
             return Time(obj)
 
-    # If there are exactly two keys - astropy.units.Quantity
+    # Try to parse as quantity
     try:
-        return obj['value'] * u.Unit(obj['unit'])
+        quantity = u.Quantity(obj)
+        # If it ends up dimensionless just return obj.
+        if str(quantity.unit) == '':
+            return quantity.value
+        else:
+            return quantity
     except Exception:
-        for k in obj.keys():
-            if isinstance(obj[k], dict):
-                obj[k] = _parse_objects(obj[k])
-
         return obj
 
 
@@ -264,12 +275,16 @@ def _serialize_all_objects(obj):
     return obj
 
 
-def _serialize_object(obj, default=str):
+def _serialize_object(obj, default=None):
+    # Astropy Quantity.
     if isinstance(obj, u.Quantity):
-        return {'value': obj.value, 'unit': obj.unit.name}
-    elif isinstance(obj, np.ndarray):
+        return str(obj)
+
+    # Numpy array.
+    if isinstance(obj, np.ndarray):
         return obj.tolist()
 
+    # Astropy Time-like (including datetime).
     with suppress(ValueError):
         if isinstance(Time(obj), Time):
             return Time(obj).isot

@@ -1,6 +1,5 @@
 import collections
 import datetime
-import json
 import logging
 import logging.config
 import os
@@ -13,6 +12,7 @@ from warnings import warn
 
 from panoptes_utils.config import parse_config
 from panoptes_utils.serializers import from_yaml
+from panoptes_utils.serializers import to_json
 
 
 # We don't want to create multiple root loggers that are "identical",
@@ -201,7 +201,7 @@ def get_root_logger(profile='panoptes', log_config=None):
     log_config = log_config if log_config else load_default()
 
     # If we already created a logger for this profile and log_config, return that.
-    logger_key = (profile, json.dumps(log_config, sort_keys=True))
+    logger_key = (profile, to_json(log_config, sort_keys=True))
     try:
         return all_loggers[logger_key]
     except KeyError:

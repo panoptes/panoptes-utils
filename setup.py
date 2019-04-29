@@ -2,9 +2,9 @@
 # Licensed under an MIT style license - see LICENSE.txt
 
 try:
-    from setuptools import setup, find_packages
+  from setuptools import setup, find_packages
 except ImportError:
-    from distutils.core import setup
+  from distutils.core import setup
 
 import itertools
 

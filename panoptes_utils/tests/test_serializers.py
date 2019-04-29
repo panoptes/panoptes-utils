@@ -48,5 +48,4 @@ def test_roundtrip_yaml(obj):
     config_str = serializers.to_yaml(obj)
     config = serializers.from_yaml(config_str)
     assert config['name'] == obj['name']
-    assert config['location']['latitude'].value == obj['location']['latitude']['value']
-    assert config['location']['latitude'].unit == obj['location']['latitude']['unit']
+    assert config['location']['latitude'] == obj['location']['latitude']
