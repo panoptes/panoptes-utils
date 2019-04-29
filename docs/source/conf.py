@@ -48,8 +48,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
-    'm2r',
-    'recommonmark',
+    'm2r'
 ]
 
 default_role = 'any'
