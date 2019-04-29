@@ -57,4 +57,4 @@ get_config('cameras.devices[1].model')
 Docker containers are available for running the `panoptes-utils` module, which also serve as the
 base container for all other PANOPTES related containers.
 
-See our [Docker documentation](docker.html) for details.
+See our [Docker documentation](https://panoptes-utils.readthedocs.io/en/latest/docker.html) for details.
