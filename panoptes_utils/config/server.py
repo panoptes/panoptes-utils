@@ -49,7 +49,11 @@ def set_config_entry():
     if request.is_json:
         req_data = request.get_json()
 
-        app.config['POCS_cut'].update(req_data)
+        try:
+            app.config['POCS_cut'].update(req_data)
+        except KeyError:
+            for k, v in req_data.items():
+                app.config['POCS_cut'].setdefault(k, v)
 
         # Config has been modified so save to file
         if app.config['auto_save'] and app.config['config_file'] is not None:
