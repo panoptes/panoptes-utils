@@ -83,7 +83,7 @@ or manipulate the configuration:
 Get entire config, pipe through jq and select just location.
 
 ```bash
-$ http :6563/get-config | jq '.location'                                                                                                                                                                      
+$ http :6563/get-config | jq '.location'                                         
 {
   "elevation": 3400,
   "flat_horizon": -6,
