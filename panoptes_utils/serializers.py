@@ -1,4 +1,5 @@
 from contextlib import suppress
+from copy import deepcopy
 import json
 from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
@@ -161,7 +162,7 @@ def to_yaml(obj, **kwargs):
     """
     yaml = StringYAML()
 
-    obj = _serialize_all_objects(obj)
+    obj = _serialize_all_objects(deepcopy(obj))
 
     return yaml.dump(obj, **kwargs)
 

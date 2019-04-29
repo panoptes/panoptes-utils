@@ -119,7 +119,7 @@ class PanMessaging(object):
                 done_fn()
 
     @classmethod
-    def create_publisher(cls, port, bind=False, host='messaging', connect=True):
+    def create_publisher(cls, port, bind=False, host='localhost', connect=True):
         """ Create a publisher
 
         Args:
@@ -144,7 +144,7 @@ class PanMessaging(object):
         return obj
 
     @classmethod
-    def create_subscriber(cls, port, topic='', host='messaging', bind=False, connect=True):
+    def create_subscriber(cls, port, topic='', host='localhost', bind=False, connect=True):
         """ Create a listener
 
         Args:
