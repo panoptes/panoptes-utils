@@ -80,14 +80,15 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
                 except Exception:
                     warn("Problem with local config file {}, skipping".format(local_version))
 
+    # parse_config currently only corrects directory names.
     return parse_config(config)
 
 
 def save_config(path, config, overwrite=True):
     """Save config to local yaml file.
 
-    This will save any entries into the `<path>_local.yaml` file to avoid clobbering
-    what comes from the version control.
+    This will save any entries into the `$PANDIR/conf_files/<path>_local.yaml` file to avoid
+    clobbering what comes from the version control.
 
     Args:
         path (str): Path to save, can be relative or absolute. See Notes
@@ -100,7 +101,7 @@ def save_config(path, config, overwrite=True):
     # Make sure ends with '_local.yaml'
     base, ext = os.path.splitext(path)
 
-    # Always want .yaml
+    # Always want .yaml (although not actually used).
     ext = '.yaml'
 
     # Check for _local name.
@@ -128,7 +129,6 @@ def parse_config(config):
     """Parse the config dictionary for common objects.
 
     Currently only parses the following:
-        * `location` for units in degrees.
         * `directories` for relative path names.
 
     Args:

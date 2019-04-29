@@ -20,10 +20,38 @@ app.json_encoder = CustomJSONEncoder
 
 @app.route('/get-config', methods=['GET', 'POST'])
 def get_config_entry():
+    """Get config entries from server.
+
+    Endpoint that responds to GET and POST requests and returns
+    configuration item corresponding to provided key or entire
+    configuration. The key entries should be specified in dot-notation,
+    with the names corresponding to the entries stored in the configuration
+    file. See the [scalpl](https://pypi.org/project/scalpl/) documentation
+    for details on the dot-notation.
+
+    The endpoint should received a JSON document with a single key named "key"
+    and a value that corresponds to the desired key within the configuration.
+
+    For example, take the following configuration:
+
+    ```
+    { 
+        'location': {
+            'elevation': 3400.0,
+        }
+    }
+    ```
+
+    To get the corresponding value for the elevation, pass a JSON document similar to:
+
+    ```
+    '{"key": "location.elevation"}'
+    ```
+    """
     req_json = request.get_json()
 
-    # If requesting specific key
     if request.is_json:
+        # If requesting specific key
         try:
             key = req_json['key']
         except KeyError:
