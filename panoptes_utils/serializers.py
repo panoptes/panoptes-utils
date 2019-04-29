@@ -56,7 +56,7 @@ def to_json(obj, **kwargs):
             >>> from astropy import units as u
             >>> config = { "name": "Mauna Loa", "elevation": 3397 * u.meter }
             >>> to_json(config)
-            '{"name": "Mauna Loa", "elevation": {"value": 3397.0, "unit": "m"}}'
+            '{"name": "Mauna Loa", "elevation": "3397.0 m"}'
 
             >>> to_json({"numpy_array": np.arange(10)})
             '{"numpy_array": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}'
@@ -185,12 +185,8 @@ def from_yaml(msg, parse=True):
             ... pan_id: PAN000
             ...
             ... location:
-            ...   latitude:
-            ...     value: 19.54
-            ...     unit: deg
-            ...   longitude:
-            ...     value: -155.58
-            ...     unit: deg
+            ...   latitude: 19.54 deg
+            ...   longitude: -155.58 deg
             ...   name: Mauna Loa Observatory  # Can be anything
             ... '''
 
@@ -204,12 +200,8 @@ def from_yaml(msg, parse=True):
             ... pan_id: PAN000  # CHANGE NAME
             ...
             ... location:
-            ...   latitude:
-            ...     value: 19.54
-            ...     unit: deg
-            ...   longitude:
-            ...     value: -155.58
-            ...     unit: deg
+            ...   latitude: 19.54 deg
+            ...   longitude: value: -155.58 deg
             ...   name: Mauna Loa Observatory  # Can be anything
             ... '''
             >>> yaml_config == config_str
@@ -246,7 +238,8 @@ def _parse_all_objects(obj):
     """
     if isinstance(obj, dict):
         if 'value' and 'unit' in obj:
-            return obj['value'] * u.Unit(obj['unit'])
+            with suppress(ValueError):
+                return obj['value'] * u.Unit(obj['unit'])
 
         for k in obj.keys():
             obj[k] = _parse_all_objects(obj[k])
