@@ -85,7 +85,7 @@ or manipulate the configuration:
 Get entire config, pipe through jq and select just location.
 
 ```bash
-$ http :6563/get-config | jq '.location'                                         
+http :6563/get-config | jq '.location'                                         
 {
   "elevation": 3400,
   "flat_horizon": -6,
@@ -106,7 +106,7 @@ and return the updated configuration back to the user. We simply pipe this throu
 (Note the `jq` pipe `|` inside the single quotes see [jq](https://stedolan.github.io/jg/) for details.)
 
 ```bash
-$ http :6563/get-config | jq '.location.horizon="37 deg" | .location.name="New Location"' | http :6563/set-config | jq '.location'
+http :6563/get-config | jq '.location.horizon="37 deg" | .location.name="New Location"' | http :6563/set-config | jq '.location'
 {
   "elevation": 3400,
   "flat_horizon": -6,
