@@ -42,9 +42,10 @@ The server can be queried/set in python:
 
 ```python
 from panoptes_utils.config.client import get_config, set_config
+from astropy import units as u
 
 # Set new horizon limit
-set_config('location.horizon', 45)
+set_config('location.horizon', 45 * u.deg)
 
 # Get the second camera model
 get_config('cameras.devices[1].model')
