@@ -12,7 +12,6 @@ from pymongo.errors import ConnectionFailure
 
 from panoptes_utils import current_time
 from panoptes_utils import serializers as json_util
-from panoptes_utils.config import load_config
 
 
 class AbstractPanDB(metaclass=abc.ABCMeta):
@@ -161,14 +160,11 @@ class PanDB(object):
     an instance of the 'correct' type of db.
     """
 
-    def __new__(cls, db_type=None, db_name=None, *args, **kwargs):
+    def __new__(cls, db_type='memory', db_name=None, *args, **kwargs):
         """Create an instance based on db_type."""
 
         if not isinstance(db_name, str) and db_name:
             raise ValueError('db_name, a string, must be provided and not empty')
-
-        if db_type is None:
-            db_type = load_config()['db']['type']
 
         if not isinstance(db_type, str) and db_type:
             raise ValueError('db_type, a string, must be provided and not empty')

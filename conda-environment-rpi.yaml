@@ -1,0 +1,29 @@
+name: panoptes-env
+channels:
+  - rpi
+dependencies:
+  - python=3
+  - astropy
+  - cffi
+  - Flask
+  - libffi
+  - jupyter_console
+  - matplotlib
+  - numpy
+  - pip
+  - pyserial
+  - python-dateutil
+  - PyYAML
+  - pyzmq
+  - readline
+  - scikit-image
+  - scikit-learn
+  - scipy
+  - tornado
+  - zeromq
+  - pip:
+    - scalpl
+    - google-cloud-storage
+    - psycopg2
+    - astroplan
+

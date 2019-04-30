@@ -5,7 +5,8 @@ import sys
 import threading
 import time
 
-from panoptes_utils.config import load_config
+from astropy.utils import console
+from panoptes_utils.config.client import get_config
 from panoptes_utils.logger import get_root_logger
 from panoptes_utils.messaging import PanMessaging
 
@@ -98,13 +99,15 @@ if __name__ == '__main__':
         type=int,
         help='First port of a pair to be forwarded. The other is the next integer.')
     parser.add_argument(
-        '--from_config',
+        '--from-config',
         action='store_true',
         help='Read ports from the pocs.yaml and pocs_local.yaml config files.')
+    parser.add_argument('--config-host', default='config-server', type=str,
+                        help='The hostname of the config server, default config-server')
     args = parser.parse_args()
 
     def arg_error(msg):
-        print(msg, file=sys.stderr)
+        console.color_print(msg, 'yellow', file=sys.stderr)
         parser.print_help()
         sys.exit(1)
 
@@ -130,8 +133,12 @@ if __name__ == '__main__':
         validate_unique_port(pub)
         sub_and_pub_pairs.append((sub, pub))
 
-    if args.from_config:
-        config = load_config(config_files=['pocs'])
+    if args.from_config and args.config_host:
+        try:
+            config = get_config(host=args.config_host)
+        except Exception as e:
+            arg_error(f'Invalid config. Is the config server running? Error: {e!r}')
+
         add_pair(config['messaging']['cmd_port'])
         add_pair(config['messaging']['msg_port'])
 

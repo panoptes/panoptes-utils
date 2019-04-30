@@ -2,8 +2,6 @@ import datetime
 import re
 import zmq
 
-import yaml
-
 from astropy import units as u
 from astropy.time import Time
 from bson import ObjectId
@@ -12,6 +10,7 @@ from json import loads
 
 from panoptes_utils import current_time
 from panoptes_utils.logger import get_root_logger
+from panoptes_utils.serializers import from_yaml
 
 
 class PanMessaging(object):
@@ -120,7 +119,7 @@ class PanMessaging(object):
                 done_fn()
 
     @classmethod
-    def create_publisher(cls, port, bind=False, connect=True):
+    def create_publisher(cls, port, bind=False, host='localhost', connect=True):
         """ Create a publisher
 
         Args:
@@ -136,16 +135,16 @@ class PanMessaging(object):
         socket = obj.context.socket(zmq.PUB)
 
         if bind:
-            socket.bind('tcp://*:{}'.format(port))
+            socket.bind(f'tcp://*:{port}')
         elif connect:
-            socket.connect('tcp://localhost:{}'.format(port))
+            socket.connect(f'tcp://{host}:{port}')
 
         obj.socket = socket
 
         return obj
 
     @classmethod
-    def create_subscriber(cls, port, topic='', bind=False, connect=True):
+    def create_subscriber(cls, port, topic='', host='localhost', bind=False, connect=True):
         """ Create a listener
 
         Args:
@@ -160,11 +159,11 @@ class PanMessaging(object):
 
         if bind:
             try:
-                socket.bind('tcp://*:{}'.format(port))
+                socket.bind(f'tcp://*:{port}')
             except zmq.error.ZMQError:
                 obj.logger.debug('Problem binding port {}'.format(port))
         elif connect:
-            socket.connect('tcp://localhost:{}'.format(port))
+            socket.connect(f'tcp://{host}:{port}')
 
         socket.setsockopt_string(zmq.SUBSCRIBE, topic)
 
@@ -242,7 +241,7 @@ class PanMessaging(object):
             try:
                 msg_obj = loads(msg)
             except Exception:
-                msg_obj = yaml.load(msg)
+                msg_obj = from_yaml(msg)
 
         return topic, msg_obj
 

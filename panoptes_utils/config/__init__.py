@@ -1,10 +1,8 @@
 import os
-import yaml
-from contextlib import suppress
-
-from astropy import units as u
-from panoptes_utils import listify
 from warnings import warn
+
+from panoptes_utils import listify
+from panoptes_utils import serializers
 
 
 def load_config(config_files=None, simulator=None, parse=True, ignore_local=False):
@@ -14,7 +12,8 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
     are passed to `config_files` then the default `$PANDIR/conf_files/pocs.yaml`
     will be loaded. See Notes for additional information.
 
-    Notes:
+    .. note::
+
         The `config_files` parameter supports a number of options:
         * `config_files` is a list and loaded in order, so the first entry
             will have any values overwritten by similarly named keys in
@@ -68,7 +67,7 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
             path = f
 
         try:
-            _add_to_conf(config, path)
+            _add_to_conf(config, path, parse=parse)
         except Exception as e:
             warn("Problem with config file {}, skipping. {}".format(path, e))
 
@@ -77,18 +76,19 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
             local_version = os.path.join(config_dir, f.replace('.', '_local.'))
             if os.path.exists(local_version):
                 try:
-                    _add_to_conf(config, local_version)
+                    _add_to_conf(config, local_version, parse=parse)
                 except Exception:
                     warn("Problem with local config file {}, skipping".format(local_version))
 
-    if parse:
-        config = parse_config(config)
-
-    return config
+    # parse_config currently only corrects directory names.
+    return parse_config(config)
 
 
 def save_config(path, config, overwrite=True):
-    """Save config to yaml file
+    """Save config to local yaml file.
+
+    This will save any entries into the `$PANDIR/conf_files/<path>_local.yaml` file to avoid
+    clobbering what comes from the version control.
 
     Args:
         path (str): Path to save, can be relative or absolute. See Notes
@@ -98,38 +98,45 @@ def save_config(path, config, overwrite=True):
             to generate a warning for existing config. Defaults to True
             for updates.
     """
-    if not path.endswith('.yaml'):
-        path = '{}.yaml'.format(path)
+    # Make sure ends with '_local.yaml'
+    base, ext = os.path.splitext(path)
 
-    if not path.startswith('/'):
-        config_dir = '{}/conf_files'.format(os.getenv('PANDIR'))
-        path = os.path.join(config_dir, path)
+    # Always want .yaml (although not actually used).
+    ext = '.yaml'
 
-    if os.path.exists(path) and not overwrite:
-        warn("Path exists and overwrite=False: {}".format(path))
+    # Check for _local name.
+    if not base.endswith('_local'):
+        base = f'{base}_local'
+
+    # Check full path location
+    if not base.startswith('/'):
+        config_dir = os.path.join(os.environ['PANDIR'], 'conf_files')
+        base = os.path.join(config_dir, base)
+
+    full_path = f'{base}{ext}'
+
+    if os.path.exists(full_path) and not overwrite:
+        warn("Path exists and overwrite=False: {}".format(full_path))
     else:
-        with open(path, 'w') as f:
-            f.write(yaml.dump(config))
+        # Create directory if does not exist
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
+        with open(full_path, 'w') as f:
+            print(config)
+            serializers.to_yaml(config, stream=f)
 
 
 def parse_config(config):
-    # Add units to our location
-    if 'location' in config:
-        loc = config['location']
+    """Parse the config dictionary for common objects.
 
-        for angle in [
-            'latitude',
-            'longitude',
-            'horizon',
-            'flat_horizon',
-            'focus_horizon',
-            'observe_horizon'
-        ]:
-            with suppress(KeyError):
-                loc[angle] = loc[angle] * u.degree
+    Currently only parses the following:
+        * `directories` for relative path names.
 
-        loc['elevation'] = loc.get('elevation', 0) * u.meter
+    Args:
+        config (dict): Config items.
 
+    Returns:
+        dict: Config items but with objects.
+    """
     # Prepend the base directory to relative dirs
     if 'directories' in config:
         base_dir = os.getenv('PANDIR')
@@ -141,10 +148,10 @@ def parse_config(config):
     return config
 
 
-def _add_to_conf(config, fn):
+def _add_to_conf(config, fn, parse=False):
     try:
         with open(fn, 'r') as f:
-            c = yaml.load(f.read())
+            c = serializers.from_yaml(f, parse=parse)
             if c is not None and isinstance(c, dict):
                 config.update(c)
     except IOError:  # pragma: no cover
