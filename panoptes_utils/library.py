@@ -1,9 +1,10 @@
 import ctypes
 
+from astropy.utils import resolve_name
 from panoptes_utils import error
 
 
-def load_library(name, path=None, logger=None):
+def load_c_library(name, path=None, logger=None):
     """Utility function to load a shared/dynamically linked library (.so/.dylib/.dll).
 
     The name and location of the shared library can be manually specified with the library_path
@@ -31,3 +32,28 @@ def load_library(name, path=None, logger=None):
             raise error.NotFound("Cound not find {} library!".format(name))
     # This CDLL loader will raise OSError if the library could not be loaded
     return ctypes.CDLL(path)
+
+
+def load_module(module_name):
+    """Dynamically load a module.
+
+    >>> from panoptes_utils import load_module
+    >>> camera = load_module('pocs.camera.simulator')
+    >>> camera.__package__
+    'pocs.camera'
+
+    Args:
+        module_name (str): Name of module to import.
+
+    Returns:
+        module: an imported module name
+
+    Raises:
+        error.NotFound: If module cannot be imported.
+    """
+    try:
+        module = resolve_name(module_name)
+    except ImportError:
+        raise error.NotFound(msg=module_name)
+
+    return module
