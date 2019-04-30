@@ -8,9 +8,9 @@ from astropy import units as u
 from panoptes_utils import current_time
 from panoptes_utils import DelaySigTerm
 from panoptes_utils import listify
-from panoptes_utils import load_module
 from panoptes_utils import CountdownTimer
 from panoptes_utils import error
+from panoptes_utils.library import load_module
 
 
 def test_error(capsys):
