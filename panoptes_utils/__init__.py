@@ -7,4 +7,5 @@ except NameError:
 
 if not __PANOPTES_SETUP__:
     from .time import *
+    from .library import *
     from .utils import *
