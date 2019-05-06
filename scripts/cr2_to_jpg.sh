@@ -50,7 +50,7 @@ if [[ -n "$TITLE" ]]
   	echo "Adding title \"${TITLE}\""
 	# Make thumbnail from jpg.
 	convert "${JPG}" -background black -fill red \
-	    -font ubuntu -pointsize 60 label:"${TITLE}" \
+	    -font "DejaVu Sans Mono" -pointsize 60 label:"${TITLE}" \
 	    -gravity South -append "${JPG}"
 fi
 
