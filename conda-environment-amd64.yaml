@@ -9,7 +9,7 @@ dependencies:
   - cffi
   - Flask
   - google-cloud-storage
-  - jupyter_console  
+  - jupyter_console
   - libffi
   - matplotlib-base>3.0.0
   - numpy
@@ -26,5 +26,6 @@ dependencies:
   - tornado
   - zeromq
   - pip:
+    - gsutil
     - scalpl
 
