@@ -24,7 +24,6 @@ dependencies:
   - pip:
     - astroplan
     - google-cloud-storage
-    - gsutil
     - psycopg2
     - scalpl
 

@@ -27,12 +27,20 @@ RUN mkdir -p ${POCS} && \
     mkdir -p ${PANDIR}/images && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-        wget bzip2 ca-certificates pkg-config zsh git fonts-lato \
+        wget curl bzip2 ca-certificates pkg-config zsh git fonts-lato \
         astrometry.net dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
         libcfitsio-dev libfreetype6-dev libpng-dev libpq-dev && \
     # Oh My ZSH. :)
     chsh -s /bin/zsh && \
     sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)" && \
+    # Google Cloud SDK
+    wget https://sdk.cloud.google.com -O gsdk.sh && \
+    bash gsdk.sh --disable-prompts && \
+    echo "/root/google-cloud-sdk/completion.bash.inc" >> ~/.bashrc && \
+    echo "/root/google-cloud-sdk/completion.zsh.inc" >> ~/.zshrc && \
+    echo "/root/google-cloud-sdk/path.bash.inc" >> ~/.bashrc && \
+    echo "/root/google-cloud-sdk/path.zsh.inc" >> ~/.zshrc && \
+    rm gsdk.sh && \
     # Cleanup apt.
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
