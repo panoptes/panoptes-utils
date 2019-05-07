@@ -9,6 +9,7 @@ import sys
 from tempfile import gettempdir
 import time
 from warnings import warn
+from contextlib import suppress
 
 from panoptes_utils.config import parse_config
 from panoptes_utils.serializers import from_yaml
@@ -250,15 +251,12 @@ def get_root_logger(profile='panoptes', log_config=None):
 
         # Create a symlink to the log file with just the name of the script and the handler
         # (level), as this makes it easier to find the latest file.
-        # Use a relative path, so that if we move PANLOG the paths aren't broken.
         log_symlink = os.path.join(log_dir, '{}-{}.log'.format(invoked_script, handler))
-        log_symlink_target = os.path.relpath(full_log_fname, start=log_dir)
-        try:
+        log_symlink_target = os.path.abspath(full_log_fname)
+        with suppress(FileNotFoundError):
             os.unlink(log_symlink)
-        except FileNotFoundError:  # pragma: no cover
-            pass
-        finally:
-            os.symlink(log_symlink_target, log_symlink)
+
+        os.symlink(log_symlink_target, log_symlink)
 
     # Configure the logger
     logging.config.dictConfig(log_config)
