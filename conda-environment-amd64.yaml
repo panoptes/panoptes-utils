@@ -10,7 +10,7 @@ dependencies:
   - google-cloud-storage
   - jupyter_console
   - libffi
-  - matplotlib
+  - matplotlib-base
   - numpy
   - pip
   - psycopg2

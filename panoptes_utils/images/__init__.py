@@ -77,7 +77,7 @@ def crop_data(data, box_width=200, center=None, verbose=False):
     return center
 
 
-def make_pretty_image(fname, title=None, timeout=15, link_latest=False, **kwargs):
+def make_pretty_image(fname, title=None, timeout=15, img_type=None, link_latest=False, **kwargs):
     """Make a pretty image.
 
     This will create a jpg file from either a CR2 (Canon) or FITS file.
@@ -89,6 +89,8 @@ def make_pretty_image(fname, title=None, timeout=15, link_latest=False, **kwargs
         fname {str} -- Name of image file, may be either .fits or .cr2
         title (None|str, optional): Title to be placed on image, default None.
         timeout (int, optional): Timeout for conversion, default 15 seconds.
+        img_type (None|str, optional): Image type of fname, one of '.cr2' or '.fits'.
+            The default is `None`, in which case the file extension of fname is used.
         link_latest (bool, optional): If the pretty picture should be linked to
             `$PANDIR/images/latest.jpg`, default False.
         **kwargs {dict} -- Additional arguments to be passed to external script.
@@ -96,12 +98,15 @@ def make_pretty_image(fname, title=None, timeout=15, link_latest=False, **kwargs
     Returns:
         str -- Filename of image that was created.
     """
+    if img_type is None:
+        img_type = os.path.splitext(fname)[-1]
+
     if not os.path.exists(fname):
         warn("File doesn't exist, can't make pretty: {}".format(fname))
         return None
-    elif fname.endswith('.cr2'):
+    elif img_type == '.cr2':
         pretty_path = _make_pretty_from_cr2(fname, title=title, timeout=timeout, **kwargs)
-    elif fname.endswith('.fits'):
+    elif img_type == '.fits':
         pretty_path = _make_pretty_from_fits(fname, title=title, **kwargs)
     else:
         warn("File must be a Canon CR2 or FITS file.")
