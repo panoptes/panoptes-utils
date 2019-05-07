@@ -27,7 +27,7 @@ RUN mkdir -p ${POCS} && \
     mkdir -p ${PANDIR}/images && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-        wget bzip2 ca-certificates pkg-config zsh git \
+        wget bzip2 ca-certificates pkg-config zsh git fonts-lato \
         astrometry.net dcraw exiftool libcfitsio-dev libcfitsio-bin \
         libcfitsio-dev libfreetype6-dev libpng-dev libpq-dev && \
     # Oh My ZSH. :)
