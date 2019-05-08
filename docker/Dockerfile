@@ -36,10 +36,10 @@ RUN mkdir -p ${POCS} && \
     # Google Cloud SDK
     wget https://sdk.cloud.google.com -O gsdk.sh && \
     bash gsdk.sh --disable-prompts && \
-    echo "/root/google-cloud-sdk/completion.bash.inc" >> ~/.bashrc && \
-    echo "/root/google-cloud-sdk/completion.zsh.inc" >> ~/.zshrc && \
-    echo "/root/google-cloud-sdk/path.bash.inc" >> ~/.bashrc && \
-    echo "/root/google-cloud-sdk/path.zsh.inc" >> ~/.zshrc && \
+    echo "source /root/google-cloud-sdk/completion.bash.inc" >> ~/.bashrc && \
+    echo "source /root/google-cloud-sdk/completion.zsh.inc" >> ~/.zshrc && \
+    echo "source /root/google-cloud-sdk/path.bash.inc" >> ~/.bashrc && \
+    echo "source /root/google-cloud-sdk/path.zsh.inc" >> ~/.zshrc && \
     rm gsdk.sh && \
     # Cleanup apt.
     apt-get clean && \
