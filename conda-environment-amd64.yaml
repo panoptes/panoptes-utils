@@ -19,6 +19,7 @@ dependencies:
   - PyYAML
   - pyzmq
   - readline
+  - ruamel_yaml
   - scikit-image
   - scikit-learn
   - scipy
