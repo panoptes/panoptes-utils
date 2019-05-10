@@ -3,7 +3,8 @@ from contextlib import suppress
 from uuid import uuid4
 from glob import glob
 
-from panoptes_utils import serializers as json_util
+from panoptes_utils.serializers import to_json
+from panoptes_utils.serializers import from_json
 from panoptes_utils.database import AbstractPanDB
 from panoptes_utils.database import create_storage_obj
 
@@ -36,7 +37,7 @@ class PanFileDB(AbstractPanDB):
         result = obj_id
         try:
             # Overwrite current collection file with obj.
-            json_util.dumps_file(current_fn, obj, clobber=True)
+            to_json(obj, filename=current_fn)
         except Exception as e:
             self._warn("Problem inserting object into current collection: {}, {!r}".format(e, obj))
             result = None
@@ -47,7 +48,7 @@ class PanFileDB(AbstractPanDB):
         collection_fn = self._get_file(collection)
         try:
             # Append obj to collection file.
-            json_util.dumps_file(collection_fn, obj)
+            to_json(obj, filename=collection_fn)
             return obj_id
         except Exception as e:
             self._warn("Problem inserting object into collection: {}, {!r}".format(e, obj))
@@ -60,7 +61,7 @@ class PanFileDB(AbstractPanDB):
         collection_fn = self._get_file(collection)
         try:
             # Insert record into file
-            json_util.dumps_file(collection_fn, obj)
+            to_json(obj, filename=collection_fn)
             return obj_id
         except Exception as e:
             self._warn("Problem inserting object into collection: {}, {!r}".format(e, obj))
@@ -70,7 +71,10 @@ class PanFileDB(AbstractPanDB):
         current_fn = self._get_file(collection, permanent=False)
 
         try:
-            return json_util.loads_file(current_fn)
+            with open(current_fn) as f:
+                msg = from_json(f.read())
+
+            return msg
         except FileNotFoundError:
             self._warn("No record found for {}".format(collection))
             return None
@@ -84,7 +88,7 @@ class PanFileDB(AbstractPanDB):
                     # contain any characters that json would need to escape: first
                     # check if the line contains the obj_id; if not skip. Else, parse
                     # as json, and then check for the _id match.
-                    obj = json_util.loads(line)
+                    obj = from_json(line)
                     if obj['_id'] == obj_id:
                         return obj
         except FileNotFoundError:
