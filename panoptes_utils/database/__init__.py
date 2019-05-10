@@ -5,7 +5,7 @@ from panoptes_utils import current_time
 from panoptes_utils.library import load_module
 
 
-def get_db_module(module_name='file'):
+def get_db_class(module_name='file'):
     """Load the DB module of the given name.
 
     Args:
@@ -17,18 +17,19 @@ def get_db_module(module_name='file'):
     Raises:
         Exception: If an unsupported database type string is passed.
     """
-    db_types = {
+    class_map = {
         'mongo': 'PanMongoDB',
         'file': 'PanFileDB',
         'memory': 'PanMemoryDB',
     }
 
-    try:
-        db_module = load_module(f'panoptes_utils.database.{db_types[module_name]}')
-    except Exception as e:
-        raise Exception('Unsupported database type: {}', module_name)
+    full_module_name = f'panoptes_utils.database.{module_name}'
 
-    return db_module
+    try:
+        db_module = load_module(full_module_name)
+        return getattr(db_module, class_map[module_name])
+    except Exception as e:
+        raise Exception(f'Unsupported database type: {full_module_name}')
 
 
 class AbstractPanDB(metaclass=abc.ABCMeta):
@@ -161,7 +162,7 @@ class PanDB(object):
         collection_names = PanDB.collection_names()
 
         # Load the correct DB module
-        DB = get_db_module(db_type)
+        DB = get_db_class(db_type)
 
         if db_type == 'memory':
             # The memory type has special setup
@@ -207,7 +208,7 @@ class PanDB(object):
             raise Exception('PanDB.permanently_erase_database called with invalid args!')
 
         # Load the correct DB module.
-        DB = get_db_module(db_type)
+        DB = get_db_class(db_type)
 
         # Do the deletion.
         DB.permanently_erase_database(db_name, *args, **kwargs)
