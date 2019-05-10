@@ -19,7 +19,6 @@ dependencies:
   - PyYAML
   - pyzmq
   - readline
-  - ruamel_yaml
   - scikit-image
   - scikit-learn
   - scipy
@@ -27,5 +26,6 @@ dependencies:
   - zeromq
   - pip:
     - astroplan
+    - ruamel-yaml
     - scalpl
 

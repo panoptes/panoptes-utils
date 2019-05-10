@@ -16,7 +16,6 @@ dependencies:
   - PyYAML
   - pyzmq
   - readline
-  - ruamel_yaml
   - scikit-image
   - scikit-learn
   - scipy
@@ -25,6 +24,7 @@ dependencies:
   - pip:
     - astroplan
     - google-cloud-storage
+    - ruamel-yaml
     - psycopg2
     - scalpl
 
