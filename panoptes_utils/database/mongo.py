@@ -1,6 +1,7 @@
 import pymongo
 import weakref
 from bson.objectid import ObjectId
+from contextlib import suppress
 from pymongo.errors import ConnectionFailure
 
 from panoptes_utils.database import AbstractPanDB
@@ -14,12 +15,8 @@ def get_shared_mongo_client(host, port, connect):
     key = (host, port, connect)
 
     # Try to get previously stored client.
-    try:
-        client = _shared_mongo_clients[key]
-        if client:
-            return client
-    except KeyError:
-        pass
+    with suppress(KeyError):
+        return _shared_mongo_clients[key]
 
     # No client available, try to create new one.
     client = pymongo.MongoClient(host, port, connect=connect)

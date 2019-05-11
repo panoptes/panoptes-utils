@@ -68,7 +68,7 @@ class AbstractPanDB(metaclass=abc.ABCMeta):
             raise InvalidCollection(msg)
 
     @abc.abstractclassmethod
-    def insert_current(self, collection, obj, store_permanently=True):
+    def insert_current(self, collection, obj, store_permanently=True):  # pragma: no cover
         """Insert an object into both the `current` collection and the collection provided.
 
         Args:
@@ -87,7 +87,7 @@ class AbstractPanDB(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractclassmethod
-    def insert(self, collection, obj):
+    def insert(self, collection, obj):  # pragma: no cover
         """Insert an object into the collection provided.
 
         The `obj` to be stored in a collection should include the `type`
@@ -106,7 +106,7 @@ class AbstractPanDB(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractclassmethod
-    def get_current(self, collection):
+    def get_current(self, collection):  # pragma: no cover
         """Returns the most current record for the given collection
 
         Args:
@@ -118,7 +118,7 @@ class AbstractPanDB(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractclassmethod
-    def find(self, collection, obj_id):
+    def find(self, collection, obj_id):  # pragma: no cover
         """Find an object by it's identifier.
 
         Args:
@@ -132,7 +132,7 @@ class AbstractPanDB(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractclassmethod
-    def clear_current(self, type):
+    def clear_current(self, type):  # pragma: no cover
         """Clear the current record of a certain type
 
         Args:
@@ -159,12 +159,6 @@ class PanDB(object):
 
     def __new__(cls, db_type='memory', db_name=None, *args, **kwargs):
         """Create an instance based on db_type."""
-
-        if not isinstance(db_name, str) and db_name:
-            raise ValueError('db_name, a string, must be provided and not empty')
-
-        if not isinstance(db_type, str) and db_type:
-            raise ValueError('db_type, a string, must be provided and not empty')
 
         collection_names = PanDB.collection_names()
 
@@ -205,12 +199,11 @@ class PanDB(object):
                                    dangerous=False,
                                    *args, **kwargs):
         """Permanently delete the contents of the identified database."""
-        if not isinstance(db_type, str) and db_type:
-            raise ValueError('db_type, a string, must be provided and not empty; was {!r}',
-                             db_type)
+
         if not isinstance(db_name, str) or 'test' not in db_name:
             raise ValueError(
                 'permanently_erase_database() called for non-test database {!r}'.format(db_name))
+
         if really != 'Yes' or dangerous != 'Totally':
             raise Exception('PanDB.permanently_erase_database called with invalid args!')
 

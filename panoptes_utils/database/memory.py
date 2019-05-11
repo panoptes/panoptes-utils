@@ -1,6 +1,7 @@
 import threading
 import weakref
 from uuid import uuid4
+from contextlib import suppress
 
 from panoptes_utils.serializers import to_json
 from panoptes_utils.serializers import from_json
@@ -84,10 +85,8 @@ class PanMemoryDB(AbstractPanDB):
         return obj
 
     def clear_current(self, entry_type):
-        try:
+        with suppress(KeyError):
             del self.current[entry_type]
-        except KeyError as e:
-            pass
 
     @classmethod
     def permanently_erase_database(self, db_name):

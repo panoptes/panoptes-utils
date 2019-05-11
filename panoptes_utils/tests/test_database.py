@@ -1,6 +1,12 @@
 import pytest
 
+from panoptes_utils.database import PanDB
 from panoptes_utils.error import InvalidCollection
+
+
+def test_bad_db():
+    with pytest.raises(Exception):
+        PanDB('foobar')
 
 
 def test_insert_and_no_permanent(db):

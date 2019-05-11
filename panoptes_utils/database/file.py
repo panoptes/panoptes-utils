@@ -84,13 +84,11 @@ class PanFileDB(AbstractPanDB):
         try:
             with open(collection_fn, 'r') as f:
                 for line in f:
-                    # Note: We can speed this up for the case where the obj_id doesn't
-                    # contain any characters that json would need to escape: first
-                    # check if the line contains the obj_id; if not skip. Else, parse
-                    # as json, and then check for the _id match.
-                    obj = from_json(line)
-                    if obj['_id'] == obj_id:
-                        return obj
+                    if obj_id in line:
+                        obj = from_json(line)
+                        break
+
+                return obj
         except FileNotFoundError:
             return None
 
