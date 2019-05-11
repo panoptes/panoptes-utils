@@ -5,8 +5,15 @@ from panoptes_utils import current_time
 from panoptes_utils.library import load_module
 
 
-def get_db_class(module_name='file'):
-    """Load the DB module of the given name.
+def _get_db_class(module_name='file'):
+    """Load the main DB class for the module of the given name.
+
+    .. doctest:
+
+        >>> _get_db_class()
+        'panoptes_utils.database.file.PanFileDB'
+        >>> _get_db_class('memory')
+        'panoptes_utils.database.file.PanMemoryDB'
 
     Args:
         module_name (str): Name of module, one of: `file` (default), `mongo', 'memory'.
@@ -162,7 +169,7 @@ class PanDB(object):
         collection_names = PanDB.collection_names()
 
         # Load the correct DB module
-        DB = get_db_class(db_type)
+        DB = _get_db_class(db_type)
 
         if db_type == 'memory':
             # The memory type has special setup
@@ -208,7 +215,7 @@ class PanDB(object):
             raise Exception('PanDB.permanently_erase_database called with invalid args!')
 
         # Load the correct DB module.
-        DB = get_db_class(db_type)
+        DB = _get_db_class(db_type)
 
         # Do the deletion.
         DB.permanently_erase_database(db_name, *args, **kwargs)
