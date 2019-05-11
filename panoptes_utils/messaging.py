@@ -1,16 +1,10 @@
-import datetime
 import re
 import zmq
-
-from astropy import units as u
-from astropy.time import Time
-from bson import ObjectId
-from json import dumps
-from json import loads
 
 from panoptes_utils import current_time
 from panoptes_utils.logger import get_root_logger
 from panoptes_utils.serializers import from_yaml
+from panoptes_utils.serializers import to_json
 
 
 class PanMessaging(object):
@@ -190,13 +184,11 @@ class PanMessaging(object):
                 'timestamp': current_time(pretty=True),
             }
         elif isinstance(message, dict):
-            message = self.scrub_message(message)
+            message = to_json(message)
         else:
             raise ValueError('Message value must be a string or dict')
 
-        msg_object = dumps(message, skipkeys=True)
-
-        full_message = '{} {}'.format(topic, msg_object)
+        full_message = '{} {}'.format(topic, message)
 
         if topic == 'PANCHAT':
             self.logger.info("{} {}".format(topic, message['message']))
@@ -238,10 +230,7 @@ class PanMessaging(object):
             pass
         else:
             topic, msg = message.split(' ', maxsplit=1)
-            try:
-                msg_obj = loads(msg)
-            except Exception:
-                msg_obj = from_yaml(msg)
+            msg_obj = from_yaml(msg)
 
         return topic, msg_obj
 
@@ -249,33 +238,3 @@ class PanMessaging(object):
         """Close the socket """
         self.socket.close()
         self.context.term()
-
-    def scrub_message(self, message):
-        result = {}
-
-        for k, v in message.items():
-            if isinstance(v, dict):
-                v = self.scrub_message(v)
-
-            if isinstance(v, u.Quantity):
-                v = v.value
-
-            if isinstance(v, datetime.datetime):
-                v = v.isoformat()
-
-            if isinstance(v, ObjectId):
-                v = str(v)
-
-            if isinstance(v, Time):
-                v = str(v.isot).split('.')[0].replace('T', ' ')
-
-            # Hmmmm. What is going on here? We need some documentation.
-            if k.endswith('_time'):
-                v = str(v).split(' ')[-1]
-
-            if isinstance(v, float):
-                v = round(v, 3)
-
-            result[k] = v
-
-        return result

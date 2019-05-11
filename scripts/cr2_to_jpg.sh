@@ -3,14 +3,14 @@
 usage() {
   echo -n "##################################################
 # Make a jpeg from the Canon Raw v2 (.CR2) file.
-# 
+#
 # If exiftool is present this merely extracts the thumbnail from
 # the CR2 file, otherwise use dcraw to create a jpeg.
 #
 # If present the TITLE is added as a title to the jpeg.
 ##################################################
  $ $(basename $0) FILENAME [TITLE]
- 
+
  Options:
   FILENAME          Name of CR2 file that holds jpeg.
   TITLE             Optional tilte to be placed on jpeg.
@@ -50,7 +50,7 @@ if [[ -n "$TITLE" ]]
   	echo "Adding title \"${TITLE}\""
 	# Make thumbnail from jpg.
 	convert "${JPG}" -background black -fill red \
-	    -font ubuntu -pointsize 60 label:"${TITLE}" \
+	    -font 'Lato-Regular' -pointsize 60 label:"${TITLE}" \
 	    -gravity South -append "${JPG}"
 fi
 

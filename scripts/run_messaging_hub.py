@@ -102,7 +102,7 @@ if __name__ == '__main__':
         '--from-config',
         action='store_true',
         help='Read ports from the pocs.yaml and pocs_local.yaml config files.')
-    parser.add_argument('--config-host', default='config-server', type=str,
+    parser.add_argument('--config-host', default='127.0.0.1', type=str,
                         help='The hostname of the config server, default config-server')
     args = parser.parse_args()
 

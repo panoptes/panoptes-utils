@@ -2,7 +2,7 @@ version: '3.2'
 services:
   config-server:
     image: gcr.io/panoptes-survey/panoptes-utils
-    container_name: config_server
+    container_name: config-server
     privileged: true
     network_mode: host
     env_file: 
