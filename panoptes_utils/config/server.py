@@ -35,7 +35,7 @@ def get_config_entry():
     For example, take the following configuration:
 
     ```
-    { 
+    {
         'location': {
             'elevation': 3400.0,
         }

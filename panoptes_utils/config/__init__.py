@@ -1,4 +1,5 @@
 import os
+from contextlib import suppress
 from warnings import warn
 
 from panoptes_utils import listify
@@ -149,10 +150,8 @@ def parse_config(config):
 
 
 def _add_to_conf(config, fn, parse=False):
-    try:
+    with suppress(IOError):
         with open(fn, 'r') as f:
             c = serializers.from_yaml(f, parse=parse)
             if c is not None and isinstance(c, dict):
                 config.update(c)
-    except IOError:  # pragma: no cover
-        pass
