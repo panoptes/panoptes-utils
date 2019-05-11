@@ -166,8 +166,7 @@ def cr2_to_pgm(
                     print("PGM Conversion command successful")
 
         except subprocess.CalledProcessError as err:
-            raise error.InvalidSystemCommand(msg="File: {} \n err: {}".format(
-                cr2_fname, err))
+            raise error.InvalidSystemCommand(msg="File: {} \n err: {}".format(cr2_fname, err))
 
     return pgm_fname
 
