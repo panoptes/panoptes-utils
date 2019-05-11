@@ -1,9 +1,9 @@
 import os
 import subprocess
+import shutil
 
 from dateutil import parser as date_parser
 from json import loads
-
 from warnings import warn
 
 import numpy as np
@@ -114,7 +114,6 @@ def cr2_to_fits(
 def cr2_to_pgm(
         cr2_fname,
         pgm_fname=None,
-        dcraw='dcraw',
         overwrite=True, *args,
         **kwargs):  # pragma: no cover
     """ Convert CR2 file to PGM
@@ -140,13 +139,11 @@ def cr2_to_pgm(
         str -- Filename of PGM that was created
 
     """
-
-    assert subprocess.call('dcraw', stdout=subprocess.PIPE),\
-        "could not execute dcraw in path: {}".format(dcraw)
-    assert os.path.exists(cr2_fname), "cr2 file does not exist at {}".format(
-                                      cr2_fname)
-
     verbose = kwargs.get('verbose', False)
+
+    dcraw = shutil.which('dcraw')
+    if dcraw is None:
+        raise error.InvalidCommand('dcraw not found')
 
     if pgm_fname is None:
         pgm_fname = cr2_fname.replace('.cr2', '.pgm')
