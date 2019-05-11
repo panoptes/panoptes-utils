@@ -1,7 +1,7 @@
 # Miniconda items taken from: https://hub.docker.com/r/continuumio/miniconda3/dockerfile
 # Updated with "latest" miniconda script.
 
-ARG base_image=continuumio/miniconda3
+ARG base_image=python:3.7-slim
 
 FROM $base_image AS base-image
 MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
