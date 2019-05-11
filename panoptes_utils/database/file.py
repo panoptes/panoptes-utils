@@ -81,16 +81,15 @@ class PanFileDB(AbstractPanDB):
 
     def find(self, collection, obj_id):
         collection_fn = self._get_file(collection)
-        try:
+        obj = None
+        with suppress(FileNotFoundError):
             with open(collection_fn, 'r') as f:
                 for line in f:
                     if obj_id in line:
                         obj = from_json(line)
                         break
 
-                return obj
-        except FileNotFoundError:
-            return None
+        return obj
 
     def clear_current(self, record_type):
         """Clears the current record of the given type.
