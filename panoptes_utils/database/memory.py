@@ -2,7 +2,8 @@ import threading
 import weakref
 from uuid import uuid4
 
-from panoptes_utils import serializers as json_util
+from panoptes_utils.serializers import to_json
+from panoptes_utils.serializers import from_json
 from panoptes_utils.database import AbstractPanDB
 from panoptes_utils.database import create_storage_obj
 
@@ -45,7 +46,7 @@ class PanMemoryDB(AbstractPanDB):
         obj_id = self._make_id()
         obj = create_storage_obj(collection, obj, obj_id=obj_id)
         try:
-            obj = json_util.dumps(obj)
+            obj = to_json(obj)
         except Exception as e:
             self._warn("Problem inserting object into current collection: {}, {!r}".format(e, obj))
             return None
@@ -60,7 +61,7 @@ class PanMemoryDB(AbstractPanDB):
         obj_id = self._make_id()
         obj = create_storage_obj(collection, obj, obj_id=obj_id)
         try:
-            obj = json_util.dumps(obj)
+            obj = to_json(obj)
         except Exception as e:
             self._warn("Problem inserting object into collection: {}, {!r}".format(e, obj))
             return None
@@ -72,14 +73,14 @@ class PanMemoryDB(AbstractPanDB):
         with self.lock:
             obj = self.current.get(collection, None)
         if obj:
-            obj = json_util.loads(obj)
+            obj = from_json(obj)
         return obj
 
     def find(self, collection, obj_id):
         with self.lock:
             obj = self.collections.get(collection, {}).get(obj_id)
         if obj:
-            obj = json_util.loads(obj)
+            obj = from_json(obj)
         return obj
 
     def clear_current(self, entry_type):
