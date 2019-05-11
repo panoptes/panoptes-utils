@@ -22,8 +22,9 @@ dependencies:
   - tornado
   - zeromq
   - pip:
-    - scalpl
-    - google-cloud-storage
-    - psycopg2
     - astroplan
+    - google-cloud-storage
+    - ruamel-yaml
+    - psycopg2
+    - scalpl
 

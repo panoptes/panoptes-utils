@@ -4,14 +4,13 @@ channels:
   - conda-forge
 dependencies:
   - python=3
-  - astroplan
   - astropy
   - cffi
   - Flask
   - google-cloud-storage
-  - jupyter_console  
+  - jupyter_console
   - libffi
-  - matplotlib>3.0.0
+  - matplotlib-base
   - numpy
   - pip
   - psycopg2
@@ -26,5 +25,7 @@ dependencies:
   - tornado
   - zeromq
   - pip:
+    - astroplan
+    - ruamel-yaml
     - scalpl
 
