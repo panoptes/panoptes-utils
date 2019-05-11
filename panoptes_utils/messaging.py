@@ -184,13 +184,11 @@ class PanMessaging(object):
                 'timestamp': current_time(pretty=True),
             }
         elif isinstance(message, dict):
-            message = self.scrub_message(message)
+            message = to_json(message)
         else:
             raise ValueError('Message value must be a string or dict')
 
-        msg_object = to_json(message)
-
-        full_message = '{} {}'.format(topic, msg_object)
+        full_message = '{} {}'.format(topic, message)
 
         if topic == 'PANCHAT':
             self.logger.info("{} {}".format(topic, message['message']))
