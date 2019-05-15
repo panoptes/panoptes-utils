@@ -16,6 +16,7 @@ RUN pip install --no-cache-dir --no-deps -Ur requirements.txt && \
     # TODO add cron job for IERS data download
     python panoptes_utils/data.py --wide-field --narrow-field
 
-ENTRYPOINT ["docker/entrypoint.sh"]
+# Comes from base image - hard-coded for now ☹.
+ENTRYPOINT ["/var/panoptes/panoptes-utils/docker/entrypoint.sh"]
 
 CMD ["/bin/zsh"]
