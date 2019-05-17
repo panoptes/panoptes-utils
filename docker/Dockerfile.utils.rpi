@@ -11,7 +11,8 @@ ENV PANDIR $pan_dir
 WORKDIR ${PANDIR}/panoptes-utils/
 COPY . ${PANDIR}/panoptes-utils/
 
-RUN apt-get update && \
+RUN cat ${PANDIR}/panoptes-utils/docker/zshrc >> ${HOME}/.zshrc && \
+    apt-get update && \
     apt-get install -y --no-install-recommends \
         gcc && \
     # Cleanup apt.

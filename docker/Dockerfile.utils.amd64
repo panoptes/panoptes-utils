@@ -10,7 +10,8 @@ ENV PANDIR $pan_dir
 WORKDIR ${PANDIR}/panoptes-utils/
 COPY . ${PANDIR}/panoptes-utils/
 
-RUN pip install --no-cache-dir --no-deps -Ur requirements.txt && \
+RUN cat ${PANDIR}/panoptes-utils/docker/zshrc >> ${HOME}/.zshrc && \
+    pip install --no-cache-dir --no-deps -Ur requirements.txt && \
     pip install --no-cache-dir -e ".[all]" && \
     # Download astrometry.net files
     # TODO add cron job for IERS data download
