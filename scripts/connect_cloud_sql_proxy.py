@@ -18,7 +18,7 @@ from panoptes_utils.config import load_config
 
 def main(instances, key_file, proxy_cmd=None, verbose=False):
     if not proxy_cmd:
-        proxy_cmd = os.path.join(os.environ['POCS'], 'bin', 'cloud_sql_proxy')
+        proxy_cmd = os.path.join(os.environ['PANDIR'], 'panoptes-utils', 'bin', 'cloud_sql_proxy')
     assert os.path.isfile(proxy_cmd)
 
     connection_str = ','.join(instances)

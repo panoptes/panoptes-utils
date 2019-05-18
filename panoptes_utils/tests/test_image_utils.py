@@ -3,7 +3,6 @@ import numpy as np
 import pytest
 import shutil
 import tempfile
-from glob import glob
 
 from panoptes_utils import images as img_utils
 from panoptes_utils import error
