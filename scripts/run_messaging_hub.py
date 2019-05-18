@@ -6,9 +6,9 @@ import threading
 import time
 
 from astropy.utils import console
-from panoptes_utils.config.client import get_config
-from panoptes_utils.logger import get_root_logger
-from panoptes_utils.messaging import PanMessaging
+from panoptes.utils.config.client import get_config
+from panoptes.utils.logger import get_root_logger
+from panoptes.utils.messaging import PanMessaging
 
 the_root_logger = None
 

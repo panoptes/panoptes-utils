@@ -14,7 +14,7 @@ from distutils.command.build_py import build_py
 import builtins
 builtins._PANOPTES_SETUP_ = True
 
-from panoptes_utils.version import __version__
+from panoptes.utils.version import __version__
 
 # Get some values from the setup.cfg
 conf = ConfigParser()

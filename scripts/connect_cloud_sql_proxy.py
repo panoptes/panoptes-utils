@@ -13,7 +13,7 @@ import sys
 import subprocess
 from pprint import pprint
 
-from panoptes_utils.config import load_config
+from panoptes.utils.config import load_config
 
 
 def main(instances, key_file, proxy_cmd=None, verbose=False):
