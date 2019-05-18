@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+## Changed
+* **Breaking** Changed namespace so no underscores, i.e. `from panoptes.utils import time`.
+* Many Docker improvements.
+
+## Added
+* Added bayer utilities. :camera:
+* Add Cloud SQL utilities. :cloud:
+
 
 ## [0.0.6] - 2019-04-29
 ### Added
