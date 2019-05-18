@@ -12,9 +12,9 @@ COPY . ${PANDIR}/panoptes-utils/
 
 RUN cat ${PANDIR}/panoptes-utils/docker/zshrc >> ${HOME}/.zshrc && \
     pip install --no-cache-dir --no-deps -Ur requirements.txt && \
-    pip install --no-cache-dir -e ".[all]" && \
-    # Download astrometry.net files
+    pip install --no-cache-dir -e ".[all]"
     # TODO add cron job for IERS data download
+    # Download astrometry.net files
     python panoptes_utils/data.py --wide-field --narrow-field
 
 # Comes from base image - hard-coded for now ☹.

@@ -59,6 +59,7 @@ if __name__ == '__main__':
                         help="Print results to stdout, default False.")
     args = parser.parse_args()
 
+    print(f'Loading config: {args.config}')
     config = load_config(args.config)
     try:
         network_config = config['panoptes_network']
