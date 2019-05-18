@@ -5,7 +5,7 @@ import shutil
 
 from astropy.io.fits import Header
 
-from panoptes_utils.images import fits as fits_utils
+from panoptes.utils.images import fits as fits_utils
 
 
 @pytest.fixture

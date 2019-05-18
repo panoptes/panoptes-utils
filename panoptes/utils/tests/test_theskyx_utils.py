@@ -3,8 +3,8 @@ import pytest
 
 from mocket import Mocket
 
-from panoptes_utils import error
-from panoptes_utils.theskyx import TheSkyX
+from panoptes.utils import error
+from panoptes.utils.theskyx import TheSkyX
 
 
 @pytest.fixture(scope="function")
@@ -17,7 +17,7 @@ def skyx(request):
 
     # Use `--with-hardware thesky` on cli to run without mock
     Mocket.enable('theskyx',
-                  '{}/panoptes-utils/panoptes_utils/tests/data'.format(os.getenv('PANDIR')))
+                  '{}/panoptes-utils/panoptes/utils/tests/data'.format(os.getenv('PANDIR')))
     if 'theskyx' in request.config.getoption('--with-hardware'):
         Mocket.disable()
 
@@ -34,7 +34,7 @@ def test_default_connect(request):
     # Use `--with-hardware thesky` on cli to run without mock
     if 'theskyx' not in request.config.getoption('--with-hardware'):
         Mocket.enable(
-            'theskyx', '{}/panoptes-utils/panoptes_utils/tests/data'.format(os.getenv('PANDIR')))
+            'theskyx', '{}/panoptes-utils/panoptes/utils/tests/data'.format(os.getenv('PANDIR')))
 
     skyx = TheSkyX()
     assert skyx.is_connected is True

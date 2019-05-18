@@ -4,8 +4,8 @@ from bson.objectid import ObjectId
 from contextlib import suppress
 from pymongo.errors import ConnectionFailure
 
-from panoptes_utils.database import AbstractPanDB
-from panoptes_utils.database import create_storage_obj
+from panoptes.utils.database import AbstractPanDB
+from panoptes.utils.database import create_storage_obj
 
 _shared_mongo_clients = weakref.WeakValueDictionary()
 

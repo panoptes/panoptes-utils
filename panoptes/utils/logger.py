@@ -11,9 +11,9 @@ import time
 from warnings import warn
 from contextlib import suppress
 
-from panoptes_utils.config import parse_config
-from panoptes_utils.serializers import from_yaml
-from panoptes_utils.serializers import to_json
+from panoptes.utils.config import parse_config
+from panoptes.utils.serializers import from_yaml
+from panoptes.utils.serializers import to_json
 
 
 # We don't want to create multiple root loggers that are "identical",

@@ -5,12 +5,12 @@ import time
 from datetime import datetime as dt
 from astropy import units as u
 
-from panoptes_utils import current_time
-from panoptes_utils import DelaySigTerm
-from panoptes_utils import listify
-from panoptes_utils import CountdownTimer
-from panoptes_utils import error
-from panoptes_utils.library import load_module
+from panoptes.utils import current_time
+from panoptes.utils import DelaySigTerm
+from panoptes.utils import listify
+from panoptes.utils import CountdownTimer
+from panoptes.utils import error
+from panoptes.utils.library import load_module
 
 
 def test_error(capsys):

@@ -4,8 +4,8 @@ import pytest
 import shutil
 import tempfile
 
-from panoptes_utils import images as img_utils
-from panoptes_utils import error
+from panoptes.utils import images as img_utils
+from panoptes.utils import error
 
 
 def test_make_images_dir(save_environ):

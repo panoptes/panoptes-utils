@@ -3,10 +3,10 @@ import weakref
 from uuid import uuid4
 from contextlib import suppress
 
-from panoptes_utils.serializers import to_json
-from panoptes_utils.serializers import from_json
-from panoptes_utils.database import AbstractPanDB
-from panoptes_utils.database import create_storage_obj
+from panoptes.utils.serializers import to_json
+from panoptes.utils.serializers import from_json
+from panoptes.utils.database import AbstractPanDB
+from panoptes.utils.database import create_storage_obj
 
 
 class PanMemoryDB(AbstractPanDB):

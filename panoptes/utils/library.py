@@ -1,7 +1,7 @@
 import ctypes
 
 from astropy.utils import resolve_name
-from panoptes_utils import error
+from panoptes.utils import error
 
 
 def load_c_library(name, path=None, logger=None):
@@ -19,7 +19,7 @@ def load_c_library(name, path=None, logger=None):
         ctypes.CDLL
 
     Raises:
-        panoptes_utils.error.NotFound: raised if library_path not given & find_libary fails to
+        panoptes.utils.error.NotFound: raised if library_path not given & find_libary fails to
             locate the library.
         OSError: raises if the ctypes.CDLL loader cannot load the library.
     """
@@ -37,7 +37,7 @@ def load_c_library(name, path=None, logger=None):
 def load_module(module_name):
     """Dynamically load a module.
 
-    >>> from panoptes_utils.library import load_module
+    >>> from panoptes.utils.library import load_module
     >>> camera = load_module('pocs.camera.simulator')
     >>> camera.__package__
     'pocs.camera'

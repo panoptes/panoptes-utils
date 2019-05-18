@@ -9,7 +9,7 @@ from astropy.coordinates import AltAz
 from astropy.coordinates import ICRS
 from astropy.coordinates import SkyCoord
 
-from panoptes_utils.time import current_time
+from panoptes.utils.time import current_time
 
 
 def listify(obj):
@@ -31,7 +31,7 @@ def listify(obj):
 def get_free_space(dir=None):
     """Return the amoung of freespace in gigabytes for given dir.
 
-    >>> from panoptes_utils import get_free_space
+    >>> from panoptes.utils import get_free_space
     >>> get_free_space()        # doctest: +SKIP
     <Quantity 10.245 Gbyte>
 
@@ -70,7 +70,7 @@ def string_to_params(opts):
         `param='42'` will keep the value as the string `'42'`.
 
 
-    >>> from panoptes_utils import string_to_params
+    >>> from panoptes.utils import string_to_params
     >>> args, kwargs = string_to_params("parg1 parg2 key1=a_str key2=2 key2='2' key3=03")
     >>> args
     ['parg1', 'parg2']

@@ -1,7 +1,7 @@
 import pytest
 
-from panoptes_utils.database import PanDB
-from panoptes_utils.error import InvalidCollection
+from panoptes.utils.database import PanDB
+from panoptes.utils.error import InvalidCollection
 
 
 def test_bad_db():

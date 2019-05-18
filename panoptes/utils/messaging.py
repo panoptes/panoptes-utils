@@ -1,10 +1,10 @@
 import re
 import zmq
 
-from panoptes_utils import current_time
-from panoptes_utils.logger import get_root_logger
-from panoptes_utils.serializers import from_yaml
-from panoptes_utils.serializers import to_json
+from panoptes.utils import current_time
+from panoptes.utils.logger import get_root_logger
+from panoptes.utils.serializers import from_yaml
+from panoptes.utils.serializers import to_json
 
 
 class PanMessaging(object):

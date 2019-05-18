@@ -8,7 +8,7 @@ from astropy.io import fits
 from astropy.wcs import WCS
 from astropy import units as u
 
-from panoptes_utils import error
+from panoptes.utils import error
 
 
 def solve_field(fname, timeout=15, solve_opts=None, **kwargs):

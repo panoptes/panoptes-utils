@@ -8,7 +8,7 @@ from decimal import ROUND_HALF_UP
 
 from astropy.wcs import WCS
 
-from panoptes_utils.images import fits as fits_utils
+from panoptes.utils.images import fits as fits_utils
 
 
 def get_rgb_cube(cube):
@@ -271,9 +271,9 @@ def pixel_color(x, y):
                3474 | G2    B   G2     B       G2    B   G2    B
                3473 |  R   G1    R    G1        R   G1    R   G1
                3472 | G2    B   G2     B       G2    B   G2    B
-                  . |                                           
-         y / i    . |                                           
-                  . |                                           
+                  . |
+         y / i    . |
+                  . |
                   3 |  R   G1    R    G1        R   G1    R   G1
                   2 | G2    B   G2     B       G2    B   G2    B
                   1 |  R   G1    R    G1        R   G1    R   G1

@@ -10,8 +10,8 @@ import numpy as np
 
 from astropy.io import fits
 
-from panoptes_utils import error
-from panoptes_utils.images import fits as fits_utils
+from panoptes.utils import error
+from panoptes.utils.images import fits as fits_utils
 
 
 def cr2_to_fits(

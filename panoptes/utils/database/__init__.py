@@ -1,8 +1,8 @@
 import abc
 from warnings import warn
 
-from panoptes_utils import current_time
-from panoptes_utils.library import load_module
+from panoptes.utils import current_time
+from panoptes.utils.library import load_module
 
 
 def _get_db_class(module_name='file'):
@@ -11,15 +11,15 @@ def _get_db_class(module_name='file'):
     .. doctest:
 
         >>> _get_db_class()
-        'panoptes_utils.database.file.PanFileDB'
+        'panoptes.utils.database.file.PanFileDB'
         >>> _get_db_class('memory')
-        'panoptes_utils.database.file.PanMemoryDB'
+        'panoptes.utils.database.file.PanMemoryDB'
 
     Args:
         module_name (str): Name of module, one of: `file` (default), `mongo', 'memory'.
 
     Returns:
-        `panoptes_utils.database.PanDB`: An instance of the db class for the correct database type.
+        `panoptes.utils.database.PanDB`: An instance of the db class for the correct database type.
 
     Raises:
         Exception: If an unsupported database type string is passed.
@@ -30,7 +30,7 @@ def _get_db_class(module_name='file'):
         'memory': 'PanMemoryDB',
     }
 
-    full_module_name = f'panoptes_utils.database.{module_name}'
+    full_module_name = f'panoptes.utils.database.{module_name}'
 
     try:
         db_module = load_module(full_module_name)
@@ -63,8 +63,8 @@ class AbstractPanDB(metaclass=abc.ABCMeta):
         if collection not in self.collection_names:
             msg = 'Collection type {!r} not available'.format(collection)
             self._warn(msg)
-            # Can't import panoptes_utils.error earlier
-            from panoptes_utils.error import InvalidCollection
+            # Can't import panoptes.utils.error earlier
+            from panoptes.utils.error import InvalidCollection
             raise InvalidCollection(msg)
 
     @abc.abstractclassmethod

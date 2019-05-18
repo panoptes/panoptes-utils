@@ -3,8 +3,8 @@ from flask import request
 from flask import jsonify
 from flask.json import JSONEncoder
 
-from panoptes_utils.config import save_config
-from panoptes_utils.serializers import _serialize_object
+from panoptes.utils.config import save_config
+from panoptes.utils.serializers import _serialize_object
 
 app = Flask(__name__)
 

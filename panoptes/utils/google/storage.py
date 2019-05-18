@@ -9,9 +9,9 @@ from glob import glob
 from google.cloud import storage
 from google.cloud import exceptions
 
-from panoptes_utils.logger import get_root_logger
-from panoptes_utils.config import load_config
-from panoptes_utils import error
+from panoptes.utils.logger import get_root_logger
+from panoptes.utils.config import load_config
+from panoptes.utils import error
 
 
 class PanStorage(object):

@@ -2,8 +2,8 @@ import os
 from contextlib import suppress
 from warnings import warn
 
-from panoptes_utils import listify
-from panoptes_utils import serializers
+from panoptes.utils import listify
+from panoptes.utils import serializers
 
 
 def load_config(config_files=None, simulator=None, parse=True, ignore_local=False):
