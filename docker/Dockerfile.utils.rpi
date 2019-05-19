@@ -6,12 +6,15 @@ MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
 ARG env_name=panoptes-env
 ARG conda_url
 ARG pan_dir=/var/panoptes
+ARG ZSH_CUSTOM=/root/.oh-my-zsh/custom
 ENV PANDIR $pan_dir
 
 WORKDIR ${PANDIR}/panoptes-utils/
 COPY . ${PANDIR}/panoptes-utils/
 
-RUN cat ${PANDIR}/panoptes-utils/docker/zshrc >> ${HOME}/.zshrc && \
+RUN git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt" && \
+    ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme" && \
+    cat ${PANDIR}/panoptes-utils/docker/zshrc >> ${HOME}/.zshrc && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
         gcc && \
