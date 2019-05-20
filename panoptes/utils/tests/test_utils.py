@@ -86,7 +86,6 @@ def test_countdown_timer_non_blocking():
         timer = CountdownTimer(arg)
         assert timer.duration == expected_duration
 
-
 def test_countdown_timer():
     count_time = 1
     timer = CountdownTimer(count_time)
@@ -102,6 +101,26 @@ def test_countdown_timer():
     assert counter == pytest.approx(1)
     assert timer.time_left() == 0
     assert timer.expired() is True
+
+def test_countdown_timer_sleep():
+    count_time = 1
+    timer = CountdownTimer(count_time)
+    assert timer.time_left() > 0
+    assert timer.expired() is False
+    assert timer.is_non_blocking is False
+
+    counter = 0.
+    while timer.time_left() > 0.5:
+        assert timer.sleep(max_sleep=0.1)
+        counter += 0.1
+
+    # Wait for the remaining half second
+    assert timer.sleep() is False
+
+    assert counter == pytest.approx(0.5)
+    assert timer.time_left() == 0
+    assert timer.expired() is True
+    assert timer.sleep() is False
 
 
 def test_delay_of_sigterm_with_nosignal():
