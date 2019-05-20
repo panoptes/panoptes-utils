@@ -16,8 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Added
 * Added bayer utilities. :camera:
-* Add Cloud SQL utilities. :cloud:
-* Added Cloud SQL utilities.
+* Added Cloud SQL utilities. :cloud:
 
 
 ## [0.0.6] - 2019-04-29
