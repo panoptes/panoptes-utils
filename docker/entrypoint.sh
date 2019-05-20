@@ -10,7 +10,7 @@ if [ ! -z "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
 fi
 
 # Authenticate if on GCE
-if [ ! -z "$CLOUDSDK_COMPUTE_ZONE" ]; then
+if [ ! -z "$GOOGLE_COMPUTE_INSTANCE" ]; then
     echo "Starting Cloud SQL proxy"
     python ${PANDIR}/panoptes-utils/scripts/connect_cloud_sql_proxy.py \
         --config="${PANDIR}/panoptes-utils/docker/cloud-sql-conf.yaml" \
