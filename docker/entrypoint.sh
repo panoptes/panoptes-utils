@@ -1,16 +1,18 @@
 #!/bin/bash -e
 
 echo "Setting up base environment"
+echo "GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}"
+echo "GOOGLE_COMPUTE_INSTANCE: ${GOOGLE_COMPUTE_INSTANCE}"
 
 # Authenticate if key has been set - used on local units
-if [ ! -z "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
+if [ ! -z ${GOOGLE_APPLICATION_CREDENTIALS} ]; then
     echo "Found Google credentials, activating service account"
     /root/google-cloud-sdk/bin/gcloud auth activate-service-account \
     --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
 fi
 
 # Authenticate if on GCE
-if [ ! -z "$GOOGLE_COMPUTE_INSTANCE" ]; then
+if [ ! -z ${GOOGLE_COMPUTE_INSTANCE} ]; then
     echo "Starting Cloud SQL proxy"
     python ${PANDIR}/panoptes-utils/scripts/connect_cloud_sql_proxy.py \
         --config="${PANDIR}/panoptes-utils/docker/cloud-sql-conf.yaml" \
