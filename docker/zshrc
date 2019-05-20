@@ -26,7 +26,6 @@ fi
 unsetopt share_history
 
 # Spaceship theme
-SPACESHIP_USER_SHOW=always
 SPACESHIP_USER_PREFIX=""
 SPACESHIP_HOST_SHOW=always
 SPACESHIP_HOST_PREFIX="Service: "

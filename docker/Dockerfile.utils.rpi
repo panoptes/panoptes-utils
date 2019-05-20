@@ -43,6 +43,6 @@ RUN git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/t
     # TODO add cron job for IERS data download
     /opt/conda/envs/$env_name/bin/python panoptes/utils/data.py --wide-field --narrow-field
 
-ENTRYPOINT ["/bin/bash", "-c", "docker/entrypoint.sh"]
+ENTRYPOINT ["/var/panoptes/panoptes-utils/docker/entrypoint.sh"]
 
 CMD ["/bin/zsh"]
