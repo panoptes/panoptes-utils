@@ -79,7 +79,7 @@ if __name__ == '__main__':
             pass
 
         if not key_file or not os.path.isfile(key_file):
-            print("Service account key not found in config, use --key_file.")
+            print("Service account key not found in config, use --key_file. Will attempt to connect without.")
 
     try:
 
@@ -95,7 +95,7 @@ if __name__ == '__main__':
 
             instance_name = instance_info['instance']
             location = instance_info['location']
-            local_port = instance_info['local_port']
+            local_port = int(instance_info['local_port'])
 
             conn_str = '{}:{}:{}=tcp:{}'.format(project_id, location, instance_name, local_port)
             connect_instances.append(conn_str)
