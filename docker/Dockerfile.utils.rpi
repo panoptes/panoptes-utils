@@ -8,10 +8,13 @@ ARG conda_url
 ARG pan_dir=/var/panoptes
 ARG ZSH_CUSTOM=/root/.oh-my-zsh/custom
 ENV PANDIR $pan_dir
+ENV CONDA_ENV $env_name
 
 WORKDIR ${PANDIR}/panoptes-utils/
 COPY . ${PANDIR}/panoptes-utils/
 
+# Install all base requirements
+# TODO: split this into separate layer
 RUN git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt" && \
     ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme" && \
     cat ${PANDIR}/panoptes-utils/docker/zshrc >> ${HOME}/.zshrc && \
@@ -29,19 +32,22 @@ RUN git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/t
     /opt/conda/bin/conda clean -tipsy && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.zshrc && \
-    /opt/conda/bin/conda env create -f conda-environment-rpi.yaml -n $env_name && \
+    /opt/conda/bin/conda env create -f conda-environment-rpi.yaml -n ${CONDA_ENV} && \
     /opt/conda/bin/conda clean --all --yes && \
     /opt/conda/bin/conda clean -tipsy && \
     # End miniconda items
     # Activate environment by default
-    echo "conda activate $env_name" >> ~/.bashrc && \
-    echo "conda activate $env_name" >> ~/.zshrc && \
-    # Install module
-    cd ${PANDIR}/panoptes-utils && \
-    /opt/conda/envs/$env_name/bin/pip install --no-cache-dir --no-deps -e ".[all]" && \
+    echo "conda activate ${CONDA_ENV}" >> ~/.bashrc && \
+    echo "conda activate ${CONDA_ENV}" >> ~/.zshrc
+
+FROM base-image
+
+# Install module
+RUN cd ${PANDIR}/panoptes-utils && \
+    /opt/conda/envs/${CONDA_ENV}/bin/pip install --no-cache-dir -e ".[all]" && \
     # Download astrometry.net files
     # TODO add cron job for IERS data download
-    /opt/conda/envs/$env_name/bin/python panoptes/utils/data.py --wide-field --narrow-field
+    /opt/conda/envs/${CONDA_ENV}/bin/python panoptes/utils/data.py --wide-field --narrow-field
 
 ENTRYPOINT ["/var/panoptes/panoptes-utils/docker/entrypoint.sh"]
 
