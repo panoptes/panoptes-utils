@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-METADATA_URL = 'http://metadata.google.internal/computeMetadata/v1/project/attributes'
+METADATA_URL='http://metadata.google.internal/computeMetadata/v1/project/attributes'
 
 echo "Setting up base environment"
 echo "GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}"
