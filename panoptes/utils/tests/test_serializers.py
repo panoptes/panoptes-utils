@@ -2,7 +2,7 @@ import pytest
 
 from astropy import units as u
 
-from panoptes_utils import serializers
+from panoptes.utils import serializers
 
 
 @pytest.fixture(scope='function')

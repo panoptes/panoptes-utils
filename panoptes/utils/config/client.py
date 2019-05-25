@@ -1,5 +1,5 @@
 import requests
-from panoptes_utils import serializers
+from panoptes.utils import serializers
 
 
 def get_config(key=None, host='localhost', port='6563', parse=True):
@@ -25,7 +25,7 @@ def get_config(key=None, host='localhost', port='6563', parse=True):
         host (str, optional): The config server host, defaults to '127.0.0.1'.
         port (str, optional): The config server port, defaults to 6563.
         parse (bool, optional): If response should be parsed by
-            `~panoptes_utils.serializers.from_json`, default True.
+            `~panoptes.utils.serializers.from_json`, default True.
 
     Returns:
         dict: The corresponding config entry.
@@ -60,7 +60,7 @@ def set_config(key, new_value, host='localhost', port='6563', parse=True):
         host (str, optional): The config server host, defaults to '127.0.0.1'.
         port (str, optional): The config server port, defaults to 6563.
         parse (bool, optional): If response should be parsed by
-            `~panoptes_utils.serializers.from_json`, default True.
+            `~panoptes.utils.serializers.from_json`, default True.
 
     Returns:
         dict: The updated config entry.

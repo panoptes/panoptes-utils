@@ -5,8 +5,8 @@ import subprocess
 
 from astropy import units as u
 
-from panoptes_utils.config.client import get_config
-from panoptes_utils.config.client import set_config
+from panoptes.utils.config.client import get_config
+from panoptes.utils.config.client import set_config
 
 
 @pytest.fixture(scope='module')
