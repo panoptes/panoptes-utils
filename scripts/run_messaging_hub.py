@@ -6,9 +6,9 @@ import threading
 import time
 
 from astropy.utils import console
-from panoptes_utils.config.client import get_config
-from panoptes_utils.logger import get_root_logger
-from panoptes_utils.messaging import PanMessaging
+from panoptes.utils.config.client import get_config
+from panoptes.utils.logger import get_root_logger
+from panoptes.utils.messaging import PanMessaging
 
 the_root_logger = None
 
@@ -102,7 +102,7 @@ if __name__ == '__main__':
         '--from-config',
         action='store_true',
         help='Read ports from the pocs.yaml and pocs_local.yaml config files.')
-    parser.add_argument('--config-host', default='config-server', type=str,
+    parser.add_argument('--config-host', default='127.0.0.1', type=str,
                         help='The hostname of the config server, default config-server')
     args = parser.parse_args()
 

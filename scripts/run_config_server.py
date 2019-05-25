@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import os
 from scalpl import Cut
 
-from panoptes_utils.config import load_config
-from panoptes_utils.config.server import app
+from panoptes.utils.config import load_config
+from panoptes.utils.config.server import app
 
 
 if __name__ == '__main__':

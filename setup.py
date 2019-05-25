@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 # Licensed under an MIT style license - see LICENSE.txt
 
-try:
-  from setuptools import setup, find_packages
-except ImportError:
-  from distutils.core import setup
+from setuptools import setup, find_namespace_packages
 
 import itertools
 
 from configparser import ConfigParser
 from distutils.command.build_py import build_py
 
-from panoptes_utils.version import __version__
+import builtins
+builtins._PANOPTES_SETUP_ = True
+
+from panoptes.utils.version import __version__
 
 # Get some values from the setup.cfg
 conf = ConfigParser()
@@ -24,6 +24,7 @@ DESCRIPTION = metadata.get('description', '')
 KEYWORDS = metadata.get('keywords', 'Project PANOPTES')
 LICENSE = metadata.get('license', 'unknown')
 LONG_DESCRIPTION = metadata.get('long_description', '')
+NAME = metadata.get('name', 'panoptes-utils')
 PACKAGENAME = metadata.get('package_name', 'packagename')
 URL = metadata.get('url', 'https://projectpanoptes.org')
 
@@ -50,7 +51,7 @@ modules = {
 }
 
 
-setup(name=PACKAGENAME,
+setup(name=NAME,
       version=__version__,
       description=DESCRIPTION,
       long_description=LONG_DESCRIPTION,
@@ -74,7 +75,7 @@ setup(name=PACKAGENAME,
           'testing': modules['testing'],
           'all': list(set(itertools.chain.from_iterable(modules.values())))
       },
-      packages=find_packages(exclude=['tests', 'test_*']),
+      packages=find_namespace_packages(exclude=['tests', 'test_*']),
       classifiers=[
           'Development Status :: 3 - Alpha',
           'Environment :: Console',
