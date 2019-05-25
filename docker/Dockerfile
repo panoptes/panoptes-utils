@@ -27,8 +27,8 @@ RUN mkdir -p ${POCS} && \
     mkdir -p ${PANDIR}/images && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-        wget curl bzip2 ca-certificates pkg-config zsh git fonts-lato \
-        astrometry.net dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
+        wget curl bzip2 ca-certificates pkg-config zsh git fonts-lato nano \
+        astrometry.net sextractor dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
         libcfitsio-dev libfreetype6-dev libpng-dev libpq-dev && \
     # Oh My ZSH. :)
     chsh -s /bin/zsh && \

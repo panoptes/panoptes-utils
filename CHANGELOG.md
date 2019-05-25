@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+## Changed
+* **Breaking** Changed namespace so no underscores, i.e. `from panoptes.utils import time`.
+* Docker updates:
+  * Use slim python images and not anaconda on amd64.
+  * Adding zsh as default shell along with some customizations.
+  * Entrypoint script properly authenticates to google cloud if possible.
+  * Added amd64 only build scripts.
+
+## Added
+* Added bayer utilities. :camera:
+* Added Cloud SQL utilities. :cloud:
+
 
 ## [0.0.6] - 2019-04-29
 ### Added
