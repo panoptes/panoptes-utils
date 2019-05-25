@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 ########################################################################
 # connect_clouddb_proxy.py
@@ -13,12 +13,12 @@ import sys
 import subprocess
 from pprint import pprint
 
-from panoptes_utils.config import load_config
+from panoptes.utils.config import load_config
 
 
 def main(instances, key_file, proxy_cmd=None, verbose=False):
     if not proxy_cmd:
-        proxy_cmd = os.path.join(os.environ['POCS'], 'bin', 'cloud_sql_proxy')
+        proxy_cmd = os.path.join(os.environ['PANDIR'], 'panoptes-utils', 'bin', 'cloud_sql_proxy')
     assert os.path.isfile(proxy_cmd)
 
     connection_str = ','.join(instances)
@@ -59,6 +59,7 @@ if __name__ == '__main__':
                         help="Print results to stdout, default False.")
     args = parser.parse_args()
 
+    print(f'Loading config: {args.config}')
     config = load_config(args.config)
     try:
         network_config = config['panoptes_network']
@@ -78,7 +79,7 @@ if __name__ == '__main__':
             pass
 
         if not key_file or not os.path.isfile(key_file):
-            print("Service account key not found in config, use --key_file.")
+            print("Service account key not found in config, use --key_file. Will attempt to connect without.")
 
     try:
 
@@ -94,7 +95,7 @@ if __name__ == '__main__':
 
             instance_name = instance_info['instance']
             location = instance_info['location']
-            local_port = instance_info['local_port']
+            local_port = int(instance_info['local_port'])
 
             conn_str = '{}:{}:{}=tcp:{}'.format(project_id, location, instance_name, local_port)
             connect_instances.append(conn_str)

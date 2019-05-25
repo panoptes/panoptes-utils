@@ -1,3 +1,4 @@
+[![PyPI version](https://badge.fury.io/py/panoptes-utils.svg)](https://badge.fury.io/py/panoptes-utils)
 [![Build Status](https://travis-ci.com/panoptes/panoptes-utils.svg?branch=master)](https://travis-ci.com/panoptes/panoptes-utils)
 [![codecov](https://codecov.io/gh/panoptes/panoptes-utils/branch/master/graph/badge.svg)](https://codecov.io/gh/panoptes/panoptes-utils)
 [![Documentation Status](https://readthedocs.org/projects/panoptes-utils/badge/?version=latest)](https://panoptes-utils.readthedocs.io/en/latest/?badge=latest)
@@ -43,7 +44,7 @@ scripts/run_config_server.py
 The server can be queried/set in python:
 
 ```python
->>> from panoptes_utils.config import client
+>>> from panoptes.utils.config import client
 
 >>> client.get_config('location.horizon')
 30.0
@@ -85,7 +86,7 @@ or manipulate the configuration:
 Get entire config, pipe through jq and select just location.
 
 ```bash
-http :6563/get-config | jq '.location'                                         
+http :6563/get-config | jq '.location'
 {
   "elevation": 3400,
   "flat_horizon": -6,
@@ -102,7 +103,7 @@ http :6563/get-config | jq '.location'
 
 `jq` can easily manipulate the json documents. Here we pipe the original output into `jq`, change two of the values, then pipe
 the output back into the `set-config` endpoint provided by our Flask microservice. This will update the configuration on the server
-and return the updated configuration back to the user. We simply pipe this through `jq` yet again for an easy display of the new values. 
+and return the updated configuration back to the user. We simply pipe this through `jq` yet again for an easy display of the new values.
 (Note the `jq` pipe `|` inside the single quotes see [jq](https://stedolan.github.io/jg/) for details.)
 
 ```bash

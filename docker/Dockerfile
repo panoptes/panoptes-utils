@@ -1,7 +1,7 @@
 # Miniconda items taken from: https://hub.docker.com/r/continuumio/miniconda3/dockerfile
 # Updated with "latest" miniconda script.
 
-ARG base_image=continuumio/miniconda3
+ARG base_image=python:3.7-slim
 
 FROM $base_image AS base-image
 MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
@@ -27,12 +27,20 @@ RUN mkdir -p ${POCS} && \
     mkdir -p ${PANDIR}/images && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-        wget bzip2 ca-certificates pkg-config zsh git \
-        astrometry.net dcraw exiftool libcfitsio-dev libcfitsio-bin \
+        wget curl bzip2 ca-certificates pkg-config zsh git fonts-lato nano \
+        astrometry.net sextractor dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
         libcfitsio-dev libfreetype6-dev libpng-dev libpq-dev && \
     # Oh My ZSH. :)
     chsh -s /bin/zsh && \
     sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)" && \
+    # Google Cloud SDK
+    wget https://sdk.cloud.google.com -O gsdk.sh && \
+    bash gsdk.sh --disable-prompts && \
+    echo ". /root/google-cloud-sdk/completion.bash.inc" >> ~/.bashrc && \
+    echo ". /root/google-cloud-sdk/completion.zsh.inc" >> ~/.zshrc && \
+    echo ". /root/google-cloud-sdk/path.bash.inc" >> ~/.bashrc && \
+    echo ". /root/google-cloud-sdk/path.zsh.inc" >> ~/.zshrc && \
+    rm gsdk.sh && \
     # Cleanup apt.
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \

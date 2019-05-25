@@ -12,9 +12,9 @@ import pytest
 import subprocess
 import time
 
-from panoptes_utils.database import PanDB
-from panoptes_utils.logger import get_root_logger
-from panoptes_utils.messaging import PanMessaging
+from panoptes.utils.database import PanDB
+from panoptes.utils.logger import get_root_logger
+from panoptes.utils.messaging import PanMessaging
 
 # Global variable set to a bool by can_connect_to_mongo().
 _can_connect_to_mongo = None
@@ -173,7 +173,7 @@ def can_connect_to_mongo():
 @pytest.fixture(scope='function', params=_all_databases)
 def db_type(request):
 
-    db_list = pytest.config.option.test_databases
+    db_list = request.config.option.test_databases
     if request.param not in db_list and 'all' not in db_list:
         pytest.skip("Skipping {} DB, set --test-all-databases=True".format(request.param))
 
@@ -275,7 +275,7 @@ def save_environ():
 
 @pytest.fixture(scope='session')
 def data_dir():
-    return os.path.join(os.getenv('PANDIR'), 'panoptes-utils', 'panoptes_utils', 'tests', 'data')
+    return os.path.join(os.getenv('PANDIR'), 'panoptes-utils', 'panoptes/utils', 'tests', 'data')
 
 
 @pytest.fixture(scope='session')

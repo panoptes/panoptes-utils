@@ -1,0 +1,49 @@
+# Path to your oh-my-zsh installation.
+export ZSH="$HOME/.oh-my-zsh"
+
+ZSH_THEME="spaceship"
+
+# Uncomment the following line to disable bi-weekly auto-update checks.
+DISABLE_AUTO_UPDATE="true"
+
+# Uncomment the following line to enable command auto-correction.
+# ENABLE_CORRECTION="true"
+
+plugins=(
+  history-substring-search
+)
+
+source $ZSH/oh-my-zsh.sh
+
+# Preferred editor for local and remote sessions
+if [[ -n $SSH_CONNECTION ]]; then
+  export EDITOR='nano'
+else
+  export EDITOR='nano'
+fi
+
+# Each byobu shell has it's own history
+unsetopt share_history
+
+# Spaceship theme
+SPACESHIP_USER_PREFIX=""
+SPACESHIP_HOST_SHOW=always
+SPACESHIP_HOST_PREFIX="Service: "
+
+SPACESHIP_PROMPT_ORDER=(
+  time          # Time stamps section
+  host          # Hostname section
+  user          # Username section
+  dir           # Current directory section
+  git           # Git section (git_branch + git_status)
+  conda         # conda virtualenv section
+  exec_time     # Execution time
+  line_sep      # Line break
+  jobs          # Background jobs indicator
+  exit_code     # Exit code section
+  char          # Prompt character
+)
+
+# PANOPTES related
+export PANDIR=/var/panoptes
+export POCS=${PANDIR}/POCS
