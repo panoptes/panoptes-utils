@@ -2,14 +2,14 @@ version: '3.2'
 services:
   config-server:
     image: gcr.io/panoptes-survey/panoptes-utils
-    container_name: config-server
+    container_name: config_server
     privileged: true
     network_mode: host
-    env_file:
+    env_file: 
       - ${PANDIR}/env_file
     volumes:
       - pandir:/var/panoptes
-    command: bash -c "python ${PANDIR}/panoptes-utils/scripts/run_config_server.py --public"
+    command: bash -c "/opt/conda/envs/panoptes-env/bin/python ${PANDIR}/panoptes-utils/scripts/run_config_server.py --public"
   messaging-hub:
     image: gcr.io/panoptes-survey/panoptes-utils
     container_name: messaging-hub
@@ -17,10 +17,10 @@ services:
     network_mode: host
     env_file: ${PANDIR}/env_file
     depends_on:
-      - "config-server"
+      - "config-server"        
     volumes:
       - pandir:/var/panoptes
-    command: bash -c "python ${PANDIR}/panoptes-utils/scripts/run_messaging_hub.py --from-config"
+    command: bash -c "/opt/conda/envs/panoptes-env/bin/python ${PANDIR}/panoptes-utils/scripts/run_messaging_hub.py --from-config"
 volumes:
     pandir:
       driver: local
