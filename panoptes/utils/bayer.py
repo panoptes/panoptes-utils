@@ -73,10 +73,14 @@ def get_rgb_masks(data, separate_green=False, mask_path=None, force_new=False, v
         mask_path = os.path.join(os.environ['PANDIR'],
                                  f'rgb_masks_{data.shape[0]}_{data.shape[1]}.npz')
 
-    print('Mask path: {}'.format(mask_path))
+    def _print(msg):
+        if verbose:
+            print(msg)
+
+    _print('Mask path: {}'.format(mask_path))
 
     if force_new:
-        print("Forcing a new mask file")
+        _print("Forcing a new mask file")
         try:
             os.remove(mask_path)
         except FileNotFoundError:
@@ -85,17 +89,17 @@ def get_rgb_masks(data, separate_green=False, mask_path=None, force_new=False, v
     # Try to load existing file and if not generate new
     try:
         loaded_masks = np.load(mask_path)
-        print("Loaded masks")
+        _print("Loaded masks")
         mask_shape = loaded_masks[loaded_masks.files[0]].shape
         if mask_shape != data.shape:
-            print("Removing mask with wrong size")
+            _print("Removing mask with wrong size")
             os.remove(mask_path)
             raise FileNotFoundError
         else:
-            print("Using saved masks")
+            _print("Using saved masks")
             _rgb_masks = {color: loaded_masks[color] for color in loaded_masks.files}
     except Exception:
-        print("Making RGB masks")
+        _print("Making RGB masks")
 
         if data.ndim > 2:
             data = data[0]
@@ -140,7 +144,7 @@ def get_rgb_masks(data, separate_green=False, mask_path=None, force_new=False, v
         ).reshape(w, h))
 
         if separate_green:
-            print("Making separate green masks")
+            _print("Making separate green masks")
             green1_mask = (np.array(
                 [
                     is_g1(index)
@@ -178,7 +182,7 @@ def get_rgb_masks(data, separate_green=False, mask_path=None, force_new=False, v
                 'b': blue_mask,
             }
 
-        print("Saving masks files")
+        _print("Saving masks files")
         np.savez_compressed(mask_path, **_rgb_masks)
 
     return _rgb_masks
