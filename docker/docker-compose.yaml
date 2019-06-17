@@ -1,7 +1,7 @@
-version: '3.2'
+version: '3.7'
 services:
   config-server:
-    image: gcr.io/panoptes-survey/panoptes-utils
+    image: gcr.io/panoptes-survey/panoptes-utils:latest
     container_name: config-server
     privileged: true
     network_mode: host
@@ -11,7 +11,7 @@ services:
       - pandir:/var/panoptes
     command: /bin/bash -c "${PANDIR}/panoptes-utils/scripts/run_config_server.py --public"
   messaging-hub:
-    image: gcr.io/panoptes-survey/panoptes-utils
+    image: gcr.io/panoptes-survey/panoptes-utils:latest
     container_name: messaging-hub
     privileged: true
     network_mode: host
