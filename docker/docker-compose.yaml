@@ -9,7 +9,7 @@ services:
       - "${PANDIR:-/var/panoptes}/env_file"
     volumes:
       - pandir:/var/panoptes
-    command: /bin/bash -c "${PANDIR}/panoptes-utils/scripts/run_config_server.py --public"
+    command: /bin/bash -c "${PANDIR:-/var/panoptes}/panoptes-utils/scripts/run_config_server.py --public"
   messaging-hub:
     image: gcr.io/panoptes-survey/panoptes-utils:latest
     container_name: messaging-hub
@@ -21,7 +21,7 @@ services:
       - "config-server"
     volumes:
       - pandir:/var/panoptes
-    command: /bin/bash -c "${PANDIR}/panoptes-utils/scripts/run_messaging_hub.py --from-config"
+    command: /bin/bash -c "${PANDIR:-/var/panoptes}/panoptes-utils/scripts/run_messaging_hub.py --from-config"
 volumes:
     pandir:
       driver: local
