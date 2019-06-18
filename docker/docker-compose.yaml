@@ -6,7 +6,7 @@ services:
     privileged: true
     network_mode: host
     env_file:
-      - "${PANDIR}/env_file"
+      - "${PANDIR:-/var/panoptes}/env_file"
     volumes:
       - pandir:/var/panoptes
     command: /bin/bash -c "${PANDIR}/panoptes-utils/scripts/run_config_server.py --public"
@@ -16,7 +16,7 @@ services:
     privileged: true
     network_mode: host
     env_file:
-      - "${PANDIR}/env_file"
+      - "${PANDIR:-/var/panoptes}/env_file"
     depends_on:
       - "config-server"
     volumes:
