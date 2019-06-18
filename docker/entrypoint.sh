@@ -2,7 +2,6 @@
 
 METADATA_URL='http://metadata.google.internal/computeMetadata/v1/project/attributes'
 
-
 # Authenticate if key has been set - used on local units
 if [ ! -z ${GOOGLE_APPLICATION_CREDENTIALS} ]; then
     echo "Found Google credentials, activating service account."
