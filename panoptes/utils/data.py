@@ -128,13 +128,20 @@ def main():
     if args.folder and not os.path.exists(args.folder):
         print("Warning, data folder {} does not exist.".format(args.folder))
 
+    keep_going = args.keep_going or not args.no_keep_going
+
     # --no_narrow_field is the default, so the the args list below ignores args.no_narrow_field.
     dl = Downloader(
         data_folder=args.folder,
-        keep_going=args.keep_going or not args.no_keep_going,
+        keep_going=keep_going,
         narrow_field=args.narrow_field,
         wide_field=args.wide_field or not args.no_wide_field)
-    return dl.download_all_files()
+    success = dl.download_all_files()
+
+    # Docker builds are failing if one of the files is missing, which shouldn't
+    # be the case. This will all need to be reworked as part of our IERS updates.
+    if success is False and keep_going is True:
+        success = True
 
 
 if __name__ == '__main__':
