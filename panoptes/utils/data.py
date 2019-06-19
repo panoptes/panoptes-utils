@@ -143,6 +143,8 @@ def main():
     if success is False and keep_going is True:
         success = True
 
+    return success
+
 
 if __name__ == '__main__':
     if not main():
