@@ -226,7 +226,7 @@ class PanMessaging(object):
             flags = flags | zmq.NOBLOCK
         try:
             message = self.socket.recv_string(flags=flags)
-        except Exception as e:
+        except Exception:
             pass
         else:
             topic, msg = message.split(' ', maxsplit=1)
