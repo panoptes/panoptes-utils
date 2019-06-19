@@ -40,7 +40,7 @@ def load_module(module_name):
     >>> from panoptes.utils.library import load_module
     >>> camera = load_module('pocs.camera.simulator')
     >>> camera.__package__
-    'pocs.camera'
+    'pocs.camera.simulator'
 
     Args:
         module_name (str): Name of module to import.
