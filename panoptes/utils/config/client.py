@@ -2,7 +2,7 @@ import requests
 from panoptes.utils import serializers
 
 
-def get_config(key=None, host='localhost', port='6563', parse=True):
+def get_config(key=None, host='localhost', port='6563', parse=True, default=None):
     """Get a config item from the config server.
 
     Return the config entry for the given `key`. If `key=None` (default), return
@@ -20,6 +20,16 @@ def get_config(key=None, host='localhost', port='6563', parse=True):
         '30.0 deg'
         >>> get_config(key='cameras.devices[1].model', port=testing_port)
         'canon_gphoto2'
+        >>> # Returns `None` if key is not found
+        >>> foobar = get_config('foobar', port=testing_port)
+        >>> foobar is None
+        True
+        >>> get_config('foobar', port=testing_port, default='baz')
+        'baz'
+        >>> # Can use Quantities as well
+        >>> from astropy import units as u
+        >>> get_config('foobar', port=testing_port, default=42 * u.meter)
+        <Quantity 42. m>
 
     Args:
         key (str): The key to update, see Examples in `get_config` for details.
@@ -27,6 +37,7 @@ def get_config(key=None, host='localhost', port='6563', parse=True):
         port (str, optional): The config server port, defaults to 6563.
         parse (bool, optional): If response should be parsed by
             `~panoptes.utils.serializers.from_json`, default True.
+        default (str, optional): The config server port, defaults to 6563.
 
     Returns:
         dict: The corresponding config entry.
@@ -40,10 +51,12 @@ def get_config(key=None, host='localhost', port='6563', parse=True):
     if not response.ok:
         raise Exception(f'Cannot access config server: {response.content}')
 
-    if parse:
-        config_entry = serializers.from_json(response.content.decode('utf8'))
-    else:
-        config_entry = response.json()
+    config_entry = default
+    if response.text != 'null\n':
+        if parse:
+            config_entry = serializers.from_json(response.content.decode('utf8'))
+        else:
+            config_entry = response.json()
 
     return config_entry
 
