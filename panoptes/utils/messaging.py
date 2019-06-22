@@ -3,7 +3,7 @@ import zmq
 
 from panoptes.utils import current_time
 from panoptes.utils.logger import get_root_logger
-from panoptes.utils.serializers import from_yaml
+from panoptes.utils.serializers import from_json
 from panoptes.utils.serializers import to_json
 
 
@@ -230,7 +230,7 @@ class PanMessaging(object):
             pass
         else:
             topic, msg = message.split(' ', maxsplit=1)
-            msg_obj = from_yaml(msg)
+            msg_obj = from_json(msg)
 
         return topic, msg_obj
 

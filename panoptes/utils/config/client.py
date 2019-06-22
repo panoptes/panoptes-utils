@@ -14,9 +14,9 @@ def get_config(key=None, host='localhost', port='6563', parse=True):
         >>> get_config(key='name')
         'PAN000'
         >>> get_config(key='location.horizon')
-        <Quantity 30 * u.deg>
+        <Quantity 30. deg>
         >>> get_config(key='location.horizon', parse=False)
-        '30 deg'
+        '30.0 deg'
         >>> get_config(key='cameras.devices[1].model')
         'canon_gphoto2'
 
