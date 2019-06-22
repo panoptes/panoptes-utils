@@ -21,7 +21,7 @@ services:
       - "config-server"
     volumes:
       - pandir:/var/panoptes
-    command: /bin/bash -c "${PANDIR:-/var/panoptes}/panoptes-utils/scripts/run_messaging_hub.py --from-config"
+    command: /bin/bash -c "${PANDIR:-/var/panoptes}/panoptes-utils/scripts/run_messaging_hub.py --from-config --config-host 0.0.0.0"
 volumes:
     pandir:
       driver: local
