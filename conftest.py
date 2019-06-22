@@ -114,6 +114,26 @@ def pytest_runtest_logreport(report):
         pass
 
 
+@pytest.fixture(scope='session', autouse=True)
+def config_server():
+    cmd = os.path.join(os.getenv('PANDIR'),
+                       'panoptes-utils',
+                       'scripts',
+                       'run_config_server.py'
+                       )
+    args = [cmd, '--host', 'localhost', '--port', '6565']
+
+    logger = get_root_logger()
+    logger.info(f'Starting config_server for testing session: {args!r}')
+
+    proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    time.sleep(1)
+    yield
+    logger.info(f'Killing config_server')
+    proc.terminate()
+
+
 @pytest.fixture
 def temp_file():
     temp_file = 'temp'
