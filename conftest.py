@@ -121,16 +121,17 @@ def config_server():
                        'scripts',
                        'run_config_server.py'
                        )
-    args = [cmd, '--host', 'localhost', '--port', '6565']
+    args = [cmd, '--host', 'localhost', '--port', '6565', '--ignore-local', '--no-save']
 
     logger = get_root_logger()
     logger.info(f'Starting config_server for testing session: {args!r}')
 
     proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    logger.info(f'config_server started with PID={proc.pid}')
 
     time.sleep(1)
     yield
-    logger.info(f'Killing config_server')
+    logger.info(f'Killing config_server started with PID={proc.pid}')
     proc.terminate()
 
 

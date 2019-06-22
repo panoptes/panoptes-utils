@@ -24,6 +24,8 @@ if __name__ == '__main__':
                         help="Config file, default $PANDIR/conf_files/pocs.yaml")
     parser.add_argument('--no-save', default=False, action='store_true',
                         help='Config entries are saved automatically by default.')
+    parser.add_argument('--ignore-local', default=False, action='store_true',
+                        help='Ignore the local config files, default False. Mostly for testing.')
     parser.add_argument('--debug', default=False, action='store_true', help='Debug')
     args = parser.parse_args()
 
@@ -43,7 +45,7 @@ if __name__ == '__main__':
 
     app.config['auto_save'] = not args.no_save
     app.config['config_file'] = args.config_file
-    app.config['POCS'] = load_config(config_files=args.config_file)
+    app.config['POCS'] = load_config(config_files=args.config_file, ignore_local=args.ignore_local)
     app.config['POCS_cut'] = Cut(app.config['POCS'])
 
     app.run(

@@ -11,13 +11,14 @@ def get_config(key=None, host='localhost', port='6563', parse=True):
     Nested keys can be specified as a string, as per [scalpl](https://pypi.org/project/scalpl/).
 
     Examples:
-        >>> get_config(key='name')
-        'PAN000'
-        >>> get_config(key='location.horizon')
+        >>> testing_port = 6565
+        >>> get_config(key='name', port=testing_port)
+        'Generic PANOPTES Unit'
+        >>> get_config(key='location.horizon', port=testing_port)
         <Quantity 30. deg>
-        >>> get_config(key='location.horizon', parse=False)
+        >>> get_config(key='location.horizon', parse=False, port=testing_port)
         '30.0 deg'
-        >>> get_config(key='cameras.devices[1].model')
+        >>> get_config(key='cameras.devices[1].model', port=testing_port)
         'canon_gphoto2'
 
     Args:
@@ -53,6 +54,16 @@ def set_config(key, new_value, host='localhost', port='6563', parse=True):
     Given a `key` entry, update the config to match. The `key` is a dot accessible
     string, as given by [scalpl](https://pypi.org/project/scalpl/). See Examples in `get_config`
     for details.
+
+    Examples:
+        >>> testing_port = 6565
+        >>> from astropy import units as u
+        >>> set_config('location.horizon', 35 * u.degree, port=testing_port)
+        {'location.horizon': <Quantity 35. deg>}
+        >>> get_config(key='location.horizon', port=testing_port)
+        <Quantity 35. deg>
+        >>> set_config('location.horizon', 30 * u.degree, port=testing_port)
+        {'location.horizon': <Quantity 30. deg>}
 
     Args:
         key (str): The key to update, see Examples in `get_config` for details.
