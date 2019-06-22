@@ -231,7 +231,6 @@ class PanMessaging(object):
             print(f'error in receive_message: {e!r}')
         else:
             topic, msg = message.split(' ', maxsplit=1)
-            print(f'in messaging: {msg!r}')
             msg_obj = from_json(msg)
 
         return topic, msg_obj

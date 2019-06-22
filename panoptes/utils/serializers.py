@@ -124,7 +124,6 @@ def from_json(msg):
     Returns:
         `dict`: The loaded object.
     """
-
     return _parse_all_objects(json.loads(msg))
 
 
