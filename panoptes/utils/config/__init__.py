@@ -73,7 +73,7 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
             warn("Problem with config file {}, skipping. {}".format(path, e))
 
         # Load local version of config
-        if ignore_local is True:
+        if ignore_local is False:
             local_version = os.path.join(config_dir, f.replace('.', '_local.'))
             if os.path.exists(local_version):
                 try:
