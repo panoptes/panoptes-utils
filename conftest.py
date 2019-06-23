@@ -112,16 +112,26 @@ def pytest_runtest_logreport(report):
         pass
 
 
+@pytest.fixture(scope='module')
+def host():
+    return 'localhost'
+
+
+@pytest.fixture(scope='module')
+def port():
+    return '6565'
+
+
 @pytest.fixture(scope='session', autouse=True)
-def config_server():
+def config_server(host, port):
     cmd = os.path.join(os.getenv('PANDIR'),
                        'panoptes-utils',
                        'scripts',
                        'run_config_server.py'
                        )
     args = [cmd, '--config-file', f'/var/panoptes/panoptes-utils/panoptes/tests/pocs_testing.yaml',
-            '--host', 'localhost',
-            '--port', '6565',
+            '--host', host,
+            '--port', port,
             '--ignore-local',
             '--no-save']
 

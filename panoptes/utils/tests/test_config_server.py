@@ -12,16 +12,6 @@ from panoptes.utils.config.client import get_config
 from panoptes.utils.config.client import set_config
 
 
-@pytest.fixture(scope='module')
-def host():
-    return 'localhost'
-
-
-@pytest.fixture(scope='module')
-def port():
-    return '6563'
-
-
 @pytest.fixture(scope='function', autouse=True)
 def config_server(host, port):
     cmd = os.path.join(os.getenv('PANDIR'),
