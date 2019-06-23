@@ -52,3 +52,4 @@ RUN cd ${PANDIR}/panoptes-utils && \
 ENTRYPOINT ["/var/panoptes/panoptes-utils/docker/entrypoint.sh"]
 
 CMD ["/bin/zsh"]
+
