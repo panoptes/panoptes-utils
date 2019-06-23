@@ -151,7 +151,7 @@ def config_server(host, port, config_path):
     proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     logger.critical(f'config_server started with PID={proc.pid}')
 
-    time.sleep(1)
+    time.sleep(1.5)
     yield
     logger.critical(f'Killing config_server started with PID={proc.pid}')
     try:
