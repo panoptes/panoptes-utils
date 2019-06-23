@@ -119,7 +119,11 @@ def config_server():
                        'scripts',
                        'run_config_server.py'
                        )
-    args = [cmd, '--host', 'localhost', '--port', '6565', '--ignore-local', '--no-save']
+    args = [cmd, '--config-file', f'/var/panoptes/panoptes-utils/panoptes/tests/pocs_testing.yaml',
+            '--host', 'localhost',
+            '--port', '6565',
+            '--ignore-local',
+            '--no-save']
 
     logger = get_root_logger()
     logger.info(f'Starting config_server for testing session: {args!r}')

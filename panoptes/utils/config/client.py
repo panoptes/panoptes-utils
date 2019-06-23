@@ -14,7 +14,7 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
     Examples:
         >>> testing_port = 6565
         >>> get_config(key='name', port=testing_port)
-        'Generic PANOPTES Unit'
+        'Testing PANOPTES Unit'
         >>> get_config(key='location.horizon', port=testing_port)
         <Quantity 30. deg>
         >>> get_config(key='location.horizon', parse=False, port=testing_port)
