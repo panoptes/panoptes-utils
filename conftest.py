@@ -112,12 +112,12 @@ def pytest_runtest_logreport(report):
         pass
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def host():
     return 'localhost'
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def port():
     return '6565'
 
