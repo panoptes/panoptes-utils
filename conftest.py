@@ -122,21 +122,31 @@ def port():
     return '6565'
 
 
+@pytest.fixture(scope='session')
+def config_path():
+    return os.path.join(os.getenv('PANDIR'),
+                        'panoptes-utils',
+                        'panoptes',
+                        'tests',
+                        'pocs_testing.yaml'
+                        )
+
+
 @pytest.fixture(scope='module', autouse=True)
-def config_server(host, port):
+def config_server(host, port, config_path):
     cmd = os.path.join(os.getenv('PANDIR'),
                        'panoptes-utils',
                        'scripts',
                        'run_config_server.py'
                        )
-    args = [cmd, '--config-file', f'/var/panoptes/panoptes-utils/panoptes/tests/pocs_testing.yaml',
+    args = [cmd, '--config-file', config_path,
             '--host', host,
             '--port', port,
             '--ignore-local',
             '--no-save']
 
     logger = get_root_logger()
-    logger.debug(f'Starting config_server for testing session: {args!r}')
+    logger.debug(f'Starting config_server for testing module: {args!r}')
 
     proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     logger.critical(f'config_server started with PID={proc.pid}')
