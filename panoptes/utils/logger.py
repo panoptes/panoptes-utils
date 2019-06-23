@@ -16,7 +16,7 @@ from panoptes.utils.serializers import from_yaml
 from panoptes.utils.serializers import to_json
 
 logging.getLogger('matplotlib').setLevel(logging.WARNING)
-logging.getLogger('requests').setLevel(logging.WARNING)
+logging.getLogger('urllib3').setLevel(logging.WARNING)
 
 
 # We don't want to create multiple root loggers that are "identical",
