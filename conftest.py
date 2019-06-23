@@ -69,7 +69,6 @@ def pytest_runtest_logstart(nodeid, location):
         logger.critical('')
         logger.critical('##########' * 8)
         logger.critical('     START TEST {}', nodeid)
-        logger.critical('')
     except Exception:
         pass
 
@@ -88,7 +87,6 @@ def pytest_runtest_logfinish(nodeid, location):
         logger = get_root_logger()
         logger.critical('')
         logger.critical('       END TEST {}', nodeid)
-        logger.critical('')
         logger.critical('##########' * 8)
     except Exception:
         pass
