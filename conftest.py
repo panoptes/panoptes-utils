@@ -122,7 +122,7 @@ def port():
     return '6565'
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope='module', autouse=True)
 def config_server(host, port):
     cmd = os.path.join(os.getenv('PANDIR'),
                        'panoptes-utils',
@@ -144,7 +144,11 @@ def config_server(host, port):
     time.sleep(1)
     yield
     logger.critical(f'Killing config_server started with PID={proc.pid}')
-    proc.terminate()
+    try:
+        outs, errs = proc.communicate(timeout=1)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        outs, errs = proc.communicate()
 
 
 @pytest.fixture

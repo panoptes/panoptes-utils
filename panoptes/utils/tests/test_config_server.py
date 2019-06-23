@@ -12,7 +12,7 @@ from panoptes.utils.config.client import get_config
 from panoptes.utils.config.client import set_config
 
 
-@pytest.fixture(scope='function', autouse=True)
+@pytest.fixture(scope='function')
 def config_server(host, port):
     cmd = os.path.join(os.getenv('PANDIR'),
                        'panoptes-utils',
@@ -34,10 +34,14 @@ def config_server(host, port):
     time.sleep(1)
     yield
     logger.critical(f'Killing config_server started with PID={proc.pid}')
-    proc.terminate()
+    try:
+        outs, errs = proc.communicate(timeout=1)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        outs, errs = proc.communicate()
 
 
-def test_config_client(host, port):
+def test_config_client(config_server, host, port):
     assert isinstance(get_config(host=host, port=port), dict)
 
     assert set_config('location.horizon', 47 * u.degree, host=host,
@@ -50,7 +54,7 @@ def test_config_client(host, port):
     assert get_config('location.horizon', host=host, port=port, parse=False) == '47.0 deg'
 
 
-def test_config_reset(host, port):
+def test_config_reset(config_server, host, port):
     # Check we are at default.
     assert get_config('location.horizon', host=host, port=port) == 30 * u.degree
 
