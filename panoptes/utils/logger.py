@@ -15,8 +15,8 @@ from panoptes.utils.config import parse_config
 from panoptes.utils.serializers import from_yaml
 from panoptes.utils.serializers import to_json
 
-mpl_logger = logging.getLogger('matplotlib')
-mpl_logger.setLevel(logging.WARNING)
+logging.getLogger('matplotlib').setLevel(logging.WARNING)
+logging.getLogger('requests').setLevel(logging.WARNING)
 
 
 # We don't want to create multiple root loggers that are "identical",
