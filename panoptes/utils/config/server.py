@@ -3,8 +3,12 @@ from flask import request
 from flask import jsonify
 from flask.json import JSONEncoder
 
+from scalpl import Cut
+
+from panoptes.utils.config import load_config
 from panoptes.utils.config import save_config
 from panoptes.utils.serializers import _serialize_object
+from panoptes.utils.logger import get_root_logger
 
 app = Flask(__name__)
 
@@ -35,7 +39,7 @@ def get_config_entry():
     For example, take the following configuration:
 
     ```
-    { 
+    {
         'location': {
             'elevation': 3400.0,
         }
@@ -92,4 +96,24 @@ def set_config_entry():
     return jsonify({
         'success': False,
         'msg': "Invalid. Need json request: {'key': <config_entry>, 'value': <new_values>}"
+    })
+
+
+@app.route('/reset-config', methods=['POST'])
+def reset_config():
+    if request.is_json:
+        get_root_logger().warning(f'Resetting config server')
+        req_data = request.get_json()
+
+        if req_data['reset']:
+            # Reload the config
+            app.config['POCS'] = load_config(config_files=app.config['config_file'],
+                                             ignore_local=app.config['ignore_local'])
+            app.config['POCS_cut'] = Cut(app.config['POCS'])
+
+        return jsonify(req_data)
+
+    return jsonify({
+        'success': False,
+        'msg': "Invalid. Need json request: {'reset': True}"
     })

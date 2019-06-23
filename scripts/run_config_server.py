@@ -45,7 +45,9 @@ if __name__ == '__main__':
 
     app.config['auto_save'] = not args.no_save
     app.config['config_file'] = args.config_file
-    app.config['POCS'] = load_config(config_files=args.config_file, ignore_local=args.ignore_local)
+    app.config['ignore_local'] = args.ignore_local
+    app.config['POCS'] = load_config(config_files=args.config_file,
+                                     ignore_local=args.ignore_local)
     app.config['POCS_cut'] = Cut(app.config['POCS'])
 
     app.run(

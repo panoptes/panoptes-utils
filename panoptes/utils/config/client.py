@@ -1,5 +1,6 @@
 import requests
 from panoptes.utils import serializers
+from panoptes.utils.logger import get_root_logger
 
 
 def get_config(key=None, host='localhost', port='6563', parse=True, default=None):
@@ -96,17 +97,21 @@ def set_config(key, new_value, host='localhost', port='6563', parse=True):
 
     json_str = serializers.to_json({key: new_value})
 
-    response = requests.post(url,
-                             data=json_str,
-                             headers={'Content-Type': 'application/json'}
-                             )
-
-    if not response.ok:
-        raise Exception(f'Cannot access config server: {response.text}')
-
-    if parse:
-        config_entry = serializers.from_json(response.content.decode('utf8'))
+    config_entry = None
+    try:
+        # We use our own serializer so pass as `data` instead of `json`.
+        response = requests.post(url,
+                                 data=json_str,
+                                 headers={'Content-Type': 'application/json'}
+                                 )
+        if not response.ok:
+            raise Exception(f'Cannot access config server: {response.text}')
+    except Exception as e:
+        get_root_logger().info(f'Problem with set_config: {e!r}')
     else:
-        config_entry = response.json()
+        if parse:
+            config_entry = serializers.from_json(response.content.decode('utf8'))
+        else:
+            config_entry = response.json()
 
     return config_entry
