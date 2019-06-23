@@ -128,7 +128,7 @@ def config_path():
                         'panoptes-utils',
                         'panoptes',
                         'tests',
-                        'pocs_testing.yaml'
+                        'panoptes_utils_testing.yaml'
                         )
 
 
