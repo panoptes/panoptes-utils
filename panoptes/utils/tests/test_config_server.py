@@ -7,6 +7,7 @@ import requests
 from astropy import units as u
 
 from panoptes.utils import serializers
+from panoptes.utils.logger import get_root_logger
 from panoptes.utils.config.client import get_config
 from panoptes.utils.config.client import set_config
 
@@ -21,26 +22,32 @@ def port():
     return '6563'
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='function', autouse=True)
 def config_server(host, port):
     cmd = os.path.join(os.getenv('PANDIR'),
                        'panoptes-utils',
                        'scripts',
                        'run_config_server.py'
                        )
-    args = [cmd, '--host', host, '--port', port, '--no-save', '--ignore-local']
+    args = [cmd, '--config-file', f'/var/panoptes/panoptes-utils/panoptes/tests/pocs_testing.yaml',
+            '--host', host,
+            '--port', port,
+            '--ignore-local',
+            '--no-save']
+
+    logger = get_root_logger()
+    logger.debug(f'Starting config_server for testing session: {args!r}')
 
     proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    logger.critical(f'config_server started with PID={proc.pid}')
 
     time.sleep(1)
-    yield proc
+    yield
+    logger.critical(f'Killing config_server started with PID={proc.pid}')
     proc.terminate()
 
 
-def test_config_client(config_server, host, port):
-    # If None then server is still running.
-    assert config_server.poll() is None
-
+def test_config_client(host, port):
     assert isinstance(get_config(host=host, port=port), dict)
 
     assert set_config('location.horizon', 47 * u.degree, host=host,
@@ -53,10 +60,7 @@ def test_config_client(config_server, host, port):
     assert get_config('location.horizon', host=host, port=port, parse=False) == '47.0 deg'
 
 
-def test_config_reset(config_server, host, port):
-    # If None then server is still running.
-    assert config_server.poll() is None
-
+def test_config_reset(host, port):
     # Check we are at default.
     assert get_config('location.horizon', host=host, port=port) == 30 * u.degree
 
