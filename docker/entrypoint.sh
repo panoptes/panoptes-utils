@@ -2,19 +2,17 @@
 
 METADATA_URL='http://metadata.google.internal/computeMetadata/v1/project/attributes'
 
-echo "Setting up base environment"
-echo "GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}"
-echo "GOOGLE_COMPUTE_INSTANCE: ${GOOGLE_COMPUTE_INSTANCE}"
-
 # Authenticate if key has been set - used on local units
 if [ ! -z ${GOOGLE_APPLICATION_CREDENTIALS} ]; then
-    echo "Found Google credentials, activating service account"
+    echo "Found Google credentials, activating service account."
+    echo "GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}"
     /root/google-cloud-sdk/bin/gcloud auth activate-service-account \
     --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
 fi
 
 # Authenticate if on GCE
 if [ ! -z ${GOOGLE_COMPUTE_INSTANCE} ]; then
+    echo "Looks like this is a GCE instance."
     echo "Getting Cloud SQL config from metadata server"
     curl --silent "${METADATA_URL}/cloud_sql_conf" -H "Metadata-Flavor: Google" > ${HOME}/.cloud-sql-conf.yaml
 

@@ -493,6 +493,24 @@ def update_headers(file_path, info):
         hdu.header.set('RA-RATE', info.get('tracking_rate_ra', ''), 'RA Tracking Rate')
 
 
+def getdata(fn, *args, **kwargs):
+    """Get the FITS data.
+
+    Small wrapper around `astropy.io.fits.getdata` to auto-determine
+    the FITS extension. This will return the data associated with the
+    image.
+
+    Args:
+        fn (str): Path to FITS file.
+        *args: Passed to `astropy.io.fits.getdata`.
+        **kwargs: Passed to `astropy.io.fits.getdata`.
+
+    Returns:
+        `astropy.io.fits.header.Header`: The FITS data.
+    """
+    return fits.getdata(fn)
+
+
 def getheader(fn, *args, **kwargs):
     """Get the FITS header.
 
