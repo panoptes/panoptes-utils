@@ -54,9 +54,9 @@ class SerialData(object):
 
         # Register our serial simulators
         >>> serial.protocol_handler_packages.append('pocs.tests.serial_handlers')
-        >>> from pocs.tests.serial_handlers.protocol_buffers import SetRBufferValue as WriteFakeDevice
-        >>> from pocs.tests.serial_handlers.protocol_buffers import GetWBufferValue as ReadFakeDevice
-        >>> from pocs.tests.serial_handlers.protocol_buffers import ResetBuffers
+        >>> from panoptes.tests.serial_handlers.protocol_buffers import SetRBufferValue as WriteFakeDevice
+        >>> from panoptes.tests.serial_handlers.protocol_buffers import GetWBufferValue as ReadFakeDevice
+        >>> from panoptes.tests.serial_handlers.protocol_buffers import ResetBuffers
 
         # Import our serial utils
         >>> from panoptes.utils.rs232 import SerialData
