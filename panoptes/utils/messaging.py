@@ -178,20 +178,21 @@ class PanMessaging(object):
         elif not self.topic_name_re.fullmatch(topic):
             raise ValueError('Topic name ("{}") is not valid'.format(topic))
 
+        if topic == 'PANCHAT':
+            self.logger.info(f"{topic} {message}")
+
         if isinstance(message, str):
-            message = {
-                'message': message,
-                'timestamp': current_time(pretty=True),
-            }
+            message = to_json({
+                "message": message,
+                "timestamp": current_time(pretty=True),
+            })
         elif isinstance(message, dict):
             message = to_json(message)
         else:
             raise ValueError('Message value must be a string or dict')
 
-        full_message = '{} {}'.format(topic, message)
-
-        if topic == 'PANCHAT':
-            self.logger.info("{} {}".format(topic, message['message']))
+        # Build the full message with topic
+        full_message = f'{topic} {message}'
 
         # Send the message
         self.socket.send_string(full_message, flags=zmq.NOBLOCK)
@@ -226,7 +227,7 @@ class PanMessaging(object):
             flags = flags | zmq.NOBLOCK
         try:
             # Ugh. So ugly with the strings.
-            message = self.socket.recv_string(flags=flags).replace("'", '"')
+            message = self.socket.recv_string(flags=flags)
         except Exception as e:
             print(f'error in receive_message: {e!r}')
         else:
