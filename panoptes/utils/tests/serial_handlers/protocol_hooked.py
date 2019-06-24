@@ -3,7 +3,7 @@
 # serial_class_for_url from your test to a function with the same API as
 # ExampleSerialClassForUrl. Or assign your class to Serial.
 
-from panoptes.tests.serial_handlers import NoOpSerial
+from panoptes.utils.tests.serial_handlers import NoOpSerial
 
 
 def ExampleSerialClassForUrl(url):

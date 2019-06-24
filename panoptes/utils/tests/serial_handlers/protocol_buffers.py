@@ -1,6 +1,6 @@
 # This module implements a handler for serial_for_url("buffers://").
 
-from panoptes.tests.serial_handlers import NoOpSerial
+from panoptes.utils.tests.serial_handlers import NoOpSerial
 
 import io
 from serial import serialutil
