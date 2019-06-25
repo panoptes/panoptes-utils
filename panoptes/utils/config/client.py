@@ -48,20 +48,21 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
     """
     url = f'http://{host}:{port}/get-config'
 
+    config_entry = default
+
     try:
         response = requests.post(url, json={'key': key})
     except Exception as e:
         get_root_logger().info(f'Problem with get_config: {e!r}')
+    else:
+        if not response.ok:
+            raise Exception(f'Cannot access config server: {response.content}')
 
-    if not response.ok:
-        raise Exception(f'Cannot access config server: {response.content}')
-
-    config_entry = default
-    if response.text != 'null\n':
-        if parse:
-            config_entry = serializers.from_json(response.content.decode('utf8'))
-        else:
-            config_entry = response.json()
+        if response.text != 'null\n':
+            if parse:
+                config_entry = serializers.from_json(response.content.decode('utf8'))
+            else:
+                config_entry = response.json()
 
     return config_entry
 
