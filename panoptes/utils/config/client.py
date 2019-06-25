@@ -47,7 +47,11 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
         Exception: Raised if the config server is not available.
     """
     url = f'http://{host}:{port}/get-config'
-    response = requests.post(url, json={'key': key})
+
+    try:
+        response = requests.post(url, json={'key': key})
+    except Exception as e:
+        get_root_logger().info(f'Problem with get_config: {e!r}')
 
     if not response.ok:
         raise Exception(f'Cannot access config server: {response.content}')
