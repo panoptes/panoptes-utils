@@ -16,7 +16,7 @@ usage() {
   TITLE             Optional tilte to be placed on jpeg.
 
  Example:
-  scripts/cr2_to_jpg.sh /var/panoptes/images/temp.cr2 \"M42 (Orion's Nebula)\"
+  cr2-to-jpg /var/panoptes/images/temp.cr2 \"M42 (Orion's Nebula)\"
 "
 }
 

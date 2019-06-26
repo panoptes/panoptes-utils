@@ -11,6 +11,7 @@ import os
 import pytest
 import subprocess
 import time
+import shutil
 
 from panoptes.utils.database import PanDB
 from panoptes.utils.logger import get_root_logger
@@ -134,11 +135,9 @@ def config_path():
 
 @pytest.fixture(scope='module', autouse=True)
 def config_server(host, port, config_path):
-    cmd = os.path.join(os.getenv('PANDIR'),
-                       'panoptes-utils',
-                       'scripts',
-                       'run_config_server.py'
-                       )
+    cmd = shutil.which('panoptes-config-server')
+    assert cmd is not None
+
     args = [cmd, '--config-file', config_path,
             '--host', host,
             '--port', port,
@@ -261,7 +260,8 @@ def messaging_ports():
 
 @pytest.fixture(scope='function')
 def message_forwarder(messaging_ports):
-    cmd = os.path.join(os.getenv('PANDIR'), 'panoptes-utils', 'scripts', 'run_messaging_hub.py')
+    cmd = shutil.which('panoptes-messaging-hub')
+    assert cmd is not None
     args = [cmd]
     # Note that the other programs using these port pairs consider
     # them to be pub and sub, in that order, but the forwarder sees things

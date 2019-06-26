@@ -1,8 +1,8 @@
-import os
 import time
 import pytest
 import subprocess
 import requests
+import shutil
 
 from astropy import units as u
 
@@ -14,11 +14,8 @@ from panoptes.utils.config.client import set_config
 
 @pytest.fixture(scope='function')
 def config_server(host, port, config_path):
-    cmd = os.path.join(os.getenv('PANDIR'),
-                       'panoptes-utils',
-                       'scripts',
-                       'run_config_server.py'
-                       )
+    cmd = shutil.which('panoptes-config-server')
+    assert cmd is not None
 
     args = [cmd, '--config-file', config_path,
             '--host', host,
