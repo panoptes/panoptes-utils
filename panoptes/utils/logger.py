@@ -189,6 +189,10 @@ class StrFormatLogRecord(logging.LogRecord):
         msg = str(self.msg)
         return logger_msg_formatter(msg, self.args)
 
+    @property
+    def text(self):
+        return self.getMessage()
+
 
 def get_root_logger(profile='panoptes', log_config=None):
     """Creates a root logger for PANOPTES used by the PanBase object.
