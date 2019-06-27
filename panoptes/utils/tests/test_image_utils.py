@@ -92,6 +92,6 @@ def test_make_pretty_image_cr2_fail():
         with open(tmpfile, 'w') as f:
             f.write('not an image file')
         with pytest.raises(error.InvalidCommand):
-            img_utils.make_pretty_image(tmpfile, title='some text', link_latest=False)
+            img_utils.make_pretty_image(tmpfile, title='some text', link_latest=False, verbose=True)
         with pytest.raises(error.InvalidCommand):
             img_utils.make_pretty_image(tmpfile, verbose=True)

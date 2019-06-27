@@ -72,9 +72,10 @@ def test_send_string(pub_and_sub):
 
 def test_send_datetime(pub_and_sub):
     pub, sub = pub_and_sub
-    pub.send_message('Test-Topic', {'date': datetime(2017, 1, 1)})
+    date_obj = datetime(2017, 1, 1)
+    pub.send_message('Test-Topic', {'date': date_obj})
     topic, msg_obj = sub.receive_message()
-    assert msg_obj['date'] == '2017-01-01T00:00:00'
+    assert msg_obj['date'] == date_obj
 
 
 ################################################################################

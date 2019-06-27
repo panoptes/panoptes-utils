@@ -11,6 +11,7 @@ import os
 import pytest
 import subprocess
 import time
+import shutil
 
 from panoptes.utils.database import PanDB
 from panoptes.utils.logger import get_root_logger
@@ -69,7 +70,6 @@ def pytest_runtest_logstart(nodeid, location):
         logger.critical('')
         logger.critical('##########' * 8)
         logger.critical('     START TEST {}', nodeid)
-        logger.critical('')
     except Exception:
         pass
 
@@ -88,7 +88,6 @@ def pytest_runtest_logfinish(nodeid, location):
         logger = get_root_logger()
         logger.critical('')
         logger.critical('       END TEST {}', nodeid)
-        logger.critical('')
         logger.critical('##########' * 8)
     except Exception:
         pass
@@ -114,20 +113,51 @@ def pytest_runtest_logreport(report):
         pass
 
 
-@pytest.fixture(autouse=True, scope='session')
-def config_server():
+@pytest.fixture(scope='session')
+def host():
+    return 'localhost'
+
+
+@pytest.fixture(scope='session')
+def port():
+    return '6565'
+
+
+@pytest.fixture(scope='session')
+def config_path():
+    return os.path.join(os.getenv('PANDIR'),
+                        'panoptes-utils',
+                        'panoptes',
+                        'tests',
+                        'panoptes_utils_testing.yaml'
+                        )
+
+
+@pytest.fixture(scope='module', autouse=True)
+def config_server(host, port, config_path):
+    cmd = shutil.which('panoptes-config-server')
+    assert cmd is not None
+
+    args = [cmd, '--config-file', config_path,
+            '--host', host,
+            '--port', port,
+            '--ignore-local',
+            '--no-save']
+
     logger = get_root_logger()
-    logger.info(f'Starting config_server')
+    logger.debug(f'Starting config_server for testing module: {args!r}')
 
-    cmd = os.path.join(os.getenv('PANDIR'), 'panoptes-utils', 'scripts', 'run_config_server.py')
-    args = [cmd, '--no-save']
+    proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    logger.critical(f'config_server started with PID={proc.pid}')
 
-    get_root_logger().info('config_server fixture starting: {}', args)
-    proc = subprocess.Popen(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    time.sleep(3)
+    time.sleep(1.5)
     yield
-    logger.info(f'Terminating config_server')
-    proc.terminate()
+    logger.critical(f'Killing config_server started with PID={proc.pid}')
+    try:
+        outs, errs = proc.communicate(timeout=1)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        outs, errs = proc.communicate()
 
 
 @pytest.fixture
@@ -230,7 +260,8 @@ def messaging_ports():
 
 @pytest.fixture(scope='function')
 def message_forwarder(messaging_ports):
-    cmd = os.path.join(os.getenv('PANDIR'), 'panoptes-utils', 'scripts', 'run_messaging_hub.py')
+    cmd = shutil.which('panoptes-messaging-hub')
+    assert cmd is not None
     args = [cmd]
     # Note that the other programs using these port pairs consider
     # them to be pub and sub, in that order, but the forwarder sees things

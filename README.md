@@ -38,7 +38,7 @@ A simple config param server. Runs as a Flask microservice that delivers JSON do
 in response to requests for config key items. To start the service run:
 
 ```bash
-scripts/run_config_server.py
+run-config-server
 ```
 
 The server can be queried/set in python:
@@ -130,7 +130,7 @@ PANOPTES system. Running the Messaging Hub will set up a forwarding service that
 number of publishers and subscribers.
 
 ```bash
-scripts/run_messaging_hub.py --from-config
+panoptes-messaging-hub --from-config
 ```
 
 ## Docker

@@ -73,7 +73,7 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
             warn("Problem with config file {}, skipping. {}".format(path, e))
 
         # Load local version of config
-        if not ignore_local:
+        if ignore_local is False:
             local_version = os.path.join(config_dir, f.replace('.', '_local.'))
             if os.path.exists(local_version):
                 try:
@@ -82,7 +82,10 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
                     warn("Problem with local config file {}, skipping".format(local_version))
 
     # parse_config currently only corrects directory names.
-    return parse_config(config)
+    if parse:
+        config = parse_config(config)
+
+    return config
 
 
 def save_config(path, config, overwrite=True):
@@ -116,7 +119,7 @@ def save_config(path, config, overwrite=True):
 
     full_path = f'{base}{ext}'
 
-    if os.path.exists(full_path) and not overwrite:
+    if os.path.exists(full_path) and overwrite is False:
         warn("Path exists and overwrite=False: {}".format(full_path))
     else:
         # Create directory if does not exist

@@ -53,10 +53,8 @@ class SerialData(object):
         >>> import serial
 
         # Register our serial simulators
-        >>> serial.protocol_handler_packages.append('pocs.tests.serial_handlers')
-        >>> from pocs.tests.serial_handlers.protocol_buffers import SetRBufferValue as WriteFakeDevice
-        >>> from pocs.tests.serial_handlers.protocol_buffers import GetWBufferValue as ReadFakeDevice
-        >>> from pocs.tests.serial_handlers.protocol_buffers import ResetBuffers
+        >>> serial.protocol_handler_packages.append('panoptes.utils.tests.serial_handlers')
+        >>> from panoptes.utils.tests.serial_handlers import protocol_buffers as pb
 
         # Import our serial utils
         >>> from panoptes.utils.rs232 import SerialData
@@ -66,7 +64,7 @@ class SerialData(object):
 
         # Note: A manual reset is currently required because implementation is not complete.
         # See https://github.com/panoptes/POCS/issues/758 for details.
-        >>> ResetBuffers()
+        >>> pb.ResetBuffers()
         >>> device_listener.is_connected
         True
 
@@ -74,7 +72,7 @@ class SerialData(object):
         'buffers://'
 
         # Device sends event
-        >>> WriteFakeDevice(b'emit event')
+        >>> pb.SetRBufferValue(b'emit event')
 
         # Listen for event
         >>> device_listener.read()
@@ -82,8 +80,11 @@ class SerialData(object):
 
         >>> device_listener.write('ack event')
         9
-        >>> ReadFakeDevice()
+        >>> pb.GetWBufferValue()
         b'ack event'
+
+        # Remove custom handlers
+        >>> serial.protocol_handler_packages.remove('panoptes.utils.tests.serial_handlers')
     """
 
     def __init__(self,
