@@ -11,9 +11,9 @@ def _get_db_class(module_name='file'):
     .. doctest:
 
         >>> _get_db_class()
-        'panoptes.utils.database.file.PanFileDB'
+        <class 'panoptes.utils.database.file.PanFileDB'>
         >>> _get_db_class('memory')
-        'panoptes.utils.database.file.PanMemoryDB'
+        <class 'panoptes.utils.database.memory.PanMemoryDB'>
 
     Args:
         module_name (str): Name of module, one of: `file` (default), `mongo', 'memory'.
@@ -35,7 +35,7 @@ def _get_db_class(module_name='file'):
     try:
         db_module = load_module(full_module_name)
         return getattr(db_module, class_map[module_name])
-    except Exception as e:
+    except Exception:
         raise Exception(f'Unsupported database type: {full_module_name}')
 
 

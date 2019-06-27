@@ -25,12 +25,11 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
     if verbose:
         print("Entering solve_field")
 
-    solve_field_script = os.path.join(
-        os.getenv('PANDIR'), 'panoptes-utils', 'scripts', 'solve_field.sh')
+    solve_field_script = shutil.which('panoptes-solve-field')
 
-    if not os.path.exists(solve_field_script):  # pragma: no cover
+    if solve_field_script is None:  # pragma: no cover
         raise error.InvalidSystemCommand(
-            "Can't find solve-field: {}".format(solve_field_script))
+            "Can't find panoptes-solve-field: {}".format(solve_field_script))
 
     # Add the options for solving the field
     if solve_opts is not None:
@@ -71,11 +70,14 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
         print("Cmd:", cmd)
 
     try:
-        proc = subprocess.Popen(cmd, universal_newlines=True,
-                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        proc = subprocess.Popen(cmd,
+                                universal_newlines=True,
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
     except OSError as e:
         raise error.InvalidCommand(
-            "Can't send command to solve_field.sh: {} \t {}".format(e, cmd))
+            "Can't send command to panoptes-solve-field: {} \t {}".format(e, cmd))
     except ValueError as e:
         raise error.InvalidCommand(
             "Bad parameters to solve_field: {} \t {}".format(e, cmd))
@@ -469,7 +471,7 @@ def write_fits(data, header, filename, logger=None, exposure_event=None):
             exposure_event.set()
 
 
-def update_headers(file_path, info):
+def update_observation_headers(file_path, info):
     with fits.open(file_path, 'update') as f:
         hdu = f[0]
         hdu.header.set('IMAGEID', info.get('image_id', ''))
@@ -491,6 +493,24 @@ def update_headers(file_path, info):
         hdu.header.set('OBSERVER', info.get('observer', ''), 'PANOPTES Unit ID')
         hdu.header.set('ORIGIN', info.get('origin', ''))
         hdu.header.set('RA-RATE', info.get('tracking_rate_ra', ''), 'RA Tracking Rate')
+
+
+def getdata(fn, *args, **kwargs):
+    """Get the FITS data.
+
+    Small wrapper around `astropy.io.fits.getdata` to auto-determine
+    the FITS extension. This will return the data associated with the
+    image.
+
+    Args:
+        fn (str): Path to FITS file.
+        *args: Passed to `astropy.io.fits.getdata`.
+        **kwargs: Passed to `astropy.io.fits.getdata`.
+
+    Returns:
+        `astropy.io.fits.header.Header`: The FITS data.
+    """
+    return fits.getdata(fn)
 
 
 def getheader(fn, *args, **kwargs):

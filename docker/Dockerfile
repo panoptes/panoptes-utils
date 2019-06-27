@@ -29,7 +29,7 @@ RUN mkdir -p ${POCS} && \
     apt-get install -y --no-install-recommends \
         wget curl bzip2 ca-certificates pkg-config zsh git fonts-lato nano \
         astrometry.net sextractor dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
-        libcfitsio-dev libfreetype6-dev libpng-dev libpq-dev && \
+        libcfitsio-dev libfreetype6-dev libpng-dev libpq-dev ack && \
     # Oh My ZSH. :)
     chsh -s /bin/zsh && \
     sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)" && \

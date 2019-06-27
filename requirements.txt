@@ -3,6 +3,7 @@ astropy
 Flask
 matplotlib
 numpy
+photutils
 pyserial
 python-dateutil
 pytz

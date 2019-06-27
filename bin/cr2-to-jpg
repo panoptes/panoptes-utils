@@ -16,7 +16,7 @@ usage() {
   TITLE             Optional tilte to be placed on jpeg.
 
  Example:
-  scripts/cr2_to_jpg.sh /var/panoptes/images/temp.cr2 \"M42 (Orion's Nebula)\"
+  cr2-to-jpg /var/panoptes/images/temp.cr2 \"M42 (Orion's Nebula)\"
 "
 }
 
@@ -32,16 +32,23 @@ JPG="${FNAME%.cr2}.jpg"
 
 echo "Converting CR2 to ${JPG}."
 
+function command_exists {
+    # https://gist.github.com/gubatron/1eb077a1c5fcf510e8e5
+    # this should be a very portable way of checking if something is on the path
+    # usage: "if command_exists foo; then echo it exists; fi"
+  type "$1" &> /dev/null
+}
+
 # Use exiftool to extract preview if it exists
-if hash exiftool 2>/dev/null; then
+if command_exists exiftool; then
     exiftool -b -PreviewImage "${FNAME}" > "${JPG}"
 else
-    if hash dcraw 2>/dev/null; then
+    if command_exists dcraw; then
         # Convert CR2 to JPG
         dcraw -c -q 3 -a -w -H 5 -b 5 "${FNAME}" | cjpeg -quality 90 > "${JPG}"
     else
         echo "Can't find either exiftool or dcraw, cannot proceed"
-        exit
+        exit 1
     fi
 fi
 

@@ -1,8 +1,9 @@
 import requests
 from panoptes.utils import serializers
+from panoptes.utils.logger import get_root_logger
 
 
-def get_config(key=None, host='localhost', port='6563', parse=True):
+def get_config(key=None, host='localhost', port='6563', parse=True, default=None):
     """Get a config item from the config server.
 
     Return the config entry for the given `key`. If `key=None` (default), return
@@ -11,14 +12,25 @@ def get_config(key=None, host='localhost', port='6563', parse=True):
     Nested keys can be specified as a string, as per [scalpl](https://pypi.org/project/scalpl/).
 
     Examples:
-        >>> get_config(key='name')
-        'PAN000'
-        >>> get_config(key='location.horizon')
-        <Quantity 30 * u.deg>
-        >>> get_config(key='location.horizon', parse=False)
-        '30 deg'
-        >>> get_config(key='cameras.devices[1].model')
+        >>> testing_port = 6565
+        >>> get_config(key='name', port=testing_port)
+        'Testing PANOPTES Unit'
+        >>> get_config(key='location.horizon', port=testing_port)
+        <Quantity 30. deg>
+        >>> get_config(key='location.horizon', parse=False, port=testing_port)
+        '30.0 deg'
+        >>> get_config(key='cameras.devices[1].model', port=testing_port)
         'canon_gphoto2'
+        >>> # Returns `None` if key is not found
+        >>> foobar = get_config('foobar', port=testing_port)
+        >>> foobar is None
+        True
+        >>> get_config('foobar', port=testing_port, default='baz')
+        'baz'
+        >>> # Can use Quantities as well
+        >>> from astropy import units as u
+        >>> get_config('foobar', port=testing_port, default=42 * u.meter)
+        <Quantity 42. m>
 
     Args:
         key (str): The key to update, see Examples in `get_config` for details.
@@ -26,6 +38,7 @@ def get_config(key=None, host='localhost', port='6563', parse=True):
         port (str, optional): The config server port, defaults to 6563.
         parse (bool, optional): If response should be parsed by
             `~panoptes.utils.serializers.from_json`, default True.
+        default (str, optional): The config server port, defaults to 6563.
 
     Returns:
         dict: The corresponding config entry.
@@ -34,15 +47,22 @@ def get_config(key=None, host='localhost', port='6563', parse=True):
         Exception: Raised if the config server is not available.
     """
     url = f'http://{host}:{port}/get-config'
-    response = requests.post(url, json={'key': key})
 
-    if not response.ok:
-        raise Exception(f'Cannot access config server: {response.content}')
+    config_entry = default
 
-    if parse:
-        config_entry = serializers.from_json(response.content.decode('utf8'))
+    try:
+        response = requests.post(url, json={'key': key})
+    except Exception as e:
+        get_root_logger().info(f'Problem with get_config: {e!r}')
     else:
-        config_entry = response.json()
+        if not response.ok:
+            raise Exception(f'Cannot access config server: {response.content}')
+
+        if response.text != 'null\n':
+            if parse:
+                config_entry = serializers.from_json(response.content.decode('utf8'))
+            else:
+                config_entry = response.json()
 
     return config_entry
 
@@ -53,6 +73,16 @@ def set_config(key, new_value, host='localhost', port='6563', parse=True):
     Given a `key` entry, update the config to match. The `key` is a dot accessible
     string, as given by [scalpl](https://pypi.org/project/scalpl/). See Examples in `get_config`
     for details.
+
+    Examples:
+        >>> testing_port = 6565
+        >>> from astropy import units as u
+        >>> set_config('location.horizon', 35 * u.degree, port=testing_port)
+        {'location.horizon': <Quantity 35. deg>}
+        >>> get_config(key='location.horizon', port=testing_port)
+        <Quantity 35. deg>
+        >>> set_config('location.horizon', 30 * u.degree, port=testing_port)
+        {'location.horizon': <Quantity 30. deg>}
 
     Args:
         key (str): The key to update, see Examples in `get_config` for details.
@@ -72,17 +102,21 @@ def set_config(key, new_value, host='localhost', port='6563', parse=True):
 
     json_str = serializers.to_json({key: new_value})
 
-    response = requests.post(url,
-                             data=json_str,
-                             headers={'Content-Type': 'application/json'}
-                             )
-
-    if not response.ok:
-        raise Exception(f'Cannot access config server: {response.text}')
-
-    if parse:
-        config_entry = serializers.from_json(response.content.decode('utf8'))
+    config_entry = None
+    try:
+        # We use our own serializer so pass as `data` instead of `json`.
+        response = requests.post(url,
+                                 data=json_str,
+                                 headers={'Content-Type': 'application/json'}
+                                 )
+        if not response.ok:
+            raise Exception(f'Cannot access config server: {response.text}')
+    except Exception as e:
+        get_root_logger().info(f'Problem with set_config: {e!r}')
     else:
-        config_entry = response.json()
+        if parse:
+            config_entry = serializers.from_json(response.content.decode('utf8'))
+        else:
+            config_entry = response.json()
 
     return config_entry

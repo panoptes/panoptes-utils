@@ -17,10 +17,9 @@ RUN git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/t
     pip install --no-cache-dir ".[all]" && \
     # Download astrometry.net files
     python panoptes/utils/data.py --wide-field --narrow-field
-    # TODO add cron job for IERS data download
 
 
 # Comes from base image - hard-coded for now ☹.
-ENTRYPOINT ["/var/panoptes/panoptes-utils/docker/entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "/var/panoptes/panoptes-utils/docker/entrypoint.sh"]
 
 CMD ["/bin/zsh"]

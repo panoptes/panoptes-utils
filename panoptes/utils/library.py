@@ -38,9 +38,11 @@ def load_module(module_name):
     """Dynamically load a module.
 
     >>> from panoptes.utils.library import load_module
-    >>> camera = load_module('pocs.camera.simulator')
-    >>> camera.__package__
-    'pocs.camera'
+    >>> error = load_module('panoptes.utils.error')
+    >>> error.__name__
+    'panoptes.utils.error'
+    >>> error.__package__
+    'panoptes.utils'
 
     Args:
         module_name (str): Name of module to import.

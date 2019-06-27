@@ -1,5 +1,6 @@
 from contextlib import suppress
 from copy import deepcopy
+from collections import OrderedDict
 import json
 from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
@@ -37,7 +38,8 @@ class StringYAML(YAML):
         if stream is None:
             inefficient = True
             stream = StringIO()
-        YAML.dump(self, data, stream, **kwargs)
+        yaml = YAML()
+        yaml.dump(data, stream, **kwargs)
         if inefficient:
             return stream.getvalue()
 
@@ -122,7 +124,6 @@ def from_json(msg):
     Returns:
         `dict`: The loaded object.
     """
-
     return _parse_all_objects(json.loads(msg))
 
 
@@ -242,7 +243,8 @@ def _parse_all_objects(obj):
     Returns:
         `dict`: Same as `obj` but with objects converted to quantities.
     """
-    if isinstance(obj, dict):
+
+    if isinstance(obj, (dict, OrderedDict)):
         if 'value' and 'unit' in obj:
             with suppress(ValueError):
                 return obj['value'] * u.Unit(obj['unit'])
@@ -256,7 +258,7 @@ def _parse_all_objects(obj):
     # Try to turn into a time
     with suppress(ValueError):
         if isinstance(Time(obj), Time):
-            return Time(obj)
+            return Time(obj).datetime
 
     # Try to parse as quantity
     try:
