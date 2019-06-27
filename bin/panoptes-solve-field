@@ -11,8 +11,8 @@ then
 fi
 
 if [[ $# == 1 ]]; then
-    echo "Using options: --guess-scale --no-plots --downsample 3 --overwrite"
-    "${SOLVE_FIELD} --guess-scale --no-plots --downsample 3 --overwrite $1"
+    echo "Using options: --guess-scale --no-plots --downsample 3 --overwrite $1"
+    "${SOLVE_FIELD}" --guess-scale --no-plots --downsample 3 --overwrite "$1"
 else
-    ${SOLVE_FIELD} "$@"
+    "${SOLVE_FIELD}" "$@"
 fi
