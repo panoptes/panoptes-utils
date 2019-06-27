@@ -74,7 +74,7 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
                                 universal_newlines=True,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE,
-                                stderr=subprocess.STDOUT)
+                                stderr=subprocess.PIPE)
     except OSError as e:
         raise error.InvalidCommand(
             "Can't send command to panoptes-solve-field: {} \t {}".format(e, cmd))
