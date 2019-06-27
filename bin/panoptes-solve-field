@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 # If SOLVE_FIELD is not set, try the default; warn if default unavailable.
 SOLVE_FIELD=${SOLVE_FIELD:-"solve-field"}
