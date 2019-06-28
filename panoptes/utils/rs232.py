@@ -1,6 +1,5 @@
 """Provides SerialData, a PySerial wrapper."""
 
-import json
 import operator
 import serial
 from serial.tools.list_ports import comports as get_comports
@@ -8,24 +7,7 @@ import time
 
 from panoptes.utils.logger import get_root_logger
 from panoptes.utils.error import BadSerialConnection
-
-
-def _parse_json(line, logger, min_error_pos=0):
-    """Parse a line of JSON, with support for correcting erroneously encoded NaN values.
-
-    When the sketch doesn't have a value to report for a float, we may find 'nan' in the string.
-    That is not valid JSON, nor compatible with Python's json module which will accept 'NaN'. We
-    can fix it and try again but must avoid an infinite loop!
-    """
-    try:
-        return json.loads(line)
-    except json.JSONDecodeError as e:
-        if e.pos >= min_error_pos and line[e.pos:].startswith('nan'):
-            new_line = line[0:e.pos] + 'NaN' + line[e.pos + 3:]
-            return _parse_json(new_line, logger, min_error_pos=e.pos + 1)
-        logger.debug('Exception while parsing JSON: %r', e)
-        logger.debug('Erroneous JSON: %r', line)
-        return None
+from panoptes.utils.serializers import from_json
 
 
 # Note: get_serial_port_info is replaced by tests to override the normal
@@ -281,7 +263,7 @@ class SerialData(object):
             (ts, line) = self.get_reading()
             if not line:
                 continue
-            data = _parse_json(line, self.logger)
+            data = from_json(line)
             if data:
                 return (ts, data)
         return None
