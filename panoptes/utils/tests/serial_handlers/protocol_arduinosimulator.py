@@ -7,7 +7,6 @@ i.e. not in the way it is intended to be used.
 
 import copy
 import datetime
-import json
 import queue
 import random
 from serial import serialutil
@@ -16,7 +15,9 @@ import time
 import urllib
 
 from panoptes.utils.tests import serial_handlers
-import panoptes.utils.logger
+from panoptes.utils.serializers import to_json
+from panoptes.utils.serializers import from_json
+from panoptes.utils.logger import get_root_logger
 
 
 def _drain_queue(q):
@@ -176,13 +177,14 @@ class ArduinoSimulator:
         # Not worrying here about emulating the 32-bit nature of millis (wraps in 49 days)
         elapsed = int((now - self.start_time).total_seconds() * 1000)
         self.report_num += 1
+        self.logger.critical(f'self.message: {self.message}')
         self.message['millis'] = elapsed
         self.message['report_num'] = self.report_num
         if self.command_lines:
             self.message['commands'] = self.command_lines
             self.command_lines = []
 
-        s = json.dumps(self.message) + '\r\n'
+        s = to_json(self.message) + '\r\n'
         if 'commands' in self.message:
             del self.message['commands']
 
@@ -196,7 +198,7 @@ class ArduinoSimulator:
 class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.logger = panoptes.utils.logger.get_root_logger()
+        self.logger = get_root_logger()
         self.simulator_thread = None
         self.relay_queue = queue.Queue(maxsize=1)
         self.json_queue = queue.Queue(maxsize=1)
@@ -471,7 +473,7 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
     def _create_simulator(self, params):
         board = params.get('board', 'telemetry')
         if board == 'telemetry':
-            message = json.loads("""
+            message = to_json("""
                 {
                     "name":"telemetry_board",
                     "ver":"2017-09-23",
@@ -487,12 +489,11 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
                     "amps": {"main":1083.60,"fan":50.40,"mount":61.20,"cameras":27.00},
                     "humidity":42.60,
                     "temp_00":15.50,
-                    "temperature":[13.00,12.81,19.75],
-                    "not_a_number":"Convert to nan"
+                    "temperature":[13.00,12.81,19.75]
                 }
                 """)
         elif board == 'camera':
-            message = json.loads("""
+            message = to_json("""
                 {
                     "name":"camera_board",
                     "inputs":6,
@@ -500,8 +501,7 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
                     "camera_01":1,
                     "accelerometer": {"x":-7.02, "y":6.95, "z":1.70, "o": 6},
                     "humidity":59.60,
-                    "temp_00":12.50,
-                    "Not_a_Number":"Convert to NaN"
+                    "temp_00":12.50
                 }
                 """)
         elif board == 'json_object':

@@ -39,6 +39,22 @@ class InvalidSystemCommand(PanError):
         super().__init__(msg)
 
 
+class InvalidDeserialization(PanError):
+
+    """ Error for serialization errors """
+
+    def __init__(self, msg='Problem deserializing'):
+        super().__init__(msg)
+
+
+class InvalidSerialization(PanError):
+
+    """ Error for serialization errors """
+
+    def __init__(self, msg='Problem Serializing'):
+        super().__init__(msg)
+
+
 class Timeout(PanError):
 
     """ Error called when an event times out """
