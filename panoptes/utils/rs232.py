@@ -1,31 +1,14 @@
 """Provides SerialData, a PySerial wrapper."""
 
-import json
 import operator
 import serial
 from serial.tools.list_ports import comports as get_comports
 import time
+from contextlib import suppress
 
 from panoptes.utils.logger import get_root_logger
-from panoptes.utils.error import BadSerialConnection
-
-
-def _parse_json(line, logger, min_error_pos=0):
-    """Parse a line of JSON, with support for correcting erroneously encoded NaN values.
-
-    When the sketch doesn't have a value to report for a float, we may find 'nan' in the string.
-    That is not valid JSON, nor compatible with Python's json module which will accept 'NaN'. We
-    can fix it and try again but must avoid an infinite loop!
-    """
-    try:
-        return json.loads(line)
-    except json.JSONDecodeError as e:
-        if e.pos >= min_error_pos and line[e.pos:].startswith('nan'):
-            new_line = line[0:e.pos] + 'NaN' + line[e.pos + 3:]
-            return _parse_json(new_line, logger, min_error_pos=e.pos + 1)
-        logger.debug('Exception while parsing JSON: %r', e)
-        logger.debug('Erroneous JSON: %r', line)
-        return None
+from panoptes.utils import error
+from panoptes.utils.serializers import from_json
 
 
 # Note: get_serial_port_info is replaced by tests to override the normal
@@ -174,7 +157,7 @@ class SerialData(object):
         """If disconnected, then connect to the serial port.
 
         Raises:
-            BadSerialConnection if unable to open the connection.
+            error.BadSerialConnection if unable to open the connection.
         """
         if self.is_connected:
             self.logger.debug('Connection already open to {}', self.name)
@@ -185,27 +168,29 @@ class SerialData(object):
             # the same type thrown when open fails to actually open the device.
             self.ser.open()
             if not self.is_connected:
-                raise BadSerialConnection(msg="Serial connection {} is not open".format(self.name))
+                raise error.BadSerialConnection(
+                    msg="Serial connection {} is not open".format(self.name))
         except serial.serialutil.SerialException as err:
-            raise BadSerialConnection(msg=err)
+            raise error.BadSerialConnection(msg=err)
         self.logger.debug('Serial connection established to {}', self.name)
 
     def disconnect(self):
         """Closes the serial connection.
 
         Raises:
-            BadSerialConnection if unable to close the connection.
+            error.BadSerialConnection if unable to close the connection.
         """
         # Fortunately, close() doesn't throw an exception if already closed.
         self.logger.debug('SerialData.disconnect called for {}', self.name)
         try:
             self.ser.close()
         except Exception as err:
-            raise BadSerialConnection(
+            raise error.BadSerialConnection(
                 msg="SerialData.disconnect failed for {}; underlying error: {}".format(
                     self.name, err))
         if self.is_connected:
-            raise BadSerialConnection(msg="SerialData.disconnect failed for {}".format(self.name))
+            raise error.BadSerialConnection(
+                msg="SerialData.disconnect failed for {}".format(self.name))
 
     def write_bytes(self, data):
         """Write data of type bytes."""
@@ -281,9 +266,10 @@ class SerialData(object):
             (ts, line) = self.get_reading()
             if not line:
                 continue
-            data = _parse_json(line, self.logger)
-            if data:
-                return (ts, data)
+            with suppress(error.InvalidDeserialization):
+                data = from_json(line)
+                if data:
+                    return (ts, data)
         return None
 
     def reset_input_buffer(self):
