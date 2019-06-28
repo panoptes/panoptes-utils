@@ -10,6 +10,9 @@ from astropy.time import Time
 from astropy import units as u
 
 
+from panoptes.utils import error
+
+
 class StringYAML(YAML):
     def dump(self, data, stream=None, **kwargs):
         """YAML class that can dump to a string.
@@ -124,7 +127,12 @@ def from_json(msg):
     Returns:
         `dict`: The loaded object.
     """
-    return _parse_all_objects(json.loads(msg))
+    try:
+        new_obj = _parse_all_objects(json.loads(msg))
+    except json.decoder.JSONDecodeError as e:
+        raise error.InvalidDeserialization(e)
+
+    return new_obj
 
 
 def to_yaml(obj, **kwargs):
