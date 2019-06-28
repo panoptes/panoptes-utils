@@ -188,8 +188,6 @@ class ArduinoSimulator:
         if 'commands' in self.message:
             del self.message['commands']
 
-        s = s.replace('"Convert to NaN"', 'NaN', 1)
-        s = s.replace('"Convert to nan"', 'nan', 1)
         self.logger.debug('generate_next_message -> {!r}', s)
         b = s.encode(encoding='ascii')
         return b
