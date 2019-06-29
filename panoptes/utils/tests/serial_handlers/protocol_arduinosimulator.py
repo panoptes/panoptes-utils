@@ -51,6 +51,7 @@ class ArduinoSimulator:
             logger: the Python logger to use for reporting messages.
         """
         self.message = copy.deepcopy(message)
+        get_root_logger().critical(f'message: {message}')
         self.relay_queue = relay_queue
         self.json_queue = json_queue
         self.stop = stop
@@ -89,8 +90,7 @@ class ArduinoSimulator:
         b = self.generate_next_message_bytes(now)
         cut = random.randrange(len(b))
         if cut > 0:
-            self.logger.info('Cutting off the leading {} bytes of the first message',
-                             cut)
+            self.logger.info('Cutting off the leading {} bytes of the first message', cut)
             b = b[cut:]
         self.pending_json_bytes.extend(b)
         # Now two interleaved loops:
@@ -177,7 +177,6 @@ class ArduinoSimulator:
         # Not worrying here about emulating the 32-bit nature of millis (wraps in 49 days)
         elapsed = int((now - self.start_time).total_seconds() * 1000)
         self.report_num += 1
-        self.logger.critical(f'self.message: {self.message}')
         self.message['millis'] = elapsed
         self.message['report_num'] = self.report_num
         if self.command_lines:
@@ -471,7 +470,7 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
     def _create_simulator(self, params):
         board = params.get('board', 'telemetry')
         if board == 'telemetry':
-            message = to_json("""
+            message = from_json("""
                 {
                     "name":"telemetry_board",
                     "ver":"2017-09-23",
@@ -486,12 +485,12 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
                     "current": {"main":387,"fan":28,"mount":34,"cameras":27},
                     "amps": {"main":1083.60,"fan":50.40,"mount":61.20,"cameras":27.00},
                     "humidity":42.60,
-                    "temp_00":15.50,
-                    "temperature":[13.00,12.81,19.75]
+                    "temperature":[13.01,12.81,19.75],
+                    "temp_00":15.50
                 }
                 """)
         elif board == 'camera':
-            message = to_json("""
+            message = from_json("""
                 {
                     "name":"camera_board",
                     "inputs":6,
@@ -499,6 +498,7 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
                     "camera_01":1,
                     "accelerometer": {"x":-7.02, "y":6.95, "z":1.70, "o": 6},
                     "humidity":59.60,
+                    "temperature":[13.01,12.81,19.75],
                     "temp_00":12.50
                 }
                 """)

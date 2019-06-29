@@ -12,24 +12,23 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
     Nested keys can be specified as a string, as per [scalpl](https://pypi.org/project/scalpl/).
 
     Examples:
-        >>> testing_port = 6565
-        >>> get_config(key='name', port=testing_port)
-        'Testing PANOPTES Unit'
-        >>> get_config(key='location.horizon', port=testing_port)
+        >>> get_config(key='name')
+        'Generic PANOPTES Unit'
+        >>> get_config(key='location.horizon')
         <Quantity 30. deg>
-        >>> get_config(key='location.horizon', parse=False, port=testing_port)
+        >>> get_config(key='location.horizon', parse=False)
         '30.0 deg'
-        >>> get_config(key='cameras.devices[1].model', port=testing_port)
+        >>> get_config(key='cameras.devices[1].model')
         'canon_gphoto2'
         >>> # Returns `None` if key is not found
-        >>> foobar = get_config('foobar', port=testing_port)
+        >>> foobar = get_config('foobar')
         >>> foobar is None
         True
-        >>> get_config('foobar', port=testing_port, default='baz')
+        >>> get_config('foobar', default='baz')
         'baz'
         >>> # Can use Quantities as well
         >>> from astropy import units as u
-        >>> get_config('foobar', port=testing_port, default=42 * u.meter)
+        >>> get_config('foobar', default=42 * u.meter)
         <Quantity 42. m>
 
     Args:
@@ -75,13 +74,12 @@ def set_config(key, new_value, host='localhost', port='6563', parse=True):
     for details.
 
     Examples:
-        >>> testing_port = 6565
         >>> from astropy import units as u
-        >>> set_config('location.horizon', 35 * u.degree, port=testing_port)
+        >>> set_config('location.horizon', 35 * u.degree)
         {'location.horizon': <Quantity 35. deg>}
-        >>> get_config(key='location.horizon', port=testing_port)
+        >>> get_config(key='location.horizon')
         <Quantity 35. deg>
-        >>> set_config('location.horizon', 30 * u.degree, port=testing_port)
+        >>> set_config('location.horizon', 30 * u.degree)
         {'location.horizon': <Quantity 30. deg>}
 
     Args:
