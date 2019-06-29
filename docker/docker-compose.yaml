@@ -18,7 +18,7 @@ services:
     env_file:
       - "${PANDIR:-/var/panoptes}/env_file"
     depends_on:
-      - "config-server"
+      - "config-server"        
     volumes:
       - pandir:/var/panoptes
     command: /bin/bash -c "${PANDIR:-/var/panoptes}/panoptes-utils/bin/panoptes-messaging-hub --from-config --config-host 0.0.0.0"
