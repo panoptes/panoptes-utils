@@ -25,12 +25,11 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
     if verbose:
         print("Entering solve_field")
 
-    solve_field_script = os.path.join(
-        os.getenv('PANDIR'), 'panoptes-utils', 'scripts', 'solve_field.sh')
+    solve_field_script = shutil.which('panoptes-solve-field')
 
-    if not os.path.exists(solve_field_script):  # pragma: no cover
+    if solve_field_script is None:  # pragma: no cover
         raise error.InvalidSystemCommand(
-            "Can't find solve-field: {}".format(solve_field_script))
+            "Can't find panoptes-solve-field: {}".format(solve_field_script))
 
     # Add the options for solving the field
     if solve_opts is not None:
@@ -71,11 +70,14 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
         print("Cmd:", cmd)
 
     try:
-        proc = subprocess.Popen(cmd, universal_newlines=True,
-                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        proc = subprocess.Popen(cmd,
+                                universal_newlines=True,
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
     except OSError as e:
         raise error.InvalidCommand(
-            "Can't send command to solve_field.sh: {} \t {}".format(e, cmd))
+            "Can't send command to panoptes-solve-field: {} \t {}".format(e, cmd))
     except ValueError as e:
         raise error.InvalidCommand(
             "Bad parameters to solve_field: {} \t {}".format(e, cmd))
@@ -287,6 +289,101 @@ def get_wcsinfo(fits_fname, verbose=False):
     return wcs_info
 
 
+def improve_wcs(fname, remove_extras=True, replace=True, timeout=30, **kwargs):
+    """Improve the world-coordinate-system (WCS) of a FITS file.
+
+    This will plate-solve an already-solved field, using a verification process
+    that will also attempt a SIP distortion correction.
+
+    Args:
+        fname (str): Full path to FITS file.
+        remove_extras (bool, optional): If generated files should be removed, default True.
+        replace (bool, optional): Overwrite existing file, default True.
+        timeout (int, optional): Timeout for the solve, default 30 seconds.
+        **kwargs: Additional keyword args for `solve_field`. Can also include a
+            `verbose` flag.
+
+    Returns:
+        dict: FITS headers, including solve information.
+
+    Raises:
+        error.SolveError: Description
+        error.Timeout: Description
+    """
+    verbose = kwargs.get('verbose', False)
+    out_dict = {}
+    output = None
+    errs = None
+
+    if verbose:
+        print("Entering improve_wcs: {}".format(fname))
+
+    options = [
+        '--continue',
+        '-t', '3',
+        '-q', '0.01',
+        '--no-plots',
+        '--guess-scale',
+        '--cpulimit', str(timeout),
+        '--no-verify',
+        '--crpix-center',
+        '--match', 'none',
+        '--corr', 'none',
+        '--wcs', 'none',
+        '-V', fname,
+    ]
+
+    proc = solve_field(fname, solve_opts=options, **kwargs)
+    try:
+        output, errs = proc.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        raise error.Timeout("Timeout while solving")
+    else:
+        if verbose:
+            print("Output: {}", output)
+            print("Errors: {}", errs)
+
+        if not os.path.exists(fname.replace('.fits', '.solved')):
+            raise error.SolveError('File not solved')
+
+        try:
+            # Handle extra files created by astrometry.net
+            new = fname.replace('.fits', '.new')
+            rdls = fname.replace('.fits', '.rdls')
+            axy = fname.replace('.fits', '.axy')
+            xyls = fname.replace('.fits', '-indx.xyls')
+
+            if replace and os.path.exists(new):
+                # Remove converted fits
+                os.remove(fname)
+                # Rename solved fits to proper extension
+                os.rename(new, fname)
+
+                out_dict['solved_fits_file'] = fname
+            else:
+                out_dict['solved_fits_file'] = new
+
+            if remove_extras:
+                for f in [rdls, xyls, axy]:
+                    if os.path.exists(f):
+                        os.remove(f)
+
+        except Exception as e:
+            warn('Cannot remove extra files: {}'.format(e))
+
+    if errs is not None:
+        warn("Error in solving: {}".format(errs))
+    else:
+        try:
+            out_dict.update(fits.getheader(fname))
+        except OSError:
+            if verbose:
+                print("Can't read fits header for {}".format(fname))
+
+    return out_dict
+
+
 def fpack(fits_fname, unpack=False, verbose=False):
     """Compress/Decompress a FITS file
 
@@ -374,7 +471,7 @@ def write_fits(data, header, filename, logger=None, exposure_event=None):
             exposure_event.set()
 
 
-def update_headers(file_path, info):
+def update_observation_headers(file_path, info):
     with fits.open(file_path, 'update') as f:
         hdu = f[0]
         hdu.header.set('IMAGEID', info.get('image_id', ''))
@@ -396,6 +493,24 @@ def update_headers(file_path, info):
         hdu.header.set('OBSERVER', info.get('observer', ''), 'PANOPTES Unit ID')
         hdu.header.set('ORIGIN', info.get('origin', ''))
         hdu.header.set('RA-RATE', info.get('tracking_rate_ra', ''), 'RA Tracking Rate')
+
+
+def getdata(fn, *args, **kwargs):
+    """Get the FITS data.
+
+    Small wrapper around `astropy.io.fits.getdata` to auto-determine
+    the FITS extension. This will return the data associated with the
+    image.
+
+    Args:
+        fn (str): Path to FITS file.
+        *args: Passed to `astropy.io.fits.getdata`.
+        **kwargs: Passed to `astropy.io.fits.getdata`.
+
+    Returns:
+        `astropy.io.fits.header.Header`: The FITS data.
+    """
+    return fits.getdata(fn)
 
 
 def getheader(fn, *args, **kwargs):

@@ -1,5 +1,6 @@
 from contextlib import suppress
 from copy import deepcopy
+from collections import OrderedDict
 import json
 from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
@@ -7,6 +8,8 @@ from ruamel.yaml.compat import StringIO
 import numpy as np
 from astropy.time import Time
 from astropy import units as u
+
+from panoptes.utils import error
 
 
 class StringYAML(YAML):
@@ -37,7 +40,8 @@ class StringYAML(YAML):
         if stream is None:
             inefficient = True
             stream = StringIO()
-        YAML.dump(self, data, stream, **kwargs)
+        yaml = YAML()
+        yaml.dump(data, stream, **kwargs)
         if inefficient:
             return stream.getvalue()
 
@@ -122,8 +126,12 @@ def from_json(msg):
     Returns:
         `dict`: The loaded object.
     """
+    try:
+        new_obj = _parse_all_objects(json.loads(msg))
+    except json.decoder.JSONDecodeError as e:
+        raise error.InvalidDeserialization(f'Error: {e!r} Message: {msg!r}')
 
-    return _parse_all_objects(json.loads(msg))
+    return new_obj
 
 
 def to_yaml(obj, **kwargs):
@@ -242,13 +250,13 @@ def _parse_all_objects(obj):
     Returns:
         `dict`: Same as `obj` but with objects converted to quantities.
     """
-    if isinstance(obj, dict):
+    if isinstance(obj, (dict, OrderedDict)):
         if 'value' and 'unit' in obj:
             with suppress(ValueError):
                 return obj['value'] * u.Unit(obj['unit'])
 
-        for k in obj.keys():
-            obj[k] = _parse_all_objects(obj[k])
+        for k, v in obj.items():
+            obj[k] = _parse_all_objects(v)
 
     if isinstance(obj, bool):
         return bool(obj)
@@ -256,14 +264,14 @@ def _parse_all_objects(obj):
     # Try to turn into a time
     with suppress(ValueError):
         if isinstance(Time(obj), Time):
-            return Time(obj)
+            return Time(obj).datetime
 
     # Try to parse as quantity
     try:
         quantity = u.Quantity(obj)
         # If it ends up dimensionless just return obj.
         if str(quantity.unit) == '':
-            return quantity.value
+            return obj
         else:
             return quantity
     except Exception:

@@ -68,6 +68,12 @@ setup(name=NAME,
       # for example:
       # $ pip install -e .[dev,test]
       install_requires=modules['required'],
+      scripts=[
+          'bin/cr2-to-jpg',
+          'bin/panoptes-config-server',
+          'bin/panoptes-messaging-hub',
+          'bin/panoptes-solve-field',
+      ],
       extras_require={
           'google': modules['google'],
           'mongo': modules['mongo'],
