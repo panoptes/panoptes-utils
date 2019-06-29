@@ -485,8 +485,8 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
                     "current": {"main":387,"fan":28,"mount":34,"cameras":27},
                     "amps": {"main":1083.60,"fan":50.40,"mount":61.20,"cameras":27.00},
                     "humidity":42.60,
-                    "temp_00":15.50,
-                    "temperature":[13.00,12.81,19.75]
+                    "temperature":[13.01,12.81,19.75],
+                    "temp_00":15.50
                 }
                 """)
         elif board == 'camera':
@@ -498,6 +498,7 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
                     "camera_01":1,
                     "accelerometer": {"x":-7.02, "y":6.95, "z":1.70, "o": 6},
                     "humidity":59.60,
+                    "temperature":[13.01,12.81,19.75],
                     "temp_00":12.50
                 }
                 """)
