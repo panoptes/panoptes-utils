@@ -9,7 +9,6 @@ import numpy as np
 from astropy.time import Time
 from astropy import units as u
 
-
 from panoptes.utils import error
 
 
@@ -130,7 +129,7 @@ def from_json(msg):
     try:
         new_obj = _parse_all_objects(json.loads(msg))
     except json.decoder.JSONDecodeError as e:
-        raise error.InvalidDeserialization(e)
+        raise error.InvalidDeserialization(f'Error: {e!r} Message: {msg!r}')
 
     return new_obj
 
@@ -251,14 +250,13 @@ def _parse_all_objects(obj):
     Returns:
         `dict`: Same as `obj` but with objects converted to quantities.
     """
-
     if isinstance(obj, (dict, OrderedDict)):
         if 'value' and 'unit' in obj:
             with suppress(ValueError):
                 return obj['value'] * u.Unit(obj['unit'])
 
-        for k in obj.keys():
-            obj[k] = _parse_all_objects(obj[k])
+        for k, v in obj.items():
+            obj[k] = _parse_all_objects(v)
 
     if isinstance(obj, bool):
         return bool(obj)
@@ -273,7 +271,7 @@ def _parse_all_objects(obj):
         quantity = u.Quantity(obj)
         # If it ends up dimensionless just return obj.
         if str(quantity.unit) == '':
-            return quantity.value
+            return obj
         else:
             return quantity
     except Exception:
