@@ -133,7 +133,7 @@ def config_path():
                         )
 
 
-@pytest.fixture(scope='module', autouse=True)
+@pytest.fixture(scope='function', autouse=True)
 def config_server(host, port, config_path):
     cmd = shutil.which('panoptes-config-server')
     assert cmd is not None
