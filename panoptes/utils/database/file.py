@@ -3,7 +3,6 @@ from contextlib import suppress
 from uuid import uuid4
 from glob import glob
 
-from panoptes.utils.logger import get_root_logger
 from panoptes.utils.serializers import to_json
 from panoptes.utils.serializers import from_json
 from panoptes.utils.database import AbstractPanDB
@@ -23,9 +22,6 @@ class PanFileDB(AbstractPanDB):
         """
 
         super().__init__(db_name=db_name, **kwargs)
-
-        if hasattr(self, 'logger') is False or self.logger is None:
-            self.logger = get_root_logger()
 
         self.db_folder = db_name
 
