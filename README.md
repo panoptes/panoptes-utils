@@ -1,30 +1,30 @@
-[![PyPI version](https: // badge.fury.io / py / panoptes - utils.svg)](https: // badge.fury.io / py / panoptes - utils)
-[![Build Status](https: // travis - ci.com / panoptes / panoptes - utils.svg?branch=master)](https: // travis - ci.com / panoptes / panoptes - utils)
-[![codecov](https: // codecov.io / gh / panoptes / panoptes - utils / branch / master / graph / badge.svg)](https: // codecov.io / gh / panoptes / panoptes - utils)
-[![Documentation Status](https: // readthedocs.org / projects / panoptes - utils / badge /?version=latest)](https: // panoptes - utils.readthedocs.io / en / latest /?badge=latest)
+[![PyPI version](https://badge.fury.io/py/panoptes-utils.svg)](https://badge.fury.io/py/panoptes-utils)
+[![Build Status](https://travis-ci.com/panoptes/panoptes-utils.svg?branch=master)](https://travis-ci.com/panoptes/panoptes-utils)
+[![codecov](https://codecov.io/gh/panoptes/panoptes-utils/branch/master/graph/badge.svg)](https://codecov.io/gh/panoptes/panoptes-utils)
+[![Documentation Status](https://readthedocs.org/projects/panoptes-utils/badge/?version=latest)](https://panoptes-utils.readthedocs.io/en/latest/?badge=latest)
 
 # PANOPTES Utils
 
 Utility functions for use within the PANOPTES ecosystem and for general astronomical processing.
 
-See the full documentation at: https: // panoptes - utils.readthedocs.io
+See the full documentation at: https://panoptes-utils.readthedocs.io
 
 # Install
 <a href="#" name='install'></a>
 
->: bulb: See[Docker](  # docker) for ways to run that `panoptes-utils` without install.
+> :bulb: See[Docker](#docker) for ways to run that `panoptes-utils` without install.
 
 To install type:
 
 ```bash
-pip install panoptes - utils
+pip install panoptes-utils
 ```
 
 There are also a number of optional dependencies, which can be installed as following:
 
 ```bash
 pip install "panoptes-utils[google,mongo,social,test]"
-- or-
+# -or-
 pip install "panoptes-utils[all]"
 ```
 
@@ -68,4 +68,4 @@ panoptes - messaging - hub - -from-config
 Docker containers are available for running the `panoptes - utils` module and associated services, which
 also serve as the base container for all other PANOPTES related containers.
 
-See our[Docker documentation](https: // panoptes - utils.readthedocs.io / en / latest / docker.html) for details.
+See our [Docker documentation](https://panoptes-utils.readthedocs.io/en/latest/docker.html) for details.
