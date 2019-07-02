@@ -37,6 +37,23 @@ From python, for instance when running in a jupyter notebook, you can use:
 >>> server_process.terminate()  # Or just exit notebook/console
 ```
 
+## Options
+
+### ignore_local
+
+By default, local versions of the config files are parsed and replace any default
+values. For instance, the default config file is `$PANDIR/conf_files/pocs.yaml` but
+the config server will also look for and parse `$PANDIR/conf_files/pocs_local.yaml`.
+
+This allows for overriding of default entries while still maintaing the originals.
+
+### auto_save
+
+By default, changes to the config values (via `set_config`, set below) are not
+preserved across restarts. Use the `auto_save` option to enable saving. When
+enabled, this will write to the "local" version of the file (i.e. `pocs_local.yaml`
+for the `pocs.yaml` config file).
+
 The following are options are available for the server:
 
 ```
