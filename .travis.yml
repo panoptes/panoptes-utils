@@ -14,7 +14,7 @@ script:
   $ci_env
   -v $TRAVIS_BUILD_DIR:/var/panoptes/panoptes-utils
   gcr.io/panoptes-survey/panoptes-utils
-  /bin/bash -c "scripts/testing/run_tests.sh"
+  /bin/bash -c "scripts/testing/run-tests.sh"
 deploy:
   provider: pypi
   username: panoptes
