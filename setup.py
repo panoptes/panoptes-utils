@@ -34,7 +34,7 @@ with open(requirements_fn) as f:
     requirements = f.read().splitlines()
 
 modules = {
-    'google': ['google-cloud', 'google-cloud-storage', 'psycopg2-binary'],
+    'google': ['google-cloud-storage', 'psycopg2-binary'],
     'mongo': ['pymongo'],
     'required': requirements,
     'social': ['requests', 'tweepy'],
