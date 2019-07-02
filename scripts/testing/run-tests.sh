@@ -6,7 +6,7 @@ cd "${PANDIR}/panoptes-utils"
 pip install -r requirements.txt
 
 export PYTHONPATH="$PYTHONPATH:$PANDIR/panoptes-utils/scripts/testing/coverage"
-export COVERAGE_PROCESS_START=.coveragerc
+export COVERAGE_PROCESS_START="${PANDIR}/panoptes-utils/.coveragerc"
 coverage run "$(command -v pytest)" -vvrs --test-databases all
 
 # Upload coverage reports if running from Travis.
