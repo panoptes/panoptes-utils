@@ -44,5 +44,3 @@ RUN mkdir -p ${POCS} && \
     # Cleanup apt.
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    # We will download index files later but setup config now.
-    echo "add_path ${PANDIR}/astrometry/data" >> /etc/astrometry.cfg

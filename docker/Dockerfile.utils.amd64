@@ -16,7 +16,8 @@ RUN git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/t
     pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir ".[all]" && \
     # Download astrometry.net files
-    python panoptes/utils/data.py --wide-field --narrow-field
+    echo "add_path /astrometry/data" >> /etc/astrometry.cfg \
+    python panoptes/utils/data.py --wide-field --narrow-field --folder /astrometry/data
 
 
 # Comes from base image - hard-coded for now ☹.

@@ -46,7 +46,9 @@ FROM base-image
 RUN cd ${PANDIR}/panoptes-utils && \
     /opt/conda/envs/${CONDA_ENV}/bin/pip install --no-cache-dir -e ".[all]" && \
     # Download astrometry.net files
-    /opt/conda/envs/${CONDA_ENV}/bin/python panoptes/utils/data.py --wide-field --narrow-field
+    mkdir -p /astrometry/data && \
+    echo "add_path /astrometry/data" >> /etc/astrometry.cfg \
+    /opt/conda/envs/${CONDA_ENV}/bin/python panoptes/utils/data.py --wide-field --narrow-field --folder /astrometry/data
 
 ENTRYPOINT ["/bin/sh", "/var/panoptes/panoptes-utils/docker/entrypoint.sh"]
 
