@@ -12,7 +12,8 @@ See the full documentation at: https://panoptes-utils.readthedocs.io
 # Install
 <a href="#" name='install'></a>
 
-> :bulb: See [Docker](#docker) for ways to run that `panoptes-utils` without install.
+> :bulb: See [Docker](#docker) for ways to run that `panoptes-utils` without installing
+to your hose computer.
 
 To install type:
 
@@ -37,7 +38,7 @@ pip install "panoptes-utils[all]"
 A simple config param server. Runs as a Flask microservice that delivers JSON documents
 in response to requests for config key items.
 
-For more details and usage examples, see the[config server README](panoptes / utils / config / README.md).
+For more details and usage examples, see the [config server README](panoptes/utils/config/README.md).
 
 ```python
 >> > from panoptes.utils.config.server import config_server
@@ -59,7 +60,7 @@ PANOPTES system. Running the Messaging Hub will set up a forwarding service that
 number of publishers and subscribers.
 
 ```bash
-panoptes - messaging - hub - -from-config
+panoptes-messaging-hub --from-config
 ```
 
 ## Docker
