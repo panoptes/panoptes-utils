@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 
 import os
-from scalpl import Cut
 
-from panoptes.utils.config import load_config
-from panoptes.utils.config.server import app
+from panoptes.utils.config.server import config_server
 
 
 if __name__ == '__main__':
@@ -23,7 +21,7 @@ if __name__ == '__main__':
                         default=os.path.join(os.environ['PANDIR'], 'conf_files', 'pocs.yaml'),
                         help="Config file, default $PANDIR/conf_files/pocs.yaml")
     parser.add_argument('--no-save', default=False, action='store_true',
-                        help='Config entries are saved automatically by default.')
+                        help='Prevent auto saving of any new values.')
     parser.add_argument('--ignore-local', default=False, action='store_true',
                         help='Ignore the local config files, default False. Mostly for testing.')
     parser.add_argument('--debug', default=False, action='store_true', help='Debug')
@@ -33,25 +31,18 @@ if __name__ == '__main__':
     if args.public and args.host == '127.0.0.1':
         args.host = '0.0.0.0'
 
-    if not args.config_file:
-        # Look for $PANDIR/conf_files/.
-        conf_dir = os.path.join(os.getenv('PANDIR'), 'conf_files')
-
-        if os.path.isdir(conf_dir):
-            print(f'Using default config files from {conf_dir}/pocs.yaml')
-            args.config_file = os.path.join(conf_dir, 'pocs')
-        else:
-            print('No config files given')
-
-    app.config['auto_save'] = not args.no_save
-    app.config['config_file'] = args.config_file
-    app.config['ignore_local'] = args.ignore_local
-    app.config['POCS'] = load_config(config_files=args.config_file,
-                                     ignore_local=args.ignore_local)
-    app.config['POCS_cut'] = Cut(app.config['POCS'])
-
-    app.run(
+    # Handle Ctrl-c gracefully
+    server_process = config_server(
         host=args.host,
         port=args.port,
+        config_file=args.config_file,
+        ignore_local=args.ignore_local,
+        auto_save=not args.no_save,
         debug=args.debug,
+        auto_start=False
     )
+
+    try:
+        server_process.start()
+    except KeyboardInterrupt:
+        server_process.terminate()
