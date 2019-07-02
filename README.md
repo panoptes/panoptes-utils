@@ -12,7 +12,7 @@ See the full documentation at: https://panoptes-utils.readthedocs.io
 # Install
 <a href="#" name='install'></a>
 
-> :bulb: See[Docker](#docker) for ways to run that `panoptes-utils` without install.
+> :bulb: See [Docker](#docker) for ways to run that `panoptes-utils` without install.
 
 To install type:
 
@@ -31,7 +31,7 @@ pip install "panoptes-utils[all]"
 # Services
 <a href="#" name='services'></a>
 
-# Config Server
+## Config Server
 <a href="#" name='config-server'></a>
 
 A simple config param server. Runs as a Flask microservice that delivers JSON documents
@@ -51,7 +51,7 @@ For more details and usage examples, see the[config server README](panoptes / ut
 >> > server_process.terminate()  # Or just exit notebook/console
 ```
 
-# Messaging Hub
+## Messaging Hub
 <a href="#" name='messaging-hub'></a>
 
 The messaging hub is responsible for relaying zeromq messages between the various components of a
@@ -62,7 +62,7 @@ number of publishers and subscribers.
 panoptes - messaging - hub - -from-config
 ```
 
-# Docker
+## Docker
 <a name="docker"></a>
 
 Docker containers are available for running the `panoptes - utils` module and associated services, which
