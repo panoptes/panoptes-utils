@@ -35,11 +35,46 @@ pip install "panoptes-utils[all]"
 <a href="#" name='config-server'></a>
 
 A simple config param server. Runs as a Flask microservice that delivers JSON documents
-in response to requests for config key items. To start the service run:
+in response to requests for config key items.
+
+#### Starting the config server
+
+To start the service from the command-line, use `bin/panoptes-config-server`:
 
 ```bash
-run-config-server
+➜ bin/panoptes-config-server --help
+usage: panoptes-config-server [-h] [--host HOST] [--port PORT] [--public]
+                              [--config-file CONFIG_FILE] [--no-save]
+                              [--ignore-local] [--debug]
+
+Start the config server for PANOPTES
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --host HOST           Host name, defaults to local interface.
+  --port PORT           Local port, default 6563
+  --public              If server should be public, default False. Note:
+                        inside a docker container set this to True to expose
+                        to host.
+  --config-file CONFIG_FILE
+                        Config file, default $PANDIR/conf_files/pocs.yaml
+  --no-save             Prevent auto saving of any new values.
+  --ignore-local        Ignore the local config files, default False. Mostly
+                        for testing.
+  --debug               Debug
 ```
+
+From python, for instance when running in a jupyter notebook, you can use:
+
+```python
+>>> from panoptes.utils.config.server import config_server
+
+>>> config_server()
+```
+
+#### Using the config server
+
+##### Python
 
 The server can be queried/set in python:
 
@@ -78,6 +113,8 @@ The server can be queried/set in python:
 >>> client.get_config('cameras.devices[1].model')
 'canon_gphoto2'
 ```
+
+##### Command-line
 
 Since the Flask microservice just deals with JSON documents, you can also use
 [httpie](https://httpie.org/) and [jq](https://stedolan.github.io/jq/) from the command line to view
