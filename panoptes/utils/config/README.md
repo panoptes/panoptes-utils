@@ -47,6 +47,11 @@ the config server will also look for and parse `$PANDIR/conf_files/pocs_local.ya
 
 This allows for overriding of default entries while still maintaing the originals.
 
+This option can be disabled with the `ignore_local` setting.
+
+> **Note:** Automatic tests run via `pytest` will always ignore local config files
+unless they are being run with the `--hardware` options.
+
 ### auto_save
 
 By default, changes to the config values (via `set_config`, set below) are not
