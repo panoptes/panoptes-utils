@@ -14,7 +14,7 @@ RUN git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/t
     ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme" && \
     cat ${PANDIR}/panoptes-utils/docker/zshrc >> ${HOME}/.zshrc && \
     pip install --no-cache-dir -Ur requirements.txt && \
-    pip install --no-cache-dir -e ".[all]" && \
+    pip install --no-cache-dir ".[all]" && \
     # Download astrometry.net files
     mkdir -p /astrometry/data && \
     echo "add_path /astrometry/data" >> /etc/astrometry.cfg && \
