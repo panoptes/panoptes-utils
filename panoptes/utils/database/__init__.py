@@ -178,7 +178,7 @@ class PanDB(object):
         """The pre-defined list of collections that are valid."""
         return [
             'camera_board',
-            'control_board'
+            'control_board',
             'config',
             'current',
             'drift_align',
