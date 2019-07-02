@@ -1,165 +1,57 @@
-[![PyPI version](https://badge.fury.io/py/panoptes-utils.svg)](https://badge.fury.io/py/panoptes-utils)
-[![Build Status](https://travis-ci.com/panoptes/panoptes-utils.svg?branch=master)](https://travis-ci.com/panoptes/panoptes-utils)
-[![codecov](https://codecov.io/gh/panoptes/panoptes-utils/branch/master/graph/badge.svg)](https://codecov.io/gh/panoptes/panoptes-utils)
-[![Documentation Status](https://readthedocs.org/projects/panoptes-utils/badge/?version=latest)](https://panoptes-utils.readthedocs.io/en/latest/?badge=latest)
+[![PyPI version](https: // badge.fury.io / py / panoptes - utils.svg)](https: // badge.fury.io / py / panoptes - utils)
+[![Build Status](https: // travis - ci.com / panoptes / panoptes - utils.svg?branch=master)](https: // travis - ci.com / panoptes / panoptes - utils)
+[![codecov](https: // codecov.io / gh / panoptes / panoptes - utils / branch / master / graph / badge.svg)](https: // codecov.io / gh / panoptes / panoptes - utils)
+[![Documentation Status](https: // readthedocs.org / projects / panoptes - utils / badge /?version=latest)](https: // panoptes - utils.readthedocs.io / en / latest /?badge=latest)
 
 # PANOPTES Utils
 
 Utility functions for use within the PANOPTES ecosystem and for general astronomical processing.
 
-See the full documentation at: https://panoptes-utils.readthedocs.io
+See the full documentation at: https: // panoptes - utils.readthedocs.io
 
-## Install
+# Install
 <a href="#" name='install'></a>
 
-> :bulb: See [Docker](#docker) for ways to run that `panoptes-utils` without install.
+>: bulb: See[Docker](  # docker) for ways to run that `panoptes-utils` without install.
 
 To install type:
 
 ```bash
-pip install panoptes-utils
+pip install panoptes - utils
 ```
 
 There are also a number of optional dependencies, which can be installed as following:
 
 ```bash
 pip install "panoptes-utils[google,mongo,social,test]"
--or-
+- or-
 pip install "panoptes-utils[all]"
 ```
 
-## Services
+# Services
 <a href="#" name='services'></a>
 
-### Config Server
+# Config Server
 <a href="#" name='config-server'></a>
 
 A simple config param server. Runs as a Flask microservice that delivers JSON documents
 in response to requests for config key items.
 
-#### Starting the config server
-
-To start the service from the command-line, use `bin/panoptes-config-server`:
-
-```bash
-➜ bin/panoptes-config-server --help
-usage: panoptes-config-server [-h] [--host HOST] [--port PORT] [--public]
-                              [--config-file CONFIG_FILE] [--no-save]
-                              [--ignore-local] [--debug]
-
-Start the config server for PANOPTES
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --host HOST           Host name, defaults to local interface.
-  --port PORT           Local port, default 6563
-  --public              If server should be public, default False. Note:
-                        inside a docker container set this to True to expose
-                        to host.
-  --config-file CONFIG_FILE
-                        Config file, default $PANDIR/conf_files/pocs.yaml
-  --no-save             Prevent auto saving of any new values.
-  --ignore-local        Ignore the local config files, default False. Mostly
-                        for testing.
-  --debug               Debug
-```
-
-From python, for instance when running in a jupyter notebook, you can use:
+For more details and usage examples, see the[config server README](panoptes / utils / config / README.md).
 
 ```python
->>> from panoptes.utils.config.server import config_server
+>> > from panoptes.utils.config.server import config_server
+>> > from panoptes.utils.config import client
 
->>> config_server()
-```
+>> > server_process=config_server()
 
-#### Using the config server
-
-##### Python
-
-The server can be queried/set in python:
-
-```python
->>> from panoptes.utils.config import client
-
->>> client.get_config('location.horizon')
+>> > client.get_config('location.horizon')
 30.0
 
->>> client.set_config('location.horizon', 45)
-{'location.horizon': 45.0}
-
->>> client.get_config('location.horizon')
-45.0
-
->>> from astropy import units as u
->>> client.set_config('location.horizon', 45 * u.deg)
-{'location.horizon': <Quantity 45. deg>}
-
->>> client.get_config('location.horizon')
-<Quantity 45. deg>
-
->>> client.get_config('location')
-{'elevation': 3400.0,
- 'flat_horizon': -6.0,
- 'focus_horizon': -12.0,
- 'gmt_offset': -600.0,
- 'horizon': <Quantity 45. deg>,
- 'latitude': 19.54,
- 'longitude': -155.58,
- 'name': 'Mauna Loa Observatory',
- 'observe_horizon': -18.0,
- 'timezone': 'US/Hawaii'}
-
-# Get the second camera model
->>> client.get_config('cameras.devices[1].model')
-'canon_gphoto2'
+>> > server_process.terminate()  # Or just exit notebook/console
 ```
 
-##### Command-line
-
-Since the Flask microservice just deals with JSON documents, you can also use
-[httpie](https://httpie.org/) and [jq](https://stedolan.github.io/jq/) from the command line to view
-or manipulate the configuration:
-
-Get entire config, pipe through jq and select just location.
-
-```bash
-http :6563/get-config | jq '.location'
-{
-  "elevation": 3400,
-  "flat_horizon": -6,
-  "focus_horizon": -12,
-  "gmt_offset": -600,
-  "horizon": "45.0 deg",
-  "latitude": 19.54,
-  "longitude": -155.58,
-  "name": "Mauna Loa Observatory",
-  "observe_horizon": -18,
-  "timezone": "US/Hawaii"
-}
-```
-
-`jq` can easily manipulate the json documents. Here we pipe the original output into `jq`, change two of the values, then pipe
-the output back into the `set-config` endpoint provided by our Flask microservice. This will update the configuration on the server
-and return the updated configuration back to the user. We simply pipe this through `jq` yet again for an easy display of the new values.
-(Note the `jq` pipe `|` inside the single quotes see [jq](https://stedolan.github.io/jg/) for details.)
-
-```bash
-http :6563/get-config | jq '.location.horizon="37 deg" | .location.name="New Location"' | http :6563/set-config | jq '.location'
-{
-  "elevation": 3400,
-  "flat_horizon": -6,
-  "focus_horizon": -12,
-  "gmt_offset": -600,
-  "horizon": "37 deg",
-  "latitude": 19.54,
-  "longitude": -155.58,
-  "name": "New Location",
-  "observe_horizon": -18,
-  "timezone": "US/Hawaii"
-}
-```
-
-### Messaging Hub
+# Messaging Hub
 <a href="#" name='messaging-hub'></a>
 
 The messaging hub is responsible for relaying zeromq messages between the various components of a
@@ -167,13 +59,13 @@ PANOPTES system. Running the Messaging Hub will set up a forwarding service that
 number of publishers and subscribers.
 
 ```bash
-panoptes-messaging-hub --from-config
+panoptes - messaging - hub - -from-config
 ```
 
-## Docker
+# Docker
 <a name="docker"></a>
 
-Docker containers are available for running the `panoptes-utils` module and associated services, which
+Docker containers are available for running the `panoptes - utils` module and associated services, which
 also serve as the base container for all other PANOPTES related containers.
 
-See our [Docker documentation](https://panoptes-utils.readthedocs.io/en/latest/docker.html) for details.
+See our[Docker documentation](https: // panoptes - utils.readthedocs.io / en / latest / docker.html) for details.
