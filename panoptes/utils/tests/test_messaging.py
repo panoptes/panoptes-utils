@@ -112,8 +112,8 @@ def assess_pub_sub(pub, sub):
         sub.send_message('topic_name', 'a string')
 
     # Can not receive a message using a publisher
-    print("Can't recieve with publisher")
-    assert (None, None) == pub.receive_message(blocking=True)
+    print("Can't receive with publisher")
+    assert (None, None) == pub.receive_message(blocking=True, timeout_ms=1000 * 30)
 
     # At first, there is nothing available to receive.
     print("Nothing at start")
