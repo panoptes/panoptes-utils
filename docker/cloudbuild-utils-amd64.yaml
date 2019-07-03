@@ -5,8 +5,9 @@ steps:
   id: 'amd64'
   args:
   - 'build'
-  - '-f=docker/Dockerfile.utils.amd64'
+  - '-f=docker/Dockerfile.utils'
   - '--build-arg=arch=amd64'
+  - '--build-arg=conda_url=https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh'
   - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:amd64'
   - '.'
   waitFor: ['-']
