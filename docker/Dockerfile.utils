@@ -47,6 +47,8 @@ RUN cd ${PANDIR}/panoptes-utils && \
     # Download astrometry.net files
     /home/${USER}/conda/envs/${CONDA_ENV}/bin/python panoptes/utils/data.py --wide-field --narrow-field --folder /astrometry/data
 
+WORKDIR ${PANDIR}/panoptes-utils
+
 # Comes from base image - hard-coded for now ☹.
 ENTRYPOINT ["/bin/sh", "/var/panoptes/panoptes-utils/docker/entrypoint.sh"]
 

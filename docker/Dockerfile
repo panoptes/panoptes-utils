@@ -53,7 +53,7 @@ RUN apt-get update && \
     chown -R "${user}" /astrometry && \
     chmod -R 755 "/home/${user}"
 
-WORKDIR ${PANDIR}
+WORKDIR ${PANDIR}/panoptes-utils
 
 USER ${user}
 
