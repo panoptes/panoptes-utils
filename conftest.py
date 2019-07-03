@@ -21,7 +21,7 @@ from panoptes.utils.config import load_config
 from panoptes.utils.logger import get_root_logger
 from panoptes.utils.messaging import PanMessaging
 from panoptes.utils.config.client import set_config
-from panoptes.utils.config.server import app
+from panoptes.utils.config.server import config_server
 
 # Global variable set to a bool by can_connect_to_mongo().
 _can_connect_to_mongo = None
@@ -161,34 +161,18 @@ def config_path():
                         )
 
 
-@pytest.fixture(scope='session')
-def config_server_args(config_path):
-    loaded_config = load_config(config_files=config_path, ignore_local=True)
-    return {
-        'config_file': config_path,
-        'auto_save': False,
-        'ignore_local': True,
-        'POCS': loaded_config,
-        'POCS_cut': Cut(loaded_config)
-    }
-
-
 @pytest.fixture(scope='session', autouse=True)
-def static_config_server(config_host, static_config_port, config_server_args, images_dir, db_name):
+def static_config_server(config_host, static_config_port, config_path, images_dir, db_name):
 
     logger = get_root_logger()
     logger.critical(f'Starting config_server for testing session')
 
-    def start_config_server():
-        # Load the config items into the app config.
-        for k, v in config_server_args.items():
-            app.config[k] = v
-
-        # Start the actual flask server.
-        app.run(host=config_host, port=static_config_port)
-
-    proc = Process(target=start_config_server)
-    proc.start()
+    proc = config_server(
+        host=config_host,
+        port=static_config_port,
+        config_file=config_path,
+        ignore_local=True,
+    )
 
     logger.info(f'config_server started with PID={proc.pid}')
 
@@ -219,7 +203,7 @@ def static_config_server(config_host, static_config_port, config_server_args, im
 
 
 @pytest.fixture(scope='function')
-def dynamic_config_server(config_host, config_port, config_server_args, images_dir, db_name):
+def dynamic_config_server(config_host, config_port, config_path, images_dir, db_name):
     """If a test requires changing the configuration we use a function-scoped testing
     server. We only do this on tests that require it so we are not constantly starting and stopping
     the config server unless necessary.  To use this, each test that requires it must use the
@@ -230,16 +214,12 @@ def dynamic_config_server(config_host, config_port, config_server_args, images_d
     logger = get_root_logger()
     logger.critical(f'Starting config_server for testing function')
 
-    def start_config_server():
-        # Load the config items into the app config.
-        for k, v in config_server_args.items():
-            app.config[k] = v
-
-        # Start the actual flask server.
-        app.run(host=config_host, port=config_port)
-
-    proc = Process(target=start_config_server)
-    proc.start()
+    proc = config_server(
+        host=config_host,
+        port=config_port,
+        config_file=config_path,
+        ignore_local=True,
+    )
 
     logger.info(f'config_server started with PID={proc.pid}')
 
