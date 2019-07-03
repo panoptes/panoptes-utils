@@ -1,0 +1,53 @@
+# Miniconda items taken from: https://hub.docker.com/r/continuumio/miniconda3/dockerfile
+# Updated with "latest" miniconda script.
+
+ARG arch=amd64
+
+FROM gcr.io/panoptes-survey/panoptes-base:$arch AS base-image
+MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
+
+ARG arch=amd64
+ARG user=panoptes
+ARG pan_dir=/var/panoptes
+ARG env_name=panoptes-env
+ARG conda_url
+
+ENV USER $user
+ENV PANDIR $pan_dir
+ENV CONDA_ENV $env_name
+
+USER ${USER}
+
+# For now we copy from local - can have bad effects if in wrong branch
+COPY . ${PANDIR}/panoptes-utils/
+
+RUN cd && \
+    # Miniconda
+    wget --quiet ${conda_url} -O ~/conda.sh && \
+    /bin/bash ~/conda.sh -b -p "/home/${USER}/conda" && \
+    rm ~/conda.sh && \
+    /home/${USER}/conda/bin/conda update -n root -c defaults conda && \
+    /home/${USER}/conda/bin/conda clean -tipsy && \
+    echo ". /home/${USER}/conda/etc/profile.d/conda.sh" >> ~/.zshrc && \
+    /home/${USER}/conda/bin/conda env create -f "${PANDIR}/panoptes-utils/conda-environment-${arch}.yaml" -n ${CONDA_ENV} && \
+    /home/${USER}/conda/bin/conda clean --all --yes && \
+    /home/${USER}/conda/bin/conda clean -tipsy && \
+    # Activate environment by default
+    echo "conda activate ${CONDA_ENV}" >> ~/.zshrc && \
+    # Download astrometry.net files
+    mkdir -p /astrometry/data && \
+    chown -R ${USER}:${USER} /astrometry/data
+
+FROM base-image
+
+# Install module
+RUN cd ${PANDIR}/panoptes-utils && \
+    /home/${USER}/conda/envs/${CONDA_ENV}/bin/pip install --no-cache-dir -Ur requirements.txt && \
+    /home/${USER}/conda/envs/${CONDA_ENV}/bin/pip install --no-cache-dir -e ".[all]" && \
+    # Download astrometry.net files
+    /home/${USER}/conda/envs/${CONDA_ENV}/bin/python panoptes/utils/data.py --wide-field --narrow-field --folder /astrometry/data
+
+# Comes from base image - hard-coded for now ☹.
+ENTRYPOINT ["/bin/sh", "/var/panoptes/panoptes-utils/docker/entrypoint.sh"]
+
+CMD ["/bin/zsh"]
