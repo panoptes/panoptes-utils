@@ -32,8 +32,6 @@ Bringing things in line with updates to POCS for docker and panoptes-utils use.
 * `~utils.fits.getdata` to match other fits convenience functions, allowing for
 fpack files.
 
-
-
 ## [0.0.7] - 2019-05-26
 ### Changed
 * **Breaking** Changed namespace so no underscores, i.e. `from panoptes.utils import time`.
