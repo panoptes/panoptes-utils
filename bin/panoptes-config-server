@@ -31,7 +31,6 @@ if __name__ == '__main__':
     if args.public and args.host == '127.0.0.1':
         args.host = '0.0.0.0'
 
-    # Handle Ctrl-c gracefully
     server_process = config_server(
         host=args.host,
         port=args.port,
