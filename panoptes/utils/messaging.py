@@ -124,13 +124,15 @@ class PanMessaging(object):
         """
         obj = cls()
 
-        obj.logger.debug("Creating publisher. Binding to port {} ".format(port))
+        obj.logger.debug('Creating zmq message publisher.')
 
         socket = obj.context.socket(zmq.PUB)
 
         if bind:
+            obj.logger.debug(f'Binding publisher to port {port}')
             socket.bind(f'tcp://*:{port}')
         elif connect:
+            obj.logger.debug(f'Binding publisher to tcp://{host}:{port}')
             socket.connect(f'tcp://{host}:{port}')
 
         obj.socket = socket
@@ -157,6 +159,7 @@ class PanMessaging(object):
             except zmq.error.ZMQError:
                 obj.logger.debug('Problem binding port {}'.format(port))
         elif connect:
+            obj.logger.debug(f'Connecting subscriber to tcp://{host}:{port}')
             socket.connect(f'tcp://{host}:{port}')
 
         socket.setsockopt_string(zmq.SUBSCRIBE, topic)
@@ -225,6 +228,7 @@ class PanMessaging(object):
             # Don't block at this point, because we will have waited as long
             # as necessary.
             flags = flags | zmq.NOBLOCK
+
         try:
             # Ugh. So ugly with the strings.
             message = self.socket.recv_string(flags=flags)

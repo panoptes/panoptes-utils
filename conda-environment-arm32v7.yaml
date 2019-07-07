@@ -14,7 +14,7 @@ dependencies:
   - pyserial
   - python-dateutil
   - PyYAML
-  - pyzmq
+  - pyzmq < 18.0.0
   - readline
   - scikit-image
   - scikit-learn

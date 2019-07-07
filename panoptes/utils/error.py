@@ -127,7 +127,7 @@ class MountNotFound(NotFound):
     """ Mount cannot be import """
 
     def __init__(self, msg='Mount Not Found'):
-        super().__init__(msg, exit=True)
+        super().__init__(msg)
 
 
 class CameraNotFound(NotFound):
