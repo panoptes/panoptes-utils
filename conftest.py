@@ -373,14 +373,14 @@ def message_forwarder(messaging_ports):
 @pytest.fixture(scope='function')
 def msg_publisher(message_forwarder):
     port = message_forwarder['msg_ports'][0]
-    publisher = PanMessaging.create_publisher(port)
+    publisher = PanMessaging.create_publisher(port, bind=True)
     yield publisher
     publisher.close()
 
 
 @pytest.fixture(scope='function')
 def msg_subscriber(message_forwarder):
-    port = message_forwarder['msg_ports'][1]
+    port = message_forwarder['msg_ports'][0]
     subscriber = PanMessaging.create_subscriber(port)
     yield subscriber
     subscriber.close()
@@ -388,8 +388,8 @@ def msg_subscriber(message_forwarder):
 
 @pytest.fixture(scope='function')
 def cmd_publisher(message_forwarder):
-    port = message_forwarder['cmd_ports'][0]
-    publisher = PanMessaging.create_publisher(port)
+    port = message_forwarder['cmd_ports'][1]
+    publisher = PanMessaging.create_publisher(port, bind=True)
     yield publisher
     publisher.close()
 
