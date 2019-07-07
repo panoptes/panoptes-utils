@@ -27,4 +27,4 @@ if [ ! -z ${GOOGLE_COMPUTE_INSTANCE} ]; then
 fi
 
 # Pass arguments
-exec "/bin/zsh -ic $@"
+exec "$@"
