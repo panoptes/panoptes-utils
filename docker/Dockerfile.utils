@@ -7,7 +7,7 @@ FROM gcr.io/panoptes-survey/panoptes-base:$arch AS base-image
 MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
 
 ARG arch=amd64
-ARG user=panoptes
+ARG user=root
 ARG pan_dir=/var/panoptes
 ARG env_name=panoptes-env
 ARG conda_url

@@ -3,7 +3,7 @@ ARG base_image=python:3.7-slim
 FROM $base_image AS base-image
 MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
 
-ARG user=panoptes
+ARG user=root
 ARG pan_dir=/var/panoptes
 ARG pocs_dir="${pan_dir}/POCS"
 
