@@ -7,7 +7,7 @@ FROM gcr.io/panoptes-survey/panoptes-base:$arch AS base-image
 MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
 
 ARG arch=amd64
-ARG user=panoptes
+ARG user=root
 ARG pan_dir=/var/panoptes
 ARG env_name=panoptes-env
 ARG conda_url
@@ -24,14 +24,14 @@ COPY . ${PANDIR}/panoptes-utils/
 RUN cd && \
     # Miniconda
     wget --quiet ${conda_url} -O ~/conda.sh && \
-    /bin/bash ~/conda.sh -b -p "/home/${USER}/conda" && \
+    /bin/bash ~/conda.sh -b -p "/${USER}/conda" && \
     rm ~/conda.sh && \
-    /home/${USER}/conda/bin/conda update -n root -c defaults conda && \
-    /home/${USER}/conda/bin/conda clean -tipsy && \
-    echo ". /home/${USER}/conda/etc/profile.d/conda.sh" >> ~/.zshrc && \
-    /home/${USER}/conda/bin/conda env create -f "${PANDIR}/panoptes-utils/conda-environment-${arch}.yaml" -n ${CONDA_ENV} && \
-    /home/${USER}/conda/bin/conda clean --all --yes && \
-    /home/${USER}/conda/bin/conda clean -tipsy && \
+    /${USER}/conda/bin/conda update -n root -c defaults conda && \
+    /${USER}/conda/bin/conda clean -tipsy && \
+    echo ". /${USER}/conda/etc/profile.d/conda.sh" >> ~/.zshrc && \
+    /${USER}/conda/bin/conda env create -f "${PANDIR}/panoptes-utils/conda-environment-${arch}.yaml" -n ${CONDA_ENV} && \
+    /${USER}/conda/bin/conda clean --all --yes && \
+    /${USER}/conda/bin/conda clean -tipsy && \
     # Activate environment by default
     echo "conda activate ${CONDA_ENV}" >> ~/.zshrc && \
     # Download astrometry.net files
@@ -42,10 +42,10 @@ FROM base-image
 
 # Install module
 RUN cd ${PANDIR}/panoptes-utils && \
-    /home/${USER}/conda/envs/${CONDA_ENV}/bin/pip install --no-cache-dir -Ur requirements.txt && \
-    /home/${USER}/conda/envs/${CONDA_ENV}/bin/pip install --no-cache-dir -e ".[all]" && \
+    /${USER}/conda/envs/${CONDA_ENV}/bin/pip install --no-cache-dir -Ur requirements.txt && \
+    /${USER}/conda/envs/${CONDA_ENV}/bin/pip install --no-cache-dir -e ".[all]" && \
     # Download astrometry.net files
-    /home/${USER}/conda/envs/${CONDA_ENV}/bin/python panoptes/utils/data.py --wide-field --narrow-field --folder /astrometry/data
+    /${USER}/conda/envs/${CONDA_ENV}/bin/python panoptes/utils/data.py --wide-field --narrow-field --folder /astrometry/data
 
 WORKDIR ${PANDIR}/panoptes-utils
 
