@@ -123,7 +123,7 @@ def assess_pub_sub(pub, sub):
     pub.send_message('topic.name', 'a string')
 
     print("Receiving a string")
-    topic, msg_obj = sub.receive_message()
+    topic, msg_obj = sub.receive_message(timeout_ms=5000)
 
     print("Checking string")
     assert isinstance(msg_obj, dict)
