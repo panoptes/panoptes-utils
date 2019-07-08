@@ -366,6 +366,7 @@ def message_forwarder(messaging_ports):
     # It takes a while for the forwarder to start, so allow for that.
     # TODO(jamessynge): Come up with a way to speed up these fixtures.
     time.sleep(3)
+    assert proc.poll() is None
     yield messaging_ports
     proc.kill()
 
