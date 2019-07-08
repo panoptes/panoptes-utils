@@ -369,7 +369,7 @@ def message_forwarder(messaging_ports):
     time.sleep(3)
     # If message forwarder doesn't start, tell us why.
     if proc.poll() is not None:
-        outs, errs = proc.communicate(timeout=15)
+        outs, errs = proc.communicate(timeout=5)
         logger.info(f'outs: {outs!r}')
         logger.info(f'errs: {errs!r}')
         assert False
