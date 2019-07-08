@@ -132,10 +132,10 @@ def assess_pub_sub(pub, sub):
     assert 'timestamp' in msg_obj
 
 
-def test_msg_pub_sub(msg_publisher, msg_subscriber):
+def test_msg_pub_sub(message_forwarder, msg_publisher, msg_subscriber):
     print("Calling helper")
     assess_pub_sub(msg_publisher, msg_subscriber)
 
 
-def test_cmd_pub_sub(cmd_publisher, cmd_subscriber):
+def test_cmd_pub_sub(message_forwarder, cmd_publisher, cmd_subscriber):
     assess_pub_sub(cmd_publisher, cmd_subscriber)
