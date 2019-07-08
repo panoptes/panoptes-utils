@@ -367,7 +367,7 @@ def message_forwarder(messaging_ports):
     # TODO(jamessynge): Come up with a way to speed up these fixtures.
     time.sleep(3)
     yield messaging_ports
-    proc.terminate()
+    proc.kill()
 
 
 @pytest.fixture(scope='function')
