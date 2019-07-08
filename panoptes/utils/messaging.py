@@ -198,7 +198,8 @@ class PanMessaging(object):
         full_message = f'{topic} {message}'
 
         # Send the message
-        self.socket.send_string(full_message, flags=zmq.NOBLOCK)
+        # self.socket.send_string(full_message, flags=zmq.NOBLOCK)
+        self.socket.send_string(full_message)
 
     def receive_message(self, blocking=True, flags=0, timeout_ms=0):
         """Receive a message
