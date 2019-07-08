@@ -198,7 +198,8 @@ class PanMessaging(object):
         full_message = f'{topic} {message}'
 
         # Send the message
-        self.socket.send_string(full_message, flags=zmq.NOBLOCK)
+        # self.socket.send_string(full_message, flags=zmq.NOBLOCK)
+        self.socket.send_string(full_message)
 
     def receive_message(self, blocking=True, flags=0, timeout_ms=0):
         """Receive a message
@@ -233,7 +234,7 @@ class PanMessaging(object):
             # Ugh. So ugly with the strings.
             message = self.socket.recv_string(flags=flags)
         except Exception as e:
-            print(f'error in receive_message: {e!r}')
+            self.logger.warning(f'error in receive_message: {e!r}')
         else:
             topic, msg = message.split(' ', maxsplit=1)
             msg_obj = from_json(msg)

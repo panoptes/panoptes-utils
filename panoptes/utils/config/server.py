@@ -13,7 +13,7 @@ from panoptes.utils.config import save_config
 from panoptes.utils.serializers import _serialize_object
 from panoptes.utils.logger import get_root_logger
 
-logging.getLogger('werkzeug').setLevel(logging.INFO)
+logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
 app = Flask(__name__)
 

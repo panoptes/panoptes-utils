@@ -361,26 +361,46 @@ def message_forwarder(messaging_ports):
         args.append(str(sub))
         args.append(str(pub))
 
-    get_root_logger().info('message_forwarder fixture starting: {}', args)
+    logger = get_root_logger()
+    logger.info('message_forwarder fixture starting: {}', args)
     proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # It takes a while for the forwarder to start, so allow for that.
     # TODO(jamessynge): Come up with a way to speed up these fixtures.
     time.sleep(3)
+    # If message forwarder doesn't start, tell us why.
+    if proc.poll() is not None:
+        outs, errs = proc.communicate(timeout=5)
+        logger.info(f'outs: {outs!r}')
+        logger.info(f'errs: {errs!r}')
+        assert False
+
     yield messaging_ports
-    proc.terminate()
+    # Make sure messager forwarder is still running at end.
+    assert proc.poll() is None
+
+    # Try to terminate, then communicate, then kill.
+    try:
+        proc.terminate()
+        outs, errs = proc.communicate(timeout=0.5)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        outs, errs = proc.communicate()
+
+    # Make sure message forwarder was killed.
+    assert proc.poll() is not None
 
 
 @pytest.fixture(scope='function')
 def msg_publisher(message_forwarder):
     port = message_forwarder['msg_ports'][0]
-    publisher = PanMessaging.create_publisher(port, bind=True)
+    publisher = PanMessaging.create_publisher(port)
     yield publisher
     publisher.close()
 
 
 @pytest.fixture(scope='function')
 def msg_subscriber(message_forwarder):
-    port = message_forwarder['msg_ports'][0]
+    port = message_forwarder['msg_ports'][1]
     subscriber = PanMessaging.create_subscriber(port)
     yield subscriber
     subscriber.close()
@@ -388,8 +408,8 @@ def msg_subscriber(message_forwarder):
 
 @pytest.fixture(scope='function')
 def cmd_publisher(message_forwarder):
-    port = message_forwarder['cmd_ports'][1]
-    publisher = PanMessaging.create_publisher(port, bind=True)
+    port = message_forwarder['cmd_ports'][0]
+    publisher = PanMessaging.create_publisher(port)
     yield publisher
     publisher.close()
 
