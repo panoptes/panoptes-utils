@@ -368,7 +368,9 @@ def message_forwarder(messaging_ports):
     time.sleep(3)
     assert proc.poll() is None
     yield messaging_ports
+    assert proc.poll() is None
     proc.kill()
+    assert proc.poll() is not None
 
 
 @pytest.fixture(scope='function')
