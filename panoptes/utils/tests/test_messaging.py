@@ -134,6 +134,7 @@ def assess_pub_sub(pub, sub):
 
 def test_msg_pub_sub(message_forwarder, msg_publisher, msg_subscriber):
     print("Calling helper")
+    print(f"Using messaging_ports: {message_forwarder}")
     assess_pub_sub(msg_publisher, msg_subscriber)
 
 
