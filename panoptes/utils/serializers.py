@@ -46,7 +46,7 @@ class StringYAML(YAML):
             return stream.getvalue()
 
 
-def to_json(obj, filename=None, **kwargs):
+def to_json(obj, filename=None, append=True, **kwargs):
     """Convert a Python object to a JSON string.
 
     Will handle `datetime` objects as well as `astropy.unit.Quantity` objects.
@@ -71,6 +71,8 @@ def to_json(obj, filename=None, **kwargs):
     Args:
         obj (`object`): The object to be converted to JSON, usually a dict.
         filename (str, optional): Path to file for saving.
+        append (bool, optional): Append to `filename`, default True. Setting
+            False will clobber the file.
         **kwargs: Keyword arguments passed to `json.dumps`.
 
     Returns:
@@ -79,7 +81,10 @@ def to_json(obj, filename=None, **kwargs):
     json_str = json.dumps(obj, default=_serialize_object, **kwargs)
 
     if filename is not None:
-        with open(filename, 'w') as f:
+        mode = 'w'
+        if append:
+            mode = 'w+'
+        with open(filename, mode) as f:
             f.write(json_str)
 
     return json_str
