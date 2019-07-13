@@ -37,7 +37,7 @@ class PanFileDB(AbstractPanDB):
         result = obj_id
         try:
             # Overwrite current collection file with obj.
-            to_json(obj, filename=current_fn)
+            to_json(obj, filename=current_fn, append=False)
         except Exception as e:
             self._warn("Problem inserting object into current collection: {}, {!r}".format(e, obj))
             result = None
