@@ -84,8 +84,8 @@ def to_json(obj, filename=None, append=True, **kwargs):
         mode = 'w'
         if append:
             mode = 'a'
-        with open(filename, mode) as f:
-            f.write(json_str)
+        with open(filename, mode) as fn:
+            fn.write(json_str + '\n')
 
     return json_str
 
