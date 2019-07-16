@@ -22,6 +22,8 @@ USER ${USER}
 COPY . ${PANDIR}/panoptes-utils/
 
 RUN cd && \
+    # Copy zshrc
+    cat "${PANDIR}/panoptes-utils/docker/zshrc" >> /${USER}/.zshrc && \
     # Miniconda
     wget --quiet ${conda_url} -O ~/conda.sh && \
     /bin/bash ~/conda.sh -b -p "/${USER}/conda" && \
