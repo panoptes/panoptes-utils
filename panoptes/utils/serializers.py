@@ -292,17 +292,18 @@ def _parse_all_objects(obj):
 
     # Try to parse as quantity if certain type
     if isinstance(obj, str):
-        units_string = obj.rsplit()[-1]  # Get the final word
-        if units_string in ['m', 'deg', 's']:
-            try:
-                quantity = u.Quantity(obj)
-                # If it ends up dimensionless just return obj.
-                if str(quantity.unit) == '':
+        with suppress(IndexError):
+            units_string = obj.rsplit()[-1]  # Get the final word
+            if units_string in ['m', 'deg', 's']:
+                try:
+                    quantity = u.Quantity(obj)
+                    # If it ends up dimensionless just return obj.
+                    if str(quantity.unit) == '':
+                        return obj
+                    else:
+                        return quantity
+                except Exception:
                     return obj
-                else:
-                    return quantity
-            except Exception:
-                return obj
 
     return obj
 
