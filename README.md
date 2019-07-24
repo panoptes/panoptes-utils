@@ -41,15 +41,15 @@ in response to requests for config key items.
 For more details and usage examples, see the [config server README](panoptes/utils/config/README.md).
 
 ```python
->> > from panoptes.utils.config.server import config_server
->> > from panoptes.utils.config import client
+>>> from panoptes.utils.config.server import config_server
+>>> from panoptes.utils.config import client
 
->> > server_process=config_server()
+>>> server_process=config_server()
 
->> > client.get_config('location.horizon')
+>>> client.get_config('location.horizon')
 30.0
 
->> > server_process.terminate()  # Or just exit notebook/console
+>>> server_process.terminate()  # Or just exit notebook/console
 ```
 
 ## Messaging Hub
