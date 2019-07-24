@@ -13,7 +13,7 @@ See the full documentation at: https://panoptes-utils.readthedocs.io
 <a href="#" name='install'></a>
 
 > :bulb: See [Docker](#docker) for ways to run that `panoptes-utils` without installing
-to your hose computer.
+to your host computer.
 
 To install type:
 
