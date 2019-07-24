@@ -84,15 +84,32 @@ The server can be queried/set in python:
 ```python
 >>> from panoptes.utils.config import client
 
+# Show the entire config item.
+>>> client.get_config('location')
+{'elevation': 3400.0,
+ 'flat_horizon': -6.0,
+ 'focus_horizon': -12.0,
+ 'gmt_offset': -600.0,
+ 'horizon': 30,
+ 'latitude': 19.54,
+ 'longitude': -155.58,
+ 'name': 'Mauna Loa Observatory',
+ 'observe_horizon': -18.0,
+ 'timezone': 'US/Hawaii'}
+
+# Get just a specific value.
 >>> client.get_config('location.horizon')
 30.0
 
+# Set to a new value.
 >>> client.set_config('location.horizon', 45)
 {'location.horizon': 45.0}
 
+# Retrieve new value.
 >>> client.get_config('location.horizon')
 45.0
 
+# Work with units.
 >>> from astropy import units as u
 >>> client.set_config('location.horizon', 45 * u.deg)
 {'location.horizon': <Quantity 45. deg>}
