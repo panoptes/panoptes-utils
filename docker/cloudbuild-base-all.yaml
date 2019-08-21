@@ -7,10 +7,10 @@ steps:
   - '--privileged'
   - 'multiarch/qemu-user-static:register'
   - '--reset'
-  waitFor: ['-']  
+  waitFor: ['-']
 
 # Build
-# AMD Build  
+# AMD Build
 - name: 'gcr.io/cloud-builders/docker'
   id: 'amd64-base'
   args:
@@ -20,7 +20,7 @@ steps:
   - '--tag=gcr.io/${PROJECT_ID}/panoptes-base:amd64'
   - '.'
   waitFor: ['register-qemu']
-# ARM Build (e.g. Raspberry Pi)  
+# ARM Build (e.g. Raspberry Pi)
 - name: 'gcr.io/cloud-builders/docker'
   id: 'arm32v7-base'
   args:
@@ -55,7 +55,7 @@ steps:
   - 'create'
   - 'gcr.io/${PROJECT_ID}/panoptes-base:latest'
   - 'gcr.io/${PROJECT_ID}/panoptes-base:arm32v7'
-  - 'gcr.io/${PROJECT_ID}/panoptes-base:amd64' 
+  - 'gcr.io/${PROJECT_ID}/panoptes-base:amd64'
   waitFor: ['push-amd64-base', 'push-arm-base']
 
 - name: 'gcr.io/cloud-builders/docker'
