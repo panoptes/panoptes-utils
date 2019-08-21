@@ -3,9 +3,9 @@ SOURCE_DIR="${PANDIR}/panoptes-utils"
 BASE_CLOUD_FILE="cloudbuild-base-${1:-all}.yaml"
 CLOUD_FILE="cloudbuild-utils-${1:-all}.yaml"
 
-echo "Using ${CLOUD_FILE}"
 
 if [[ $* == *--base* ]]; then
+    echo "Using ${BASE_CLOUD_FILE}"
 	echo "Building panoptes-base!"
 	gcloud builds submit \
         --timeout="5h" \
@@ -13,6 +13,7 @@ if [[ $* == *--base* ]]; then
         "${SOURCE_DIR}"
 fi
 
+echo "Using ${CLOUD_FILE}"
 echo "Building panoptes-utils"
 gcloud builds submit \
     --timeout="5h" \
