@@ -21,14 +21,14 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
         >>> get_config(key='cameras.devices[1].model')
         'canon_gphoto2'
         >>> # Returns `None` if key is not found
-        >>> foobar = get_config('foobar')
+        >>> foobar = get_config(key='foobar')
         >>> foobar is None
         True
-        >>> get_config('foobar', default='baz')
+        >>> get_config(key='foobar', default='baz')
         'baz'
         >>> # Can use Quantities as well
         >>> from astropy import units as u
-        >>> get_config('foobar', default=42 * u.meter)
+        >>> get_config(key='foobar', default=42 * u.meter)
         <Quantity 42. m>
 
     Args:

@@ -72,7 +72,6 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
     try:
         proc = subprocess.Popen(cmd,
                                 universal_newlines=True,
-                                stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
     except OSError as e:
@@ -142,15 +141,19 @@ def get_solve_field(fname, replace=True, remove_extras=True, **kwargs):
         output, errs = proc.communicate(timeout=kwargs.get('timeout', 30))
     except subprocess.TimeoutExpired:
         proc.kill()
-        raise error.Timeout("Timeout while solving")
+        output, errs = proc.communicate()
+        print(f'Timeout on {fname}')
+        print(f'Output on {fname}: {output}')
+        print(f'Errors on {fname}: {errs}')
+        raise error.Timeout(f'Timeout while solving: {output!r} {errs!r}')
     else:
         if verbose:
-            print("Returncode:", proc.returncode)
-            print("Output:", output)
-            print("Errors:", errs)
+            print(f'Returncode: {proc.returncode}')
+            print(f'Output on {fname}: {output}')
+            print(f'Errors on {fname}: {errs}')
 
         if proc.returncode == 3:
-            raise error.SolveError('solve-field not found: {}'.format(output))
+            raise error.SolveError(f'solve-field not found: {output}')
 
         if not os.path.exists(fname.replace(file_ext, '.solved')):
             raise error.SolveError('File not solved')
@@ -178,10 +181,10 @@ def get_solve_field(fname, replace=True, remove_extras=True, **kwargs):
                         os.remove(f)
 
         except Exception as e:
-            warn('Cannot remove extra files: {}'.format(e))
+            warn(f'Cannot remove extra files: {e!r}')
 
     if errs is not None and errs > '':
-        warn("Error in solving: {}".format(errs))
+        warn(f'Error in solving: {errs!r}')
     else:
 
         try:
