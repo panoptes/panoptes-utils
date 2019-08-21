@@ -145,7 +145,7 @@ def get_solve_field(fname, replace=True, remove_extras=True, **kwargs):
         print(f'Timeout on {fname}')
         print(f'Output on {fname}: output')
         print(f'Errors on {fname}: errs')
-        raise error.Timeout("Timeout while solving")
+        raise error.Timeout("Timeout while solving: {output!r} {errs!r}")
     else:
         if verbose:
             print("Returncode:", proc.returncode)
