@@ -55,7 +55,10 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
     except Exception as e:
         get_root_logger().info(f'Problem with get_config: {e!r}')
     else:
-        if response.ok and response.text != 'null\n':
+        if not response.ok:
+            get_root_logger().warning(f'Problem with config-server: {response.content!r}')
+
+        if response.text != 'null\n':
             if parse:
                 config_entry = serializers.from_json(response.content.decode('utf8'))
             else:
