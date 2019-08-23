@@ -55,7 +55,7 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
     except Exception as e:
         get_root_logger().info(f'Problem with get_config: {e!r}')
     else:
-        if not response.ok:
+        if not response.ok and default is None:
             config_entry = {'error': f'Cannot access config server: {response.content}'}
         elif response.text != 'null\n':
             if parse:
