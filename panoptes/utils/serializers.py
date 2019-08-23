@@ -291,7 +291,7 @@ def _parse_all_objects(obj):
             return Time(obj).datetime
 
     # Try to parse as quantity if certain type
-    if isinstance(obj, str):
+    if isinstance(obj, str) and obj > '':
         with suppress(IndexError):
             units_string = obj.rsplit()[-1]  # Get the final word
             if units_string in ['m', 'deg', 's']:
