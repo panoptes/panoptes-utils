@@ -57,12 +57,12 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
     else:
         if not response.ok:
             get_root_logger().warning(f'Problem with config-server: {response.content!r}')
-
-        if response.text != 'null\n':
-            if parse:
-                config_entry = serializers.from_json(response.content.decode('utf8'))
-            else:
-                config_entry = response.json()
+        else:
+            if response.text != 'null\n':
+                if parse:
+                    config_entry = serializers.from_json(response.content.decode('utf8'))
+                else:
+                    config_entry = response.json()
 
     return config_entry
 
