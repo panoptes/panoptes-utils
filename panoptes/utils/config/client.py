@@ -20,9 +20,9 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
         '30.0 deg'
         >>> get_config(key='cameras.devices[1].model')
         'canon_gphoto2'
-        >>> # Returns `error` if key is not found.
+        >>> # Returns `None` if key is not found.
         >>> foobar = get_config(key='foobar')
-        >>> 'error' in foobar.keys()
+        >>> foobar is None
         True
         >>> # But you can supply a default.
         >>> get_config(key='foobar', default='baz')
@@ -55,9 +55,7 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
     except Exception as e:
         get_root_logger().info(f'Problem with get_config: {e!r}')
     else:
-        if not response.ok and default is None:
-            config_entry = {'error': f'Cannot access config server'}
-        elif response.text != 'null\n':
+        if response.ok and response.text != 'null\n':
             if parse:
                 config_entry = serializers.from_json(response.content.decode('utf8'))
             else:
