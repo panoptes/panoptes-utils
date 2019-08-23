@@ -39,6 +39,8 @@ RUN apt-get update && \
     bash gsdk.sh --disable-prompts && \
     echo ". /${USER}/google-cloud-sdk/completion.zsh.inc" >> ~/.zshrc && \
     echo ". /${USER}/google-cloud-sdk/path.zsh.inc" >> ~/.zshrc && \
+    echo ". /${USER}/google-cloud-sdk/completion.bash.inc" >> ~/.bashrc && \
+    echo ". /${USER}/google-cloud-sdk/path.bash.inc" >> ~/.bashrc && \
     rm gsdk.sh && \
     echo "add_path /astrometry/data" >> /etc/astrometry.cfg && \
     # Cleanup apt.
