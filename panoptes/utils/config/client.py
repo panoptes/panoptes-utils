@@ -56,7 +56,7 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
         get_root_logger().info(f'Problem with get_config: {e!r}')
     else:
         if not response.ok and default is None:
-            config_entry = {'error': f'Cannot access config server: {response.content}'}
+            config_entry = {'error': f'Cannot access config server'}
         elif response.text != 'null\n':
             if parse:
                 config_entry = serializers.from_json(response.content.decode('utf8'))
