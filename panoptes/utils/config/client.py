@@ -20,10 +20,11 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
         '30.0 deg'
         >>> get_config(key='cameras.devices[1].model')
         'canon_gphoto2'
-        >>> # Returns `None` if key is not found
+        >>> # Returns `error` if key is not found.
         >>> foobar = get_config(key='foobar')
-        >>> foobar is None
+        >>> 'error' in foobar.keys()
         True
+        >>> # But you can supply a default.
         >>> get_config(key='foobar', default='baz')
         'baz'
         >>> # Can use Quantities as well
