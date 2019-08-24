@@ -32,9 +32,7 @@ RUN cd && \
     echo ". /${USER}/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo ". /${USER}/conda/etc/profile.d/conda.sh" >> ~/.zshrc && \
     /${USER}/conda/bin/conda env create -f "${PANDIR}/panoptes-utils/conda-environment-${arch}.yaml" -n ${CONDA_ENV} && \
-    /${USER}/conda/bin/conda clean --all --yes && \
     /${USER}/conda/bin/conda clean -tipsy && \
-    /${USER}/conda/bin/conda build purge-all && \
     # Activate environment by default
     echo "conda activate ${CONDA_ENV}" >> ~/.bashrc && \
     echo "conda activate ${CONDA_ENV}" >> ~/.zshrc && \
