@@ -5,6 +5,8 @@ from matplotlib import animation
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib import cm
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
 import numpy as np
 
 from astropy.visualization import LogStretch, ImageNormalize, LinearStretch, MinMaxInterval
@@ -33,6 +35,17 @@ def get_palette(cmap='inferno'):
     palette.set_bad('g', 1.0)
 
     return palette
+
+
+def add_colorbar(axes_image, size='5%', pad=0.05, orientation='vertical'):
+    """Add a decently sized colorbar to the image.
+
+    Args:
+        axes_image (`~matplotlib.image.AxesImage`): A matplotlib AxesImage.
+    """
+    divider = make_axes_locatable(axes_image.axes)
+    cax = divider.append_axes('right', size=size, pad=pad)
+    axes_image.figure.colorbar(axes_image, cax=cax, orientation=orientation)
 
 
 def add_pixel_grid(ax1, grid_height, grid_width, show_axis_labels=True, show_superpixel=False,
