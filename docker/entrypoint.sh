@@ -13,7 +13,7 @@ METADATA_URL='http://metadata.google.internal/computeMetadata/v1/project/attribu
 if [ ! -z ${GOOGLE_APPLICATION_CREDENTIALS} ]; then
     echo "Found Google credentials, activating service account."
     echo "GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}"
-    /root/google-cloud-sdk/bin/gcloud auth activate-service-account \
+    gcloud auth activate-service-account \
     --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
 fi
 
