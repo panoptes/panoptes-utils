@@ -1,5 +1,12 @@
 #!/bin/bash -ie
 
+# Create SSH key if it doesn't exist
+SSH_KEY="${HOME}/.ssh/id_rsa"
+if ! test -f "$SSH_KEY"; then
+    ssh-keygen -t rsa -N "" -f "${SSH_KEY}"
+fi
+
+
 METADATA_URL='http://metadata.google.internal/computeMetadata/v1/project/attributes'
 
 # Authenticate if key has been set - used on local units

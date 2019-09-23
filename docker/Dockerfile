@@ -1,4 +1,4 @@
-ARG base_image=python:3.7-slim
+ARG base_image=continuumio/miniconda3
 
 FROM $base_image AS base-image
 MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
@@ -39,7 +39,8 @@ RUN apt-get update && \
     mkdir -p /astrometry/data && \
     echo "add_path /astrometry/data" >> /etc/astrometry.cfg && \
     # Cleanup apt.
-    apt-get clean && \
+    apt-get autoremove --purge -y && \
+    apt-get -y clean && \
     rm -rf /var/lib/apt/lists/* && \
     # Change permissions and owners of directories
     chown -R "${USER}" "/${USER}" && \

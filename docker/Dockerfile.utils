@@ -16,6 +16,7 @@ RUN cd && \
     /opt/conda/bin/conda install --yes -c conda-forge -c astropy \
         --file "${PANDIR}/panoptes-utils/conda-requirements-${arch}.yaml" && \
     /opt/conda/bin/conda clean --all --yes && \
+    /opt/conda/bin/conda clean -f --yes && \
     # Install module
     cd ${PANDIR}/panoptes-utils && \
     pip install --no-cache-dir -r requirements.txt && \
