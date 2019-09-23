@@ -16,7 +16,7 @@ steps:
   args:
   - 'build'
   - '-f=docker/Dockerfile'
-  - '--build-arg=base_image=python:3.7-slim'
+  - '--build-arg=base_image=continuumio/miniconda3'
   - '--tag=gcr.io/${PROJECT_ID}/panoptes-base:amd64'
   - '.'
   waitFor: ['register-qemu']

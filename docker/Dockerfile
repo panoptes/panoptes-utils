@@ -17,31 +17,26 @@ ENV SOLVE_FIELD=/usr/bin/solve-field
 ENV DEBIAN_FRONTEND=noninteractive
 ENV ZSH_CUSTOM "/${USER}/.oh-my-zsh/custom"
 
+# For now we copy from local - can have bad effects if in wrong branch
+COPY . ${PANDIR}/panoptes-utils/
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        wget curl bzip2 ca-certificates pkg-config zsh git fonts-lato nano \
+        wget curl bzip2 ca-certificates pkg-config zsh git fonts-lato nano byobu openssh-client \
         astrometry.net sextractor dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
-        libcfitsio-dev libfreetype6-dev libpng-dev libpq-dev ack gcc grc ncdu htop && \
+        libcfitsio-dev libfreetype6-dev libpng-dev libpq-dev ack gcc grc ncdu htop vim-nox && \
     # Oh My ZSH. :)
     sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)" && \
     git clone https://github.com/denysdovhan/spaceship-prompt.git "${ZSH_CUSTOM}/themes/spaceship-prompt" && \
     ln -s "${ZSH_CUSTOM}/themes/spaceship-prompt/spaceship.zsh-theme" "${ZSH_CUSTOM}/themes/spaceship.zsh-theme" && \
+    # Copy zshrc
+    cat "${PANDIR}/panoptes-utils/docker/zshrc" >> /${USER}/.zshrc && \
     # Create directories
     mkdir -p ${POCS} && \
     mkdir -p ${PANDIR}/logs && \
-    mkdir -p ${PANDIR}/astrometry/data && \
     mkdir -p ${PANDIR}/images && \
     mkdir -p ${PANDIR}/panoptes-utils && \
     mkdir -p /astrometry/data && \
-    # Google Cloud SDK
-    cd "/${USER}" && \
-    wget https://sdk.cloud.google.com -O gsdk.sh && \
-    bash gsdk.sh --disable-prompts && \
-    echo ". /${USER}/google-cloud-sdk/completion.zsh.inc" >> ~/.zshrc && \
-    echo ". /${USER}/google-cloud-sdk/path.zsh.inc" >> ~/.zshrc && \
-    echo ". /${USER}/google-cloud-sdk/completion.bash.inc" >> ~/.bashrc && \
-    echo ". /${USER}/google-cloud-sdk/path.bash.inc" >> ~/.bashrc && \
-    rm gsdk.sh && \
     echo "add_path /astrometry/data" >> /etc/astrometry.cfg && \
     # Cleanup apt.
     apt-get clean && \
@@ -56,4 +51,4 @@ WORKDIR ${PANDIR}/panoptes-utils
 
 USER ${USER}
 
-# No ENTRYPOINT or CMD because this is use as a first stage
+# No ENTRYPOINT or CMD because this is used as a first stage
