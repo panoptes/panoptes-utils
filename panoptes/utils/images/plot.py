@@ -38,10 +38,31 @@ def get_palette(cmap='inferno'):
 
 
 def add_colorbar(axes_image, size='5%', pad=0.05, orientation='vertical'):
-    """Add a decently sized colorbar to the image.
+    """Add a colorbar to the image.
+
+    A plotting example:
+
+    .. plot::
+
+        from panoptes.utils.images.plot import add_colorbar
+
+        x = np.arange(0.0, 10.0)
+        y = np.arange(0.0, 10.0)
+        X, Y = np.meshgrid(x, y)
+
+        def func(x, y):
+            return x**2 + y**2
+
+        z = func(X, Y)
+
+        fig, ax = plt.subplots()
+        im1 = ax.imshow(z)
+        add_colorbar(im1)
+        fig.show()
+
 
     Args:
-        axes_image (`~matplotlib.image.AxesImage`): A matplotlib AxesImage.
+        axes_image (`matplotlib.image.AxesImage`): A matplotlib AxesImage.
     """
     divider = make_axes_locatable(axes_image.axes)
     cax = divider.append_axes('right', size=size, pad=pad)
