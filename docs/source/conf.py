@@ -39,6 +39,7 @@ release = ''
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.autosummary',
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
@@ -54,6 +55,8 @@ extensions = [
 default_role = 'any'
 
 napoleon_include_init_with_doc = True
+
+plot_include_source = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -201,6 +204,9 @@ intersphinx_mapping = {
     'python': ('https://docs.python.org/', None),
     'astropy': ('http://docs.astropy.org/en/stable/', None),
     'astroplan': ('https://astroplan.readthedocs.io/en/latest/', None),
+    'NumPy': ('http://docs.scipy.org/doc/numpy/', None),
+    'SciPy': ('http://docs.scipy.org/doc/scipy/reference', None),
+    'matplotlib': ('http://matplotlib.org', None),
 }
 
 
