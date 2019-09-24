@@ -45,6 +45,8 @@ def add_colorbar(axes_image, size='5%', pad=0.05, orientation='vertical'):
 
     .. plot::
 
+        >>> from matplotlib import pyplot as plt
+        >>> import numpy as np
         >>> from panoptes.utils.images.plot import add_colorbar
         >>>
         >>> x = np.arange(0.0, 100.0)
