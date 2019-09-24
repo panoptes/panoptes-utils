@@ -275,7 +275,7 @@ def _parse_all_objects(obj):
         `dict`: Same as `obj` but with objects converted to quantities.
     """
     if isinstance(obj, (dict, OrderedDict)):
-        if 'value' and 'unit' in obj:
+        if 'value' in obj and 'unit' in obj:
             with suppress(ValueError):
                 return obj['value'] * u.Unit(obj['unit'])
 
