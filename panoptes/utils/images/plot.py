@@ -51,8 +51,7 @@ def add_colorbar(axes_image, size='5%', pad=0.05, orientation='vertical'):
         >>> y = np.arange(0.0, 100.0)
         >>> X, Y = np.meshgrid(x, y)
         >>>
-        >>> def func(x, y):
-        >>>     return x**2 + y**2
+        >>> func = lambda x, y: x**2 + y**2
         >>>
         >>> z = func(X, Y)
         >>>
