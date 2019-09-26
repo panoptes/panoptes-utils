@@ -41,7 +41,7 @@ def test_bad_load_module():
         load_module('FOOBAR')
 
 
-def test_load_c_module():
+def test_load_c_library():
     # Called without a `path` this will use find_library to locate libc.
     libc = load_c_library('c')
     assert libc._name[:4] == 'libc'
