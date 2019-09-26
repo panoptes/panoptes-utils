@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -ie
 
 METADATA_URL='http://metadata.google.internal/computeMetadata/v1/project/attributes'
 
@@ -21,7 +21,7 @@ if [ ! -z ${GOOGLE_COMPUTE_INSTANCE} ]; then
     chmod 600 ${HOME}/.pgpass
 
     echo "Starting Cloud SQL proxy"
-    python ${PANDIR}/panoptes-utils/scripts/connect_cloud_sql_proxy.py \
+    /root/conda/envs/panoptes-env/bin/python ${PANDIR}/panoptes-utils/scripts/connect_cloud_sql_proxy.py \
         --config="${HOME}/.cloud-sql-conf.yaml" \
         --verbose &
 fi

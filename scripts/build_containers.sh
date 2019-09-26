@@ -18,5 +18,5 @@ echo "Building panoptes-utils"
 gcloud builds submit \
     --timeout="5h" \
     --config "${SOURCE_DIR}/docker/${CLOUD_FILE}" \
-    --async "${SOURCE_DIR}"
+    "${SOURCE_DIR}"
 

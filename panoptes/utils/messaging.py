@@ -237,7 +237,10 @@ class PanMessaging(object):
             self.logger.warning(f'error in receive_message: {e!r}')
         else:
             topic, msg = message.split(' ', maxsplit=1)
-            msg_obj = from_json(msg)
+            try:
+                msg_obj = from_json(msg)
+            except Exception as e:
+                self.logger.warning(f'Error parsing message: {msg} {e!r}')
 
         return topic, msg_obj
 
