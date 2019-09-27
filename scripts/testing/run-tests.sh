@@ -1,6 +1,5 @@
 #!/bin/bash -e
 
-cd "${PANDIR}/panoptes-utils"
 # Install any updated requirements
 pip install -r requirements.txt
 
