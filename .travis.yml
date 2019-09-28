@@ -30,7 +30,7 @@ install: true
 script:
 - docker run -it
   $ci_env
-  -e PATH=$HOME/bin:$PATH
+  -e PATH='$HOME/bin:$PATH'
   -v $HOME/bin:$HOME/bin
   -v /var/run/docker.sock:/var/run/docker.sock
   -v $TRAVIS_BUILD_DIR:/var/panoptes/panoptes-utils
