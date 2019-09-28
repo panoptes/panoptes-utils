@@ -18,7 +18,6 @@ before_install:
     -v "$HOME/bin":/mnt
     -u $(id -u):$(id -g)
     gcr.io/panoptes-survey/plate-solver /bin/bash -c "cp -rv bin/* /mnt/"
-- export PATH=$HOME/bin:$PATH
 - mkdir -p $HOME/.astrometry
 - cd $HOME/.astrometry
 # Download index files
