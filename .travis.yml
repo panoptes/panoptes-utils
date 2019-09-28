@@ -13,7 +13,7 @@ before_install:
 - docker pull gcr.io/panoptes-survey/plate-solver:latest
 - docker pull gcr.io/panoptes-survey/panoptes-utils:latest
 # Copy plate-solver files
-- mkdir $HOME/bin
+- mkdir -p $HOME/bin
 - docker run --rm -it
     -v "$HOME/bin":/mnt
     -u $(id -u):$(id -g)
