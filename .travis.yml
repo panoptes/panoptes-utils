@@ -23,8 +23,8 @@ before_install:
 # Download index files
 - for i in {4208..4219}; do
     if [[ ! -z "$HOME/.astrometry/index-{$i}.fits" ]]; then
-      wget "http://broiler.astrometry.net/~dstn/4200/index-${i}.fits"
-    fi
+      wget "http://broiler.astrometry.net/~dstn/4200/index-${i}.fits";
+    fi;
   done
 install: true
 script:
