@@ -5,9 +5,22 @@ python:
   - "3.6"
 services:
 - docker
+cache:
+  directories:
+    - $HOME/.astrometry
 before_install:
 - ci_env=`bash <(curl -s https://codecov.io/env)`
-- docker pull gcr.io/panoptes-survey/panoptes-utils:amd64
+- docker pull gcr.io/panoptes-survey/plate-solver:latest
+- docker pull gcr.io/panoptes-survey/panoptes-utils:latest
+# Copy plate-solver files
+- docker run --rm -it
+    -v "/usr/local/bin":/mnt
+    -u $(id -u):$(id -g)
+    gcr.io/panoptes-survey/plate-solver /bin/bash -c "cp -rv bin/* /mnt/"
+- mkdir -p $HOME/.astrometry
+- cd $HOME/.astrometry
+# Download index files
+- for i in {4208..4219}; do wget "http://broiler.astrometry.net/~dstn/4200/index-${i}.fits"; done
 install: true
 script:
 - docker run -it
