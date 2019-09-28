@@ -14,7 +14,7 @@ before_install:
 - docker pull gcr.io/panoptes-survey/panoptes-utils:latest
 # Copy plate-solver files
 - docker run --rm -it
-    -v "/usr/local/bin":/mnt
+    -v "$HOME/bin":/mnt
     -u $(id -u):$(id -g)
     gcr.io/panoptes-survey/plate-solver /bin/bash -c "cp -rv bin/* /mnt/"
 - mkdir -p $HOME/.astrometry
