@@ -25,6 +25,7 @@ install: true
 script:
 - docker run -it
   $ci_env
+  -v /var/run/docker.sock:/var/run/docker.sock
   -v $TRAVIS_BUILD_DIR:/var/panoptes/panoptes-utils
   gcr.io/panoptes-survey/panoptes-utils
   /bin/zsh -ci "scripts/testing/run-tests.sh"
