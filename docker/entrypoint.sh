@@ -11,7 +11,7 @@ export HOME=/home/panoptes
 SSH_KEY="${HOME}/.ssh/id_rsa"
 if ! test -f "$SSH_KEY"; then
     mkdir -p "${HOME}/.ssh"
-    ssh-keygen -t rsa -N "" -f "${SSH_KEY}"
+    ssh-keygen -q -t rsa -N "" -f "${SSH_KEY}"
     chown -R ${USER_ID}:${USER_ID} ${HOME}/.ssh
 fi
 
