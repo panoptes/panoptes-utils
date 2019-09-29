@@ -187,6 +187,7 @@ class PanDB(object):
             'observations',
             'offset_info',
             'power',
+            'safety',
             'state',
             'telemetry_board',
             'weather',
