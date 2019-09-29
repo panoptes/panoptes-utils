@@ -33,14 +33,9 @@ RUN apt-get update && \
     cat "${PANDIR}/panoptes-utils/docker/zshrc" >> /root/.zshrc && \
     # Copy zshrc to /etc/skel for new users
     cat "${PANDIR}/panoptes-utils/docker/zshrc" >> /etc/skel/.zshrc && \
-    # Create directories
-    mkdir -p ${POCS} && \
-    mkdir -p ${PANDIR}/logs && \
-    mkdir -p ${PANDIR}/images && \
-    mkdir -p ${PANDIR}/panoptes-utils && \
     # Astrometry folders
     mkdir -p /astrometry/ && \
-    echo "add_path /astrometry/" >> /etc/astrometry.cfg &&
+    echo "add_path /astrometry/" >> /etc/astrometry.cfg && \
     # Cleanup apt.
     apt-get autoremove --purge -y gcc git pkg-config && \
     apt-get autoremove --purge -y && \
