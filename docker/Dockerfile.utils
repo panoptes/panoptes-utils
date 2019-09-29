@@ -31,7 +31,7 @@ RUN cd && \
     chgrp -R panoptes /opt/conda && \
     chmod -R 775 /opt/conda && \
     # Download astrometry.net files
-    /${USER}/conda/envs/${CONDA_ENV}/bin/python panoptes/utils/data.py \
+    python panoptes/utils/data.py \
         --wide-field --narrow-field \
         --folder /astrometry/data
 
