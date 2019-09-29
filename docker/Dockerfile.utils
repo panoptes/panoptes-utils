@@ -1,6 +1,3 @@
-# Miniconda items taken from: https://hub.docker.com/r/continuumio/miniconda3/dockerfile
-# Updated with "latest" miniconda script.
-
 ARG arch=amd64
 
 FROM gcr.io/panoptes-survey/panoptes-base:$arch AS base-image
@@ -12,17 +9,27 @@ ARG pan_dir=/var/panoptes
 ENV PANDIR $pan_dir
 
 RUN cd && \
+    # Create a panoptes group and change group ownership
+    groupadd panoptes && \
     # Install anaconda packages
     /opt/conda/bin/conda install --yes -c conda-forge -c astropy \
         --file "${PANDIR}/panoptes-utils/conda-requirements-${arch}.yaml" && \
     /opt/conda/bin/conda clean --all --yes && \
     /opt/conda/bin/conda clean -f --yes && \
+    # Create directories
+    mkdir -p ${POCS} && \
+    mkdir -p ${PANDIR}/logs && \
+    mkdir -p ${PANDIR}/images && \
+    mkdir -p ${PANDIR}/panoptes-utils && \
     # Install module
     cd ${PANDIR}/panoptes-utils && \
     pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir -e ".[all]" && \
-    # Download astrometry.net files
-    python panoptes/utils/data.py --wide-field --narrow-field --folder /astrometry/data
+    # Change permissions on directories
+    chgrp -R panoptes /var/panoptes && \
+    chmod -R 775 /var/panoptes && \
+    chgrp -R panoptes /opt/conda && \
+    chmod -R 775 /opt/conda
 
 WORKDIR ${PANDIR}/panoptes-utils
 
