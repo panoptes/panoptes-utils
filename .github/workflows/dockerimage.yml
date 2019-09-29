@@ -1,0 +1,16 @@
+name: Docker Image CI
+
+on: [push]
+
+jobs:
+
+  build:
+ 
+    runs-on: ubuntu-latest
+ 
+    steps:
+    - uses: actions/checkout@v1
+    - name: PANOPTES Base
+      run: docker build . --file docker/Dockerfile --tag panoptes-base:$(date +%s)
+    - name: PANOPTES Utils
+      run: docker build . --file docker/Dockerfile.utils --tag panoptes-utils:$(date +%s)
