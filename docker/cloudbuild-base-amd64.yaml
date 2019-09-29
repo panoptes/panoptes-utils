@@ -7,7 +7,7 @@ steps:
   - 'build'
   - '-f=docker/Dockerfile'
   - '--build-arg=base_image=continuumio/miniconda3'
-  - '--tag=gcr.io/${PROJECT_ID}/panoptes-base:amd64'
+  - '--tag=gcr.io/${PROJECT_ID}/panoptes-base:latest'
   - '.'
   waitFor: ['-']
 
@@ -16,30 +16,5 @@ steps:
   id: 'push-amd64-base'
   args:
   - 'push'
-  - 'gcr.io/${PROJECT_ID}/panoptes-base:amd64'
+  - 'gcr.io/${PROJECT_ID}/panoptes-base:latest'
   waitFor: ['amd64-base']
-
-# Manifest file for multiarch
-- name: 'gcr.io/cloud-builders/docker'
-  id: 'manifest-base'
-  env:
-  - 'DOCKER_CLI_EXPERIMENTAL=enabled'
-  args:
-  - 'manifest'
-  - 'create'
-  - 'gcr.io/${PROJECT_ID}/panoptes-base:latest'
-  - 'gcr.io/${PROJECT_ID}/panoptes-base:amd64'
-  waitFor: ['push-amd64-base']
-
-# Push manifest file
-- name: 'gcr.io/cloud-builders/docker'
-  id: 'push-manifest-base'
-  env:
-  - 'DOCKER_CLI_EXPERIMENTAL=enabled'
-  args:
-  - 'manifest'
-  - 'push'
-  - 'gcr.io/${PROJECT_ID}/panoptes-base:latest'
-  waitFor: ['manifest-base']
-images:
-  - 'gcr.io/${PROJECT_ID}/panoptes-base:amd64'

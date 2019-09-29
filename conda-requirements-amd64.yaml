@@ -1,0 +1,21 @@
+astropy
+cffi
+Flask
+google-cloud-sdk
+google-cloud-storage
+jupyter_console
+libffi
+matplotlib-base
+numpy
+pip
+psycopg2
+pyserial
+python-dateutil
+PyYAML
+pyzmq < 18.0.0
+readline
+scikit-image
+scikit-learn
+scipy
+tornado
+zeromq

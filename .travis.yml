@@ -12,9 +12,10 @@ install: true
 script:
 - docker run -it
   $ci_env
+  -e LOCAL_USER_ID=$(id -u)
   -v $TRAVIS_BUILD_DIR:/var/panoptes/panoptes-utils
   gcr.io/panoptes-survey/panoptes-utils
-  /bin/zsh -ci "scripts/testing/run-tests.sh"
+  scripts/testing/run-tests.sh
 deploy:
   provider: pypi
   username: panoptes

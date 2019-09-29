@@ -2,23 +2,27 @@ version: '3.7'
 services:
   config-server:
     image: gcr.io/panoptes-survey/panoptes-utils:latest
+    init: true
     container_name: config-server
     privileged: true
     network_mode: host
-    env_file:
-      - "${PANDIR:-/var/panoptes}/env_file"
+    env_file: "${PANDIR:-/var/panoptes}/env_file"
+    environment:
+      - LOCAL_USER_ID
     volumes:
       - pandir:/var/panoptes
     command: /bin/zsh -ic "${PANDIR:-/var/panoptes}/panoptes-utils/bin/panoptes-config-server --public"
   messaging-hub:
     image: gcr.io/panoptes-survey/panoptes-utils:latest
+    init: true
     container_name: messaging-hub
     privileged: true
     network_mode: host
-    env_file:
-      - "${PANDIR:-/var/panoptes}/env_file"
+    env_file: "${PANDIR:-/var/panoptes}/env_file"
+    environment:
+      - LOCAL_USER_ID
     depends_on:
-      - "config-server"        
+      - "config-server"
     volumes:
       - pandir:/var/panoptes
     command: /bin/zsh -ic "${PANDIR:-/var/panoptes}/panoptes-utils/bin/panoptes-messaging-hub --from-config --config-host 0.0.0.0"
