@@ -1,4 +1,5 @@
 import ctypes
+import ctypes.util
 
 from astropy.utils import resolve_name
 from panoptes.utils import error
