@@ -1,59 +1,47 @@
-ARG base_image=python:3.7-slim
+ARG base_image=continuumio/miniconda3
 
 FROM $base_image AS base-image
 MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
 
-ARG user=root
 ARG pan_dir=/var/panoptes
 ARG pocs_dir="${pan_dir}/POCS"
 
-ENV USER $user
+ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
-ENV SHELL /bin/bash
+ENV SOLVE_FIELD=/usr/bin/solve-field
 ENV PANDIR $pan_dir
 ENV POCS $pocs_dir
-ENV PANUSER $USER
-ENV SOLVE_FIELD=/usr/bin/solve-field
-ENV DEBIAN_FRONTEND=noninteractive
-ENV ZSH_CUSTOM "/${USER}/.oh-my-zsh/custom"
+ENV SHELL /bin/zsh
+ENV ZSH_CUSTOM "/.oh-my-zsh/custom"
+
+# For now we copy from local - can have bad effects if in wrong branch
+COPY . ${PANDIR}/panoptes-utils/
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        wget curl bzip2 ca-certificates pkg-config zsh git fonts-lato nano \
-        astrometry.net sextractor dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
-        libcfitsio-dev libfreetype6-dev libpng-dev libpq-dev ack gcc grc ncdu htop && \
+        gosu wget curl bzip2 ca-certificates zsh openssh-client \
+        astrometry.net dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
+        libfreetype6-dev libpng-dev libpq-dev fonts-lato \
+        gcc git pkg-config && \
     # Oh My ZSH. :)
+    mkdir -p "${ZSH_CUSTOM}" && \
+    chmod -R 755 "${ZSH_CUSTOM}" && \
     sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)" && \
     git clone https://github.com/denysdovhan/spaceship-prompt.git "${ZSH_CUSTOM}/themes/spaceship-prompt" && \
     ln -s "${ZSH_CUSTOM}/themes/spaceship-prompt/spaceship.zsh-theme" "${ZSH_CUSTOM}/themes/spaceship.zsh-theme" && \
-    # Create directories
-    mkdir -p ${POCS} && \
-    mkdir -p ${PANDIR}/logs && \
-    mkdir -p ${PANDIR}/astrometry/data && \
-    mkdir -p ${PANDIR}/images && \
-    mkdir -p ${PANDIR}/panoptes-utils && \
-    mkdir -p /astrometry/data && \
-    # Google Cloud SDK
-    cd "/${USER}" && \
-    wget https://sdk.cloud.google.com -O gsdk.sh && \
-    bash gsdk.sh --disable-prompts && \
-    echo ". /${USER}/google-cloud-sdk/completion.zsh.inc" >> ~/.zshrc && \
-    echo ". /${USER}/google-cloud-sdk/path.zsh.inc" >> ~/.zshrc && \
-    echo ". /${USER}/google-cloud-sdk/completion.bash.inc" >> ~/.bashrc && \
-    echo ". /${USER}/google-cloud-sdk/path.bash.inc" >> ~/.bashrc && \
-    rm gsdk.sh && \
-    echo "add_path /astrometry/data" >> /etc/astrometry.cfg && \
+    cp -r /root/.oh-my-zsh /etc/skel && \
+    cat "${PANDIR}/panoptes-utils/docker/zshrc" >> /root/.zshrc && \
+    # Copy zshrc to /etc/skel for new users
+    cat "${PANDIR}/panoptes-utils/docker/zshrc" >> /etc/skel/.zshrc && \
+    # Astrometry folders
+    mkdir -p /astrometry/ && \
+    echo "add_path /astrometry/" >> /etc/astrometry.cfg && \
     # Cleanup apt.
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    # Change permissions and owners of directories
-    chown -R "${USER}" "/${USER}" && \
-    chown -R "${USER}" "${PANDIR}" && \
-    chown -R "${USER}" /astrometry && \
-    chmod -R 755 "/${USER}"
+    apt-get autoremove --purge -y gcc git pkg-config && \
+    apt-get autoremove --purge -y && \
+    apt-get -y clean && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR ${PANDIR}/panoptes-utils
 
-USER ${USER}
-
-# No ENTRYPOINT or CMD because this is use as a first stage
+# No ENTRYPOINT or CMD because this is used as a first stage
