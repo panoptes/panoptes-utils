@@ -22,7 +22,7 @@ RUN apt-get update && \
         gosu wget curl bzip2 ca-certificates zsh openssh-client \
         astrometry.net dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
         libfreetype6-dev libpng-dev libpq-dev fonts-lato \
-        gcc git pkg-config && \
+        gcc git pkg-config sudo && \
     # Oh My ZSH. :)
     mkdir -p "${ZSH_CUSTOM}" && \
     chmod -R 755 "${ZSH_CUSTOM}" && \
