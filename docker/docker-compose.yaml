@@ -6,7 +6,9 @@ services:
     container_name: config-server
     privileged: true
     network_mode: host
-    env_file: "$PANDIR/.env"
+    env_file: $PANDIR/.env
+    restart_policy:
+      condition: on-failure
     volumes:
       - pandir:/var/panoptes
     command: ["$PANDIR/panoptes-utils/bin/panoptes-config-server", "--public"]
@@ -16,9 +18,11 @@ services:
     container_name: messaging-hub
     privileged: true
     network_mode: host
-    env_file: "$PANDIR/.env"
+    env_file: $PANDIR/.env
     depends_on:
       - "config-server"
+    restart_policy:
+      condition: on-failure
     volumes:
       - pandir:/var/panoptes
     command:
