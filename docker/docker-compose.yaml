@@ -7,8 +7,7 @@ services:
     privileged: true
     network_mode: host
     env_file: $PANDIR/.env
-    restart_policy:
-      condition: on-failure
+    restart: on-failure
     volumes:
       - pandir:/var/panoptes
     command: ["$PANDIR/panoptes-utils/bin/panoptes-config-server", "--public"]
@@ -21,8 +20,7 @@ services:
     env_file: $PANDIR/.env
     depends_on:
       - "config-server"
-    restart_policy:
-      condition: on-failure
+    restart: on-failure
     volumes:
       - pandir:/var/panoptes
     command:
