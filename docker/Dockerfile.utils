@@ -33,7 +33,7 @@ RUN cd && \
     # Download astrometry.net files
     python panoptes/utils/data.py \
         --wide-field --narrow-field \
-        --folder /astrometry/data
+        --folder /astrometry/
 
 WORKDIR ${PANDIR}/panoptes-utils
 
