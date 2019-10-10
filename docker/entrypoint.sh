@@ -24,14 +24,6 @@ if test -f requirements.txt; then
     gosu panoptes pip install --no-cache-dir -q -r requirements.txt
 fi
 
-# Add better download link for astroplan
-cat << EOF >> "${HOME}/.astropy/config/astropy.cfg"
-
-[utils.iers.iers]
-iers_auto_url = https://storage.googleapis.com/panoptes-resources/iers/ser7.dat
-iers_auto_url_mirror = https://storage.googleapis.com/panoptes-resources/iers/ser7.dat
-EOF
-
 METADATA_URL='http://metadata.google.internal/computeMetadata/v1/project/attributes'
 
 # Authenticate if key has been set - used on local units
