@@ -1,4 +1,4 @@
-#!/bin/bash -ie
+#!/bin/bash -internal
 
 USER_ID=${LOCAL_USER_ID:-9001}
 
