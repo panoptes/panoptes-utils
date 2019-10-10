@@ -19,7 +19,7 @@ COPY . ${PANDIR}/panoptes-utils/
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        gosu wget curl bzip2 ca-certificates zsh openssh-client \
+        gosu wget curl bzip2 ca-certificates zsh openssh-client nano \
         astrometry.net dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
         libfreetype6-dev libpng-dev libpq-dev fonts-lato \
         gcc git pkg-config sudo && \
@@ -35,12 +35,7 @@ RUN apt-get update && \
     cat "${PANDIR}/panoptes-utils/docker/zshrc" >> /etc/skel/.zshrc && \
     # Astrometry folders
     mkdir -p /astrometry/ && \
-    echo "add_path ${PANDIR}/astrometry/data" >> /etc/astrometry.cfg && \
-    # Cleanup apt.
-    apt-get autoremove --purge -y gcc git pkg-config && \
-    apt-get autoremove --purge -y && \
-    apt-get -y clean && \
-    rm -rf /var/lib/apt/lists/*
+    echo "add_path ${PANDIR}/astrometry/data" >> /etc/astrometry.cfg
 
 WORKDIR ${PANDIR}/panoptes-utils
 

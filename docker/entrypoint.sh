@@ -1,4 +1,4 @@
-#!/bin/bash -i
+#!/bin/bash -ie
 
 USER_ID=${LOCAL_USER_ID:-9001}
 
@@ -6,7 +6,6 @@ USER_ID=${LOCAL_USER_ID:-9001}
 echo "Starting with UID : $USER_ID"
 useradd --shell /bin/zsh -u $USER_ID -o -c "PANOPTES User" -m panoptes -g panoptes -G plugdev,dialout
 export HOME=/home/panoptes
-
 
 # Create SSH key if it doesn't exist
 SSH_KEY="${HOME}/.ssh/id_rsa"

@@ -33,7 +33,12 @@ RUN cd && \
     # Download astrometry.net files
     python panoptes/utils/data.py \
         --wide-field --narrow-field \
-        --folder /astrometry/
+        --folder /astrometry/ && \
+    # Cleanup apt.
+    apt-get autoremove --purge -y git gcc pkg-config && \
+    apt-get autoremove --purge -y && \
+    apt-get -y clean && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR ${PANDIR}/panoptes-utils
 
