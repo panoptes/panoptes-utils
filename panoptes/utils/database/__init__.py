@@ -181,6 +181,8 @@ class PanDB(object):
         return [
             'camera_board',
             'control_board',
+            'camera_env_board',
+            'control_env_board',
             'config',
             'current',
             'drift_align',

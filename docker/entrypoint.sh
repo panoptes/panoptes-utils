@@ -21,6 +21,7 @@ chown -R ${USER_ID}:${USER_ID} $HOME
 # will run with the local directory mapped and that may have changed.
 if test -f requirements.txt; then
     gosu panoptes pip install --no-cache-dir -q -r requirements.txt
+    gosu panoptes pip install --no-cache-dir -q -e .
 fi
 
 METADATA_URL='http://metadata.google.internal/computeMetadata/v1/project/attributes'
