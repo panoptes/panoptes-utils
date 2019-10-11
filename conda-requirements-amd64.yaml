@@ -12,7 +12,7 @@ psycopg2
 pyserial
 python-dateutil
 PyYAML
-pyzmq < 18.0.0
+pyzmq
 readline
 scikit-image
 scikit-learn

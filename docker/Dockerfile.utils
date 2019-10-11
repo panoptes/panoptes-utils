@@ -24,6 +24,7 @@ RUN cd && \
     # Install module
     cd ${PANDIR}/panoptes-utils && \
     pip install --no-cache-dir -r requirements.txt && \
+    pip install -e git://github.com/wtgee/astroplan.git@add-iers-conf#egg=astroplan && \
     pip install --no-cache-dir -e ".[all]" && \
     # Change permissions on directories
     chgrp -R panoptes /var/panoptes && \
@@ -33,7 +34,12 @@ RUN cd && \
     # Download astrometry.net files
     python panoptes/utils/data.py \
         --wide-field --narrow-field \
-        --folder /astrometry/data
+        --folder /astrometry/ && \
+    # Cleanup apt.
+    apt-get autoremove --purge -y git gcc pkg-config && \
+    apt-get autoremove --purge -y && \
+    apt-get -y clean && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR ${PANDIR}/panoptes-utils
 

@@ -49,9 +49,11 @@ class AbstractPanDB(metaclass=abc.ABCMeta):
             collection_names (list of str): Names of the valid collections.
             logger: (Optional) logger to use for warnings.
         """
+        self.logger = logger
+        if self.logger:
+            self.logger.info(f'Creating PanDB {db_name} with collections: {collection_names}')
         self.db_name = db_name
         self.collection_names = collection_names
-        self.logger = logger
 
     def _warn(self, *args, **kwargs):
         if self.logger:
@@ -179,6 +181,8 @@ class PanDB(object):
         return [
             'camera_board',
             'control_board',
+            'camera_env_board',
+            'control_env_board',
             'config',
             'current',
             'drift_align',
