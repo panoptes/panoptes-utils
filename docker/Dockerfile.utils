@@ -24,6 +24,7 @@ RUN cd && \
     # Install module
     cd ${PANDIR}/panoptes-utils && \
     pip install --no-cache-dir -r requirements.txt && \
+    pip install -e git://github.com/wtgee/astroplan.git@add-iers-conf#egg=astroplan && \
     pip install --no-cache-dir -e ".[all]" && \
     # Change permissions on directories
     chgrp -R panoptes /var/panoptes && \
