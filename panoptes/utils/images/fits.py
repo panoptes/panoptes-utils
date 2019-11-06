@@ -324,7 +324,7 @@ def improve_wcs(fname, remove_extras=True, replace=True, timeout=30, **kwargs):
     options = [
         '--continue',
         '-t', '3',
-        '-q', '0.01',
+        '-q', '0.1',
         '--no-plots',
         '--guess-scale',
         '--cpulimit', str(timeout),
