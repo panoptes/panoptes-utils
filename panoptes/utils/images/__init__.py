@@ -19,6 +19,7 @@ from dateutil import parser as date_parser
 from panoptes.utils import current_time
 from panoptes.utils import error
 from panoptes.utils.images import focus as focus_utils
+from panoptes.utils.images.plot import add_colorbar
 
 palette = copy(colormap.inferno)
 palette.set_over('w', 1.0)
@@ -202,7 +203,7 @@ def _make_pretty_from_fits(fname=None,
         ax.set_ylabel('Y / pixels')
 
     im = ax.imshow(data, norm=norm, cmap=palette, origin='lower')
-    fig.colorbar(im)
+    add_colorbar(im)
     fig.suptitle(title)
 
     new_filename = fname.replace('.fits', '.jpg')
