@@ -4,6 +4,8 @@ import pytest
 import shutil
 import tempfile
 
+from astropy.nddata import Cutout2D
+
 from panoptes.utils import images as img_utils
 from panoptes.utils import error
 
@@ -28,7 +30,7 @@ def test_crop_data():
     ones = np.ones((201, 201))
     assert ones.sum() == 40401.
 
-    cropped01 = img_utils.crop_data(ones, verbose=True)
+    cropped01 = img_utils.crop_data(ones, verbose=False)  # False to exercise coverage.
     assert cropped01.sum() == 40000.
 
     cropped02 = img_utils.crop_data(ones, verbose=True, box_width=10)
@@ -36,6 +38,18 @@ def test_crop_data():
 
     cropped03 = img_utils.crop_data(ones, verbose=True, box_width=6, center=(50, 50))
     assert cropped03.sum() == 36.
+
+    # Test the Cutout2D object
+    cropped04 = img_utils.crop_data(ones,
+                                    verbose=True,
+                                    box_width=20,
+                                    center=(50, 50),
+                                    data_only=False)
+    assert isinstance(cropped04, Cutout2D)
+    assert cropped04.position_original == (50, 50)
+
+    # Box is 20 pixels wide so center is at 10,10
+    assert cropped04.position_cutout == (10, 10)
 
 
 def test_make_pretty_image(solved_fits_file, tiny_fits_file, save_environ):
