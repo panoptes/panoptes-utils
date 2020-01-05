@@ -10,6 +10,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 from astropy.wcs import WCS
+from astropy.nddata import Cutout2D
 from astropy.io.fits import open as open_fits
 from astropy.visualization import (PercentileInterval, LogStretch, ImageNormalize)
 
@@ -39,18 +40,23 @@ def make_images_dir():
         return None
 
 
-def crop_data(data, box_width=200, center=None, verbose=False):
-    """ Return a cropped portion of the image
+def crop_data(data, box_width=200, center=None, verbose=False, data_only=True):
+    """Return a cropped portion of the image
 
     Shape is a box centered around the middle of the data
 
     Args:
-        data(np.array):     The original data, e.g. an image.
-        box_width(int):     Size of box width in pixels, defaults to 200px
-        center(tuple(int)): Crop around set of coords, defaults to image center.
+        data (`numpy.array`): Array of data.
+        box_width (int, optional): Size of box width in pixels, defaults to 200px.
+        center (tuple(int, int), optional): Crop around set of coords, default to image center.
+        verbose (bool, optional): Print extra text output.
+        data_only (bool, optional): If True (default), return only data. If False
+            return the `Cutout2D` object.
 
     Returns:
-        np.array:           A clipped (thumbnailed) version of the data
+        np.array: A clipped (thumbnailed) version of the data if `data_only=True`, otherwise
+            a `astropy.nddata.Cutout2D` object.
+
     """
     assert data.shape[0] >= box_width, "Can't clip data, it's smaller than {} ({})".format(
         box_width, data.shape)
@@ -66,16 +72,16 @@ def crop_data(data, box_width=200, center=None, verbose=False):
         y_center = int(center[0])
         x_center = int(center[1])
 
-    box_width = int(box_width / 2)
-
     if verbose:
         print("Using center: {} {}".format(x_center, y_center))
         print("Box width: {}".format(box_width))
 
-    center = data[x_center - box_width:x_center + box_width, y_center - box_width:
-                  y_center + box_width]
+    cutout = Cutout2D(data, (x_center, y_center), box_width)
 
-    return center
+    if data_only:
+        return cutout.data
+
+    return cutout
 
 
 def make_pretty_image(fname, title=None, timeout=15, img_type=None, link_latest=False, **kwargs):
