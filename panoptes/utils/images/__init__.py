@@ -78,7 +78,7 @@ def crop_data(data, box_width=200, center=None, verbose=False, data_only=True, w
         print("Using center: {} {}".format(x_center, y_center))
         print("Box width: {}".format(box_width))
 
-    cutout = Cutout2D(data, (x_center, y_center), box_width, wcs=wcs)
+    cutout = Cutout2D(data, (y_center, x_center), box_width, wcs=wcs)
 
     if data_only:
         return cutout.data
