@@ -40,7 +40,7 @@ def make_images_dir():
         return None
 
 
-def crop_data(data, box_width=200, center=None, verbose=False, data_only=True):
+def crop_data(data, box_width=200, center=None, verbose=False, data_only=True, wcs=None):
     """Return a cropped portion of the image
 
     Shape is a box centered around the middle of the data
@@ -52,6 +52,8 @@ def crop_data(data, box_width=200, center=None, verbose=False, data_only=True):
         verbose (bool, optional): Print extra text output.
         data_only (bool, optional): If True (default), return only data. If False
             return the `Cutout2D` object.
+        wcs (None|`astropy.wcs.WCS`, optional): A valid World Coordinate System (WCS) that will
+            be cropped along with the data if provided.
 
     Returns:
         np.array: A clipped (thumbnailed) version of the data if `data_only=True`, otherwise
@@ -76,7 +78,7 @@ def crop_data(data, box_width=200, center=None, verbose=False, data_only=True):
         print("Using center: {} {}".format(x_center, y_center))
         print("Box width: {}".format(box_width))
 
-    cutout = Cutout2D(data, (x_center, y_center), box_width)
+    cutout = Cutout2D(data, (x_center, y_center), box_width, wcs=wcs)
 
     if data_only:
         return cutout.data
