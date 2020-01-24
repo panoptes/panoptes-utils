@@ -240,7 +240,7 @@ def image_id_from_path(path):
     >>> from panoptes.utils import image_id_from_path
     >>> path = 'gs://panoptes-raw-images/PAN012/95cdbc/20190820T111638/20190820T122447.fits'
     >>> image_id_from_path(path)
-    "PAN012_95cdbc_20190820T122447"
+    'PAN012_95cdbc_20190820T122447'
 
     Args:
         path (str): A path or uri for a file.
@@ -262,7 +262,7 @@ def sequence_id_from_path(path):
     >>> from panoptes.utils import sequence_id_from_path
     >>> path = 'gs://panoptes-raw-images/PAN012/95cdbc/20190820T111638/20190820T122447.fits'
     >>> sequence_id_from_path(path)
-    "PAN012_95cdbc_20190820T111638"
+    'PAN012_95cdbc_20190820T111638'
 
     Args:
         path (str): A path or uri for a file.
