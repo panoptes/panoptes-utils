@@ -1,5 +1,6 @@
 import contextlib
 import os
+import re
 import shutil
 import signal
 
@@ -10,6 +11,8 @@ from astropy.coordinates import ICRS
 from astropy.coordinates import SkyCoord
 
 from panoptes.utils.time import current_time
+
+PATH_MATCHER = re.compile(r'.*(?P<unit_id>PAN\d{3})/(?P<camera_id>[a-gA-G1-9]{6})/(?P<sequence_id>.*?)/(?P<image_id>.*?)\..*')
 
 
 def listify(obj):
@@ -230,3 +233,46 @@ def moving_average(data_set, periods=3):
     weights = np.ones(periods) / periods
     return np.convolve(data_set, weights, mode='same')
 
+
+def image_id_from_path(path):
+    """Return the `image_id` from the given path or uri.
+
+    >>> from panoptes.utils import image_id_from_path
+    >>> path = 'gs://panoptes-raw-images/PAN012/95cdbc/20190820T111638/20190820T122447.fits'
+    >>> image_id_from_path(path)
+    'PAN012_95cdbc_20190820T122447'
+
+    Args:
+        path (str): A path or uri for a file.
+
+    Returns:
+        str: The image id in the form "<unit_id>_<camera_id>_<image_id>"
+    """
+    result = PATH_MATCHER.match(path)
+    return '{}_{}_{}'.format(
+        result.group('unit_id'),
+        result.group('camera_id'),
+        result.group('image_id')
+    )
+
+
+def sequence_id_from_path(path):
+    """Return the `sequence_id` from the given path or uri.
+
+    >>> from panoptes.utils import sequence_id_from_path
+    >>> path = 'gs://panoptes-raw-images/PAN012/95cdbc/20190820T111638/20190820T122447.fits'
+    >>> sequence_id_from_path(path)
+    'PAN012_95cdbc_20190820T111638'
+
+    Args:
+        path (str): A path or uri for a file.
+
+    Returns:
+        str: The image id in the form "<unit_id>_<camera_id>_<sequence_id>"
+    """
+    result = PATH_MATCHER.match(path)
+    return '{}_{}_{}'.format(
+        result.group('unit_id'),
+        result.group('camera_id'),
+        result.group('sequence_id')
+    )
