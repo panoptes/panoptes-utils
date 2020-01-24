@@ -6,10 +6,10 @@ class PanError(Exception):
 
     """ Base class for Panoptes errors """
 
-    def __init__(self, msg=None, exit=False):
+    def __init__(self, msg=None, log=False, exit=False):
         self.msg = msg
 
-        if self.msg:
+        if self.msg and log:
             logging.error(str(self))
 
         if exit:
