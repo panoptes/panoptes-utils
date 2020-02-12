@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 import signal
+import collections.abc
 
 import numpy as np
 from astropy import units as u
@@ -26,9 +27,13 @@ def listify(obj):
         list:   You guessed it.
     """
     if obj is None:
-        return []
+        return list()
+    elif isinstance(obj, list):
+        return obj
+    elif isinstance(obj, (collections.abc.ValuesView, collections.abc.KeysView)):
+        return list(obj)
     else:
-        return obj if isinstance(obj, (list, type(None))) else [obj]
+        return [obj]
 
 
 def get_free_space(dir=None):
