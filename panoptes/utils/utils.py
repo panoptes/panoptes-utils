@@ -26,6 +26,26 @@ def listify(obj):
     If a `dict` object is passed then this function will return a list of *only*
     the values.
 
+    .. doctest::
+
+        >>> listify(42)
+        [42]
+        >>> listify('foo')
+        ['foo']
+        >>> listify(None)
+        []
+        >>> listify(['a'])
+        ['a']
+
+        >>> my_dict = dict(a=42, b='foo')
+        >>> listify(my_dict)
+        [42, 'foo']
+        >>> listify(my_dict.values())
+        [42, 'foo']
+        >>> listify(my_dict.keys())
+        ['a', 'b']
+
+
     Returns:
         list:   You guessed it.
     """
