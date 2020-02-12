@@ -1,4 +1,4 @@
-import collections
+import collections.abc
 import datetime
 import logging
 import logging.config
@@ -131,7 +131,7 @@ def logger_msg_formatter(fmt, args):
     # formatting methods to try based on the contents.
     method_names = []
     may_have_legacy_subst = format_has_legacy_style(fmt)
-    args_are_mapping = isinstance(args, collections.Mapping)
+    args_are_mapping = isinstance(args, collections.abc.Mapping)
     if '{' in fmt:
         # Looks modern.
         if args_are_mapping:
