@@ -23,6 +23,9 @@ def listify(obj):
     if obj is list, just returns obj, otherwise returns list with
     obj as single member.
 
+    If a `dict` object is passed then this function will return a list of *only*
+    the values.
+
     Returns:
         list:   You guessed it.
     """
@@ -30,6 +33,8 @@ def listify(obj):
         return list()
     elif isinstance(obj, list):
         return obj
+    elif isinstance(obj, dict):
+        return list(obj.values())
     elif isinstance(obj, (collections.abc.ValuesView, collections.abc.KeysView)):
         return list(obj)
     else:

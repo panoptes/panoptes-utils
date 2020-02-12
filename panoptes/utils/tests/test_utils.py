@@ -64,8 +64,12 @@ def test_listfy_dicts():
 
     assert isinstance(listify(d_vals), list)
     assert listify(d_vals) == list(d_vals)
+
     assert isinstance(listify(d_keys), list)
     assert listify(d_keys) == list(d_keys)
+
+    assert isinstance(listify(d), list)
+    assert listify(d) == list(d_vals)
 
 
 def test_pretty_time():
