@@ -56,6 +56,22 @@ def test_empty_listify():
     assert listify(None) == []
 
 
+def test_listfy_dicts():
+    d = dict(a=42)
+
+    d_vals = d.values()
+    d_keys = d.keys()
+
+    assert isinstance(listify(d_vals), list)
+    assert listify(d_vals) == list(d_vals)
+
+    assert isinstance(listify(d_keys), list)
+    assert listify(d_keys) == list(d_keys)
+
+    assert isinstance(listify(d), list)
+    assert listify(d) == list(d_vals)
+
+
 def test_pretty_time():
     t0 = '2016-08-13 10:00:00'
     os.environ['POCSTIME'] = t0
@@ -93,6 +109,7 @@ def test_countdown_timer_non_blocking():
         timer = CountdownTimer(arg)
         assert timer.duration == expected_duration
 
+
 def test_countdown_timer():
     count_time = 1
     timer = CountdownTimer(count_time)
@@ -108,6 +125,7 @@ def test_countdown_timer():
     assert counter == pytest.approx(1)
     assert timer.time_left() == 0
     assert timer.expired() is True
+
 
 def test_countdown_timer_sleep():
     count_time = 1

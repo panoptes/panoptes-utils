@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 import signal
+import collections.abc
 
 import numpy as np
 from astropy import units as u
@@ -22,13 +23,42 @@ def listify(obj):
     if obj is list, just returns obj, otherwise returns list with
     obj as single member.
 
+    If a `dict` object is passed then this function will return a list of *only*
+    the values.
+
+    .. doctest::
+
+        >>> listify(42)
+        [42]
+        >>> listify('foo')
+        ['foo']
+        >>> listify(None)
+        []
+        >>> listify(['a'])
+        ['a']
+
+        >>> my_dict = dict(a=42, b='foo')
+        >>> listify(my_dict)
+        [42, 'foo']
+        >>> listify(my_dict.values())
+        [42, 'foo']
+        >>> listify(my_dict.keys())
+        ['a', 'b']
+
+
     Returns:
         list:   You guessed it.
     """
     if obj is None:
-        return []
+        return list()
+    elif isinstance(obj, list):
+        return obj
+    elif isinstance(obj, dict):
+        return list(obj.values())
+    elif isinstance(obj, (collections.abc.ValuesView, collections.abc.KeysView)):
+        return list(obj)
     else:
-        return obj if isinstance(obj, (list, type(None))) else [obj]
+        return [obj]
 
 
 def get_free_space(dir=None):
