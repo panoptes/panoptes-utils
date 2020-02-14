@@ -1,5 +1,7 @@
 import os
 import time
+from pytz import utc
+
 from astropy import units as u
 from astropy.time import Time
 
@@ -67,7 +69,7 @@ def current_time(flatten=False, datetime=False, pretty=False):
 
     if datetime:
         # Add UTC timezone
-        _time = _time.to_datetime()
+        _time = _time.to_datetime(timezone=utc)
 
     return _time
 
