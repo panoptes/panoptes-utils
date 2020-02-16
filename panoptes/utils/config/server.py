@@ -126,7 +126,10 @@ def get_config_entry():
             # Return all
             show_config = app.config['POCS']
         else:
-            show_config = app.config['POCS_cut'].get(key, None)
+            try:
+                show_config = app.config['POCS_cut'].get(key, None)
+            except KeyError:
+                show_config = None
     else:
         # Return entire config
         show_config = app.config['POCS']

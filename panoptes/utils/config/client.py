@@ -64,6 +64,9 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
                 else:
                     config_entry = response.json()
 
+    if config_entry is None:
+        config_entry = default
+
     return config_entry
 
 
