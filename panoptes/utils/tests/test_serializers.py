@@ -2,6 +2,7 @@ import pytest
 
 from astropy import units as u
 
+from panoptes.utils import current_time
 from panoptes.utils import serializers
 
 
@@ -12,9 +13,9 @@ def obj():
         "pan_id": "PAN000",
         "location": {
             "name": "Mauna Loa Observatory",
-            "latitude": 19.54 * u.degree,
-            "longitude": -155.58 * u.degree,
-            "elevation": 3400.0,
+            "latitude": 19.54 * u.degree,       # Astropy unit
+            "longitude": "-155.58 deg",         # String unit
+            "elevation": "3400.0 m",
             "horizon": 30 * u.degree,
             "flat_horizon": -6 * u.degree,
             "focus_horizon": -12 * u.degree,
@@ -33,7 +34,11 @@ def obj():
         "db": {
             "name": "panoptes",
             "type": "file"
-        }
+        },
+        "empty": {},
+        "current_time": current_time(),
+        "bool": True,
+
     }
 
 
