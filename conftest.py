@@ -1,4 +1,4 @@
-# This is in the root PANDIR directory so that pytest will recognize the
+s# This is in the root PANDIR directory so that pytest will recognize the
 # options added below without having to also specify pocs/test, or a
 # one of the tests in that directory, on the command line; i.e. pytest
 # doesn't load pocs/tests/conftest.py until after it has searched for
@@ -12,12 +12,8 @@ import pytest
 import subprocess
 import time
 import shutil
-from multiprocessing import Process
-
-from scalpl import Cut
 
 from panoptes.utils.database import PanDB
-from panoptes.utils.config import load_config
 from panoptes.utils.logger import get_root_logger
 from panoptes.utils.messaging import PanMessaging
 from panoptes.utils.config.client import set_config
