@@ -2,7 +2,7 @@ import os
 import pytest
 import signal
 import time
-from pytz import utc
+from datetime.timezone import utc
 from datetime import datetime as dt
 from astropy import units as u
 

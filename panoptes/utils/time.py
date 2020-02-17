@@ -1,6 +1,6 @@
 import os
 import time
-from pytz import utc
+from datetime.timezone import utc
 
 from astropy import units as u
 from astropy.time import Time
