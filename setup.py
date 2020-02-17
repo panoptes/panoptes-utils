@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # Licensed under an MIT style license - see LICENSE.txt
 
+from panoptes.utils.version import __version__
 from setuptools import setup, find_namespace_packages
 
 import itertools
@@ -11,7 +12,6 @@ from distutils.command.build_py import build_py
 import builtins
 builtins._PANOPTES_SETUP_ = True
 
-from panoptes.utils.version import __version__
 
 # Get some values from the setup.cfg
 conf = ConfigParser()
@@ -35,8 +35,22 @@ with open(requirements_fn) as f:
 
 modules = {
     'google': ['google-cloud-storage', 'psycopg2-binary'],
-    'mongo': ['pymongo'],
-    'required': requirements,
+    'required': [
+        'astroplan',
+        'astropy',
+        'Flask',
+        'matplotlib>=3.0.0',
+        'numpy',
+        'photutils',
+        'pyserial',
+        'python-dateutil',
+        'PyYAML',
+        'pyzmq',
+        'ruamel.yaml>=0.15',
+        'scalpl',
+        'scikit-image',
+        'scipy',
+    ],
     'social': ['requests', 'tweepy'],
     'testing': [
         'codecov',
@@ -67,16 +81,14 @@ setup(name=NAME,
       # dependencies). You can install these using the following syntax,
       # for example:
       # $ pip install -e .[dev,test]
-      install_requires=modules['required'],
       scripts=[
           'bin/cr2-to-jpg',
           'bin/panoptes-config-server',
           'bin/panoptes-messaging-hub',
           'bin/panoptes-solve-field',
       ],
+      install_requires=modules['required'],
       extras_require={
-          'google': modules['google'],
-          'mongo': modules['mongo'],
           'social': modules['social'],
           'testing': modules['testing'],
           'all': list(set(itertools.chain.from_iterable(modules.values())))

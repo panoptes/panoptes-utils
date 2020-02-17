@@ -1,6 +1,8 @@
 #!/bin/bash -e
 
 cd "${PANDIR}/panoptes-utils"
+
+pip install --ignore-installed pip PyYAML
 # Install any updated requirements
 pip install -r requirements.txt
 

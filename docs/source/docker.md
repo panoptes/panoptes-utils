@@ -44,7 +44,7 @@ The `panoptes-utils` repository provides the base for the PANOPTES Docker images
 is public and can be obtained via `docker`:
 
 ```bash
-docker pull gcr.io/panoptes-survey/panoptes-utils:latest
+docker pull gcr.io/panoptes-exp/panoptes-utils:latest
 ```
 
 ### Running Docker Containers
@@ -61,7 +61,7 @@ The first container runs the configuration server (i.e. `scripts/run_config_serv
 
 ### Building Docker Images
 
-`docker/build-iamge.sh` builds:
+`docker/build-image.sh` builds:
 * `cloudbuild-base.yaml` uses `Dockerfile` to create a `panoptes-base` image.
 * `cloudbuild-utils.yaml` uses `Dockerfile.utils.[amd64|rpi]` to create a `panoptes-utils` image.
   * Uses `conda-environment-[amd64|rpi.yaml` to create a conda environment called `panoptes-env`

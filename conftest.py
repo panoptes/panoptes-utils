@@ -19,9 +19,7 @@ from panoptes.utils.messaging import PanMessaging
 from panoptes.utils.config.client import set_config
 from panoptes.utils.config.server import config_server
 
-# Global variable set to a bool by can_connect_to_mongo().
-_can_connect_to_mongo = None
-_all_databases = ['mongo', 'file', 'memory']
+_all_databases = ['file', 'memory']
 
 
 def pytest_addoption(parser):
@@ -288,19 +286,6 @@ def fake_logger():
     return FakeLogger()
 
 
-def can_connect_to_mongo():
-    global _can_connect_to_mongo
-    if _can_connect_to_mongo is None:
-        logger = get_root_logger()
-        try:
-            PanDB(db_type='mongo', db_name='panoptes_testing', logger=logger, connect=True)
-            _can_connect_to_mongo = True
-        except Exception:
-            _can_connect_to_mongo = False
-        logger.info('can_connect_to_mongo = {}', _can_connect_to_mongo)
-    return _can_connect_to_mongo
-
-
 @pytest.fixture(scope='function', params=_all_databases)
 def db_type(request):
 
@@ -308,9 +293,6 @@ def db_type(request):
     if request.param not in db_list and 'all' not in db_list:
         pytest.skip("Skipping {} DB, set --test-all-databases=True".format(request.param))
 
-    # If testing mongo, make sure we can connect, otherwise skip.
-    if request.param == 'mongo' and not can_connect_to_mongo():
-        pytest.skip("Can't connect to {} DB, skipping".format(request.param))
     PanDB.permanently_erase_database(
         request.param, 'panoptes_testing', really='Yes', dangerous='Totally')
     return request.param

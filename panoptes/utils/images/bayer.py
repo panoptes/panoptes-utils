@@ -8,12 +8,12 @@ from decimal import ROUND_HALF_UP
 
 def get_rgb_data(data, separate_green=False):
     """Get the data split into separate channels for RGB.
-    
+
     `data` can be a 2D (`W x H`) or 3D (`N x W x H`) array where `W`=width
     and `H`=height of the data, with `N`=number of frames.
-    
+
     The return array will be a `3 x W x H` or `3 x N x W x H` array.
-    
+
     The Bayer array defines a superpixel as a collection of 4 pixels
     set in a square grid:
 
@@ -68,7 +68,7 @@ def get_rgb_data(data, separate_green=False):
               G1 |  odd i, |   odd j
               G2 | even i, |  even j
               B  | even i, |   odd j
-              
+
         Or, in other words, the bottom-left (i.e. `(0,0)`) super-pixel is an RGGB pattern.
 
         And a mask can therefore be generated as:
@@ -77,31 +77,30 @@ def get_rgb_data(data, separate_green=False):
             bayer[1::2, 1::2] = 1 # Green
             bayer[0::2, 0::2] = 1 # Green
             bayer[0::2, 1::2] = 1 # Blue
-            
+
     """
     rgb_masks = get_rgb_masks(data, separate_green=separate_green)
-    
+
     color_data = list()
-    
+
     # Red
     color_data.append(np.ma.array(data, mask=rgb_masks[0]))
-    
+
     # Green
     color_data.append(np.ma.array(data, mask=rgb_masks[1]))
-    
+
     if separate_green:
         color_data.append(np.ma.array(data, mask=rgb_masks[2]))
-    
+
     # Blue
     color_data.append(np.ma.array(data, mask=rgb_masks[-1]))
-    
 
     return np.ma.array(color_data)
 
 
 def get_rgb_masks(data, separate_green=False):
     """Get the RGGB Bayer pattern for the given data.
-    
+
     See `get_rgb_data` for description of data.
 
     Args:
@@ -112,16 +111,16 @@ def get_rgb_masks(data, separate_green=False):
     Returns:
         tuple(np.array, np.array, np.array): A 3-tuple of numpy arrays of `bool` type.
     """
-    
+
     r_mask = np.ones_like(data).astype(bool)
     g1_mask = np.ones_like(data).astype(bool)
     b_mask = np.ones_like(data).astype(bool)
-    
+
     if separate_green:
         g2_mask = np.ones_like(data).astype(bool)
     else:
         g2_mask = g1_mask
-    
+
     if data.ndim == 2:
         r_mask[1::2, 0::2] = False
         g1_mask[1::2, 1::2] = False
@@ -139,40 +138,6 @@ def get_rgb_masks(data, separate_green=False):
         return np.array([r_mask, g1_mask, g2_mask, b_mask])
     else:
         return np.array([r_mask, g1_mask, b_mask])
-
-
-def spiral_matrix(A):
-    """Simple function to spiral a matrix.
-
-    Args:
-        A (`numpy.array`): Array to spiral.
-
-    Returns:
-        `numpy.array`: Spiralled array.
-    """
-    A = np.array(A)
-    out = []
-    while(A.size):
-        out.append(A[:, 0][::-1])  # take first row and reverse it
-        A = A[:, 1:].T[::-1]       # cut off first row and rotate counterclockwise
-    return np.concatenate(out)
-
-
-def get_pixel_index(x):
-    """Find corresponding index position of `x` pixel position.
-
-    Note:
-        Due to the standard rounding policy of python that will round half integers
-        to their nearest even whole integer, we instead use a `Decimal` with correct
-        round up policy.
-
-    Args:
-        x (float): x coordinate position.
-
-    Returns:
-        int: Index position for zero-based index
-    """
-    return int(Decimal(x - 1).to_integral_value(ROUND_HALF_UP))
 
 
 def pixel_color(x, y):

@@ -16,7 +16,7 @@ def _get_db_class(module_name='file'):
         <class 'panoptes.utils.database.memory.PanMemoryDB'>
 
     Args:
-        module_name (str): Name of module, one of: `file` (default), `mongo', 'memory'.
+        module_name (str): Name of module, one of: `file` (default), 'memory'.
 
     Returns:
         `panoptes.utils.database.PanDB`: An instance of the db class for the correct database type.
@@ -25,7 +25,6 @@ def _get_db_class(module_name='file'):
         Exception: If an unsupported database type string is passed.
     """
     class_map = {
-        'mongo': 'PanMongoDB',
         'file': 'PanFileDB',
         'memory': 'PanMemoryDB',
     }
