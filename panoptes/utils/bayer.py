@@ -8,12 +8,12 @@ from decimal import ROUND_HALF_UP
 
 def get_rgb_data(data, separate_green=False):
     """Get the data split into separate channels for RGB.
-    
+
     `data` can be a 2D (`W x H`) or 3D (`N x W x H`) array where `W`=width
     and `H`=height of the data, with `N`=number of frames.
-    
+
     The return array will be a `3 x W x H` or `3 x N x W x H` array.
-    
+
     The Bayer array defines a superpixel as a collection of 4 pixels
     set in a square grid:
 
@@ -68,7 +68,7 @@ def get_rgb_data(data, separate_green=False):
               G1 |  odd i, |   odd j
               G2 | even i, |  even j
               B  | even i, |   odd j
-              
+
         Or, in other words, the bottom-left (i.e. `(0,0)`) super-pixel is an RGGB pattern.
 
         And a mask can therefore be generated as:
@@ -77,31 +77,30 @@ def get_rgb_data(data, separate_green=False):
             bayer[1::2, 1::2] = 1 # Green
             bayer[0::2, 0::2] = 1 # Green
             bayer[0::2, 1::2] = 1 # Blue
-            
+
     """
     rgb_masks = get_rgb_masks(data, separate_green=separate_green)
-    
+
     color_data = list()
-    
+
     # Red
     color_data.append(np.ma.array(data, mask=rgb_masks[0]))
-    
+
     # Green
     color_data.append(np.ma.array(data, mask=rgb_masks[1]))
-    
+
     if separate_green:
         color_data.append(np.ma.array(data, mask=rgb_masks[2]))
-    
+
     # Blue
     color_data.append(np.ma.array(data, mask=rgb_masks[-1]))
-    
 
     return np.ma.array(color_data)
 
 
 def get_rgb_masks(data, separate_green=False):
     """Get the RGGB Bayer pattern for the given data.
-    
+
     See `get_rgb_data` for description of data.
 
     Args:
@@ -112,16 +111,16 @@ def get_rgb_masks(data, separate_green=False):
     Returns:
         tuple(np.array, np.array, np.array): A 3-tuple of numpy arrays of `bool` type.
     """
-    
+
     r_mask = np.ones_like(data).astype(bool)
     g1_mask = np.ones_like(data).astype(bool)
     b_mask = np.ones_like(data).astype(bool)
-    
+
     if separate_green:
         g2_mask = np.ones_like(data).astype(bool)
     else:
         g2_mask = g1_mask
-    
+
     if data.ndim == 2:
         r_mask[1::2, 0::2] = False
         g1_mask[1::2, 1::2] = False
