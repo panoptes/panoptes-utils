@@ -44,7 +44,7 @@ The `panoptes-utils` repository provides the base for the PANOPTES Docker images
 is public and can be obtained via `docker`:
 
 ```bash
-docker pull gcr.io/panoptes-survey/panoptes-utils:latest
+docker pull gcr.io/panoptes-exp/panoptes-utils:latest
 ```
 
 ### Running Docker Containers
