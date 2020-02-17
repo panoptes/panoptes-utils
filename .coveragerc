@@ -4,8 +4,7 @@ concurrency =
     multiprocessing
     threading
     subprocess
-source =
-    panoptes/utils
+source=panoptes/utils
 parallel = True
 
 [report]
