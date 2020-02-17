@@ -34,7 +34,6 @@ with open(requirements_fn) as f:
     requirements = f.read().splitlines()
 
 modules = {
-    'mongo': ['pymongo'],
     'required': requirements,
     'social': ['requests', 'tweepy'],
     'testing': [
@@ -74,7 +73,6 @@ setup(name=NAME,
           'bin/panoptes-solve-field',
       ],
       extras_require={
-          'mongo': modules['mongo'],
           'social': modules['social'],
           'testing': modules['testing'],
           'all': list(set(itertools.chain.from_iterable(modules.values())))
