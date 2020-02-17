@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # Licensed under an MIT style license - see LICENSE.txt
 
-from panoptes.utils.version import __version__
+import builtins
+from distutils.command.build_py import build_py
+from configparser import ConfigParser
 from setuptools import setup, find_namespace_packages
 
 import itertools
 
-from configparser import ConfigParser
-from distutils.command.build_py import build_py
+import versioneer
 
-import builtins
 builtins._PANOPTES_SETUP_ = True
 
 
@@ -50,6 +50,7 @@ modules = {
         'scalpl',
         'scikit-image',
         'scipy',
+        'versioneer'
     ],
     'social': ['requests', 'tweepy'],
     'testing': [
@@ -66,7 +67,8 @@ modules = {
 
 
 setup(name=NAME,
-      version=__version__,
+      version=versioneer.get_version(),
+      cmdclass=versioneer.get_cmdclass(),
       description=DESCRIPTION,
       long_description=LONG_DESCRIPTION,
       author=AUTHOR,
@@ -108,5 +110,4 @@ setup(name=NAME,
           'Topic :: Scientific/Engineering :: Astronomy',
           'Topic :: Scientific/Engineering :: Physics',
       ],
-      cmdclass={'build_py': build_py}
       )
