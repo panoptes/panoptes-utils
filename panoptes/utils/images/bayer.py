@@ -140,40 +140,6 @@ def get_rgb_masks(data, separate_green=False):
         return np.array([r_mask, g1_mask, b_mask])
 
 
-def spiral_matrix(A):
-    """Simple function to spiral a matrix.
-
-    Args:
-        A (`numpy.array`): Array to spiral.
-
-    Returns:
-        `numpy.array`: Spiralled array.
-    """
-    A = np.array(A)
-    out = []
-    while(A.size):
-        out.append(A[:, 0][::-1])  # take first row and reverse it
-        A = A[:, 1:].T[::-1]       # cut off first row and rotate counterclockwise
-    return np.concatenate(out)
-
-
-def get_pixel_index(x):
-    """Find corresponding index position of `x` pixel position.
-
-    Note:
-        Due to the standard rounding policy of python that will round half integers
-        to their nearest even whole integer, we instead use a `Decimal` with correct
-        round up policy.
-
-    Args:
-        x (float): x coordinate position.
-
-    Returns:
-        int: Index position for zero-based index
-    """
-    return int(Decimal(x - 1).to_integral_value(ROUND_HALF_UP))
-
-
 def pixel_color(x, y):
     """ Given an x,y position, return the corresponding color.
 
