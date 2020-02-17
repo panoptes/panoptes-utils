@@ -12,6 +12,7 @@ from panoptes.utils import CountdownTimer
 from panoptes.utils import error
 from panoptes.utils.library import load_module
 from panoptes.utils.library import load_c_library
+from panoptes.utils.logger import get_root_logger
 
 
 def test_error(capsys):
@@ -45,6 +46,15 @@ def test_load_c_library():
     # Called without a `path` this will use find_library to locate libc.
     libc = load_c_library('c')
     assert libc._name[:4] == 'libc'
+
+    libc = load_c_library('c', mode=None, logger=get_root_logger())
+    assert libc._name[:4] == 'libc'
+
+
+def test_load_c_library_fail():
+    # Called without a `path` this will use find_library to locate libc.
+    with pytest.raises(error.NotFound):
+        load_c_library('foobar')
 
 
 def test_listify():

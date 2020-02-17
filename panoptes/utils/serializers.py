@@ -286,7 +286,7 @@ def _parse_all_objects(obj):
         return bool(obj)
 
     # Try to turn into a time
-    with suppress(ValueError):
+    with suppress(KeyError, ValueError):
         if isinstance(Time(obj), Time):
             return Time(obj).datetime
 

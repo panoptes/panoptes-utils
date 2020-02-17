@@ -21,6 +21,18 @@ def test_config_client(dynamic_config_server, config_port):
     assert get_config('location.horizon', port=config_port, parse=False) == '47.0 deg'
 
 
+def test_config_client_bad(dynamic_config_server, config_port, caplog):
+    # Bad host will return `None` but also throw error
+    assert set_config('foo', 42, host='foobaz') is None
+    assert caplog.records[-1].levelname == "INFO"
+    assert caplog.records[-1].message.startswith("Problem with set_config")
+
+    # Bad host will return `None` but also throw error
+    assert get_config('foo', host='foobaz') is None
+    assert caplog.records[-1].levelname == "INFO"
+    assert caplog.records[-1].message.startswith("Problem with get_config")
+
+
 def test_config_reset(dynamic_config_server, config_port, config_host):
     # Check we are at default.
     assert get_config('location.horizon', port=config_port) == 30 * u.degree

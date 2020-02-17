@@ -12,12 +12,8 @@ import pytest
 import subprocess
 import time
 import shutil
-from multiprocessing import Process
-
-from scalpl import Cut
 
 from panoptes.utils.database import PanDB
-from panoptes.utils.config import load_config
 from panoptes.utils.logger import get_root_logger
 from panoptes.utils.messaging import PanMessaging
 from panoptes.utils.config.client import set_config

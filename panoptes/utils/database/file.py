@@ -35,11 +35,12 @@ class PanFileDB(AbstractPanDB):
         obj = create_storage_obj(collection, obj, obj_id=obj_id)
         current_fn = self._get_file(collection, permanent=False)
         result = obj_id
+
         try:
             # Overwrite current collection file with obj.
             to_json(obj, filename=current_fn, append=False)
         except Exception as e:
-            self._warn("Problem inserting object into current collection: {}, {!r}".format(e, obj))
+            self._warn(f"Problem serializing object for insertion: {e} {current_fn} {obj!r}")
             result = None
 
         if not store_permanently:
@@ -48,7 +49,7 @@ class PanFileDB(AbstractPanDB):
         collection_fn = self._get_file(collection)
         try:
             # Append obj to collection file.
-            to_json(obj, filename=collection_fn)
+            to_json(obj, filename=collection_fn, append=True)
             return obj_id
         except Exception as e:
             self._warn("Problem inserting object into collection: {}, {!r}".format(e, obj))
