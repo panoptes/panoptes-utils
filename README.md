@@ -24,7 +24,7 @@ pip install panoptes-utils
 There are also a number of optional dependencies, which can be installed as following:
 
 ```bash
-pip install "panoptes-utils[google,mongo,social,test]"
+pip install "panoptes-utils[social,test]"
 # -or-
 pip install "panoptes-utils[all]"
 ```

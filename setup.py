@@ -34,7 +34,6 @@ with open(requirements_fn) as f:
     requirements = f.read().splitlines()
 
 modules = {
-    'google': ['google-cloud-storage', 'psycopg2-binary'],
     'mongo': ['pymongo'],
     'required': requirements,
     'social': ['requests', 'tweepy'],
@@ -75,7 +74,6 @@ setup(name=NAME,
           'bin/panoptes-solve-field',
       ],
       extras_require={
-          'google': modules['google'],
           'mongo': modules['mongo'],
           'social': modules['social'],
           'testing': modules['testing'],

@@ -1,8 +1,6 @@
 astropy
 cffi
 Flask
-google-cloud-sdk
-google-cloud-storage
 jupyter_console
 libffi
 matplotlib-base
