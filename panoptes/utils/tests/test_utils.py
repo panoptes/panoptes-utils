@@ -2,6 +2,7 @@ import os
 import pytest
 import signal
 import time
+from datetime import timezone as tz
 from datetime import datetime as dt
 from astropy import units as u
 
@@ -96,7 +97,7 @@ def test_pretty_time():
 
     # This will increment one second - see docs
     t3 = current_time(datetime=True)
-    assert t3 == dt(2016, 8, 13, 10, 0, 2)
+    assert t3 == dt(2016, 8, 13, 10, 0, 2, tzinfo=tz.utc)
 
 
 def test_countdown_timer_bad_input():

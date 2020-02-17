@@ -6,7 +6,6 @@ numpy
 photutils
 pyserial
 python-dateutil
-pytz
 PyYAML
 pyzmq
 ruamel.yaml>=0.15
