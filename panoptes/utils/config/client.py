@@ -20,15 +20,16 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
         '30.0 deg'
         >>> get_config(key='cameras.devices[1].model')
         'canon_gphoto2'
-        >>> # Returns `None` if key is not found
-        >>> foobar = get_config('foobar')
+        >>> # Returns `None` if key is not found.
+        >>> foobar = get_config(key='foobar')
         >>> foobar is None
         True
-        >>> get_config('foobar', default='baz')
+        >>> # But you can supply a default.
+        >>> get_config(key='foobar', default='baz')
         'baz'
         >>> # Can use Quantities as well
         >>> from astropy import units as u
-        >>> get_config('foobar', default=42 * u.meter)
+        >>> get_config(key='foobar', default=42 * u.meter)
         <Quantity 42. m>
 
     Args:
@@ -55,13 +56,16 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
         get_root_logger().info(f'Problem with get_config: {e!r}')
     else:
         if not response.ok:
-            raise Exception(f'Cannot access config server: {response.content}')
+            get_root_logger().info(f'Problem with get_config: {response.content!r}')
+        else:
+            if response.text != 'null\n':
+                if parse:
+                    config_entry = serializers.from_json(response.content.decode('utf8'))
+                else:
+                    config_entry = response.json()
 
-        if response.text != 'null\n':
-            if parse:
-                config_entry = serializers.from_json(response.content.decode('utf8'))
-            else:
-                config_entry = response.json()
+    if config_entry is None:
+        config_entry = default
 
     return config_entry
 

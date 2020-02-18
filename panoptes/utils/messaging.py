@@ -124,13 +124,15 @@ class PanMessaging(object):
         """
         obj = cls()
 
-        obj.logger.debug("Creating publisher. Binding to port {} ".format(port))
+        obj.logger.debug('Creating zmq message publisher.')
 
         socket = obj.context.socket(zmq.PUB)
 
         if bind:
+            obj.logger.debug(f'Binding publisher to port {port}')
             socket.bind(f'tcp://*:{port}')
         elif connect:
+            obj.logger.debug(f'Binding publisher to tcp://{host}:{port}')
             socket.connect(f'tcp://{host}:{port}')
 
         obj.socket = socket
@@ -157,6 +159,7 @@ class PanMessaging(object):
             except zmq.error.ZMQError:
                 obj.logger.debug('Problem binding port {}'.format(port))
         elif connect:
+            obj.logger.debug(f'Connecting subscriber to tcp://{host}:{port}')
             socket.connect(f'tcp://{host}:{port}')
 
         socket.setsockopt_string(zmq.SUBSCRIBE, topic)
@@ -195,7 +198,8 @@ class PanMessaging(object):
         full_message = f'{topic} {message}'
 
         # Send the message
-        self.socket.send_string(full_message, flags=zmq.NOBLOCK)
+        # self.socket.send_string(full_message, flags=zmq.NOBLOCK)
+        self.socket.send_string(full_message)
 
     def receive_message(self, blocking=True, flags=0, timeout_ms=0):
         """Receive a message
@@ -225,14 +229,18 @@ class PanMessaging(object):
             # Don't block at this point, because we will have waited as long
             # as necessary.
             flags = flags | zmq.NOBLOCK
+
         try:
             # Ugh. So ugly with the strings.
             message = self.socket.recv_string(flags=flags)
         except Exception as e:
-            print(f'error in receive_message: {e!r}')
+            self.logger.warning(f'error in receive_message: {e!r}')
         else:
             topic, msg = message.split(' ', maxsplit=1)
-            msg_obj = from_json(msg)
+            try:
+                msg_obj = from_json(msg)
+            except Exception as e:
+                self.logger.warning(f'Error parsing message: {msg} {e!r}')
 
         return topic, msg_obj
 

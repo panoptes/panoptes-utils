@@ -16,7 +16,7 @@ def _get_db_class(module_name='file'):
         <class 'panoptes.utils.database.memory.PanMemoryDB'>
 
     Args:
-        module_name (str): Name of module, one of: `file` (default), `mongo', 'memory'.
+        module_name (str): Name of module, one of: `file` (default), 'memory'.
 
     Returns:
         `panoptes.utils.database.PanDB`: An instance of the db class for the correct database type.
@@ -25,7 +25,6 @@ def _get_db_class(module_name='file'):
         Exception: If an unsupported database type string is passed.
     """
     class_map = {
-        'mongo': 'PanMongoDB',
         'file': 'PanFileDB',
         'memory': 'PanMemoryDB',
     }
@@ -49,9 +48,11 @@ class AbstractPanDB(metaclass=abc.ABCMeta):
             collection_names (list of str): Names of the valid collections.
             logger: (Optional) logger to use for warnings.
         """
+        self.logger = logger
+        if self.logger:
+            self.logger.info(f'Creating PanDB {db_name} with collections: {collection_names}')
         self.db_name = db_name
         self.collection_names = collection_names
-        self.logger = logger
 
     def _warn(self, *args, **kwargs):
         if self.logger:
@@ -178,6 +179,9 @@ class PanDB(object):
         """The pre-defined list of collections that are valid."""
         return [
             'camera_board',
+            'control_board',
+            'camera_env_board',
+            'control_env_board',
             'config',
             'current',
             'drift_align',
@@ -186,6 +190,7 @@ class PanDB(object):
             'observations',
             'offset_info',
             'power',
+            'safety',
             'state',
             'telemetry_board',
             'weather',

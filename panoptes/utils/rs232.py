@@ -266,6 +266,7 @@ class SerialData(object):
             (ts, line) = self.get_reading()
             if not line:
                 continue
+
             with suppress(error.InvalidDeserialization):
                 data = from_json(line)
                 if data:

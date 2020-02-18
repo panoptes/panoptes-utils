@@ -2,6 +2,7 @@ import os
 import pytest
 import signal
 import time
+from datetime import timezone as tz
 from datetime import datetime as dt
 from astropy import units as u
 
@@ -11,6 +12,8 @@ from panoptes.utils import listify
 from panoptes.utils import CountdownTimer
 from panoptes.utils import error
 from panoptes.utils.library import load_module
+from panoptes.utils.library import load_c_library
+from panoptes.utils.logger import get_root_logger
 
 
 def test_error(capsys):
@@ -40,6 +43,21 @@ def test_bad_load_module():
         load_module('FOOBAR')
 
 
+def test_load_c_library():
+    # Called without a `path` this will use find_library to locate libc.
+    libc = load_c_library('c')
+    assert libc._name[:4] == 'libc'
+
+    libc = load_c_library('c', mode=None, logger=get_root_logger())
+    assert libc._name[:4] == 'libc'
+
+
+def test_load_c_library_fail():
+    # Called without a `path` this will use find_library to locate libc.
+    with pytest.raises(error.NotFound):
+        load_c_library('foobar')
+
+
 def test_listify():
     assert listify(12) == [12]
     assert listify([1, 2, 3]) == [1, 2, 3]
@@ -47,6 +65,22 @@ def test_listify():
 
 def test_empty_listify():
     assert listify(None) == []
+
+
+def test_listfy_dicts():
+    d = dict(a=42)
+
+    d_vals = d.values()
+    d_keys = d.keys()
+
+    assert isinstance(listify(d_vals), list)
+    assert listify(d_vals) == list(d_vals)
+
+    assert isinstance(listify(d_keys), list)
+    assert listify(d_keys) == list(d_keys)
+
+    assert isinstance(listify(d), list)
+    assert listify(d) == list(d_vals)
 
 
 def test_pretty_time():
@@ -63,7 +97,7 @@ def test_pretty_time():
 
     # This will increment one second - see docs
     t3 = current_time(datetime=True)
-    assert t3 == dt(2016, 8, 13, 10, 0, 2)
+    assert t3 == dt(2016, 8, 13, 10, 0, 2, tzinfo=tz.utc)
 
 
 def test_countdown_timer_bad_input():
@@ -86,6 +120,7 @@ def test_countdown_timer_non_blocking():
         timer = CountdownTimer(arg)
         assert timer.duration == expected_duration
 
+
 def test_countdown_timer():
     count_time = 1
     timer = CountdownTimer(count_time)
@@ -101,6 +136,7 @@ def test_countdown_timer():
     assert counter == pytest.approx(1)
     assert timer.time_left() == 0
     assert timer.expired() is True
+
 
 def test_countdown_timer_sleep():
     count_time = 1

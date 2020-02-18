@@ -1,14 +1,19 @@
+import logging
+from warnings import warn
 from flask import Flask
 from flask import request
 from flask import jsonify
 from flask.json import JSONEncoder
 
+from multiprocessing import Process
 from scalpl import Cut
 
 from panoptes.utils.config import load_config
 from panoptes.utils.config import save_config
 from panoptes.utils.serializers import _serialize_object
 from panoptes.utils.logger import get_root_logger
+
+logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
 app = Flask(__name__)
 
@@ -20,6 +25,59 @@ class CustomJSONEncoder(JSONEncoder):
 
 
 app.json_encoder = CustomJSONEncoder
+
+
+def config_server(host='localhost',
+                  port=6563,
+                  config_file=None,
+                  ignore_local=False,
+                  auto_save=False,
+                  auto_start=True,
+                  debug=False):
+    """Start the config server in a separate process.
+
+    A convenience function to start the config server.
+
+    Args:
+        host (str, optional): Name of host, default 'localhost'.
+        port (int, optional): Port for server, default 6563.
+        config_file (str|None, optional): The config file to load, defaults to
+            `$PANDIR/conf_files/pocs.yaml`.
+        ignore_local (bool, optional): If local config files should be ignored,
+            default False.
+        auto_save (bool, optional): If setting new values should auto-save to
+            local file, default False.
+        auto_start (bool, optional): If server process should be started
+            automatically, default True.
+        debug (bool, optional): Flask server debug mode, default False.
+
+    Returns:
+        `multiprocessing.Process`: The process running the config server.
+    """
+    app.config['auto_save'] = auto_save
+    app.config['config_file'] = config_file
+    app.config['ignore_local'] = ignore_local
+    app.config['POCS'] = load_config(config_files=config_file, ignore_local=ignore_local)
+    app.config['POCS_cut'] = Cut(app.config['POCS'])
+
+    def start_server(**kwargs):
+        try:
+            app.run(**kwargs)
+        except OSError:
+            warn(f'Problem starting config server, is another config server already running?')
+            return None
+
+    server_process = Process(target=start_server,
+                             kwargs=dict(host=host, port=port, debug=debug),
+                             name='panoptes-config-server')
+
+    if server_process is not None and auto_start:
+        try:
+            server_process.start()
+        except KeyboardInterrupt:
+            server_process.terminate()
+
+    return server_process
 
 
 @app.route('/get-config', methods=['GET', 'POST'])
@@ -68,7 +126,10 @@ def get_config_entry():
             # Return all
             show_config = app.config['POCS']
         else:
-            show_config = app.config['POCS_cut'].get(key, None)
+            try:
+                show_config = app.config['POCS_cut'].get(key, None)
+            except KeyError:
+                show_config = None
     else:
         # Return entire config
         show_config = app.config['POCS']

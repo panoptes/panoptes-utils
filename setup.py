@@ -1,17 +1,14 @@
 #!/usr/bin/env python
 # Licensed under an MIT style license - see LICENSE.txt
 
+from distutils.command.build_py import build_py
+from configparser import ConfigParser
 from setuptools import setup, find_namespace_packages
 
 import itertools
 
-from configparser import ConfigParser
-from distutils.command.build_py import build_py
+import versioneer
 
-import builtins
-builtins._PANOPTES_SETUP_ = True
-
-from panoptes.utils.version import __version__
 
 # Get some values from the setup.cfg
 conf = ConfigParser()
@@ -34,9 +31,23 @@ with open(requirements_fn) as f:
     requirements = f.read().splitlines()
 
 modules = {
-    'google': ['google-cloud', 'google-cloud-storage', 'psycopg2-binary'],
-    'mongo': ['pymongo'],
-    'required': requirements,
+    'required': [
+        'astroplan',
+        'astropy',
+        'Flask',
+        'matplotlib>=3.0.0',
+        'numpy',
+        'photutils',
+        'pyserial',
+        'python-dateutil',
+        'PyYAML',
+        'pyzmq',
+        'ruamel.yaml>=0.15',
+        'scalpl',
+        'scikit-image',
+        'scipy',
+        'versioneer'
+    ],
     'social': ['requests', 'tweepy'],
     'testing': [
         'codecov',
@@ -52,7 +63,8 @@ modules = {
 
 
 setup(name=NAME,
-      version=__version__,
+      version=versioneer.get_version(),
+      cmdclass=versioneer.get_cmdclass(),
       description=DESCRIPTION,
       long_description=LONG_DESCRIPTION,
       author=AUTHOR,
@@ -67,16 +79,14 @@ setup(name=NAME,
       # dependencies). You can install these using the following syntax,
       # for example:
       # $ pip install -e .[dev,test]
-      install_requires=modules['required'],
       scripts=[
           'bin/cr2-to-jpg',
           'bin/panoptes-config-server',
           'bin/panoptes-messaging-hub',
           'bin/panoptes-solve-field',
       ],
+      install_requires=modules['required'],
       extras_require={
-          'google': modules['google'],
-          'mongo': modules['mongo'],
           'social': modules['social'],
           'testing': modules['testing'],
           'all': list(set(itertools.chain.from_iterable(modules.values())))
@@ -96,5 +106,4 @@ setup(name=NAME,
           'Topic :: Scientific/Engineering :: Astronomy',
           'Topic :: Scientific/Engineering :: Physics',
       ],
-      cmdclass={'build_py': build_py}
       )

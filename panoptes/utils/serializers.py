@@ -46,7 +46,7 @@ class StringYAML(YAML):
             return stream.getvalue()
 
 
-def to_json(obj, filename=None, **kwargs):
+def to_json(obj, filename=None, append=True, **kwargs):
     """Convert a Python object to a JSON string.
 
     Will handle `datetime` objects as well as `astropy.unit.Quantity` objects.
@@ -71,6 +71,8 @@ def to_json(obj, filename=None, **kwargs):
     Args:
         obj (`object`): The object to be converted to JSON, usually a dict.
         filename (str, optional): Path to file for saving.
+        append (bool, optional): Append to `filename`, default True. Setting
+            False will clobber the file.
         **kwargs: Keyword arguments passed to `json.dumps`.
 
     Returns:
@@ -79,8 +81,11 @@ def to_json(obj, filename=None, **kwargs):
     json_str = json.dumps(obj, default=_serialize_object, **kwargs)
 
     if filename is not None:
-        with open(filename, 'w') as f:
-            f.write(json_str)
+        mode = 'w'
+        if append:
+            mode = 'a'
+        with open(filename, mode) as fn:
+            fn.write(json_str + '\n')
 
     return json_str
 
@@ -88,7 +93,14 @@ def to_json(obj, filename=None, **kwargs):
 def from_json(msg):
     """Convert a JSON string into a Python object.
 
-    Astropy quanitites will be converted from a ``{"value": val, "unit": unit}`` format.
+    Astropy quanitites will be converted from a ``{"value": val, "unit": unit}``
+    format. Additionally, the following units will be converted if the value ends
+    with the exact string:
+
+        * deg
+        * m
+        * s
+
     Time-like values are *not* parsed, however see example below.
 
     Examples:
@@ -104,7 +116,17 @@ def from_json(msg):
             >>> from_json('{"horizon":{"value":42.0,"unit":"degr"}}')
             {'horizon': {'value': 42.0, 'unit': 'degr'}}
 
-            # Be careful with short unit names!
+            # The following will convert if final string:
+            >>> from_json('{"horizon": "42.0 deg"}')
+            {'horizon': <Quantity 42. deg>}
+
+            >>> from_json('{"elevation": "1000 m"}')
+            {'elevation': <Quantity 1000. m>}
+
+            >>> from_json('{"readout_time": "10 s"}')
+            {'readout_time': <Quantity 10. s>}
+
+            # Be careful with short unit names in extended format!
             >>> horizon = from_json('{"horizon":{"value":42.0,"unit":"d"}}')
             >>> horizon['horizon']
             <Quantity 42. d>
@@ -190,6 +212,8 @@ def from_yaml(msg, parse=True):
     Comments are preserved as long as the object remains YAML (lost on conversion
     to JSON, for example).
 
+    See `from_json` for examples of astropy unit parsing.
+
     Examples:
         Note how comments in the YAML are preserved.
 
@@ -251,7 +275,7 @@ def _parse_all_objects(obj):
         `dict`: Same as `obj` but with objects converted to quantities.
     """
     if isinstance(obj, (dict, OrderedDict)):
-        if 'value' and 'unit' in obj:
+        if 'value' in obj and 'unit' in obj:
             with suppress(ValueError):
                 return obj['value'] * u.Unit(obj['unit'])
 
@@ -262,20 +286,26 @@ def _parse_all_objects(obj):
         return bool(obj)
 
     # Try to turn into a time
-    with suppress(ValueError):
+    with suppress(KeyError, ValueError):
         if isinstance(Time(obj), Time):
             return Time(obj).datetime
 
-    # Try to parse as quantity
-    try:
-        quantity = u.Quantity(obj)
-        # If it ends up dimensionless just return obj.
-        if str(quantity.unit) == '':
-            return obj
-        else:
-            return quantity
-    except Exception:
-        return obj
+    # Try to parse as quantity if certain type
+    if isinstance(obj, str) and obj > '':
+        with suppress(IndexError):
+            units_string = obj.rsplit()[-1]  # Get the final word
+            if units_string in ['m', 'deg', 's']:
+                try:
+                    quantity = u.Quantity(obj)
+                    # If it ends up dimensionless just return obj.
+                    if str(quantity.unit) == '':
+                        return obj
+                    else:
+                        return quantity
+                except Exception:
+                    return obj
+
+    return obj
 
 
 def _serialize_all_objects(obj):

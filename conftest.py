@@ -12,20 +12,15 @@ import pytest
 import subprocess
 import time
 import shutil
-from multiprocessing import Process
-
-from scalpl import Cut
 
 from panoptes.utils.database import PanDB
 from panoptes.utils.config import load_config
 from panoptes.utils.logger import get_root_logger
 from panoptes.utils.messaging import PanMessaging
 from panoptes.utils.config.client import set_config
-from panoptes.utils.config.server import app
+from panoptes.utils.config.server import config_server
 
-# Global variable set to a bool by can_connect_to_mongo().
-_can_connect_to_mongo = None
-_all_databases = ['mongo', 'file', 'memory']
+_all_databases = ['file', 'memory']
 
 
 def pytest_addoption(parser):
@@ -161,34 +156,18 @@ def config_path():
                         )
 
 
-@pytest.fixture(scope='session')
-def config_server_args(config_path):
-    loaded_config = load_config(config_files=config_path, ignore_local=True)
-    return {
-        'config_file': config_path,
-        'auto_save': False,
-        'ignore_local': True,
-        'POCS': loaded_config,
-        'POCS_cut': Cut(loaded_config)
-    }
-
-
 @pytest.fixture(scope='session', autouse=True)
-def static_config_server(config_host, static_config_port, config_server_args, images_dir, db_name):
+def static_config_server(config_host, static_config_port, config_path, images_dir, db_name):
 
     logger = get_root_logger()
     logger.critical(f'Starting config_server for testing session')
 
-    def start_config_server():
-        # Load the config items into the app config.
-        for k, v in config_server_args.items():
-            app.config[k] = v
-
-        # Start the actual flask server.
-        app.run(host=config_host, port=static_config_port)
-
-    proc = Process(target=start_config_server)
-    proc.start()
+    proc = config_server(
+        host=config_host,
+        port=static_config_port,
+        config_file=config_path,
+        ignore_local=True,
+    )
 
     logger.info(f'config_server started with PID={proc.pid}')
 
@@ -219,7 +198,7 @@ def static_config_server(config_host, static_config_port, config_server_args, im
 
 
 @pytest.fixture(scope='function')
-def dynamic_config_server(config_host, config_port, config_server_args, images_dir, db_name):
+def dynamic_config_server(config_host, config_port, config_path, images_dir, db_name):
     """If a test requires changing the configuration we use a function-scoped testing
     server. We only do this on tests that require it so we are not constantly starting and stopping
     the config server unless necessary.  To use this, each test that requires it must use the
@@ -230,16 +209,12 @@ def dynamic_config_server(config_host, config_port, config_server_args, images_d
     logger = get_root_logger()
     logger.critical(f'Starting config_server for testing function')
 
-    def start_config_server():
-        # Load the config items into the app config.
-        for k, v in config_server_args.items():
-            app.config[k] = v
-
-        # Start the actual flask server.
-        app.run(host=config_host, port=config_port)
-
-    proc = Process(target=start_config_server)
-    proc.start()
+    proc = config_server(
+        host=config_host,
+        port=config_port,
+        config_file=config_path,
+        ignore_local=True,
+    )
 
     logger.info(f'config_server started with PID={proc.pid}')
 
@@ -312,19 +287,6 @@ def fake_logger():
     return FakeLogger()
 
 
-def can_connect_to_mongo():
-    global _can_connect_to_mongo
-    if _can_connect_to_mongo is None:
-        logger = get_root_logger()
-        try:
-            PanDB(db_type='mongo', db_name='panoptes_testing', logger=logger, connect=True)
-            _can_connect_to_mongo = True
-        except Exception:
-            _can_connect_to_mongo = False
-        logger.info('can_connect_to_mongo = {}', _can_connect_to_mongo)
-    return _can_connect_to_mongo
-
-
 @pytest.fixture(scope='function', params=_all_databases)
 def db_type(request):
 
@@ -332,9 +294,6 @@ def db_type(request):
     if request.param not in db_list and 'all' not in db_list:
         pytest.skip("Skipping {} DB, set --test-all-databases=True".format(request.param))
 
-    # If testing mongo, make sure we can connect, otherwise skip.
-    if request.param == 'mongo' and not can_connect_to_mongo():
-        pytest.skip("Can't connect to {} DB, skipping".format(request.param))
     PanDB.permanently_erase_database(
         request.param, 'panoptes_testing', really='Yes', dangerous='Totally')
     return request.param
@@ -381,13 +340,33 @@ def message_forwarder(messaging_ports):
         args.append(str(sub))
         args.append(str(pub))
 
-    get_root_logger().info('message_forwarder fixture starting: {}', args)
-    proc = subprocess.Popen(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    logger = get_root_logger()
+    logger.info('message_forwarder fixture starting: {}', args)
+    proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # It takes a while for the forwarder to start, so allow for that.
     # TODO(jamessynge): Come up with a way to speed up these fixtures.
     time.sleep(3)
+    # If message forwarder doesn't start, tell us why.
+    if proc.poll() is not None:
+        outs, errs = proc.communicate(timeout=5)
+        logger.info(f'outs: {outs!r}')
+        logger.info(f'errs: {errs!r}')
+        assert False
+
     yield messaging_ports
-    proc.terminate()
+    # Make sure messager forwarder is still running at end.
+    assert proc.poll() is None
+
+    # Try to terminate, then communicate, then kill.
+    try:
+        proc.terminate()
+        outs, errs = proc.communicate(timeout=0.5)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        outs, errs = proc.communicate()
+
+    # Make sure message forwarder was killed.
+    assert proc.poll() is not None
 
 
 @pytest.fixture(scope='function')
