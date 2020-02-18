@@ -32,4 +32,4 @@ jobs:
         pip install '.[all]'
         pytest
       env:
-        PANDIR: "${HOME}"
+        PANDIR: /home/github
