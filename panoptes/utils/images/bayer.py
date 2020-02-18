@@ -1,9 +1,7 @@
-import os
 
 import numpy as np
 
 from decimal import Decimal
-from decimal import ROUND_HALF_UP
 
 
 def get_rgb_data(data, separate_green=False):
