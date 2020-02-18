@@ -31,3 +31,5 @@ jobs:
       run: |
         pip install '.[all]'
         pytest
+      env:
+        PANDIR: ${HOME}
