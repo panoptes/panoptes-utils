@@ -1,8 +1,13 @@
+# This workflow is responsible for building python packages.
+# The package will be uploaded to the Test PyPi for every push to develop
+# and pushes to the real PyPi for merges into master.
 name: Upload Python Package
 
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - master
+      - develop
 
 jobs:
   deploy:
