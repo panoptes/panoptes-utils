@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2020-02-18
+This release is a consolidation and cleanup of the repository in prepartion for
+accepting changes from the other repositories.
+
+The features and changes will be described in the upcoming `v0.3.0`, which will
+be the first "real" release.
+
 ## [0.0.8] - 2019-06-29
 Bringing things in line with updates to POCS for docker and panoptes-utils use.
 ### Changed
