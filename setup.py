@@ -34,7 +34,6 @@ with open(requirements_fn) as f:
     requirements = f.read().splitlines()
 
 modules = {
-    'google': ['google-cloud-storage', 'psycopg2-binary'],
     'required': [
         'astroplan',
         'astropy',
