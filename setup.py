@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # Licensed under an MIT style license - see LICENSE.txt
 
-import builtins
 from distutils.command.build_py import build_py
 from configparser import ConfigParser
 from setuptools import setup, find_namespace_packages
@@ -9,8 +8,6 @@ from setuptools import setup, find_namespace_packages
 import itertools
 
 import versioneer
-
-builtins._PANOPTES_SETUP_ = True
 
 
 # Get some values from the setup.cfg
@@ -34,7 +31,6 @@ with open(requirements_fn) as f:
     requirements = f.read().splitlines()
 
 modules = {
-    'google': ['google-cloud-storage', 'psycopg2-binary'],
     'required': [
         'astroplan',
         'astropy',

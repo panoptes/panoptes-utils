@@ -1,5 +1,7 @@
 from copy import copy
 
+from warnings import warn
+
 from matplotlib import rc
 from matplotlib import animation
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
