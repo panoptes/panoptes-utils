@@ -24,8 +24,8 @@ RUN cd && \
     # Install module
     cd ${PANDIR}/panoptes-utils && \
     # First deal with pip and PyYAML - see https://github.com/pypa/pip/issues/5247
-    && pip install --no-cache-dir --no-deps --ignore-installed pip PyYAML \
-    && pip install --no-cache-dir -r requirements.txt \
+    pip install --no-cache-dir --no-deps --ignore-installed pip PyYAML && \
+    pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir -e ".[all]" && \
     # Change permissions on directories
     chgrp -R panoptes /var/panoptes && \
