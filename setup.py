@@ -32,8 +32,8 @@ with open(requirements_fn) as f:
 
 modules = {
     'required': [
-        'astroplan',
-        'astropy',
+        'astroplan>=0.6',
+        'astropy>=4.0.0',
         'Flask',
         'matplotlib>=3.0.0',
         'numpy',
