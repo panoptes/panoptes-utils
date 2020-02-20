@@ -438,3 +438,5 @@ def cr2_file():
 
     if not os.path.exists(cr2_path):
         pytest.skip("No CR2 file found, skipping test.")
+
+    return cr2_path
