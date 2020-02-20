@@ -187,10 +187,9 @@ def altaz_to_radec(alt=35, az=90, location=None, obstime=None, verbose=False):
     >>> altaz_to_radec()
     Traceback (most recent call last):
       File "<stdin>", line 1, in <module>
-      ,,,
+      ...
         assert location is not None
     AssertionError
-
 
     Args:
         alt (int, optional): Altitude, defaults to 35
