@@ -5,8 +5,12 @@ python:
   - "3.6"
 services:
 - docker
+cache:
+  directories:
+  - $HOME/data
 before_install:
 - ci_env=`bash <(curl -s https://codecov.io/env)`
+- mkdir -p $HOME/data && wget ${TEST_CR2_FILE} -o $HOME/data/canon.cr2
 - docker pull gcr.io/panoptes-exp/panoptes-utils:latest
 install: true
 script:

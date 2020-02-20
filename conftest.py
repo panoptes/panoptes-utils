@@ -430,3 +430,11 @@ def tiny_fits_file(data_dir):
 @pytest.fixture(scope='session')
 def noheader_fits_file(data_dir):
     return os.path.join(data_dir, 'noheader.fits')
+
+
+@pytest.fixture(scope='session')
+def cr2_file():
+    cr2_path = os.path.expandvars('$HOME/data/canon.cr2')
+
+    if not os.path.exists(cr2_path):
+        pytest.skip("No CR2 file found, skipping test.")

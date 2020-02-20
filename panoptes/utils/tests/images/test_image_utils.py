@@ -106,6 +106,18 @@ def test_make_pretty_image_cr2_fail():
         with open(tmpfile, 'w') as f:
             f.write('not an image file')
         with pytest.raises(error.InvalidCommand):
-            img_utils.make_pretty_image(tmpfile, title='some text', link_latest=False, verbose=True)
+            img_utils.make_pretty_image(tmpfile,
+                                        title='some text',
+                                        link_latest=False,
+                                        verbose=True)
         with pytest.raises(error.InvalidCommand):
             img_utils.make_pretty_image(tmpfile, verbose=True)
+
+
+@pytest.mark.skipif("TRAVIS" not in os.environ,
+                    reason="Skipping this test on Travis CI.")
+def test_make_pretty_image_cr2(cr2_file):
+    img_utils.make_pretty_image(cr2_file,
+                                title='CR2 Test',
+                                link_latest=False,
+                                verbose=True)
