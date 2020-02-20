@@ -165,19 +165,18 @@ def altaz_to_radec(alt=35, az=90, location=None, obstime=None, verbose=False):
     """Convert alt/az degrees to RA/Dec SkyCoord.
 
     >>> from panoptes.utils import altaz_to_radec
-
     >>> from astropy.coordinates import EarthLocation
-    >>>
     >>> keck = EarthLocation.of_site('Keck Observatory')
     ...
-
-    >>> altaz_to_radec(location=keck)
-    <SkyCoord (ICRS): (ra, dec) in deg
-        (14.016..., 11.113...)>
 
     >>> altaz_to_radec(alt=75, az=180, location=keck, obstime='2020-02-02T20:20:02.02')
     <SkyCoord (ICRS): (ra, dec) in deg
         (281.78..., 4.807...)>
+
+    >>> # Will use current time if none given
+    >>> altaz_to_radec(location=keck)
+    <SkyCoord (ICRS): (ra, dec) in deg
+        (..., ...)>
 
     >>> altaz_to_radec(location=keck, obstime='2020-02-02T20:20:02.02', verbose=True)
     Getting coordinates for Alt 35 Az 90, from (-5464487..., -2492806..., 2151240.19451846) m at 2020-02-02T20:20:02.02
