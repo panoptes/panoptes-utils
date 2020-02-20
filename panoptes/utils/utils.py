@@ -65,8 +65,11 @@ def get_free_space(dir=None):
     """Return the amoung of freespace in gigabytes for given dir.
 
     >>> from panoptes.utils import get_free_space
-    >>> get_free_space()        # doctest: +SKIP
-    <Quantity 10.245 Gbyte>
+    >>> get_free_space()
+    <Quantity ... Gbyte>
+
+    >>> get_free_space(dir='/')
+    <Quantity ... Gbyte>
 
     Args:
         dir (str, optional): Path to directory. If None defaults to $PANDIR.
