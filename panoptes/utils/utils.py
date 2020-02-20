@@ -277,7 +277,7 @@ def get_quantity_value(quantity, unit=None):
     >>> get_quantity_value(60 * u.minute, unit='second')
     3600.0
 
-    >>> get_quantity_value(60 * u.hour, unit=u.second)
+    >>> get_quantity_value(60 * u.minute, unit=u.second)
     3600.0
 
     >>> get_quantity_value(60)
