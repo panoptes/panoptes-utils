@@ -115,7 +115,7 @@ def test_make_pretty_image_cr2_fail():
 
 
 @pytest.mark.skipif("TRAVIS" not in os.environ,
-                    reason="Skipping this test on Travis CI.")
+                    reason="Skipping this test if not on Travis CI.")
 def test_make_pretty_image_cr2(cr2_file):
     img_utils.make_pretty_image(cr2_file,
                                 title='CR2 Test',

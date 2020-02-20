@@ -17,6 +17,7 @@ script:
 - docker run -it
   $ci_env
   -e LOCAL_USER_ID=$(id -u)
+  -v $HOME/data:/data
   -v $TRAVIS_BUILD_DIR:/var/panoptes/panoptes-utils
   gcr.io/panoptes-exp/panoptes-utils:latest
   scripts/testing/run-tests.sh
