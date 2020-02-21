@@ -63,6 +63,7 @@ def test_make_pretty_image(solved_fits_file, tiny_fits_file, save_environ):
         # the latest image.
         imgdir = os.path.join(tmpdir, 'images')
         assert not os.path.isdir(imgdir)
+        os.makedirs(imgdir, exist_ok=True)
         os.environ['PANDIR'] = tmpdir
 
         link_path = os.path.expandvars('$PANDIR/latest.jpg')
