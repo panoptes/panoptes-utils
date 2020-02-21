@@ -65,7 +65,7 @@ def test_make_pretty_image(solved_fits_file, tiny_fits_file, save_environ):
         assert not os.path.isdir(imgdir)
         os.environ['PANDIR'] = tmpdir
 
-        link_path = os.path.expandvars('$PANDIR/images/latest.jpg')
+        link_path = os.path.expandvars('$PANDIR/latest.jpg')
         pretty = img_utils.make_pretty_image(fits_file, link_path=link_path)
         assert pretty
         assert os.path.isfile(pretty)
@@ -97,8 +97,7 @@ def test_make_pretty_image_cr2_fail():
             img_utils.make_pretty_image(tmpfile, verbose=True)
 
 
-@pytest.mark.skipif("TRAVIS" not in os.environ,
-                    reason="Skipping this test if not on Travis CI.")
+@pytest.mark.skipif("TRAVIS" not in os.environ, reason="Skipping this test if not on Travis CI.")
 def test_make_pretty_image_cr2(cr2_file):
     link_path = '/data/latest.jpg'
     pretty_path = img_utils.make_pretty_image(cr2_file,
