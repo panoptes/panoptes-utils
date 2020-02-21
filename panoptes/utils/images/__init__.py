@@ -112,7 +112,7 @@ def make_pretty_image(fname,
         warn("File must be a Canon CR2 or FITS file.")
         return None
 
-    if not os.path.exists(os.path.dirname(link_path)):
+    if link_path is None or not os.path.exists(os.path.dirname(link_path)):
         return pretty_path
 
     # Remove existing symlink
