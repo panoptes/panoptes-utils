@@ -28,18 +28,6 @@ palette.set_under('k', 1.0)
 palette.set_bad('g', 1.0)
 
 
-def make_images_dir():
-    """Return the path of the PANDIR/images directory, creating it if necessary."""
-    images_dir = os.path.join(os.getenv('PANDIR'), 'images')
-    try:
-        os.makedirs(images_dir, exist_ok=True)
-        return images_dir
-    except Exception as e:
-        warn(f'Unable to create the images directory: {images_dir}')
-        warn(f'Exception during os.makedirs: {e}')
-        return None
-
-
 def crop_data(data, box_width=200, center=None, verbose=False, data_only=True, wcs=None):
     """Return a cropped portion of the image
 

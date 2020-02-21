@@ -10,22 +10,6 @@ from panoptes.utils import images as img_utils
 from panoptes.utils import error
 
 
-def test_make_images_dir(save_environ):
-    assert img_utils.make_images_dir()
-
-    # Invalid parent directory for 'images'.
-    os.environ['PANDIR'] = '/dev/null/'
-    with pytest.warns(UserWarning):
-        assert img_utils.make_images_dir() is None
-
-    # Valid parents for 'images' that need to be created.
-    with tempfile.TemporaryDirectory() as tmpdir:
-        parent = os.path.join(tmpdir, 'some', 'dirs')
-        imgdir = os.path.join(parent, 'images')
-        os.environ['PANDIR'] = parent
-        assert img_utils.make_images_dir() == imgdir
-
-
 def test_crop_data():
     ones = np.ones((201, 201))
     assert ones.sum() == 40401.
