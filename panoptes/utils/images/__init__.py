@@ -5,7 +5,6 @@ from contextlib import suppress
 
 from warnings import warn
 
-from matplotlib import cm as colormap
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 
@@ -14,18 +13,13 @@ from astropy.nddata import Cutout2D
 from astropy.io.fits import open as open_fits
 from astropy.visualization import (PercentileInterval, LogStretch, ImageNormalize)
 
-from copy import copy
 from dateutil import parser as date_parser
 
 from panoptes.utils import current_time
 from panoptes.utils import error
 from panoptes.utils.images import focus as focus_utils
 from panoptes.utils.images.plot import add_colorbar
-
-palette = copy(colormap.inferno)
-palette.set_over('w', 1.0)
-palette.set_under('k', 1.0)
-palette.set_bad('g', 1.0)
+from panoptes.utils.images.plot import get_palette
 
 
 def crop_data(data, box_width=200, center=None, verbose=False, data_only=True, wcs=None):
@@ -203,7 +197,7 @@ def _make_pretty_from_fits(fname=None,
         ax.set_xlabel('X / pixels')
         ax.set_ylabel('Y / pixels')
 
-    im = ax.imshow(data, norm=norm, cmap=palette, origin='lower')
+    im = ax.imshow(data, norm=norm, cmap=get_palette(), origin='lower')
     add_colorbar(im)
     fig.suptitle(title)
 
