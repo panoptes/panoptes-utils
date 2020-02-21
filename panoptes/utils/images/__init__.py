@@ -241,7 +241,7 @@ def _make_pretty_from_cr2(fname, title=None, timeout=15, **kwargs):
         if verbose:
             print(output)
     except Exception as e:
-        raise error.InvalidCommand("Error executing gphoto2: {!r}\nCommand: {}".format(e, cmd))
+        raise error.InvalidCommand(f"Error executing {script_name}: {e.stderr!r}\nCommand: {cmd}")
 
     return fname.replace('cr2', 'jpg')
 
