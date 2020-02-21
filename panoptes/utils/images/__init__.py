@@ -86,7 +86,12 @@ def crop_data(data, box_width=200, center=None, verbose=False, data_only=True, w
     return cutout
 
 
-def make_pretty_image(fname, title=None, timeout=15, img_type=None, link_latest=False, **kwargs):
+def make_pretty_image(fname,
+                      title=None,
+                      timeout=15,
+                      img_type=None,
+                      link_path=None,
+                      **kwargs):
     """Make a pretty image.
 
     This will create a jpg file from either a CR2 (Canon) or FITS file.
@@ -95,17 +100,21 @@ def make_pretty_image(fname, title=None, timeout=15, img_type=None, link_latest=
         See `/scripts/cr2_to_jpg.sh` for CR2 process.
 
     Arguments:
-        fname {str} -- Name of image file, may be either .fits or .cr2
+        fname (str): The path to the raw image.
         title (None|str, optional): Title to be placed on image, default None.
         timeout (int, optional): Timeout for conversion, default 15 seconds.
         img_type (None|str, optional): Image type of fname, one of '.cr2' or '.fits'.
             The default is `None`, in which case the file extension of fname is used.
-        link_latest (bool, optional): If the pretty picture should be linked to
-            `$PANDIR/images/latest.jpg`, default False.
+        link_path (None|str, optional): Path to location that image should be symlinked.
+            The directory must exist.
         **kwargs {dict} -- Additional arguments to be passed to external script.
 
     Returns:
         str -- Filename of image that was created.
+
+    Deleted Parameters:
+        link_latest (bool, optional): If the pretty picture should be linked to
+            `/images/latest.jpg`, default False.
     """
     if img_type is None:
         img_type = os.path.splitext(fname)[-1]
@@ -121,23 +130,19 @@ def make_pretty_image(fname, title=None, timeout=15, img_type=None, link_latest=
         warn("File must be a Canon CR2 or FITS file.")
         return None
 
-    if not link_latest or not os.path.exists(pretty_path):
+    if not os.path.exists(os.path.dirname(link_path)):
         return pretty_path
 
-    # Symlink latest.jpg to the image; first remove the symlink if it already exists.
-    images_dir = make_images_dir()
-    if not images_dir:
-        warn(f"Can't link latest.jpg to {pretty_path}")
-    else:
-        latest_path = os.path.join(images_dir, 'latest.jpg')
-        with suppress(FileNotFoundError):
-            os.remove(latest_path)
-        try:
-            os.symlink(pretty_path, latest_path)
-        except Exception as e:
-            warn("Can't link latest image: {}".format(e))
+    # Remove existing symlink
+    with suppress(FileNotFoundError):
+        os.remove(link_path)
 
-    return pretty_path
+    try:
+        os.symlink(pretty_path, link_path)
+    except Exception as e:
+        warn("Can't link latest image: {}".format(e))
+
+    return link_path
 
 
 def _make_pretty_from_fits(fname=None,

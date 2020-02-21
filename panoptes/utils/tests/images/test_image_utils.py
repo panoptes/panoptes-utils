@@ -81,16 +81,16 @@ def test_make_pretty_image(solved_fits_file, tiny_fits_file, save_environ):
         assert not os.path.isdir(imgdir)
         os.environ['PANDIR'] = tmpdir
 
-        pretty = img_utils.make_pretty_image(fits_file, link_latest=True)
+        link_path = os.path.expandvars('$PANDIR/images/latest.jpg')
+        pretty = img_utils.make_pretty_image(fits_file, link_path=link_path)
         assert pretty
         assert os.path.isfile(pretty)
         assert os.path.isdir(imgdir)
-        latest = os.path.join(imgdir, 'latest.jpg')
-        assert os.path.isfile(latest)
-        os.remove(latest)
+        assert link_path == pretty
+        os.remove(link_path)
         os.rmdir(imgdir)
 
-        # Try again, but without link_latest.
+        # Try again, but without link_path.
         pretty = img_utils.make_pretty_image(fits_file, title='some text')
         assert pretty
         assert os.path.isfile(pretty)
@@ -108,7 +108,6 @@ def test_make_pretty_image_cr2_fail():
         with pytest.raises(error.InvalidCommand):
             img_utils.make_pretty_image(tmpfile,
                                         title='some text',
-                                        link_latest=False,
                                         verbose=True)
         with pytest.raises(error.InvalidCommand):
             img_utils.make_pretty_image(tmpfile, verbose=True)
@@ -117,7 +116,12 @@ def test_make_pretty_image_cr2_fail():
 @pytest.mark.skipif("TRAVIS" not in os.environ,
                     reason="Skipping this test if not on Travis CI.")
 def test_make_pretty_image_cr2(cr2_file):
-    img_utils.make_pretty_image(cr2_file,
-                                title='CR2 Test',
-                                link_latest=False,
-                                verbose=True)
+    link_path = '/data/latest.jpg'
+    pretty_path = img_utils.make_pretty_image(cr2_file,
+                                              title='CR2 Test',
+                                              image_type='cr2',
+                                              link_path=link_path,
+                                              verbose=True)
+
+    assert os.path.exists(pretty_path)
+    assert pretty_path == link_path
