@@ -19,6 +19,10 @@ from panoptes.utils.messaging import PanMessaging
 from panoptes.utils.config.client import set_config
 from panoptes.utils.config.server import config_server
 
+# Doctest modules
+import numpy as np
+
+
 _all_databases = ['file', 'memory']
 
 
@@ -440,3 +444,8 @@ def cr2_file():
         pytest.skip("No CR2 file found, skipping test.")
 
     return cr2_path
+
+
+@pytest.fixture(autouse=True)
+def add_doctest_dependencies(doctest_namespace):
+    doctest_namespace['np'] = np
