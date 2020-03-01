@@ -17,3 +17,4 @@ ignore_errors = True
 omit =
     panoptes/tests/*
     panoptes/utils/tests/*
+    panoptes/utils/_version.py
