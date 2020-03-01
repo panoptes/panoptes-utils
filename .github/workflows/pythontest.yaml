@@ -42,6 +42,7 @@ jobs:
         docker run -i \
           $ci_env \
           -e LOCAL_USER_ID=$(id -u) \
+          -e TRAVIS=true \
           -v $(pwd):/var/panoptes/panoptes-utils \
           panoptes-utils:testing \
           scripts/testing/run-tests.sh
