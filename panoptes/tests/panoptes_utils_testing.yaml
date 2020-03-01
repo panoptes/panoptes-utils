@@ -98,9 +98,9 @@ observations:
 panoptes_network:
     image_storage: True
     service_account_key: # Location of JSON account key
-    project_id: panoptes-survey
+    project_id: panoptes-exp
     buckets:
-        images: panoptes-survey
+        images: panoptes-exp
 
 #Enable to output POCS messages to social accounts
 # social_accounts:

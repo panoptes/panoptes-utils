@@ -1,0 +1,43 @@
+# This workflow is responsible for building python packages.
+# The package will be uploaded to the Test PyPi for every push to develop
+# and pushes to the real PyPi for merges into master.
+name: Upload Python Package
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Fetch all history for all tags and branches for versioneer
+      run: git fetch --prune --unshallow
+    - name: Install dependencies for building package
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+    - name: Build a binary wheel and a source tarball
+      run: |
+        python setup.py sdist bdist_wheel
+    - name: Publish distribution 📦 to Test PyPI
+      if: github.ref == 'refs/heads/develop'
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.test_pypi_password }}
+        repository_url: https://test.pypi.org/legacy/
+    - name: Publish distribution 📦 to PyPI
+      if: github.ref == 'refs/heads/master'
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.pypi_password }}
