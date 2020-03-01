@@ -28,7 +28,5 @@ jobs:
         pip install -r requirements.txt
     - name: Test with pytest
       run: |
-        mkdir -p /var/panoptes
-        cd /var/panoptes
         pip install '.[all]'
-        pytest
+        PANDIR=$(pwd) pytest
