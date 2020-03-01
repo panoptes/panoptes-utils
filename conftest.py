@@ -19,6 +19,10 @@ from panoptes.utils.messaging import PanMessaging
 from panoptes.utils.config.client import set_config
 from panoptes.utils.config.server import config_server
 
+# Doctest modules
+import numpy as np
+
+
 _all_databases = ['file', 'memory']
 
 
@@ -409,7 +413,7 @@ def save_environ():
 
 @pytest.fixture(scope='session')
 def data_dir():
-    return os.path.join(os.getenv('PANDIR'), 'panoptes-utils', 'panoptes/utils', 'tests', 'data')
+    return os.path.expandvars('$PANDIR/panoptes-utils/panoptes/tests/data')
 
 
 @pytest.fixture(scope='session')
@@ -430,3 +434,18 @@ def tiny_fits_file(data_dir):
 @pytest.fixture(scope='session')
 def noheader_fits_file(data_dir):
     return os.path.join(data_dir, 'noheader.fits')
+
+
+@pytest.fixture(scope='session')
+def cr2_file():
+    cr2_path = '/data/canon.cr2'
+
+    if not os.path.exists(cr2_path):
+        pytest.skip("No CR2 file found, skipping test.")
+
+    return cr2_path
+
+
+@pytest.fixture(autouse=True)
+def add_doctest_dependencies(doctest_namespace):
+    doctest_namespace['np'] = np

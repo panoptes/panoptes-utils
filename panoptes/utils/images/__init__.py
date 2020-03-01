@@ -5,7 +5,6 @@ from contextlib import suppress
 
 from warnings import warn
 
-from matplotlib import cm as colormap
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 
@@ -14,30 +13,13 @@ from astropy.nddata import Cutout2D
 from astropy.io.fits import open as open_fits
 from astropy.visualization import (PercentileInterval, LogStretch, ImageNormalize)
 
-from copy import copy
 from dateutil import parser as date_parser
 
 from panoptes.utils import current_time
 from panoptes.utils import error
 from panoptes.utils.images import focus as focus_utils
 from panoptes.utils.images.plot import add_colorbar
-
-palette = copy(colormap.inferno)
-palette.set_over('w', 1.0)
-palette.set_under('k', 1.0)
-palette.set_bad('g', 1.0)
-
-
-def make_images_dir():
-    """Return the path of the PANDIR/images directory, creating it if necessary."""
-    images_dir = os.path.join(os.getenv('PANDIR'), 'images')
-    try:
-        os.makedirs(images_dir, exist_ok=True)
-        return images_dir
-    except Exception as e:
-        warn(f'Unable to create the images directory: {images_dir}')
-        warn(f'Exception during os.makedirs: {e}')
-        return None
+from panoptes.utils.images.plot import get_palette
 
 
 def crop_data(data, box_width=200, center=None, verbose=False, data_only=True, wcs=None):
@@ -86,7 +68,12 @@ def crop_data(data, box_width=200, center=None, verbose=False, data_only=True, w
     return cutout
 
 
-def make_pretty_image(fname, title=None, timeout=15, img_type=None, link_latest=False, **kwargs):
+def make_pretty_image(fname,
+                      title=None,
+                      timeout=15,
+                      img_type=None,
+                      link_path=None,
+                      **kwargs):
     """Make a pretty image.
 
     This will create a jpg file from either a CR2 (Canon) or FITS file.
@@ -95,17 +82,21 @@ def make_pretty_image(fname, title=None, timeout=15, img_type=None, link_latest=
         See `/scripts/cr2_to_jpg.sh` for CR2 process.
 
     Arguments:
-        fname {str} -- Name of image file, may be either .fits or .cr2
+        fname (str): The path to the raw image.
         title (None|str, optional): Title to be placed on image, default None.
         timeout (int, optional): Timeout for conversion, default 15 seconds.
         img_type (None|str, optional): Image type of fname, one of '.cr2' or '.fits'.
             The default is `None`, in which case the file extension of fname is used.
-        link_latest (bool, optional): If the pretty picture should be linked to
-            `$PANDIR/images/latest.jpg`, default False.
+        link_path (None|str, optional): Path to location that image should be symlinked.
+            The directory must exist.
         **kwargs {dict} -- Additional arguments to be passed to external script.
 
     Returns:
         str -- Filename of image that was created.
+
+    Deleted Parameters:
+        link_latest (bool, optional): If the pretty picture should be linked to
+            `/images/latest.jpg`, default False.
     """
     if img_type is None:
         img_type = os.path.splitext(fname)[-1]
@@ -121,23 +112,19 @@ def make_pretty_image(fname, title=None, timeout=15, img_type=None, link_latest=
         warn("File must be a Canon CR2 or FITS file.")
         return None
 
-    if not link_latest or not os.path.exists(pretty_path):
+    if link_path is None or not os.path.exists(os.path.dirname(link_path)):
         return pretty_path
 
-    # Symlink latest.jpg to the image; first remove the symlink if it already exists.
-    images_dir = make_images_dir()
-    if not images_dir:
-        warn(f"Can't link latest.jpg to {pretty_path}")
-    else:
-        latest_path = os.path.join(images_dir, 'latest.jpg')
-        with suppress(FileNotFoundError):
-            os.remove(latest_path)
-        try:
-            os.symlink(pretty_path, latest_path)
-        except Exception as e:
-            warn("Can't link latest image: {}".format(e))
+    # Remove existing symlink
+    with suppress(FileNotFoundError):
+        os.remove(link_path)
 
-    return pretty_path
+    try:
+        os.symlink(pretty_path, link_path)
+    except Exception as e:
+        warn("Can't link latest image: {}".format(e))
+
+    return link_path
 
 
 def _make_pretty_from_fits(fname=None,
@@ -210,7 +197,7 @@ def _make_pretty_from_fits(fname=None,
         ax.set_xlabel('X / pixels')
         ax.set_ylabel('Y / pixels')
 
-    im = ax.imshow(data, norm=norm, cmap=palette, origin='lower')
+    im = ax.imshow(data, norm=norm, cmap=get_palette(), origin='lower')
     add_colorbar(im)
     fig.suptitle(title)
 
@@ -241,7 +228,7 @@ def _make_pretty_from_cr2(fname, title=None, timeout=15, **kwargs):
         if verbose:
             print(output)
     except Exception as e:
-        raise error.InvalidCommand("Error executing gphoto2: {!r}\nCommand: {}".format(e, cmd))
+        raise error.InvalidCommand(f"Error executing {script_name}: {e.output!r}\nCommand: {cmd}")
 
     return fname.replace('cr2', 'jpg')
 
