@@ -505,6 +505,16 @@ def getdata(fn, *args, **kwargs):
     the FITS extension. This will return the data associated with the
     image.
 
+    >>> fits_fn = getfixture('solved_fits_file')
+    >>> getdata(fits_fn)
+    array([[2215, 2169, 2200, ..., 2169, 2235, 2168],
+           [2123, 2191, 2133, ..., 2212, 2127, 2217],
+           [2208, 2154, 2209, ..., 2159, 2233, 2187],
+           ...,
+           [2120, 2201, 2120, ..., 2209, 2126, 2195],
+           [2219, 2151, 2199, ..., 2173, 2214, 2166],
+           [2114, 2194, 2122, ..., 2202, 2125, 2204]], dtype=uint16)
+
     Args:
         fn (str): Path to FITS file.
         *args: Passed to `astropy.io.fits.getdata`.
@@ -523,6 +533,21 @@ def getheader(fn, *args, **kwargs):
     the FITS extension. This will return the header associated with the
     image. If you need the compression header information use the astropy
     module directly.
+
+    >>> fits_fn = getfixture('tiny_fits_file')
+    >>> os.path.basename(fits_fn)
+    'tiny.fits'
+    >>> header = getheader(fits_fn)
+    >>> header['IMAGEID']
+    'PAN001_XXXXXX_20160909T081152'
+
+    >>> # Works with fpacked files
+    >>> fits_fn = getfixture('solved_fits_file')
+    >>> os.path.basename(fits_fn)
+    'solved.fits.fz'
+    >>> header = getheader(fits_fn)
+    >>> header['IMAGEID']
+    'PAN001_XXXXXX_20160909T081152'
 
     Args:
         fn (str): Path to FITS file.
@@ -545,6 +570,10 @@ def getval(fn, *args, **kwargs):
     the FITS extension. This will return the value from the header
     associated with the image (not the compression header). If you need
     the compression header information use the astropy module directly.
+
+    >>> fits_fn = getfixture('tiny_fits_file')
+    >>> getval(fits_fn, 'IMAGEID')
+    'PAN001_XXXXXX_20160909T081152'
 
     Args:
         fn (str): Path to FITS file.
