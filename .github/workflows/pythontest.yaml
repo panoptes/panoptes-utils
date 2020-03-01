@@ -22,15 +22,15 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
     - name: Fetch all history for all tags and branches for versioneer
       run: git fetch --prune --unshallow
-    - name: Download docker image
+    - name: Build panoptes-utils image
       run: |
-        docker pull gcr.io/panoptes-exp/panoptes-utils:latest
-    - name: Test with pytest in docker container
+        docker build -t panoptes-utils:testing -f docker/Dockerfile.utils .
+    - name: Test with pytest in panoptes-utils container
       run: |
         ci_env=`bash <(curl -s https://codecov.io/env)`
         docker run -i \
           $ci_env \
           -e LOCAL_USER_ID=$(id -u) \
-          -v $TRAVIS_BUILD_DIR:/var/panoptes/panoptes-utils \
-          gcr.io/panoptes-exp/panoptes-utils:latest \
+          -v $(pwd):/var/panoptes/panoptes-utils \
+          panoptes-utils:testing \
           scripts/testing/run-tests.sh
