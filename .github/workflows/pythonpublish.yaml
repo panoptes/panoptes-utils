@@ -5,9 +5,8 @@ name: Upload Python Package
 
 on:
   push:
-    branches:
-      - master
-      - develop
+    tags:
+    - '*v'
 
 jobs:
   publish:
