@@ -10,7 +10,7 @@ PANOPTES Utilities
    :maxdepth: 1
    :caption: Contents:
 
-   panoptes_utils
+   panoptes.utils
 
 .. 	mdinclude:: README.md
 
