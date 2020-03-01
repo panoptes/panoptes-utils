@@ -201,12 +201,12 @@ epub_exclude_files = ['search.html']
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/', None),
+    'python': ('https://docs.python.org/3/', None),
     'astropy': ('http://docs.astropy.org/en/stable/', None),
     'astroplan': ('https://astroplan.readthedocs.io/en/latest/', None),
-    'NumPy': ('http://docs.scipy.org/doc/numpy/', None),
-    'SciPy': ('http://docs.scipy.org/doc/scipy/reference', None),
-    'matplotlib': ('http://matplotlib.org', None),
+    'NumPy': ('https://docs.scipy.org/doc/numpy/', None),
+    'SciPy': ('https://docs.scipy.org/doc/scipy/reference', None),
+    'matplotlib': ('https://matplotlib.org', None),
 }
 
 
