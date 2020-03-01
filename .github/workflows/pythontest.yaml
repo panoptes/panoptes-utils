@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8]
+        python-version: [3.7]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -22,11 +22,15 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
     - name: Fetch all history for all tags and branches for versioneer
       run: git fetch --prune --unshallow
-    - name: Install dependencies for testing
+    - name: Download docker image
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Test with pytest
+        docker pull gcr.io/panoptes-exp/panoptes-utils:latest
+    - name: Test with pytest in docker container
       run: |
-        pip install '.[all]'
-        PANDIR=$(dirname `pwd`) pytest
+        ci_env=`bash <(curl -s https://codecov.io/env)`
+        docker run -it
+          $ci_env
+          -e LOCAL_USER_ID=$(id -u)
+          -v $TRAVIS_BUILD_DIR:/var/panoptes/panoptes-utils
+          gcr.io/panoptes-exp/panoptes-utils:latest
+          scripts/testing/run-tests.sh
