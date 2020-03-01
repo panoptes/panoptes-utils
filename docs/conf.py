@@ -14,13 +14,13 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../panoptes_utils'))
+sys.path.insert(0, os.path.abspath('../../panoptes'))
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'PANOPTES Utils'
-copyright = '2019, PANOPTES Team'
+copyright = '2020, PANOPTES Team'
 author = 'PANOPTES Team'
 
 # The short X.Y version
