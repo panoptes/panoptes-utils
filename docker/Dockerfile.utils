@@ -37,7 +37,7 @@ RUN cd && \
         --wide-field --narrow-field \
         --folder /astrometry/ && \
     # Cleanup apt.
-    apt-get autoremove --purge -y git gcc pkg-config && \
+    apt-get autoremove --purge -y gcc pkg-config && \
     apt-get autoremove --purge -y && \
     apt-get -y clean && \
     rm -rf /var/lib/apt/lists/*
