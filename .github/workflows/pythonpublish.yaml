@@ -11,13 +11,13 @@ on:
 
 jobs:
   deploy:
+    env:
+      PANDIR: ${{ env.HOME }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.7, 3.8]
     steps:
-    env:
-      PANDIR: $HOME
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
