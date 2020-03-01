@@ -10,7 +10,7 @@ on:
       - develop
 
 jobs:
-  deploy:
+  publish:
     runs-on: ubuntu-latest
     strategy:
       matrix:
