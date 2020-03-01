@@ -26,6 +26,7 @@ jobs:
       matrix:
         python-version: [3.7]
     steps:
+    - uses: actions/checkout@v2
     - name: Fetch all history for all tags and branches for versioneer
       run: git fetch --prune --unshallow
     - name: Build panoptes-base image
