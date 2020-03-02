@@ -141,7 +141,7 @@ handlers:
     when: W6
     backupCount: 4
   info:
-    class: logging.Stream
+    class: logging.StreamHandler
     level: INFO
     formatter: simple
   error:
