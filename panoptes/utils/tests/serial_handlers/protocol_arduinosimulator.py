@@ -13,11 +13,13 @@ from serial import serialutil
 import threading
 import time
 import urllib
+import logging
 
 from panoptes.utils.tests import serial_handlers
 from panoptes.utils.serializers import to_json
 from panoptes.utils.serializers import from_json
-from panoptes.utils.logger import get_root_logger
+
+_logger = logging.getLogger(__name__)
 
 
 def _drain_queue(q):
@@ -51,7 +53,7 @@ class ArduinoSimulator:
             logger: the Python logger to use for reporting messages.
         """
         self.message = copy.deepcopy(message)
-        get_root_logger().critical(f'message: {message}')
+        self.logger.critical(f'message: {message}')
         self.relay_queue = relay_queue
         self.json_queue = json_queue
         self.stop = stop
@@ -195,7 +197,7 @@ class ArduinoSimulator:
 class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.logger = get_root_logger()
+        self.logger = _logger
         self.simulator_thread = None
         self.relay_queue = queue.Queue(maxsize=1)
         self.json_queue = queue.Queue(maxsize=1)

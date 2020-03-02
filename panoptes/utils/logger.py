@@ -209,7 +209,7 @@ def get_root_logger(profile='panoptes', log_config=None):
     """
 
     # Get log info from config
-    log_config = log_config if log_config else load_default()
+    log_config = log_config if log_config else from_yaml(DEFAULT_CONFIG)
 
     # If we already created a logger for this profile and log_config, return that.
     logger_key = (profile, to_json(log_config, sort_keys=True))
@@ -287,10 +287,6 @@ def get_root_logger(profile='panoptes', log_config=None):
     # when the log rotates too!
     all_loggers[logger_key] = logger
     return logger
-
-
-def load_default():
-    return from_yaml(DEFAULT_CONFIG)
 
 
 DEFAULT_CONFIG = """
