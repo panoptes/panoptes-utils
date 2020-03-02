@@ -1,6 +1,8 @@
 import os
 from contextlib import suppress
+from warnings import warn
 import logging
+
 from ..utils import listify
 from ..serializers import from_yaml
 from ..serializers import to_yaml
@@ -72,7 +74,7 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
         try:
             _add_to_conf(config, path, parse=parse)
         except Exception as e:
-            _logger.warning(f"Problem with config file {path}, skipping. {e}")
+            warn(f"Problem with config file {path}, skipping. {e}")
 
         # Load local version of config
         if ignore_local is False:
@@ -81,7 +83,7 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
                 try:
                     _add_to_conf(config, local_version, parse=parse)
                 except Exception:
-                    _logger.warning(f"Problem with local config file {local_version}, skipping")
+                    warn(f"Problem with local config file {local_version}, skipping")
 
     # parse_config currently only corrects directory names.
     if parse:
