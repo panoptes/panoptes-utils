@@ -451,9 +451,31 @@ def funpack(*args, **kwargs):
 
 
 def write_fits(data, header, filename, logger=None, exposure_event=None):
+    """Write FITS file to requested location.
+
+    >>> from panoptes.utils.images import fits as fits_utils
+    >>> data = np.random.normal(size=100)
+    >>> header = { 'FILE': 'delete_me', 'TEST': True }
+    >>> filename = str(getfixture('tmpdir').join('temp.fits'))
+    >>> fits_utils.write_fits(data, header, filename)
+    >>> assert os.path.exists(filename)
+
+    >>> fits_utils.getval(filename, 'FILE')
+    'delete_me'
+    >>> data2 = fits_utils.getdata(filename)
+    >>> assert np.array_equal(data, data2)
+
+    Args:
+        data (array_like): The data to be written.
+        header (dict): Dictionary of items to be saved in header.
+        filename (str): Path to filename for output.
+        logger (None|logger, optional): An optional logger.
+        exposure_event (None|`threading.Event`, optional): A `threading.Event` that
+            can be triggered when the image is written.
     """
-    Write FITS file to requested location
-    """
+    if not isinstance(header, fits.Header):
+        header = fits.Header(header)
+
     hdu = fits.PrimaryHDU(data, header=header)
 
     # Create directories if required.
