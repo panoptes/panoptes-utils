@@ -451,9 +451,31 @@ def funpack(*args, **kwargs):
 
 
 def write_fits(data, header, filename, logger=None, exposure_event=None):
+    """Write FITS file to requested location.
+
+    >>> from panoptes.utils.images import fits as fits_utils
+    >>> data = np.random.normal(size=100)
+    >>> header = { 'FILE': 'delete_me', 'TEST': True }
+    >>> filename = str(getfixture('tmpdir').join('temp.fits'))
+    >>> fits_utils.write_fits(data, header, filename)
+    >>> assert os.path.exists(filename)
+
+    >>> fits_utils.getval(filename, 'FILE')
+    'delete_me'
+    >>> data2 = fits_utils.getdata(filename)
+    >>> assert np.array_equal(data, data2)
+
+    Args:
+        data (array_like): The data to be written.
+        header (dict): Dictionary of items to be saved in header.
+        filename (str): Path to filename for output.
+        logger (None|logger, optional): An optional logger.
+        exposure_event (None|`threading.Event`, optional): A `threading.Event` that
+            can be triggered when the image is written.
     """
-    Write FITS file to requested location
-    """
+    if not isinstance(header, fits.Header):
+        header = fits.Header(header)
+
     hdu = fits.PrimaryHDU(data, header=header)
 
     # Create directories if required.
@@ -475,6 +497,13 @@ def write_fits(data, header, filename, logger=None, exposure_event=None):
 
 
 def update_observation_headers(file_path, info):
+    """Update FITS headers with items from the Observation status.
+
+    Args:
+        file_path (str): Path to a FITS file.
+        info (dict): The return dict from `pocs.observatory.Observation.status`,
+            which includes basic information about the observation.
+    """
     with fits.open(file_path, 'update') as f:
         hdu = f[0]
         hdu.header.set('IMAGEID', info.get('image_id', ''))
@@ -505,6 +534,16 @@ def getdata(fn, *args, **kwargs):
     the FITS extension. This will return the data associated with the
     image.
 
+    >>> fits_fn = getfixture('solved_fits_file')
+    >>> getdata(fits_fn)
+    array([[2215, 2169, 2200, ..., 2169, 2235, 2168],
+           [2123, 2191, 2133, ..., 2212, 2127, 2217],
+           [2208, 2154, 2209, ..., 2159, 2233, 2187],
+           ...,
+           [2120, 2201, 2120, ..., 2209, 2126, 2195],
+           [2219, 2151, 2199, ..., 2173, 2214, 2166],
+           [2114, 2194, 2122, ..., 2202, 2125, 2204]], dtype=uint16)
+
     Args:
         fn (str): Path to FITS file.
         *args: Passed to `astropy.io.fits.getdata`.
@@ -523,6 +562,21 @@ def getheader(fn, *args, **kwargs):
     the FITS extension. This will return the header associated with the
     image. If you need the compression header information use the astropy
     module directly.
+
+    >>> fits_fn = getfixture('tiny_fits_file')
+    >>> os.path.basename(fits_fn)
+    'tiny.fits'
+    >>> header = getheader(fits_fn)
+    >>> header['IMAGEID']
+    'PAN001_XXXXXX_20160909T081152'
+
+    >>> # Works with fpacked files
+    >>> fits_fn = getfixture('solved_fits_file')
+    >>> os.path.basename(fits_fn)
+    'solved.fits.fz'
+    >>> header = getheader(fits_fn)
+    >>> header['IMAGEID']
+    'PAN001_XXXXXX_20160909T081152'
 
     Args:
         fn (str): Path to FITS file.
@@ -545,6 +599,10 @@ def getval(fn, *args, **kwargs):
     the FITS extension. This will return the value from the header
     associated with the image (not the compression header). If you need
     the compression header information use the astropy module directly.
+
+    >>> fits_fn = getfixture('tiny_fits_file')
+    >>> getval(fits_fn, 'IMAGEID')
+    'PAN001_XXXXXX_20160909T081152'
 
     Args:
         fn (str): Path to FITS file.

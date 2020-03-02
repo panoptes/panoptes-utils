@@ -21,7 +21,7 @@ from panoptes.utils.config.server import config_server
 
 # Doctest modules
 import numpy as np
-
+from matplotlib import pyplot as plt
 
 _all_databases = ['file', 'memory']
 
@@ -449,3 +449,4 @@ def cr2_file():
 @pytest.fixture(autouse=True)
 def add_doctest_dependencies(doctest_namespace):
     doctest_namespace['np'] = np
+    doctest_namespace['plt'] = plt
