@@ -113,8 +113,13 @@ def test_root_logger():
 
 
 def test_root_logger_with_config():
-    logger = get_root_logger(log_config=from_yaml(TEST_CONFIG))
+    config = from_yaml(TEST_CONFIG)
+    logger = get_root_logger(log_config=config)
     logger.info('With config')
+
+    config['use_utc'] = False
+    logger = get_root_logger(log_config=config)
+    logger.info('Without utc')
 
 
 TEST_CONFIG = """
@@ -136,11 +141,9 @@ handlers:
     when: W6
     backupCount: 4
   info:
-    class: logging.handlers.TimedRotatingFileHandler
+    class: logging.Stream
     level: INFO
-    formatter: detail
-    when: W6
-    backupCount: 4
+    formatter: simple
   error:
     class: logging.handlers.TimedRotatingFileHandler
     level: ERROR
