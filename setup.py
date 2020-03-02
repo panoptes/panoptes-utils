@@ -25,11 +25,6 @@ NAME = metadata.get('name', 'panoptes-utils')
 PACKAGENAME = metadata.get('package_name', 'packagename')
 URL = metadata.get('url', 'https://projectpanoptes.org')
 
-requirements = list()
-requirements_fn = 'requirements.txt'
-with open(requirements_fn) as f:
-    requirements = f.read().splitlines()
-
 modules = {
     'required': [
         'astroplan>=0.6',
