@@ -1,8 +1,10 @@
 import os
+from warnings import warn
 from contextlib import suppress
 from uuid import uuid4
 from glob import glob
 
+from .. import error
 from ..serializers import to_json
 from ..serializers import from_json
 from ..database import AbstractPanDB
@@ -40,20 +42,12 @@ class PanFileDB(AbstractPanDB):
             # Overwrite current collection file with obj.
             to_json(obj, filename=current_fn, append=False)
         except Exception as e:
-            self.logger.warning(f"Problem serializing object for insertion: {e} {current_fn} {obj!r}")
-            result = None
+            raise error.InvalidSerialization(f"Problem serializing object for insertion: {e} {current_fn} {obj!r}")
 
         if not store_permanently:
             return result
-
-        collection_fn = self._get_file(collection)
-        try:
-            # Append obj to collection file.
-            to_json(obj, filename=collection_fn, append=True)
-            return obj_id
-        except Exception as e:
-            self.logger.warning("Problem inserting object into collection: {}, {!r}".format(e, obj))
-            return None
+        else:
+            return self.insert(collection, obj)
 
     def insert(self, collection, obj):
         self.validate_collection(collection)
@@ -65,8 +59,7 @@ class PanFileDB(AbstractPanDB):
             to_json(obj, filename=collection_fn)
             return obj_id
         except Exception as e:
-            self.logger.warning("Problem inserting object into collection: {}, {!r}".format(e, obj))
-            return None
+            raise error.InvalidSerialization(f"Problem inserting object into collection: {e}, {obj!r}")
 
     def get_current(self, collection):
         current_fn = self._get_file(collection, permanent=False)
