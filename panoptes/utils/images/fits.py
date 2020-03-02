@@ -475,6 +475,13 @@ def write_fits(data, header, filename, logger=None, exposure_event=None):
 
 
 def update_observation_headers(file_path, info):
+    """Update FITS headers with items from the Observation status.
+
+    Args:
+        file_path (str): Path to a FITS file.
+        info (dict): The return dict from `pocs.observatory.Observation.status`,
+            which includes basic information about the observation.
+    """
     with fits.open(file_path, 'update') as f:
         hdu = f[0]
         hdu.header.set('IMAGEID', info.get('image_id', ''))
