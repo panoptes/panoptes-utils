@@ -3,10 +3,10 @@ import weakref
 from uuid import uuid4
 from contextlib import suppress
 
-from panoptes.utils.serializers import to_json
-from panoptes.utils.serializers import from_json
-from panoptes.utils.database import AbstractPanDB
-from panoptes.utils.database import create_storage_obj
+from ..serializers import to_json
+from ..serializers import from_json
+from ..database import AbstractPanDB
+from ..database import create_storage_obj
 
 
 class PanMemoryDB(AbstractPanDB):
@@ -49,7 +49,7 @@ class PanMemoryDB(AbstractPanDB):
         try:
             obj = to_json(obj)
         except Exception as e:
-            self._warn("Problem inserting object into current collection: {}, {!r}".format(e, obj))
+            self.logger.warning("Problem inserting object into current collection: {}, {!r}".format(e, obj))
             return None
         with self.lock:
             self.current[collection] = obj
@@ -64,7 +64,7 @@ class PanMemoryDB(AbstractPanDB):
         try:
             obj = to_json(obj)
         except Exception as e:
-            self._warn("Problem inserting object into collection: {}, {!r}".format(e, obj))
+            self.logger.warning("Problem inserting object into collection: {}, {!r}".format(e, obj))
             return None
         with self.lock:
             self.collections.setdefault(collection, {})[obj_id] = obj

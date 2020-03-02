@@ -58,13 +58,3 @@ def test_bad_collection(db):
 
     with pytest.raises(InvalidCollection):
         db.insert('foobar', {'test': 'insert'})
-
-
-def test_warn_bad_object(db):
-    db.logger = None
-
-    with pytest.warns(UserWarning):
-        db.insert_current('observations', {'junk': db})
-
-    with pytest.warns(UserWarning):
-        db.insert('observations', {'junk': db})

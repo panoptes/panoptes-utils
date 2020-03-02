@@ -1,13 +1,15 @@
 import requests
 
-from panoptes.utils.logger import get_root_logger
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class SocialSlack(object):
 
     """Social Messaging sink to output to Slack."""
 
-    logger = get_root_logger()
+    logger = _logger
 
     def __init__(self, **kwargs):
         self.web_hook = kwargs.get('webhook_url', '')

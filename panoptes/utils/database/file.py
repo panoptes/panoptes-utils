@@ -3,10 +3,10 @@ from contextlib import suppress
 from uuid import uuid4
 from glob import glob
 
-from panoptes.utils.serializers import to_json
-from panoptes.utils.serializers import from_json
-from panoptes.utils.database import AbstractPanDB
-from panoptes.utils.database import create_storage_obj
+from ..serializers import to_json
+from ..serializers import from_json
+from ..database import AbstractPanDB
+from ..database import create_storage_obj
 
 
 class PanFileDB(AbstractPanDB):
@@ -40,7 +40,7 @@ class PanFileDB(AbstractPanDB):
             # Overwrite current collection file with obj.
             to_json(obj, filename=current_fn, append=False)
         except Exception as e:
-            self._warn(f"Problem serializing object for insertion: {e} {current_fn} {obj!r}")
+            self.logger.warning(f"Problem serializing object for insertion: {e} {current_fn} {obj!r}")
             result = None
 
         if not store_permanently:
@@ -52,7 +52,7 @@ class PanFileDB(AbstractPanDB):
             to_json(obj, filename=collection_fn, append=True)
             return obj_id
         except Exception as e:
-            self._warn("Problem inserting object into collection: {}, {!r}".format(e, obj))
+            self.logger.warning("Problem inserting object into collection: {}, {!r}".format(e, obj))
             return None
 
     def insert(self, collection, obj):
@@ -65,7 +65,7 @@ class PanFileDB(AbstractPanDB):
             to_json(obj, filename=collection_fn)
             return obj_id
         except Exception as e:
-            self._warn("Problem inserting object into collection: {}, {!r}".format(e, obj))
+            self.logger.warning("Problem inserting object into collection: {}, {!r}".format(e, obj))
             return None
 
     def get_current(self, collection):
@@ -77,7 +77,7 @@ class PanFileDB(AbstractPanDB):
 
             return msg
         except FileNotFoundError:
-            self._warn("No record found for {}".format(collection))
+            self.logger.warning("No record found for {}".format(collection))
             return None
 
     def find(self, collection, obj_id):

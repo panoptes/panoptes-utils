@@ -43,15 +43,24 @@ def vollath_F4(data, axis=None):
     Returns:
         float64: Calculated F4 value for y, x axis or both
     """
-    if axis == 'Y' or axis == 'y':
-        return _vollath_F4_y(data)
-    elif axis == 'X' or axis == 'x':
-        return _vollath_F4_x(data)
+    def _vollath_F4_y():
+        A1 = (data[1:] * data[:-1]).mean()
+        A2 = (data[2:] * data[:-2]).mean()
+        return A1 - A2
+
+    def _vollath_F4_x():
+        A1 = (data[:, 1:] * data[:, :-1]).mean()
+        A2 = (data[:, 2:] * data[:, :-2]).mean()
+        return A1 - A2
+
+    if str(axis).lower() == 'y':
+        return _vollath_F4_y()
+    elif str(axis).lower() == 'x':
+        return _vollath_F4_x()
     elif not axis:
-        return (_vollath_F4_y(data) + _vollath_F4_x(data)) / 2
+        return (_vollath_F4_y() + _vollath_F4_x()) / 2
     else:
-        raise ValueError(
-            "axis must be one of 'Y', 'y', 'X', 'x' or None, got {}!".format(axis))
+        raise ValueError(f"axis must be one of 'Y', 'y', 'X', 'x' or None, got {axis}!")
 
 
 def mask_saturated(data, saturation_level=None, threshold=0.9, dtype=np.float64):
@@ -69,15 +78,3 @@ def mask_saturated(data, saturation_level=None, threshold=0.9, dtype=np.float64)
 
     # Convert data to masked array of requested dtype, mask values above saturation level
     return np.ma.array(data, mask=(data > saturation_level), dtype=dtype)
-
-
-def _vollath_F4_y(data):
-    A1 = (data[1:] * data[:-1]).mean()
-    A2 = (data[2:] * data[:-2]).mean()
-    return A1 - A2
-
-
-def _vollath_F4_x(data):
-    A1 = (data[:, 1:] * data[:, :-1]).mean()
-    A2 = (data[:, 2:] * data[:, :-2]).mean()
-    return A1 - A2

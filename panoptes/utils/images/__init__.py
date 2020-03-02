@@ -2,8 +2,8 @@ import os
 import subprocess
 import shutil
 from contextlib import suppress
-
 from warnings import warn
+import logging
 
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -15,14 +15,16 @@ from astropy.visualization import (PercentileInterval, LogStretch, ImageNormaliz
 
 from dateutil import parser as date_parser
 
-from panoptes.utils import current_time
-from panoptes.utils import error
-from panoptes.utils.images import focus as focus_utils
-from panoptes.utils.images.plot import add_colorbar
-from panoptes.utils.images.plot import get_palette
+from .. import error
+from ..time import current_time
+from ..images import focus as focus_utils
+from ..images.plot import add_colorbar
+from ..images.plot import get_palette
+
+_logger = logging.getLogger(__name__)
 
 
-def crop_data(data, box_width=200, center=None, verbose=False, data_only=True, wcs=None):
+def crop_data(data, box_width=200, center=None, data_only=True, wcs=None, **kwargs):
     """Return a cropped portion of the image
 
     Shape is a box centered around the middle of the data
@@ -31,7 +33,6 @@ def crop_data(data, box_width=200, center=None, verbose=False, data_only=True, w
         data (`numpy.array`): Array of data.
         box_width (int, optional): Size of box width in pixels, defaults to 200px.
         center (tuple(int, int), optional): Crop around set of coords, default to image center.
-        verbose (bool, optional): Print extra text output.
         data_only (bool, optional): If True (default), return only data. If False
             return the `Cutout2D` object.
         wcs (None|`astropy.wcs.WCS`, optional): A valid World Coordinate System (WCS) that will
@@ -45,9 +46,6 @@ def crop_data(data, box_width=200, center=None, verbose=False, data_only=True, w
     assert data.shape[0] >= box_width, "Can't clip data, it's smaller than {} ({})".format(
         box_width, data.shape)
     # Get the center
-    if verbose:
-        print("Data to crop: {}".format(data.shape))
-
     if center is None:
         x_len, y_len = data.shape
         x_center = int(x_len / 2)
@@ -56,9 +54,8 @@ def crop_data(data, box_width=200, center=None, verbose=False, data_only=True, w
         y_center = int(center[0])
         x_center = int(center[1])
 
-    if verbose:
-        print("Using center: {} {}".format(x_center, y_center))
-        print("Box width: {}".format(box_width))
+    _logger.debug("Using center: {} {}".format(x_center, y_center))
+    _logger.debug("Box width: {}".format(box_width))
 
     cutout = Cutout2D(data, (y_center, x_center), box_width, wcs=wcs)
 
@@ -212,21 +209,17 @@ def _make_pretty_from_fits(fname=None,
 
 
 def _make_pretty_from_cr2(fname, title=None, timeout=15, **kwargs):
-    verbose = kwargs.get('verbose', False)
-
     script_name = shutil.which('cr2-to-jpg')
     cmd = [script_name, fname]
 
     if title:
         cmd.append(title)
 
-    if verbose:
-        print(cmd)
+    _logger.debug(cmd)
 
     try:
         output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        if verbose:
-            print(output)
+        _logger.debug(output)
     except Exception as e:
         raise error.InvalidCommand(f"Error executing {script_name}: {e.output!r}\nCommand: {cmd}")
 
@@ -239,7 +232,6 @@ def make_timelapse(
         glob_pattern='20[1-9][0-9]*T[0-9]*.jpg',
         overwrite=False,
         timeout=60,
-        verbose=False,
         **kwargs):
     """Create a timelapse.
 
@@ -255,8 +247,7 @@ def make_timelapse(
             to the local directory.
         overwrite (bool, optional): Overwrite timelapse if exists, default False.
         timeout (int): Timeout for making movie, default 60 seconds.
-        verbose (bool, optional): Show output, default False.
-        **kwargs (dict): Valid keywords: verbose
+        **kwargs (dict):
 
     Returns:
         str: Name of output file
@@ -274,9 +265,6 @@ def make_timelapse(
         cam_name = head.split('/')[-1]
         fname = '{}_{}_{}.mp4'.format(field_name, cam_name, tail)
         fn_out = os.path.normpath(os.path.join(directory, fname))
-
-    if verbose:
-        print("Timelapse file: {}".format(fn_out))
 
     if os.path.exists(fn_out) and not overwrite:
         raise FileExistsError("Timelapse exists. Set overwrite=True if needed")
@@ -302,8 +290,7 @@ def make_timelapse(
 
         ffmpeg_cmd.append(fn_out)
 
-        if verbose:
-            print(ffmpeg_cmd)
+        _logger.debug(ffmpeg_cmd)
 
         proc = subprocess.Popen(ffmpeg_cmd, universal_newlines=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -314,15 +301,14 @@ def make_timelapse(
             proc.kill()
             outs, errs = proc.communicate()
         finally:
-            if verbose:
-                print(outs)
-                print(errs)
+            _logger.debug(f"Output: {outs}")
+            _logger.debug(f"Errors: {errs}")
 
             # Double-check for file existence
             if not os.path.exists(fn_out):
                 fn_out = None
     except Exception as e:
-        warn("Problem creating timelapse in {}: {!r}".format(fn_out, e))
+        _logger.warning(f"Problem creating timelapse in {fn_out}: {e!r}")
         fn_out = None
 
     return fn_out

@@ -5,6 +5,9 @@ from datetime import timezone as tz
 from astropy import units as u
 from astropy.time import Time
 
+import logging
+_logger = logging.getLogger(__name__)
+
 
 def current_time(flatten=False, datetime=False, pretty=False):
     """ Convenience method to return the "current" time according to the system.
@@ -121,6 +124,15 @@ class CountdownTimer(object):
         self.duration = float(duration)
         self.restart()
 
+    def __str__(self):
+        is_blocking = ''
+        if self.is_non_blocking is False:
+            is_blocking = '(blocking)'
+        is_expired = ''
+        if self.expired():
+            is_expired = 'EXPIRED '
+        return f'{is_expired}Timer {is_blocking} {self.time_left():.02f}/{self.duration:.02f}'
+
     def expired(self):
         """Return a boolean, telling if the timeout has expired.
 
@@ -149,6 +161,7 @@ class CountdownTimer(object):
     def restart(self):
         """Restart the timed duration."""
         self.target_time = time.monotonic() + self.duration
+        _logger.debug(f'Restarting {self}')
 
     def sleep(self, max_sleep=None):
         """Sleep until the timer expires, or for max_sleep, whichever is sooner.
@@ -158,12 +171,18 @@ class CountdownTimer(object):
         Returns:
             True if slept for less than time_left(), False otherwise.
         """
+        # Sleep for remaining time by default.
         remaining = self.time_left()
         if not remaining:
             return False
+        sleep_time = remaining
+
+        # Sleep only for max time if requested.
         if max_sleep and max_sleep < remaining:
             assert max_sleep > 0
-            time.sleep(max_sleep)
-            return True
-        time.sleep(remaining)
-        return False
+            sleep_time = max_sleep
+
+        _logger.debug(f'Sleeping for {sleep_time:.02f} seconds')
+        time.sleep(sleep_time)
+
+        return sleep_time < remaining

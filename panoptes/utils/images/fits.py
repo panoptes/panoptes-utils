@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+import logging
 
 from warnings import warn
 
@@ -8,7 +9,9 @@ from astropy.io import fits
 from astropy.wcs import WCS
 from astropy import units as u
 
-from panoptes.utils import error
+from .. import error
+
+_logger = logging.getLogger(__name__)
 
 
 def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
@@ -19,12 +22,7 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
         timeout(int, optional):     Timeout for the solve-field command,
                                     defaults to 60 seconds.
         solve_opts(list, optional): List of options for solve-field.
-        verbose(bool, optional):    Show output, defaults to False.
     """
-    verbose = kwargs.get('verbose', False)
-    if verbose:
-        print("Entering solve_field")
-
     solve_field_script = shutil.which('panoptes-solve-field')
 
     if solve_field_script is None:  # pragma: no cover
@@ -66,8 +64,6 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
         options.append('--extension=1')
 
     cmd = [solve_field_script] + options + [fname]
-    if verbose:
-        print("Cmd:", cmd)
 
     try:
         proc = subprocess.Popen(cmd,
@@ -82,9 +78,6 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
             "Bad parameters to solve_field: {} \t {}".format(e, cmd))
     except Exception as e:
         raise error.PanError("Timeout on plate solving: {}".format(e))
-
-    if verbose:
-        print("Returning proc from solve_field")
 
     return proc
 
@@ -106,7 +99,6 @@ def get_solve_field(fname, replace=True, remove_extras=True, **kwargs):
     Returns:
         dict: Keyword information from the solved field
     """
-    verbose = kwargs.get('verbose', False)
     skip_solved = kwargs.get('skip_solved', True)
 
     out_dict = {}
@@ -120,18 +112,11 @@ def get_solve_field(fname, replace=True, remove_extras=True, **kwargs):
 
     # Check for solved file
     if skip_solved and wcs.is_celestial:
-
-        if verbose:
-            print("Solved file exists, skipping",
-                  "(pass skip_solved=False to solve again):",
-                  fname)
+        _logger.info(f"Solved file exists, skipping (use skip_solved=False to solve again): {fname}")
 
         out_dict.update(header)
         out_dict['solved_fits_file'] = fname
         return out_dict
-
-    if verbose:
-        print("Entering get_solve_field:", fname)
 
     # Set a default radius of 15
     kwargs.setdefault('radius', 15)
@@ -147,10 +132,9 @@ def get_solve_field(fname, replace=True, remove_extras=True, **kwargs):
         print(f'Errors on {fname}: {errs}')
         raise error.Timeout(f'Timeout while solving: {output!r} {errs!r}')
     else:
-        if verbose:
-            print(f'Returncode: {proc.returncode}')
-            print(f'Output on {fname}: {output}')
-            print(f'Errors on {fname}: {errs}')
+        _logger.debug(f'Returncode: {proc.returncode}')
+        _logger.debug(f'Output on {fname}: {output}')
+        _logger.debug(f'Errors on {fname}: {errs}')
 
         if proc.returncode == 3:
             raise error.SolveError(f'solve-field not found: {output}')
@@ -190,31 +174,28 @@ def get_solve_field(fname, replace=True, remove_extras=True, **kwargs):
         try:
             out_dict.update(getheader(fname))
         except OSError:
-            if verbose:
-                print("Can't read fits header for:", fname)
+            _logger.warning(f"Can't read fits header for: {fname}")
 
     return out_dict
 
 
-def get_wcsinfo(fits_fname, verbose=False):
+def get_wcsinfo(fits_fname, **kwargs):
     """Returns the WCS information for a FITS file.
 
     Uses the `wcsinfo` astrometry.net utility script to get the WCS information
     from a plate-solved file.
 
-    Parameters
-    ----------
-    fits_fname : {str}
-        Name of a FITS file that contains a WCS.
-    verbose : {bool}, optional
-        Verbose (the default is False)
-    Returns
-    -------
-    dict
-        Output as returned from `wcsinfo`
+    Args:
+        fits_fname ({str}): Name of a FITS file that contains a WCS.
+        **kwargs: Args that can be passed to wcsinfo.
+
+    Returns:
+        dict: Output as returned from `wcsinfo`
+
+    Raises:
+        error.InvalidCommand: Raised if `wcsinfo` is not found (part of astrometry.net)
     """
-    assert os.path.exists(fits_fname), warn(
-        "No file exists at: {}".format(fits_fname))
+    assert os.path.exists(fits_fname), warn(f"No file exists at: {fits_fname}")
 
     wcsinfo = shutil.which('wcsinfo')
     if wcsinfo is None:
@@ -226,8 +207,7 @@ def get_wcsinfo(fits_fname, verbose=False):
         run_cmd.append('-e')
         run_cmd.append('1')
 
-    if verbose:
-        print("wcsinfo command: {}".format(run_cmd))
+    _logger.debug("wcsinfo command: {}".format(run_cmd))
 
     proc = subprocess.Popen(run_cmd, stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT, universal_newlines=True)
@@ -303,8 +283,7 @@ def improve_wcs(fname, remove_extras=True, replace=True, timeout=30, **kwargs):
         remove_extras (bool, optional): If generated files should be removed, default True.
         replace (bool, optional): Overwrite existing file, default True.
         timeout (int, optional): Timeout for the solve, default 30 seconds.
-        **kwargs: Additional keyword args for `solve_field`. Can also include a
-            `verbose` flag.
+        **kwargs: Additional keyword args for `solve_field`.
 
     Returns:
         dict: FITS headers, including solve information.
@@ -313,13 +292,9 @@ def improve_wcs(fname, remove_extras=True, replace=True, timeout=30, **kwargs):
         error.SolveError: Description
         error.Timeout: Description
     """
-    verbose = kwargs.get('verbose', False)
     out_dict = {}
     output = None
     errs = None
-
-    if verbose:
-        print("Entering improve_wcs: {}".format(fname))
 
     options = [
         '--continue',
@@ -343,9 +318,8 @@ def improve_wcs(fname, remove_extras=True, replace=True, timeout=30, **kwargs):
         proc.kill()
         raise error.Timeout("Timeout while solving")
     else:
-        if verbose:
-            print("Output: {}", output)
-            print("Errors: {}", errs)
+        _logger.debug(f"Output: {output}")
+        _logger.debug(f"Errors: {errs}")
 
         if not os.path.exists(fname.replace('.fits', '.solved')):
             raise error.SolveError('File not solved')
@@ -381,13 +355,12 @@ def improve_wcs(fname, remove_extras=True, replace=True, timeout=30, **kwargs):
         try:
             out_dict.update(fits.getheader(fname))
         except OSError:
-            if verbose:
-                print("Can't read fits header for {}".format(fname))
+            _logger.warning(f"Can't read fits header for {fname}")
 
     return out_dict
 
 
-def fpack(fits_fname, unpack=False, verbose=False):
+def fpack(fits_fname, unpack=False):
     """Compress/Decompress a FITS file
 
     Uses `fpack` (or `funpack` if `unpack=True`) to compress a FITS file
@@ -395,7 +368,6 @@ def fpack(fits_fname, unpack=False, verbose=False):
     Args:
         fits_fname ({str}): Name of a FITS file that contains a WCS.
         unpack ({bool}, optional): file should decompressed instead of compressed, default False.
-        verbose ({bool}, optional): Verbose, default False.
 
     Returns:
         str: Filename of compressed/decompressed file.
@@ -418,8 +390,7 @@ def fpack(fits_fname, unpack=False, verbose=False):
         warn("fpack not found (try installing cfitsio). File has not been changed")
         return fits_fname
 
-    if verbose:
-        print("fpack command: {}".format(run_cmd))
+    _logger.debug("fpack command: {}".format(run_cmd))
 
     proc = subprocess.Popen(run_cmd, stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT, universal_newlines=True)
@@ -450,7 +421,7 @@ def funpack(*args, **kwargs):
     return fpack(*args, unpack=True, **kwargs)
 
 
-def write_fits(data, header, filename, logger=None, exposure_event=None):
+def write_fits(data, header, filename, exposure_event=None, **kwargs):
     """Write FITS file to requested location.
 
     >>> from panoptes.utils.images import fits as fits_utils
@@ -469,7 +440,6 @@ def write_fits(data, header, filename, logger=None, exposure_event=None):
         data (array_like): The data to be written.
         header (dict): Dictionary of items to be saved in header.
         filename (str): Path to filename for output.
-        logger (None|logger, optional): An optional logger.
         exposure_event (None|`threading.Event`, optional): A `threading.Event` that
             can be triggered when the image is written.
     """
@@ -485,12 +455,10 @@ def write_fits(data, header, filename, logger=None, exposure_event=None):
     try:
         hdu.writeto(filename)
     except OSError as err:
-        if logger:
-            logger.error('Error writing image to {}!'.format(filename))
-            logger.error(err)
+        _logger.error('Error writing image to {}!'.format(filename))
+        _logger.error(err)
     else:
-        if logger:
-            logger.debug('Image written to {}'.format(filename))
+        _logger.debug('Image written to {}'.format(filename))
     finally:
         if exposure_event:
             exposure_event.set()

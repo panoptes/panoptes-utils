@@ -5,10 +5,12 @@ import serial
 from serial.tools.list_ports import comports as get_comports
 import time
 from contextlib import suppress
+import logging
 
-from panoptes.utils.logger import get_root_logger
-from panoptes.utils import error
-from panoptes.utils.serializers import from_json
+from . import error
+from .serializers import from_json
+
+_logger = logging.getLogger(__name__)
 
 
 # Note: get_serial_port_info is replaced by tests to override the normal
@@ -78,7 +80,7 @@ class SerialData(object):
                  open_delay=0.0,
                  retry_limit=5,
                  retry_delay=0.5,
-                 logger=None,
+                 **kwargs
                  ):
         """Create a SerialData instance and attempt to open a connection.
 
@@ -96,16 +98,12 @@ class SerialData(object):
             open_delay: Seconds to wait after opening the port.
             retry_limit: Number of times to try readline() calls in read().
             retry_delay: Delay between readline() calls in read().
-            logger (`logging.logger` or None, optional): A logger instance. If left as None
-                then `panoptes.utils.logger.get_root_logger` will be called.
 
         Raises:
             ValueError: If the serial parameters are invalid (e.g. a negative baudrate).
 
         """
-        if not logger:
-            logger = get_root_logger()
-        self.logger = logger
+        self.logger = _logger
 
         if not port:
             raise ValueError('Must specify port for SerialData')

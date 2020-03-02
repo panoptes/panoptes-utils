@@ -11,9 +11,8 @@ import time
 from warnings import warn
 from contextlib import suppress
 
-from panoptes.utils.config import parse_config
-from panoptes.utils.serializers import from_yaml
-from panoptes.utils.serializers import to_json
+from .serializers import from_yaml
+from .serializers import to_json
 
 logging.getLogger('matplotlib').setLevel(logging.WARNING)
 logging.getLogger('urllib3').setLevel(logging.WARNING)
@@ -252,7 +251,6 @@ def get_root_logger(profile='panoptes', log_config=None):
 
     # Set log filename and rotation
     for handler in log_config.get('handlers', []):
-        # Set the filename
         partial_fname = '{}-{}.log'.format(log_fname, handler)
         full_log_fname = os.path.join(per_run_dir, partial_fname)
         log_config['handlers'][handler].setdefault('filename', full_log_fname)
@@ -267,7 +265,9 @@ def get_root_logger(profile='panoptes', log_config=None):
         with suppress(FileNotFoundError):
             os.unlink(log_symlink)
 
-        os.symlink(log_symlink_target, log_symlink)
+        # Symlink log file if active.
+        if handler in log_config['root'].get('handlers', []):
+            os.symlink(log_symlink_target, log_symlink)
 
     # Configure the logger
     logging.config.dictConfig(log_config)
@@ -286,7 +286,7 @@ def get_root_logger(profile='panoptes', log_config=None):
 
 
 def load_default():
-    return parse_config(from_yaml(DEFAULT_CONFIG))
+    return from_yaml(DEFAULT_CONFIG)
 
 
 DEFAULT_CONFIG = """

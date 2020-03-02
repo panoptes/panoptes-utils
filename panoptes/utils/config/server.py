@@ -8,13 +8,13 @@ from flask.json import JSONEncoder
 from multiprocessing import Process
 from scalpl import Cut
 
-from panoptes.utils.config import load_config
-from panoptes.utils.config import save_config
-from panoptes.utils.serializers import _serialize_object
-from panoptes.utils.logger import get_root_logger
+from . import load_config
+from . import save_config
+from ..serializers import _serialize_object
 
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
+_logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 
@@ -163,7 +163,7 @@ def set_config_entry():
 @app.route('/reset-config', methods=['POST'])
 def reset_config():
     if request.is_json:
-        get_root_logger().warning(f'Resetting config server')
+        _logger.warning(f'Resetting config server')
         req_data = request.get_json()
 
         if req_data['reset']:

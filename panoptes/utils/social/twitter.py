@@ -1,13 +1,14 @@
 import tweepy
+import logging
 
-from panoptes.utils.logger import get_root_logger
+_logger = logging.getLogger(__name__)
 
 
 class SocialTwitter(object):
 
     """Social Messaging sink to output to Twitter."""
 
-    logger = get_root_logger()
+    logger = _logger
 
     def __init__(self, **kwargs):
         consumer_key = kwargs.get('consumer_key', '')
