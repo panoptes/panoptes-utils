@@ -3,6 +3,7 @@ import weakref
 from uuid import uuid4
 from contextlib import suppress
 
+from .. import error
 from ..serializers import to_json
 from ..serializers import from_json
 from ..database import AbstractPanDB
@@ -49,8 +50,8 @@ class PanMemoryDB(AbstractPanDB):
         try:
             obj = to_json(obj)
         except Exception as e:
-            self.logger.warning("Problem inserting object into current collection: {}, {!r}".format(e, obj))
-            return None
+            raise error.InvalidSerialization(f"Problem serializing object for insertion: {e} {obj!r}")
+
         with self.lock:
             self.current[collection] = obj
             if store_permanently:
@@ -64,8 +65,8 @@ class PanMemoryDB(AbstractPanDB):
         try:
             obj = to_json(obj)
         except Exception as e:
-            self.logger.warning("Problem inserting object into collection: {}, {!r}".format(e, obj))
-            return None
+            raise error.InvalidSerialization(f"Problem inserting object into collection: {e}, {obj!r}")
+
         with self.lock:
             self.collections.setdefault(collection, {})[obj_id] = obj
         return obj_id
