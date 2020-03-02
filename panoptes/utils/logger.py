@@ -251,6 +251,10 @@ def get_root_logger(profile='panoptes', log_config=None):
 
     # Set log filename and rotation
     for handler in log_config.get('handlers', []):
+        handler_class = log_config['handlers'][handler]['class']
+        if handler_class != 'logging.handlers.TimedRotatingFileHandler':
+            continue
+
         partial_fname = '{}-{}.log'.format(log_fname, handler)
         full_log_fname = os.path.join(per_run_dir, partial_fname)
         log_config['handlers'][handler].setdefault('filename', full_log_fname)
@@ -300,11 +304,18 @@ formatters:
     style: '{'
     format: '{levelname:.1s}{asctime}.{msecs:03.0f} {filename:>25s}:{lineno:03d}] {message}'
     datefmt: '%m%d %H:%M:%S'
+  jsonsimple:
+    format: '%(message)s %(levelname)s %(asctime)s %(msecs)s %(filename)s %(lineno)s %(name)s %(process)s %(funcName)s %(pathname)s'
+    class: pythonjsonlogger.jsonlogger.JsonFormatter
 handlers:
+  json:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: jsonsimple
   all:
     class: logging.handlers.TimedRotatingFileHandler
     level: DEBUG
-    formatter: detail
+    formatter: jsonsimple
     when: W6
     backupCount: 4
   info:
@@ -329,6 +340,9 @@ loggers:
   all:
     handlers: [all]
     propagate: true
+  json:
+    handlers: [json]
+    propagate: true
   info:
     handlers: [info]
     propagate: true
@@ -340,5 +354,5 @@ loggers:
     propagate: true
 root:
   level: DEBUG
-  handlers: [all, warn]
+  handlers: [all]
 """
