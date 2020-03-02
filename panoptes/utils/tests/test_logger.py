@@ -117,6 +117,9 @@ def test_root_logger_with_config():
     logger = get_root_logger(log_config=config)
     logger.info('With config')
 
+
+def test_root_logger_with_config_utc():
+    config = from_yaml(TEST_CONFIG)
     config['use_utc'] = False
     logger = get_root_logger(log_config=config)
     logger.info('Without utc')
