@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # Licensed under an MIT style license - see LICENSE.txt
 
-from distutils.command.build_py import build_py
 from configparser import ConfigParser
 from setuptools import setup, find_namespace_packages
 
