@@ -3,6 +3,7 @@ import pytest
 from panoptes.utils.logger import field_name_to_key
 from panoptes.utils.logger import logger_msg_formatter
 from panoptes.utils.logger import get_root_logger
+from panoptes.utils.serializers import from_yaml
 
 
 def test_field_name_to_key():
@@ -109,3 +110,54 @@ def test_root_logger():
     logger = get_root_logger()
     logger.info('Hi')
     logger.info('Hi', extra=dict(foo='bar'))
+
+
+def test_root_logger_with_config():
+    logger = get_root_logger(log_config=from_yaml(TEST_CONFIG))
+    logger.info('With config')
+
+
+TEST_CONFIG = """
+version: 1
+use_utc: True
+formatters:
+  simple:
+    format: '%(asctime)s - %(message)s'
+    datefmt: '%H:%M:%S'
+  detail:
+    style: '{'
+    format: '{levelname:.1s}{asctime}.{msecs:03.0f} {filename:>25s}:{lineno:03d}] {message}'
+    datefmt: '%m%d %H:%M:%S'
+handlers:
+  all:
+    class: logging.handlers.TimedRotatingFileHandler
+    level: DEBUG
+    formatter: simple
+    when: W6
+    backupCount: 4
+  info:
+    class: logging.handlers.TimedRotatingFileHandler
+    level: INFO
+    formatter: detail
+    when: W6
+    backupCount: 4
+  error:
+    class: logging.handlers.TimedRotatingFileHandler
+    level: ERROR
+    formatter: detail
+    when: W6
+    backupCount: 4
+loggers:
+  all:
+    handlers: [all]
+    propagate: true
+  info:
+    handlers: [info]
+    propagate: true
+  error:
+    handlers: [error]
+    propagate: true
+root:
+  level: DEBUG
+  handlers: [all, info]
+"""
