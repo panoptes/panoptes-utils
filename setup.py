@@ -70,10 +70,6 @@ setup(name=NAME,
       python_requires='>=3.6',
       setup_requires=['pytest-runner'],
       tests_require=modules['testing'],
-      # List additional groups of dependencies here (e.g. development
-      # dependencies). You can install these using the following syntax,
-      # for example:
-      # $ pip install -e .[dev,test]
       scripts=[
           'bin/cr2-to-jpg',
           'bin/panoptes-config-server',
