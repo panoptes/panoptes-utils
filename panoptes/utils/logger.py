@@ -213,10 +213,8 @@ def get_root_logger(profile='panoptes', log_config=None):
 
     # If we already created a logger for this profile and log_config, return that.
     logger_key = (profile, to_json(log_config, sort_keys=True))
-    try:
+    with suppress(KeyError):
         return all_loggers[logger_key]
-    except KeyError:
-        pass
 
     # Alter the log_config to use UTC times
     if log_config.get('use_utc', True):

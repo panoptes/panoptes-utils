@@ -2,6 +2,7 @@ import pytest
 
 from panoptes.utils.logger import field_name_to_key
 from panoptes.utils.logger import logger_msg_formatter
+from panoptes.utils.logger import get_root_logger
 
 
 def test_field_name_to_key():
@@ -102,3 +103,9 @@ def test_logger_msg_formatter_1_non_dict():
     for fmt in tests:
         with pytest.warns(UserWarning):
             assert logger_msg_formatter(fmt, d) == fmt
+
+
+def test_root_logger():
+    logger = get_root_logger()
+    logger.info('Hi')
+    logger.info('Hi', extra=dict(foo='bar'))
