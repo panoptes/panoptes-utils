@@ -36,13 +36,8 @@ def test_crop_data():
 
 
 def test_make_pretty_image(solved_fits_file, tiny_fits_file, save_environ):
-    # Not a valid file type (can't automatically handle .fits.fz files).
-    with pytest.warns(UserWarning, match='File must be'):
-        assert not img_utils.make_pretty_image(solved_fits_file)
-
     # Make a dir and put test image files in it.
     with tempfile.TemporaryDirectory() as tmpdir:
-        fz_file = os.path.join(tmpdir, os.path.basename(solved_fits_file))
         fits_file = os.path.join(tmpdir, os.path.basename(tiny_fits_file))
         # TODO Add a small CR2 file to our sample image files.
 
@@ -53,10 +48,6 @@ def test_make_pretty_image(solved_fits_file, tiny_fits_file, save_environ):
         # Copy the files.
         shutil.copy(solved_fits_file, tmpdir)
         shutil.copy(tiny_fits_file, tmpdir)
-
-        # Not a valid file type (can't automatically handle fits.fz files).
-        with pytest.warns(UserWarning):
-            assert not img_utils.make_pretty_image(fz_file)
 
         # Can handle the fits file, and creating the images dir for linking
         # the latest image.
