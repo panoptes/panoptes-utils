@@ -1,14 +1,10 @@
 import tweepy
-import logging
-
-_logger = logging.getLogger(__name__)
+from loguru import logger
 
 
 class SocialTwitter(object):
 
     """Social Messaging sink to output to Twitter."""
-
-    logger = _logger
 
     def __init__(self, **kwargs):
         consumer_key = kwargs.get('consumer_key', '')
@@ -35,7 +31,7 @@ class SocialTwitter(object):
             self.api = tweepy.API(auth)
         except tweepy.TweepError:
             msg = 'Error authenicating with Twitter. Please check your Twitter configuration.'
-            self.logger.warning(msg)
+            logger.warning(msg)
             raise ValueError(msg)
 
     def send_message(self, msg, timestamp):
@@ -48,4 +44,4 @@ class SocialTwitter(object):
             else:
                 self.api.update_status(msg)
         except tweepy.TweepError:
-            self.logger.debug('Error tweeting message. Please check your Twitter configuration.')
+            logger.debug('Error tweeting message. Please check your Twitter configuration.')

@@ -1,15 +1,10 @@
 import requests
-
-import logging
-
-_logger = logging.getLogger(__name__)
+from loguru import logger
 
 
 class SocialSlack(object):
 
     """Social Messaging sink to output to Slack."""
-
-    logger = _logger
 
     def __init__(self, **kwargs):
         self.web_hook = kwargs.get('webhook_url', '')
@@ -28,4 +23,4 @@ class SocialSlack(object):
             # We ignore the response body and headers of a successful post.
             requests.post(self.web_hook, json={'text': post_msg})
         except Exception as e:
-            self.logger.debug('Error posting to slack: {}'.format(e))
+            logger.debug('Error posting to slack: {}'.format(e))

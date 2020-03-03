@@ -1,12 +1,10 @@
 import re
 import zmq
-import logging
+from loguru import logger
 
 from .time import current_time
 from .serializers import from_json
 from .serializers import to_json
-
-_logger = logging.getLogger(__name__)
 
 
 class PanMessaging(object):
@@ -71,7 +69,7 @@ class PanMessaging(object):
     a byte array of this format:
         <topic-name><space><serialized-value>
     """
-    logger = _logger
+    logger = logger
 
     # Topic names must consist of the characters.
     topic_name_re = re.compile('[a-zA-Z][-a-zA-Z0-9_.:]*')

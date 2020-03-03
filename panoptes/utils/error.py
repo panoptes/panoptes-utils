@@ -1,6 +1,5 @@
 import sys
-import logging
-_logger = logging.getLogger(__name__)
+from loguru import logger
 
 
 class PanError(Exception):
@@ -11,7 +10,7 @@ class PanError(Exception):
         self.msg = msg
 
         if self.msg and log:
-            _logger.error(str(self))
+            logger.error(str(self))
 
         if exit:
             self.exit_program(self.msg)

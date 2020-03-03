@@ -1,12 +1,9 @@
 import abc
-import logging
+from loguru import logger
 
 from .. import error
 from ..time import current_time
 from ..library import load_module
-
-
-_logger = logging.getLogger(__name__)
 
 
 def _get_db_class(module_name='file'):
@@ -52,7 +49,7 @@ class AbstractPanDB(metaclass=abc.ABCMeta):
             collection_names (list of str): Names of the valid collections.
             logger: (Optional) logger to use for warnings.
         """
-        self.logger = _logger
+        self.logger = logger
         self.logger.info(f'Creating PanDB {db_name} with collections: {collection_names}')
         self.db_name = db_name
         self.collection_names = collection_names

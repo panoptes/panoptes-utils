@@ -4,7 +4,7 @@ import subprocess
 import shutil
 from contextlib import suppress
 from warnings import warn
-import logging
+from loguru import logger
 
 import numpy as np
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -21,8 +21,6 @@ from ..time import current_time
 from ..images import fits as fits_utils
 from ..images.plot import add_colorbar
 from ..images.plot import get_palette
-
-_logger = logging.getLogger(__name__)
 
 
 def crop_data(data, box_width=200, center=None, data_only=True, wcs=None, **kwargs):
@@ -55,8 +53,8 @@ def crop_data(data, box_width=200, center=None, data_only=True, wcs=None, **kwar
         y_center = int(center[0])
         x_center = int(center[1])
 
-    _logger.debug("Using center: {} {}".format(x_center, y_center))
-    _logger.debug("Box width: {}".format(box_width))
+    logger.debug("Using center: {} {}".format(x_center, y_center))
+    logger.debug("Box width: {}".format(box_width))
 
     cutout = Cutout2D(data, (y_center, x_center), box_width, wcs=wcs)
 
@@ -214,11 +212,11 @@ def _make_pretty_from_cr2(fname, title=None, timeout=15, **kwargs):
     if title:
         cmd.append(title)
 
-    _logger.debug(cmd)
+    logger.debug(cmd)
 
     try:
         output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        _logger.debug(output)
+        logger.debug(output)
     except Exception as e:
         raise error.InvalidCommand(f"Error executing {script_name}: {e.output!r}\nCommand: {cmd}")
 
@@ -318,7 +316,7 @@ def make_timelapse(
 
         ffmpeg_cmd.append(fn_out)
 
-        _logger.debug(ffmpeg_cmd)
+        logger.debug(ffmpeg_cmd)
 
         proc = subprocess.Popen(ffmpeg_cmd, universal_newlines=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -329,8 +327,8 @@ def make_timelapse(
             proc.kill()
             outs, errs = proc.communicate()
         finally:
-            _logger.debug(f"Output: {outs}")
-            _logger.debug(f"Errors: {errs}")
+            logger.debug(f"Output: {outs}")
+            logger.debug(f"Errors: {errs}")
 
             # Double-check for file existence
             if not os.path.exists(fn_out):

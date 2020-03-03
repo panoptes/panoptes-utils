@@ -1,12 +1,9 @@
 import ctypes
 import ctypes.util
-
-import logging
+from loguru import logger
 
 from astropy.utils import resolve_name
 from . import error
-
-_logger = logging.getLogger(__name__)
 
 
 def load_c_library(name, path=None, mode=ctypes.DEFAULT_MODE, **kwargs):
@@ -35,7 +32,7 @@ def load_c_library(name, path=None, mode=ctypes.DEFAULT_MODE, **kwargs):
         # Interpret a value of None as the default.
         mode = ctypes.DEFAULT_MODE
     # Open library
-    _logger.debug(f"Opening {name} library")
+    logger.debug(f"Opening {name} library")
     if not path:
         path = ctypes.util.find_library(name)
         if not path:

@@ -1,7 +1,7 @@
 import os
 import shutil
 import subprocess
-import logging
+from loguru import logger
 
 from warnings import warn
 
@@ -10,8 +10,6 @@ from astropy.wcs import WCS
 from astropy import units as u
 
 from .. import error
-
-_logger = logging.getLogger(__name__)
 
 
 def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
@@ -33,6 +31,7 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
     if solve_opts is not None:
         options = solve_opts
     else:
+        png_fn = fname.replace('.fits', '.png')
         options = [
             '--guess-scale',
             '--cpulimit', str(timeout),
@@ -42,6 +41,7 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
             '--match', 'none',
             '--corr', 'none',
             '--wcs', 'none',
+            '--pnm', png_fn,
             '--downsample', '4',
         ]
 
@@ -112,7 +112,7 @@ def get_solve_field(fname, replace=True, remove_extras=True, **kwargs):
 
     # Check for solved file
     if skip_solved and wcs.is_celestial:
-        _logger.info(f"Solved file exists, skipping (use skip_solved=False to solve again): {fname}")
+        logger.info(f"Solved file exists, skipping (use skip_solved=False to solve again): {fname}")
 
         out_dict.update(header)
         out_dict['solved_fits_file'] = fname
@@ -132,9 +132,9 @@ def get_solve_field(fname, replace=True, remove_extras=True, **kwargs):
         print(f'Errors on {fname}: {errs}')
         raise error.Timeout(f'Timeout while solving: {output!r} {errs!r}')
     else:
-        _logger.debug(f'Returncode: {proc.returncode}')
-        _logger.debug(f'Output on {fname}: {output}')
-        _logger.debug(f'Errors on {fname}: {errs}')
+        logger.debug(f'Returncode: {proc.returncode}')
+        logger.debug(f'Output on {fname}: {output}')
+        logger.debug(f'Errors on {fname}: {errs}')
 
         if proc.returncode == 3:
             raise error.SolveError(f'solve-field not found: {output}')
@@ -174,7 +174,7 @@ def get_solve_field(fname, replace=True, remove_extras=True, **kwargs):
         try:
             out_dict.update(getheader(fname))
         except OSError:
-            _logger.warning(f"Can't read fits header for: {fname}")
+            logger.warning(f"Can't read fits header for: {fname}")
 
     return out_dict
 
@@ -207,7 +207,7 @@ def get_wcsinfo(fits_fname, **kwargs):
         run_cmd.append('-e')
         run_cmd.append('1')
 
-    _logger.debug("wcsinfo command: {}".format(run_cmd))
+    logger.debug("wcsinfo command: {}".format(run_cmd))
 
     proc = subprocess.Popen(run_cmd, stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT, universal_newlines=True)
@@ -318,8 +318,8 @@ def improve_wcs(fname, remove_extras=True, replace=True, timeout=30, **kwargs):
         proc.kill()
         raise error.Timeout("Timeout while solving")
     else:
-        _logger.debug(f"Output: {output}")
-        _logger.debug(f"Errors: {errs}")
+        logger.debug(f"Output: {output}")
+        logger.debug(f"Errors: {errs}")
 
         if not os.path.exists(fname.replace('.fits', '.solved')):
             raise error.SolveError('File not solved')
@@ -355,7 +355,7 @@ def improve_wcs(fname, remove_extras=True, replace=True, timeout=30, **kwargs):
         try:
             out_dict.update(fits.getheader(fname))
         except OSError:
-            _logger.warning(f"Can't read fits header for {fname}")
+            logger.warning(f"Can't read fits header for {fname}")
 
     return out_dict
 
@@ -390,7 +390,7 @@ def fpack(fits_fname, unpack=False):
         warn("fpack not found (try installing cfitsio). File has not been changed")
         return fits_fname
 
-    _logger.debug("fpack command: {}".format(run_cmd))
+    logger.debug("fpack command: {}".format(run_cmd))
 
     proc = subprocess.Popen(run_cmd, stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT, universal_newlines=True)
@@ -455,10 +455,10 @@ def write_fits(data, header, filename, exposure_event=None, **kwargs):
     try:
         hdu.writeto(filename)
     except OSError as err:
-        _logger.error('Error writing image to {}!'.format(filename))
-        _logger.error(err)
+        logger.error('Error writing image to {}!'.format(filename))
+        logger.error(err)
     else:
-        _logger.debug('Image written to {}'.format(filename))
+        logger.debug('Image written to {}'.format(filename))
     finally:
         if exposure_event:
             exposure_event.set()

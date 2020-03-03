@@ -1,10 +1,8 @@
 import requests
-import logging
+from loguru import logger
 
 from ..serializers import from_json
 from ..serializers import to_json
-
-_logger = logging.getLogger(__name__)
 
 
 def get_config(key=None, host='localhost', port='6563', parse=True, default=None):
@@ -57,10 +55,10 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
     try:
         response = requests.post(url, json={'key': key})
     except Exception as e:
-        _logger.info(f'Problem with get_config: {e!r}')
+        logger.info(f'Problem with get_config: {e!r}')
     else:
         if not response.ok:
-            _logger.info(f'Problem with get_config: {response.content!r}')
+            logger.info(f'Problem with get_config: {response.content!r}')
         else:
             if response.text != 'null\n':
                 if parse:
@@ -118,7 +116,7 @@ def set_config(key, new_value, host='localhost', port='6563', parse=True):
         if not response.ok:
             raise Exception(f'Cannot access config server: {response.text}')
     except Exception as e:
-        _logger.info(f'Problem with set_config: {e!r}')
+        logger.info(f'Problem with set_config: {e!r}')
     else:
         if parse:
             config_entry = from_json(response.content.decode('utf8'))

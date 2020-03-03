@@ -1,4 +1,5 @@
 import logging
+from loguru import logger
 from warnings import warn
 from flask import Flask
 from flask import request
@@ -14,7 +15,6 @@ from ..serializers import _serialize_object
 
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
-_logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 
@@ -163,7 +163,7 @@ def set_config_entry():
 @app.route('/reset-config', methods=['POST'])
 def reset_config():
     if request.is_json:
-        _logger.warning(f'Resetting config server')
+        logger.warning(f'Resetting config server')
         req_data = request.get_json()
 
         if req_data['reset']:

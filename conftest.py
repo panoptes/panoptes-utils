@@ -13,6 +13,10 @@ import subprocess
 import time
 import shutil
 
+import logging
+from _pytest.logging import caplog as _caplog
+from loguru import logger
+
 from panoptes.utils.database import PanDB
 from panoptes.utils.messaging import PanMessaging
 from panoptes.utils.config.client import set_config
@@ -387,3 +391,15 @@ def cr2_file():
 def add_doctest_dependencies(doctest_namespace):
     doctest_namespace['np'] = np
     doctest_namespace['plt'] = plt
+
+
+@pytest.fixture
+def caplog(_caplog):
+    class PropogateHandler(logging.Handler):
+        def emit(self, record):
+            logging.getLogger(record.name).handle(record)
+
+    logger.enable('panoptes')
+    handler_id = logger.add(PropogateHandler(), format="{message}")
+    yield _caplog
+    logger.remove(handler_id)

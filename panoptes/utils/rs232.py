@@ -5,12 +5,10 @@ import serial
 from serial.tools.list_ports import comports as get_comports
 import time
 from contextlib import suppress
-import logging
+from loguru import logger
 
 from . import error
 from .serializers import from_json
-
-_logger = logging.getLogger(__name__)
 
 
 # Note: get_serial_port_info is replaced by tests to override the normal
@@ -103,7 +101,7 @@ class SerialData(object):
             ValueError: If the serial parameters are invalid (e.g. a negative baudrate).
 
         """
-        self.logger = _logger
+        self.logger = logger
 
         if not port:
             raise ValueError('Must specify port for SerialData')

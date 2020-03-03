@@ -5,8 +5,7 @@ from datetime import timezone as tz
 from astropy import units as u
 from astropy.time import Time
 
-import logging
-_logger = logging.getLogger(__name__)
+from loguru import logger
 
 
 def current_time(flatten=False, datetime=False, pretty=False):
@@ -161,7 +160,7 @@ class CountdownTimer(object):
     def restart(self):
         """Restart the timed duration."""
         self.target_time = time.monotonic() + self.duration
-        _logger.debug(f'Restarting {self}')
+        logger.debug(f'Restarting {self}')
 
     def sleep(self, max_sleep=None):
         """Sleep until the timer expires, or for max_sleep, whichever is sooner.
@@ -182,7 +181,7 @@ class CountdownTimer(object):
             assert max_sleep > 0
             sleep_time = max_sleep
 
-        _logger.debug(f'Sleeping for {sleep_time:.02f} seconds')
+        logger.debug(f'Sleeping for {sleep_time:.02f} seconds')
         time.sleep(sleep_time)
 
         return sleep_time < remaining

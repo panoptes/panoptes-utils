@@ -1,13 +1,11 @@
 import os
 from contextlib import suppress
 from warnings import warn
-import logging
+from loguru import logger
 
 from ..utils import listify
 from ..serializers import from_yaml
 from ..serializers import to_yaml
-
-_logger = logging.getLogger(__name__)
 
 
 def load_config(config_files=None, simulator=None, parse=True, ignore_local=False):
@@ -124,7 +122,7 @@ def save_config(path, config, overwrite=True):
     full_path = f'{base}{ext}'
 
     if os.path.exists(full_path) and overwrite is False:
-        _logger.warning(f"Path exists and overwrite=False: {full_path}")
+        logger.warning(f"Path exists and overwrite=False: {full_path}")
     else:
         # Create directory if does not exist
         os.makedirs(os.path.dirname(full_path), exist_ok=True)

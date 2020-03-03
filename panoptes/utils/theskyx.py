@@ -1,9 +1,7 @@
 import socket
-import logging
+from loguru import logger
 
 from . import error
-
-_logger = logging.getLogger(__name__)
 
 
 class TheSkyX(object):
@@ -14,7 +12,7 @@ class TheSkyX(object):
     """
 
     def __init__(self, host='localhost', port=3040, connect=True, *args, **kwargs):
-        self.logger = _logger
+        self.logger = logger
 
         self._host = host
         self._port = port
