@@ -1,23 +1,24 @@
 import os
+import re
 import subprocess
 import shutil
 from contextlib import suppress
 from warnings import warn
 import logging
 
+import numpy as np
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 from astropy.wcs import WCS
 from astropy.nddata import Cutout2D
-from astropy.io.fits import open as open_fits
 from astropy.visualization import (PercentileInterval, LogStretch, ImageNormalize)
 
 from dateutil import parser as date_parser
 
 from .. import error
 from ..time import current_time
-from ..images import focus as focus_utils
+from ..images import fits as fits_utils
 from ..images.plot import add_colorbar
 from ..images.plot import get_palette
 
@@ -133,11 +134,9 @@ def _make_pretty_from_fits(fname=None,
                            clip_percent=99.9,
                            **kwargs):
 
-    with open_fits(fname) as hdu:
-        header = hdu[0].header
-        data = hdu[0].data
-        data = focus_utils.mask_saturated(data)
-        wcs = WCS(header)
+    data = mask_saturated(fits_utils.getdata(fname))
+    header = fits_utils.getheader(fname)
+    wcs = WCS(header)
 
     if not title:
         field = header.get('FIELD', 'Unknown field')
@@ -198,7 +197,7 @@ def _make_pretty_from_fits(fname=None,
     add_colorbar(im)
     fig.suptitle(title)
 
-    new_filename = fname.replace('.fits', '.jpg')
+    new_filename = re.sub('.fits(.fz)?', '.jpg', fname)
     fig.savefig(new_filename, bbox_inches='tight')
 
     # explicitly close and delete figure
@@ -224,6 +223,35 @@ def _make_pretty_from_cr2(fname, title=None, timeout=15, **kwargs):
         raise error.InvalidCommand(f"Error executing {script_name}: {e.output!r}\nCommand: {cmd}")
 
     return fname.replace('cr2', 'jpg')
+
+
+def mask_saturated(data, saturation_level=None, threshold=0.9, dtype=np.float64):
+    """Convert data to masked array of requested dtype with saturated values masked.
+
+    Args:
+        data (array_like): The numpy data array.
+        saturation_level (float|None, optional): The saturation level. If None,
+            the level will be set to the threshold times the max value for the dtype.
+        threshold (float, optional): The percentage of the max value to use.
+        dtype (`numpy.dtype`, optional): The requested dtype for the new array.
+
+    Returns:
+        `numpy.ma.array`: The masked numpy array.
+    """
+    if not saturation_level:
+        try:
+            # If data is an integer type use iinfo to compute machine limits
+            dtype_info = np.iinfo(data.dtype)
+        except ValueError:
+            # Not an integer type. Assume for now we have 16 bit data
+            saturation_level = threshold * (2**16 - 1)
+        else:
+            # Data is an integer type, set saturation level at specified fraction of
+            # max value for the type
+            saturation_level = threshold * dtype_info.max
+
+    # Convert data to masked array of requested dtype, mask values above saturation level
+    return np.ma.array(data, mask=(data > saturation_level), dtype=dtype)
 
 
 def make_timelapse(

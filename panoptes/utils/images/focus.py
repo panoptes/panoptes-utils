@@ -61,20 +61,3 @@ def vollath_F4(data, axis=None):
         return (_vollath_F4_y() + _vollath_F4_x()) / 2
     else:
         raise ValueError(f"axis must be one of 'Y', 'y', 'X', 'x' or None, got {axis}!")
-
-
-def mask_saturated(data, saturation_level=None, threshold=0.9, dtype=np.float64):
-    if not saturation_level:
-        try:
-            # If data is an integer type use iinfo to compute machine limits
-            dtype_info = np.iinfo(data.dtype)
-        except ValueError:
-            # Not an integer type. Assume for now we have 16 bit data
-            saturation_level = threshold * (2**16 - 1)
-        else:
-            # Data is an integer type, set saturation level at specified fraction of
-            # max value for the type
-            saturation_level = threshold * dtype_info.max
-
-    # Convert data to masked array of requested dtype, mask values above saturation level
-    return np.ma.array(data, mask=(data > saturation_level), dtype=dtype)
