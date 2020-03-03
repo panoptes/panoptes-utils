@@ -50,3 +50,13 @@ def test_root_logger(caplog, profile, tmp_path):
     assert os.listdir(tmp_path)[-1] == 'foo.log'
     assert caplog.records[-1].message == 'Bye'
     assert caplog.records[-1].levelname == 'INFO'
+
+    del os.environ['PANLOG']
+    os.environ['PANDIR'] = str(tmp_path)
+    logger = get_root_logger(profile=profile, stderr=True)
+    logger.critical('Bye Again')
+    dir_name = os.path.join(str(tmp_path), 'logs')
+    assert os.path.isdir(dir_name)
+    assert len(os.listdir(dir_name)) == 1
+    assert caplog.records[-1].message == 'Bye Again'
+    assert caplog.records[-1].levelname == 'CRITICAL'
