@@ -29,7 +29,7 @@ class SocialTwitter(object):
             auth.set_access_token(access_token, access_token_secret)
 
             self.api = tweepy.API(auth)
-        except tweepy.TweepError:
+        except tweepy.TweepError:  # pragma: no cover
             msg = 'Error authenicating with Twitter. Please check your Twitter configuration.'
             logger.warning(msg)
             raise ValueError(msg)
@@ -43,5 +43,5 @@ class SocialTwitter(object):
                 self.api.update_status('{} - {}'.format(msg, timestamp))
             else:
                 self.api.update_status(msg)
-        except tweepy.TweepError:
+        except tweepy.TweepError:  # pragma: no cover
             logger.debug('Error tweeting message. Please check your Twitter configuration.')
