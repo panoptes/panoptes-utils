@@ -103,7 +103,7 @@ def make_pretty_image(fname,
         return None
     elif img_type == '.cr2':
         pretty_path = _make_pretty_from_cr2(fname, title=title, timeout=timeout, **kwargs)
-    elif img_type == '.fits':
+    elif img_type in ['.fits', '.fz']:
         pretty_path = _make_pretty_from_fits(fname, title=title, **kwargs)
     else:
         warn("File must be a Canon CR2 or FITS file.")
