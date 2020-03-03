@@ -16,6 +16,7 @@ import shutil
 import logging
 from _pytest.logging import caplog as _caplog
 from loguru import logger
+from contextlib import suppress
 
 from panoptes.utils.database import PanDB
 from panoptes.utils.messaging import PanMessaging
@@ -402,4 +403,5 @@ def caplog(_caplog):
     logger.enable('panoptes')
     handler_id = logger.add(PropogateHandler(), format="{message}")
     yield _caplog
-    logger.remove(handler_id)
+    with suppress(ValueError):
+        logger.remove(handler_id)

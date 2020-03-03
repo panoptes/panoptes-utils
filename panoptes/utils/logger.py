@@ -4,7 +4,8 @@ from loguru import logger
 
 def get_root_logger(profile='panoptes',
                     log_file='panoptes_{time:YYYYMMDD!UTC}.log',
-                    log_dir=None):
+                    log_dir=None,
+                    stderr=False):
     """Creates a root logger for PANOPTES used by the PanBase object.
 
     Note: The `log_dir` is determined first from `$PANLOG` if it exists, then
@@ -14,6 +15,8 @@ def get_root_logger(profile='panoptes',
         profile (str, optional): The name of the logger to use, defaults to 'panoptes'.
         log_file (str|None, optional): The filename, defaults to `panoptes_{time:YYYYMMDD!UTC}.log`.
         log_dir (str|None, optional): The directory to place the log file, see note.
+        stderr (bool, optional): If the default `stderr` handler should be included,
+          defaults to False.
 
     Returns:
         `loguru.logger`: A configured instance of the logger.
@@ -30,15 +33,21 @@ def get_root_logger(profile='panoptes',
 
     # Serialize messages to a file.
     log_path = os.path.normpath(os.path.join(log_dir, log_file))
-    logger.add(log_path,
-               rotation='11:30',
-               enqueue=True,
-               serialize=True,
-               backtrace=True,
-               diagnose=True,
-               level="DEBUG")
-
     # Turn on logging from this repo.
+    if stderr is False:
+        logger.remove()
+
+    handler_id = logger.add(log_path,
+                            rotation='11:30',
+                            enqueue=True,
+                            serialize=True,
+                            backtrace=True,
+                            diagnose=True,
+                            level="DEBUG")
+
+    logger._handlers = {
+        handler_id: log_path
+    }
     logger.enable(profile)
     logger.success('{:*^80}'.format(' Starting PanLogger '))
 
