@@ -29,6 +29,7 @@ modules = {
         'astroplan>=0.6',
         'astropy>=4.0.0',
         'Flask',
+        'loguru',
         'matplotlib>=3.0.0',
         'numpy',
         'photutils',
@@ -49,8 +50,8 @@ modules = {
         'coverage',
         'coveralls',
         'mocket',
-        'pycodestyle==2.3.1',
-        'pytest>=3.6',
+        'pycodestyle',
+        'pytest',
         'pytest-cov',
         'pytest-remotedata>=0.3.1'
     ],
