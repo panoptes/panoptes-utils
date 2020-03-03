@@ -14,6 +14,7 @@ PANOPTES Utils
   - [Services](#services)
     - [Config Server](#config-server)
     - [Messaging Hub](#messaging-hub)
+    - [Logger](#logger)
 
 Utility functions for use within the PANOPTES ecosystem and for general astronomical processing.
 
@@ -96,3 +97,9 @@ The messaging hub is responsible for relaying zeromq messages between the variou
 ```bash
 panoptes-messaging-hub --from-config
 ```
+
+### Logger
+
+A basic logger is defined in `panoptes.utils.logger.get_root_logger()`, which configures a [loguru](https://github.com/Delgan/loguru) logger with some defaults that are suitable to [POCS](https://github.com/panoptes/POCS).
+
+For now this will remain part of this repository but may move directly to POCS in the future as it is likely to be unused by others.
