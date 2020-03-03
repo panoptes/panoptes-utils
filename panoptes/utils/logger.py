@@ -39,7 +39,7 @@ def get_root_logger(profile='panoptes',
                level="DEBUG")
 
     # Turn on logging from this repo.
-    logger.enable('panoptes')
+    logger.enable(profile)
     logger.success('{:*^80}'.format(' Starting PanLogger '))
 
     return logger
