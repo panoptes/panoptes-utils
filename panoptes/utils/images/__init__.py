@@ -308,7 +308,6 @@ def make_timelapse(
             if not os.path.exists(fn_out):
                 fn_out = None
     except Exception as e:
-        _logger.warning(f"Problem creating timelapse in {fn_out}: {e!r}")
-        fn_out = None
+        raise error.PanError(f"Problem creating timelapse in {fn_out}: {e!r}")
 
     return fn_out
