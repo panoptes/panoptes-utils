@@ -291,6 +291,10 @@ DEFAULT_CONFIG = """
 version: 1
 use_utc: True
 formatters:
+  detail:
+    style: '{'
+    format: '{levelname:.1s}{asctime}.{msecs:03.0f} {filename:>25s}:{lineno:03d}] {message}'
+    datefmt: '%m%d %H:%M:%S'
   jsonsimple:
     format: '%(message)s %(levelname)s %(asctime)s %(msecs)s %(filename)s %(lineno)s %(name)s %(process)s %(funcName)s %(pathname)s'
     class: pythonjsonlogger.jsonlogger.JsonFormatter
@@ -298,7 +302,7 @@ handlers:
   all:
     class: logging.handlers.TimedRotatingFileHandler
     level: DEBUG
-    formatter: jsonsimple
+    formatter: detail
     when: W6
     backupCount: 4
 loggers:
