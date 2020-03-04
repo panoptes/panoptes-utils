@@ -89,9 +89,8 @@ The services can be run either from a [docker](#docker) image or from the instal
 A simple config param server. Runs as a Flask microservice that delivers JSON documents
 in response to requests for config key items.
 
-For more details and usage examples, see the [config server README](panoptes/utils/config/README.md).
 
-Can be run from the installed script and defaults to `http://localhost:6563/get-config`:
+Can be run from the installed script (defaults to `http://localhost:6563/get-config`):
 
 ```bash
 $ bin/panoptes-config-server
@@ -115,6 +114,8 @@ Or inside a python process:
 
 >>> server_process.terminate()  # Or just exit notebook/console
 ```
+
+For more details and usage examples, see the [config server README](panoptes/utils/config/README.md).
 
 ### Messaging Hub
 
