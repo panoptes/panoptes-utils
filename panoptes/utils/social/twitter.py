@@ -1,13 +1,10 @@
 import tweepy
-
-from panoptes.utils.logger import get_root_logger
+from ..logger import logger
 
 
 class SocialTwitter(object):
 
     """Social Messaging sink to output to Twitter."""
-
-    logger = get_root_logger()
 
     def __init__(self, **kwargs):
         consumer_key = kwargs.get('consumer_key', '')
@@ -32,9 +29,9 @@ class SocialTwitter(object):
             auth.set_access_token(access_token, access_token_secret)
 
             self.api = tweepy.API(auth)
-        except tweepy.TweepError:
+        except tweepy.TweepError:  # pragma: no cover
             msg = 'Error authenicating with Twitter. Please check your Twitter configuration.'
-            self.logger.warning(msg)
+            logger.warning(msg)
             raise ValueError(msg)
 
     def send_message(self, msg, timestamp):
@@ -46,5 +43,5 @@ class SocialTwitter(object):
                 self.api.update_status('{} - {}'.format(msg, timestamp))
             else:
                 self.api.update_status(msg)
-        except tweepy.TweepError:
-            self.logger.debug('Error tweeting message. Please check your Twitter configuration.')
+        except tweepy.TweepError:  # pragma: no cover
+            logger.debug('Error tweeting message. Please check your Twitter configuration.')

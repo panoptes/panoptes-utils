@@ -12,7 +12,7 @@ from astropy.visualization import SqrtStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 from astropy.wcs import WCS
 
-from panoptes.utils.images.fits import get_solve_field
+from ..images.fits import get_solve_field
 
 
 def analyze_polar_rotation(pole_fn, *args, **kwargs):

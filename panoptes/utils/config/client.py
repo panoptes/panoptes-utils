@@ -1,6 +1,8 @@
 import requests
-from panoptes.utils import serializers
-from panoptes.utils.logger import get_root_logger
+
+from ..logger import logger
+from ..serializers import from_json
+from ..serializers import to_json
 
 
 def get_config(key=None, host='localhost', port='6563', parse=True, default=None):
@@ -53,14 +55,14 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
     try:
         response = requests.post(url, json={'key': key})
     except Exception as e:
-        get_root_logger().info(f'Problem with get_config: {e!r}')
+        logger.info(f'Problem with get_config: {e!r}')
     else:
         if not response.ok:
-            get_root_logger().info(f'Problem with get_config: {response.content!r}')
+            logger.info(f'Problem with get_config: {response.content!r}')
         else:
             if response.text != 'null\n':
                 if parse:
-                    config_entry = serializers.from_json(response.content.decode('utf8'))
+                    config_entry = from_json(response.content.decode('utf8'))
                 else:
                     config_entry = response.json()
 
@@ -102,7 +104,7 @@ def set_config(key, new_value, host='localhost', port='6563', parse=True):
     """
     url = f'http://{host}:{port}/set-config'
 
-    json_str = serializers.to_json({key: new_value})
+    json_str = to_json({key: new_value})
 
     config_entry = None
     try:
@@ -114,10 +116,10 @@ def set_config(key, new_value, host='localhost', port='6563', parse=True):
         if not response.ok:
             raise Exception(f'Cannot access config server: {response.text}')
     except Exception as e:
-        get_root_logger().info(f'Problem with set_config: {e!r}')
+        logger.info(f'Problem with set_config: {e!r}')
     else:
         if parse:
-            config_entry = serializers.from_json(response.content.decode('utf8'))
+            config_entry = from_json(response.content.decode('utf8'))
         else:
             config_entry = response.json()
 

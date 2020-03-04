@@ -1,19 +1,37 @@
-astropy
-cffi
-Flask
-jupyter_console
-libffi
-matplotlib-base
-numpy
-pip
-psycopg2
-pyserial
-python-dateutil
-PyYAML
-pyzmq
-readline
-scikit-image
-scikit-learn
-scipy
-tornado
-zeromq
+name: panoptes
+channels:
+  - astropy
+  - conda-forge
+dependencies:
+  - astroplan>=0.6
+  - astropy>=4.0.0
+  - codecov
+  - coverage
+  - coveralls
+  - Flask
+  - ipython
+  - loguru
+  - matplotlib-base>=3.0.0
+  - numpy
+  - photutils
+  - pip
+  - pycodestyle
+  - pyserial
+  - pytest-cov
+  - pytest-remotedata>=0.3.1
+  - pytest
+  - python-dateutil
+  - python-json-logger
+  - PyYAML
+  - pyzmq
+  - readline
+  - requests
+  - ruamel.yaml>=0.15
+  - scikit-image
+  - scipy
+  - tweepy
+  - versioneer
+  - zeromq
+  - pip:
+    - scalpl
+    - mocket

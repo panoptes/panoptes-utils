@@ -7,8 +7,9 @@ import time
 
 from astropy.utils import console
 from panoptes.utils.config.client import get_config
-from panoptes.utils.logger import get_root_logger
 from panoptes.utils.messaging import PanMessaging
+from panoptes.utils.logger import logger
+
 
 the_root_logger = None
 
@@ -153,6 +154,6 @@ if __name__ == '__main__':
     if not sub_and_pub_pairs:
         arg_error('Found no port pairs to forward between.')
 
-    the_root_logger = get_root_logger()
+    the_root_logger = logger
 
     run_forwarders(sub_and_pub_pairs)

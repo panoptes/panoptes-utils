@@ -1,9 +1,5 @@
-import os
 
 import numpy as np
-
-from decimal import Decimal
-from decimal import ROUND_HALF_UP
 
 
 def get_rgb_data(data, separate_green=False):
@@ -101,7 +97,7 @@ def get_rgb_data(data, separate_green=False):
 def get_rgb_masks(data, separate_green=False):
     """Get the RGGB Bayer pattern for the given data.
 
-    See `get_rgb_data` for description of data.
+    > Note: See `get_rgb_data` for a description of the RGGB pattern.
 
     Args:
         data (`numpy.array`): An array of data representing an image.
@@ -132,7 +128,7 @@ def get_rgb_masks(data, separate_green=False):
         g2_mask[..., 0::2, 0::2] = False
         b_mask[..., 0::2, 1::2] = False
     else:
-        raise Exception('Only 2D and 3D data allowed')
+        raise TypeError('Only 2D and 3D data allowed')
 
     if separate_green:
         return np.array([r_mask, g1_mask, g2_mask, b_mask])
@@ -140,68 +136,10 @@ def get_rgb_masks(data, separate_green=False):
         return np.array([r_mask, g1_mask, b_mask])
 
 
-def pixel_color(x, y):
+def get_pixel_color(x, y):
     """ Given an x,y position, return the corresponding color.
 
-    The Bayer array defines a superpixel as a collection of 4 pixels
-    set in a square grid:
-
-                     R G
-                     G B
-
-    `ds9` and other image viewers define the coordinate axis from the
-    lower left corner of the image, which is how a traditional x-y plane
-    is defined and how most images would expect to look when viewed. This
-    means that the `(0, 0)` coordinate position will be in the lower left
-    corner of the image.
-
-    When the data is loaded into a `numpy` array the data is flipped on the
-    vertical axis in order to maintain the same indexing/slicing features.
-    This means the the `(0, 0)` coordinate position is in the upper-left
-    corner of the array when output. When plotting this array one can use
-    the `origin='lower'` option to view the array as would be expected in
-    a normal image although this does not change the actual index.
-
-    Note:
-
-        Image dimensions:
-
-         ----------------------------
-         x | width  | i | columns |  5208
-         y | height | j | rows    |  3476
-
-        Bayer Pattern (as seen in ds9):
-
-                                      x / j
-
-                      0     1    2     3 ... 5204 5205 5206 5207
-                    --------------------------------------------
-               3475 |  R   G1    R    G1        R   G1    R   G1
-               3474 | G2    B   G2     B       G2    B   G2    B
-               3473 |  R   G1    R    G1        R   G1    R   G1
-               3472 | G2    B   G2     B       G2    B   G2    B
-                  . |
-         y / i    . |
-                  . |
-                  3 |  R   G1    R    G1        R   G1    R   G1
-                  2 | G2    B   G2     B       G2    B   G2    B
-                  1 |  R   G1    R    G1        R   G1    R   G1
-                  0 | G2    B   G2     B       G2    B   G2    B
-
-
-        This can be described by:
-
-                 | row (y) |  col (x)
-             --------------| ------
-              R  |  odd i, |  even j
-              G1 |  odd i, |   odd j
-              G2 | even i, |  even j
-              B  | even i, |   odd j
-
-            bayer[1::2, 0::2] = 1 # Red
-            bayer[1::2, 1::2] = 1 # Green
-            bayer[0::2, 0::2] = 1 # Green
-            bayer[0::2, 1::2] = 1 # Blue
+    > Note: See `get_rgb_data` for a description of the RGGB pattern.
 
     Returns:
         str: one of 'R', 'G1', 'G2', 'B'
@@ -218,80 +156,3 @@ def pixel_color(x, y):
             return 'B'
         else:
             return 'G1'
-
-
-def get_stamp_slice(x, y, stamp_size=(14, 14), verbose=False, ignore_superpixel=False):
-    """Get the slice around a given position with fixed Bayer pattern.
-
-    Given an x,y pixel position, get the slice object for a stamp of a given size
-    but make sure the first position corresponds to a red-pixel. This means that
-    x,y will not necessarily be at the center of the resulting stamp.
-
-    Args:
-        x (float): X pixel position.
-        y (float): Y pixel position.
-        stamp_size (tuple, optional): The size of the cutout, default (14, 14).
-        verbose (bool, optional): Verbose, default False.
-
-    Returns:
-        `slice`: A slice object for the data.
-    """
-    # Make sure requested size can have superpixels on each side.
-    if not ignore_superpixel:
-        for side_length in stamp_size:
-            side_length -= 2  # Subtract center superpixel
-            if int(side_length / 2) % 2 != 0:
-                print("Invalid slice size: ", side_length + 2,
-                      " Slice must have even number of pixels on each side of",
-                      " the center superpixel.",
-                      "i.e. 6, 10, 14, 18...")
-                return
-
-    # Pixels have nasty 0.5 rounding issues
-    x = Decimal(float(x)).to_integral()
-    y = Decimal(float(y)).to_integral()
-    color = pixel_color(x, y)
-    if verbose:
-        print(x, y, color)
-
-    x_half = int(stamp_size[0] / 2)
-    y_half = int(stamp_size[1] / 2)
-
-    x_min = int(x - x_half)
-    x_max = int(x + x_half)
-
-    y_min = int(y - y_half)
-    y_max = int(y + y_half)
-
-    # Alter the bounds depending on identified center pixel
-    if color == 'B':
-        x_min -= 1
-        x_max -= 1
-        y_min -= 0
-        y_max -= 0
-    elif color == 'G1':
-        x_min -= 1
-        x_max -= 1
-        y_min -= 1
-        y_max -= 1
-    elif color == 'G2':
-        x_min -= 0
-        x_max -= 0
-        y_min -= 0
-        y_max -= 0
-    elif color == 'R':
-        x_min -= 0
-        x_max -= 0
-        y_min -= 1
-        y_max -= 1
-
-    # if stamp_size is odd add extra
-    if (stamp_size[0] % 2 == 1):
-        x_max += 1
-        y_max += 1
-
-    if verbose:
-        print(x_min, x_max, y_min, y_max)
-        print()
-
-    return (slice(y_min, y_max), slice(x_min, x_max))

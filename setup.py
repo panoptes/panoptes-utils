@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # Licensed under an MIT style license - see LICENSE.txt
 
-from distutils.command.build_py import build_py
 from configparser import ConfigParser
 from setuptools import setup, find_namespace_packages
 
@@ -25,20 +24,17 @@ NAME = metadata.get('name', 'panoptes-utils')
 PACKAGENAME = metadata.get('package_name', 'packagename')
 URL = metadata.get('url', 'https://projectpanoptes.org')
 
-requirements = list()
-requirements_fn = 'requirements.txt'
-with open(requirements_fn) as f:
-    requirements = f.read().splitlines()
-
 modules = {
     'required': [
-        'astroplan',
-        'astropy',
+        'astroplan>=0.6',
+        'astropy>=4.0.0',
         'Flask',
+        'loguru',
         'matplotlib>=3.0.0',
         'numpy',
         'photutils',
         'pyserial',
+        'python-json-logger',
         'python-dateutil',
         'PyYAML',
         'pyzmq',
@@ -54,8 +50,8 @@ modules = {
         'coverage',
         'coveralls',
         'mocket',
-        'pycodestyle==2.3.1',
-        'pytest>=3.6',
+        'pycodestyle',
+        'pytest',
         'pytest-cov',
         'pytest-remotedata>=0.3.1'
     ],
@@ -75,10 +71,6 @@ setup(name=NAME,
       python_requires='>=3.6',
       setup_requires=['pytest-runner'],
       tests_require=modules['testing'],
-      # List additional groups of dependencies here (e.g. development
-      # dependencies). You can install these using the following syntax,
-      # for example:
-      # $ pip install -e .[dev,test]
       scripts=[
           'bin/cr2-to-jpg',
           'bin/panoptes-config-server',

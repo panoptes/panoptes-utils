@@ -14,10 +14,10 @@ import threading
 import time
 import urllib
 
+from panoptes.utils.logger import logger
 from panoptes.utils.tests import serial_handlers
 from panoptes.utils.serializers import to_json
 from panoptes.utils.serializers import from_json
-from panoptes.utils.logger import get_root_logger
 
 
 def _drain_queue(q):
@@ -36,7 +36,7 @@ class ArduinoSimulator:
     at a rate similar to 9600 baud, the rate used by our Arduino sketches.
     """
 
-    def __init__(self, message, relay_queue, json_queue, chunk_size, stop, logger):
+    def __init__(self, message, relay_queue, json_queue, chunk_size, stop):
         """
         Args:
             message: The message to be sent (millis and report_num will be added).
@@ -48,14 +48,13 @@ class ArduinoSimulator:
                 length up to chunk_size).
             chunk_size: The number of bytes to write to json_queue at a time.
             stop: a threading.Event which is checked to see if run should stop executing.
-            logger: the Python logger to use for reporting messages.
         """
         self.message = copy.deepcopy(message)
-        get_root_logger().critical(f'message: {message}')
+        self.logger = logger
+        self.logger.critical(f'message: {message}')
         self.relay_queue = relay_queue
         self.json_queue = json_queue
         self.stop = stop
-        self.logger = logger
         # Time between producing messages.
         self.message_delta = datetime.timedelta(seconds=2)
         self.next_message_time = None
@@ -195,7 +194,7 @@ class ArduinoSimulator:
 class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.logger = get_root_logger()
+        self.logger = logger
         self.simulator_thread = None
         self.relay_queue = queue.Queue(maxsize=1)
         self.json_queue = queue.Queue(maxsize=1)

@@ -7,6 +7,8 @@ import shutil
 import sys
 import warnings
 
+from .logger import logger
+
 # Use custom location for download
 from astropy.utils.iers import conf as iers_conf
 iers_conf.iers_auto_url = 'https://storage.googleapis.com/panoptes-resources/iers/ser7.dat'
@@ -55,7 +57,7 @@ class Downloader:
         except Exception as e:
             if not self.keep_going:
                 raise e
-            print('Failed to download IERS A bulletin: {}'.format(e))
+            logger.warning(f'Failed to download IERS A bulletin: {e}')
             result = False
         if self.wide_field:
             for i in range(4110, 4119):
@@ -78,7 +80,7 @@ class Downloader:
         except Exception as e:
             if not self.keep_going:
                 raise e
-            print('Failed to download {}: {}'.format(url, e))
+            logger.warning(f'Failed to download {url}: {e}')
             return False
         # The file has been downloaded to some directory. Move the file into the data folder.
         try:
@@ -88,13 +90,13 @@ class Downloader:
         except OSError as e:
             if not self.keep_going:
                 raise e
-            print("Problem saving {}. Check permissions: {}".format(url, e))
+            logger.warning(f"Problem saving {url}. Check permissions: {e}")
             return False
 
     def create_data_folder(self):
         """Creates the data folder if it does not exist."""
         if not os.path.exists(self.data_folder):
-            print("Creating data folder: {}.".format(self.data_folder))
+            logger.info("Creating data folder: {}.".format(self.data_folder))
             os.makedirs(self.data_folder)
 
 
@@ -131,7 +133,7 @@ def main():
     args = parser.parse_args()
 
     if args.folder and not os.path.exists(args.folder):
-        print("Warning, data folder {} does not exist.".format(args.folder))
+        logger.info("Warning, data folder {} does not exist.".format(args.folder))
 
     keep_going = args.keep_going or not args.no_keep_going
 
