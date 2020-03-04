@@ -113,8 +113,7 @@ class CountdownTimer(object):
         if isinstance(duration, u.Quantity):
             duration = duration.to(u.second).value
         elif not isinstance(duration, (int, float)):
-            raise ValueError(
-                'duration (%r) is not a supported type: %s' % (duration, type(duration)))
+            raise ValueError(f'duration ({duration}) is not a supported type: {type(duration)}')
 
         #: bool: True IFF the duration is zero.
         assert duration >= 0, "Duration must be non-negative."

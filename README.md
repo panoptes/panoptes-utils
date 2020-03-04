@@ -52,7 +52,7 @@ See our [Docker documentation](https://panoptes-utils.readthedocs.io/en/latest/d
 # Using
 ## Modules
 
-The modules can be used as helper utilities anywhere you would like. See the complete documentation for details: [https://panoptes-utils.readthedocs.io/en/latest/](https://panoptes-utils.readthedocs.io/en/latest/)
+The modules can be used as helper utilities anywhere you would like. See the complete documentation for details: [https://panoptes-utils.readthedocs.io/en/latest/](https://panoptes-utils.readthedocs.io/en/latest/).
 
 ## Services
 
@@ -103,3 +103,23 @@ panoptes-messaging-hub --from-config
 A basic logger is defined in `panoptes.utils.logger.get_root_logger()`, which configures a [loguru](https://github.com/Delgan/loguru) logger with some defaults that are suitable to [POCS](https://github.com/panoptes/POCS).
 
 For now this will remain part of this repository but may move directly to POCS in the future as it is likely to be unused by others.
+
+There is also a `get_logger`, which is convenience method to return a generic logging instance, currently implemented with [`loguru`](https://github.com/Delgan/loguru). This can be used to enable logging for the `panoptes-utils` functions:
+
+```python
+>>> from panoptes.utils import CountdownTimer
+>>> # No logs by default
+>>> t0 = CountdownTimer(5)
+>>> t0.sleep()
+False
+
+>>> # Enable the logs
+>>> from panoptes.utils.logger import get_logger
+>>> get_logger().enable('panoptes')
+
+>>> t1 = CountdownTimer(5)
+2020-03-04 06:42:50 | DEBUG | panoptes.utils.time:restart:162 - Restarting Timer (blocking) 5.00/5.00
+>>> t1.sleep()
+2020-03-04 06:42:53 | DEBUG | panoptes.utils.time:sleep:183 - Sleeping for 2.43 seconds
+False
+```
