@@ -7,7 +7,6 @@ from panoptes.utils import listify
 from panoptes.utils import error
 from panoptes.utils.library import load_module
 from panoptes.utils.library import load_c_library
-from panoptes.utils.logger import get_root_logger
 
 
 def test_bad_load_module():
@@ -20,7 +19,7 @@ def test_load_c_library():
     libc = load_c_library('c')
     assert libc._name[:4] == 'libc'
 
-    libc = load_c_library('c', mode=None, logger=get_root_logger())
+    libc = load_c_library('c', mode=None)
     assert libc._name[:4] == 'libc'
 
 

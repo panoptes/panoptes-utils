@@ -11,7 +11,7 @@ pip install -e ".[all]"
 
 export PYTHONPATH="$PYTHONPATH:$PANDIR/panoptes-utils/scripts/testing/coverage"
 export COVERAGE_PROCESS_START="${PANDIR}/panoptes-utils/.coveragerc"
-coverage run "$(command -v pytest)" -vvrs --test-databases all
+coverage run "$(command -v pytest)" -vv -rfes --test-databases all
 
 # Upload coverage reports if running from Travis.
 if [[ $TRAVIS ]]; then

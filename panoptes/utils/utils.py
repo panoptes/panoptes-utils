@@ -11,7 +11,8 @@ from astropy.coordinates import AltAz
 from astropy.coordinates import ICRS
 from astropy.coordinates import SkyCoord
 
-from panoptes.utils.time import current_time
+from .time import current_time
+
 
 PATH_MATCHER = re.compile(
     r'.*(?P<unit_id>PAN\d{3})/(?P<camera_id>[a-gA-G1-9]{6})/(?P<sequence_id>.*?)/(?P<image_id>.*?)\..*')
@@ -161,7 +162,7 @@ def string_to_params(opts):
     return args, kwargs
 
 
-def altaz_to_radec(alt=35, az=90, location=None, obstime=None, verbose=False):
+def altaz_to_radec(alt=35, az=90, location=None, obstime=None, **kwargs):
     """Convert alt/az degrees to RA/Dec SkyCoord.
 
     >>> from panoptes.utils import altaz_to_radec
@@ -178,8 +179,7 @@ def altaz_to_radec(alt=35, az=90, location=None, obstime=None, verbose=False):
     <SkyCoord (ICRS): (ra, dec) in deg
         (..., ...)>
 
-    >>> altaz_to_radec(location=keck, obstime='2020-02-02T20:20:02.02', verbose=True)
-    Getting coordinates for Alt 35 Az 90, from (-5464487..., -2492806..., 2151240.19451846) m at 2020-02-02T20:20:02.02
+    >>> altaz_to_radec(location=keck, obstime='2020-02-02T20:20:02.02')
     <SkyCoord (ICRS): (ra, dec) in deg
         (338.40968035, 11.11755983)>
 
@@ -196,7 +196,6 @@ def altaz_to_radec(alt=35, az=90, location=None, obstime=None, verbose=False):
         az (int, optional): Azimute, defaults to 90 (east)
         location (None|astropy.coordinates.EarthLocation, required): A valid location.
         obstime (None, optional): Time for object, defaults to `current_time`
-        verbose (bool, optional): Verbose, default False.
 
     Returns:
         astropy.coordinates.SkyCoord: Coordinates corresponding to the AltAz.
@@ -204,10 +203,6 @@ def altaz_to_radec(alt=35, az=90, location=None, obstime=None, verbose=False):
     assert location is not None
     if obstime is None:
         obstime = current_time()
-
-    if verbose:
-        print("Getting coordinates for Alt {} Az {}, from {} at {}".format(
-            alt, az, location, obstime))
 
     altaz = AltAz(obstime=obstime, location=location, alt=alt * u.deg, az=az * u.deg)
     return SkyCoord(altaz.transform_to(ICRS))

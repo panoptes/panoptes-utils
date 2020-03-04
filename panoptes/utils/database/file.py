@@ -1,12 +1,14 @@
 import os
+from warnings import warn
 from contextlib import suppress
 from uuid import uuid4
 from glob import glob
 
-from panoptes.utils.serializers import to_json
-from panoptes.utils.serializers import from_json
-from panoptes.utils.database import AbstractPanDB
-from panoptes.utils.database import create_storage_obj
+from .. import error
+from ..serializers import to_json
+from ..serializers import from_json
+from ..database import AbstractPanDB
+from ..database import create_storage_obj
 
 
 class PanFileDB(AbstractPanDB):
@@ -40,20 +42,12 @@ class PanFileDB(AbstractPanDB):
             # Overwrite current collection file with obj.
             to_json(obj, filename=current_fn, append=False)
         except Exception as e:
-            self._warn(f"Problem serializing object for insertion: {e} {current_fn} {obj!r}")
-            result = None
+            raise error.InvalidSerialization(f"Problem serializing object for insertion: {e} {current_fn} {obj!r}")
 
         if not store_permanently:
             return result
-
-        collection_fn = self._get_file(collection)
-        try:
-            # Append obj to collection file.
-            to_json(obj, filename=collection_fn, append=True)
-            return obj_id
-        except Exception as e:
-            self._warn("Problem inserting object into collection: {}, {!r}".format(e, obj))
-            return None
+        else:
+            return self.insert(collection, obj)
 
     def insert(self, collection, obj):
         self.validate_collection(collection)
@@ -65,8 +59,7 @@ class PanFileDB(AbstractPanDB):
             to_json(obj, filename=collection_fn)
             return obj_id
         except Exception as e:
-            self._warn("Problem inserting object into collection: {}, {!r}".format(e, obj))
-            return None
+            raise error.InvalidSerialization(f"Problem inserting object into collection: {e}, {obj!r}")
 
     def get_current(self, collection):
         current_fn = self._get_file(collection, permanent=False)
@@ -77,7 +70,7 @@ class PanFileDB(AbstractPanDB):
 
             return msg
         except FileNotFoundError:
-            self._warn("No record found for {}".format(collection))
+            self.logger.warning("No record found for {}".format(collection))
             return None
 
     def find(self, collection, obj_id):

@@ -14,18 +14,17 @@ def test_crop_data():
     ones = np.ones((201, 201))
     assert ones.sum() == 40401.
 
-    cropped01 = img_utils.crop_data(ones, verbose=False)  # False to exercise coverage.
+    cropped01 = img_utils.crop_data(ones)  # False to exercise coverage.
     assert cropped01.sum() == 40000.
 
-    cropped02 = img_utils.crop_data(ones, verbose=True, box_width=10)
+    cropped02 = img_utils.crop_data(ones, box_width=10)
     assert cropped02.sum() == 100.
 
-    cropped03 = img_utils.crop_data(ones, verbose=True, box_width=6, center=(50, 50))
+    cropped03 = img_utils.crop_data(ones, box_width=6, center=(50, 50))
     assert cropped03.sum() == 36.
 
     # Test the Cutout2D object
     cropped04 = img_utils.crop_data(ones,
-                                    verbose=True,
                                     box_width=20,
                                     center=(50, 50),
                                     data_only=False)
@@ -37,13 +36,8 @@ def test_crop_data():
 
 
 def test_make_pretty_image(solved_fits_file, tiny_fits_file, save_environ):
-    # Not a valid file type (can't automatically handle .fits.fz files).
-    with pytest.warns(UserWarning, match='File must be'):
-        assert not img_utils.make_pretty_image(solved_fits_file)
-
     # Make a dir and put test image files in it.
     with tempfile.TemporaryDirectory() as tmpdir:
-        fz_file = os.path.join(tmpdir, os.path.basename(solved_fits_file))
         fits_file = os.path.join(tmpdir, os.path.basename(tiny_fits_file))
         # TODO Add a small CR2 file to our sample image files.
 
@@ -54,10 +48,6 @@ def test_make_pretty_image(solved_fits_file, tiny_fits_file, save_environ):
         # Copy the files.
         shutil.copy(solved_fits_file, tmpdir)
         shutil.copy(tiny_fits_file, tmpdir)
-
-        # Not a valid file type (can't automatically handle fits.fz files).
-        with pytest.warns(UserWarning):
-            assert not img_utils.make_pretty_image(fz_file)
 
         # Can handle the fits file, and creating the images dir for linking
         # the latest image.
@@ -92,10 +82,9 @@ def test_make_pretty_image_cr2_fail():
             f.write('not an image file')
         with pytest.raises(error.InvalidCommand):
             img_utils.make_pretty_image(tmpfile,
-                                        title='some text',
-                                        verbose=True)
+                                        title='some text')
         with pytest.raises(error.InvalidCommand):
-            img_utils.make_pretty_image(tmpfile, verbose=True)
+            img_utils.make_pretty_image(tmpfile)
 
 
 @pytest.mark.skipif("TRAVIS" not in os.environ, reason="Skipping this test if not on Travis CI.")
@@ -104,8 +93,7 @@ def test_make_pretty_image_cr2(cr2_file):
     pretty_path = img_utils.make_pretty_image(cr2_file,
                                               title='CR2 Test',
                                               image_type='cr2',
-                                              link_path=link_path,
-                                              verbose=True)
+                                              link_path=link_path)
 
     assert os.path.exists(pretty_path)
     assert pretty_path == link_path

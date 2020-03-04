@@ -14,6 +14,7 @@ imageio==2.6.1            # via scikit-image
 itsdangerous==1.1.0       # via flask
 jinja2==2.11.1            # via flask
 kiwisolver==1.1.0         # via matplotlib
+loguru==0.4.1
 markupsafe==1.1.1         # via jinja2
 matplotlib==3.1.3
 networkx==2.4             # via scikit-image
@@ -23,6 +24,7 @@ pillow==7.0.0             # via imageio, scikit-image
 pyparsing==2.4.6          # via matplotlib
 pyserial==3.4
 python-dateutil==2.8.1
+python-json-logger==0.1.11
 pytz==2019.3              # via astroplan
 pywavelets==1.1.1         # via scikit-image
 pyyaml==5.3
@@ -37,4 +39,4 @@ versioneer==0.18
 werkzeug==1.0.0           # via flask
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools
+# setuptools==45.2.0        # via kiwisolver

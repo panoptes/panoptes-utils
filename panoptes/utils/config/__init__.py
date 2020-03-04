@@ -2,8 +2,10 @@ import os
 from contextlib import suppress
 from warnings import warn
 
-from panoptes.utils import listify
-from panoptes.utils import serializers
+from ..logger import logger
+from ..utils import listify
+from ..serializers import from_yaml
+from ..serializers import to_yaml
 
 
 def load_config(config_files=None, simulator=None, parse=True, ignore_local=False):
@@ -70,7 +72,7 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
         try:
             _add_to_conf(config, path, parse=parse)
         except Exception as e:
-            warn("Problem with config file {}, skipping. {}".format(path, e))
+            warn(f"Problem with config file {path}, skipping. {e}")
 
         # Load local version of config
         if ignore_local is False:
@@ -79,7 +81,7 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
                 try:
                     _add_to_conf(config, local_version, parse=parse)
                 except Exception:
-                    warn("Problem with local config file {}, skipping".format(local_version))
+                    warn(f"Problem with local config file {local_version}, skipping")
 
     # parse_config currently only corrects directory names.
     if parse:
@@ -120,13 +122,13 @@ def save_config(path, config, overwrite=True):
     full_path = f'{base}{ext}'
 
     if os.path.exists(full_path) and overwrite is False:
-        warn("Path exists and overwrite=False: {}".format(full_path))
+        logger.warning(f"Path exists and overwrite=False: {full_path}")
     else:
         # Create directory if does not exist
         os.makedirs(os.path.dirname(full_path), exist_ok=True)
         with open(full_path, 'w') as f:
             print(config)
-            serializers.to_yaml(config, stream=f)
+            to_yaml(config, stream=f)
 
 
 def parse_config(config):
@@ -155,6 +157,6 @@ def parse_config(config):
 def _add_to_conf(config, fn, parse=False):
     with suppress(IOError):
         with open(fn, 'r') as f:
-            c = serializers.from_yaml(f, parse=parse)
+            c = from_yaml(f, parse=parse)
             if c is not None and isinstance(c, dict):
                 config.update(c)

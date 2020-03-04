@@ -26,10 +26,10 @@ def test_fpack(solved_fits_file):
     info = os.stat(copy_file)
     assert info.st_size > 0.
 
-    uncompressed = fits_utils.funpack(copy_file, verbose=True)
+    uncompressed = fits_utils.funpack(copy_file)
     assert os.stat(uncompressed).st_size > info.st_size
 
-    compressed = fits_utils.fpack(uncompressed, verbose=True)
+    compressed = fits_utils.fpack(uncompressed)
     assert os.stat(compressed).st_size == info.st_size
 
     os.remove(copy_file)
@@ -47,7 +47,7 @@ def test_getval(solved_fits_file):
 
 
 def test_solve_field(solved_fits_file):
-    proc = fits_utils.solve_field(solved_fits_file, verbose=True)
+    proc = fits_utils.solve_field(solved_fits_file)
     assert isinstance(proc, subprocess.Popen)
     proc.wait()
     assert proc.returncode == 0
@@ -55,13 +55,15 @@ def test_solve_field(solved_fits_file):
 
 def test_solve_options(solved_fits_file):
     proc = fits_utils.solve_field(
-        solved_fits_file, solve_opts=['--guess-scale'], verbose=False)
+        solved_fits_file, solve_opts=['--guess-scale'])
     assert isinstance(proc, subprocess.Popen)
     proc.wait()
     assert proc.returncode == 0
 
 
 def test_solve_bad_field(solved_fits_file):
-    proc = fits_utils.solve_field('Foo', verbose=True)
+    proc = fits_utils.solve_field('Foo.fits')
     outs, errs = proc.communicate()
+    print('outs', outs)
+    print('errs', errs)
     assert 'ERROR' in errs

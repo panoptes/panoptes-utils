@@ -1,7 +1,7 @@
 import pytest
 
 from panoptes.utils.database import PanDB
-from panoptes.utils.error import InvalidCollection
+from panoptes.utils import error
 
 
 def test_bad_db():
@@ -50,21 +50,29 @@ def test_simple_insert(db):
     assert record['data']['test'] == rec['test']
 
 
-# Filter out (hide) "UserWarning: Collection not available"
+def test_bad_insert(db):
+    """Can't serialize `db` properly so gives warning and returns nothing."""
+    with pytest.raises(error.InvalidSerialization):
+        rec = db.insert_current('config', db, store_permanently=False)
+        assert rec is None
+
+    with pytest.raises(error.InvalidSerialization):
+        rec = db.insert('config', db)
+        assert rec is None
+
+
 @pytest.mark.filterwarnings('ignore')
 def test_bad_collection(db):
-    with pytest.raises(InvalidCollection):
+    with pytest.raises(error.InvalidCollection):
         db.insert_current('foobar', {'test': 'insert'})
 
-    with pytest.raises(InvalidCollection):
+    with pytest.raises(error.InvalidCollection):
         db.insert('foobar', {'test': 'insert'})
 
 
 def test_warn_bad_object(db):
-    db.logger = None
-
-    with pytest.warns(UserWarning):
+    with pytest.raises(error.InvalidSerialization):
         db.insert_current('observations', {'junk': db})
 
-    with pytest.warns(UserWarning):
+    with pytest.raises(error.InvalidSerialization):
         db.insert('observations', {'junk': db})

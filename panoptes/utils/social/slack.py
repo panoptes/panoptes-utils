@@ -1,13 +1,10 @@
 import requests
-
-from panoptes.utils.logger import get_root_logger
+from ..logger import logger
 
 
 class SocialSlack(object):
 
     """Social Messaging sink to output to Slack."""
-
-    logger = get_root_logger()
 
     def __init__(self, **kwargs):
         self.web_hook = kwargs.get('webhook_url', '')
@@ -25,5 +22,5 @@ class SocialSlack(object):
 
             # We ignore the response body and headers of a successful post.
             requests.post(self.web_hook, json={'text': post_msg})
-        except Exception as e:
-            self.logger.debug('Error posting to slack: {}'.format(e))
+        except Exception as e:  # pragma: no cover
+            logger.warning('Error posting to slack: {}'.format(e))
