@@ -2,6 +2,15 @@ import os
 from loguru import logger
 
 
+def get_logger():
+    """Convenience method to return the logger.
+
+    Returns:
+        `loguru.logger`: A logging instance. Currently `loguru`.
+    """
+    return logger
+
+
 def get_root_logger(profile='panoptes',
                     log_file='panoptes_{time:YYYYMMDD!UTC}.log',
                     log_dir=None,
