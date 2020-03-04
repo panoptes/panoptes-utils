@@ -1,7 +1,7 @@
-Docker Containers
-=================
+Docker
+======
 
-- [Docker Containers](#docker-containers)
+- [Docker](#docker)
   - [PANOPTES Containers](#panoptes-containers)
       - [panoptes-base](#panoptes-base)
       - [panoptes-utils](#panoptes-utils)
@@ -57,14 +57,12 @@ docker pull gcr.io/panoptes-exp/panoptes-utils:latest
 
 ## Running Docker Containers
 
-The image contains an installed version of the `panoptes-utils` module as well as the system dependencies required to run the various scripts and functions (see [Services]). The default `CMD` is just a shell so
-can run a machine with default options and get placed inside the virtual environment.
+The image contains an installed version of the `panoptes-utils` module as well as the system dependencies required to run the various scripts and functions (see [Services](../README.md#services)). The default `ENTRY_POINT` is just a shell so can run a machine with default options and get placed inside the virtual environment.
 
 > Note that we are running this with `network=host`, which opens up all network ports on
 the host to the running container. As of April 2019 this still presents problems on the Mac.
 
-For PANOPTES purposes, the `docker-compose.yaml` defines two containers each running `panoptes-utils` image.
-The first container runs the configuration server (i.e. `scripts/run_config_server.py`) as a local web service and the second container runs the zeromq messaging hub (i.e. `scripts/run_messaging_hub.py`).
+For PANOPTES purposes, the `docker-compose.yaml` defines two containers each running `panoptes-utils` image. The first container runs the configuration server (i.e. `scripts/run_config_server.py`) as a local web service and the second container runs the zeromq messaging hub (i.e. `scripts/run_messaging_hub.py`).
 
 ## Building Docker Images
 
