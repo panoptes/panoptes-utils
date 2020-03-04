@@ -69,7 +69,7 @@ For PANOPTES purposes, the `docker-compose.yaml` defines two containers each run
 `docker/build-image.sh` builds:
 * `cloudbuild-base.yaml` uses `Dockerfile` to create a `panoptes-base` image.
 * `cloudbuild-utils.yaml` uses `Dockerfile.utils.[amd64|rpi]` to create a `panoptes-utils` image.
-  * Uses `conda-environment-[amd64|rpi.yaml` to create a conda environment called `panoptes-env`
+  * Uses `conda-environment-[amd64|rpi].yaml` to create a conda environment called `panoptes-env`
 
 `.travis.yaml` uses `panoptes-utils` image to run `scripts/testing/run_tests.sh` with the `$TRAVIS_BUILD_DIR` mapped to the working dir for the module.
 
