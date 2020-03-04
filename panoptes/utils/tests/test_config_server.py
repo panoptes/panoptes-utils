@@ -1,6 +1,5 @@
 import pytest
 import requests
-import logging
 
 from astropy import units as u
 
@@ -23,7 +22,6 @@ def test_config_client(dynamic_config_server, config_port):
 
 
 def test_config_client_bad(dynamic_config_server, config_port, caplog):
-    caplog.set_level(logging.DEBUG)
     # Bad host will return `None` but also throw error
     assert set_config('foo', 42, host='foobaz') is None
     assert caplog.records[-1].levelname == "INFO"
