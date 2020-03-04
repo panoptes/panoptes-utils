@@ -2,7 +2,6 @@ import os
 import subprocess
 import shutil
 
-from loguru import logger
 from dateutil import parser as date_parser
 from json import loads
 from warnings import warn
@@ -12,6 +11,7 @@ import numpy as np
 from astropy.io import fits
 
 from .. import error
+from ..logger import logger
 from ..images import fits as fits_utils
 
 

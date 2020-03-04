@@ -1,6 +1,6 @@
 import socket
-from loguru import logger
 
+from .logger import logger
 from . import error
 
 

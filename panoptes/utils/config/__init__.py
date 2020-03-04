@@ -1,8 +1,8 @@
 import os
 from contextlib import suppress
 from warnings import warn
-from loguru import logger
 
+from ..logger import logger
 from ..utils import listify
 from ..serializers import from_yaml
 from ..serializers import to_yaml

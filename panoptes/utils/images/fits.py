@@ -1,7 +1,6 @@
 import os
 import shutil
 import subprocess
-from loguru import logger
 
 from warnings import warn
 
@@ -9,6 +8,7 @@ from astropy.io import fits
 from astropy.wcs import WCS
 from astropy import units as u
 
+from ..logger import logger
 from .. import error
 
 

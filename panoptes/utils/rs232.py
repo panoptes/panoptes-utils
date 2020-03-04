@@ -5,9 +5,9 @@ import serial
 from serial.tools.list_ports import comports as get_comports
 import time
 from contextlib import suppress
-from loguru import logger
 
 from . import error
+from .logger import logger
 from .serializers import from_json
 
 

@@ -1,5 +1,5 @@
 import requests
-from loguru import logger
+from ..logger import logger
 
 
 class SocialSlack(object):

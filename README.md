@@ -11,6 +11,7 @@ PANOPTES Utils
   - [Docker](#docker)
 - [Using](#using)
   - [Modules](#modules)
+      - [Logging](#logging)
   - [Services](#services)
     - [Config Server](#config-server)
     - [Messaging Hub](#messaging-hub)
@@ -53,6 +54,31 @@ See our [Docker documentation](https://panoptes-utils.readthedocs.io/en/latest/d
 ## Modules
 
 The modules can be used as helper utilities anywhere you would like. See the complete documentation for details: [https://panoptes-utils.readthedocs.io/en/latest/](https://panoptes-utils.readthedocs.io/en/latest/).
+
+#### Logging
+
+The `panoptes-utils` module uses [`loguru`](https://github.com/Delgan/loguru) for logging, which also serves as the basis for the POCS logger (see [Logger](#logger) below).
+
+To access the logs for the module, you can import directly from the `logger` module, i.e., `from panoptes.utils.logger import logger`. This is a simple wrapper around `luguru` with no extra configuration.
+
+```python
+>>> from panoptes.utils import CountdownTimer
+>>> # No logs by default
+>>> t0 = CountdownTimer(5)
+>>> t0.sleep()
+False
+
+>>> # Enable the logs
+>>> from panoptes.utils.logger import logger
+>>> logger.enable('panoptes')
+
+>>> t1 = CountdownTimer(5)
+2020-03-04 06:42:50 | DEBUG | panoptes.utils.time:restart:162 - Restarting Timer (blocking) 5.00/5.00
+>>> t1.sleep()
+2020-03-04 06:42:53 | DEBUG | panoptes.utils.time:sleep:183 - Sleeping for 2.43 seconds
+False
+```
+
 
 ## Services
 
@@ -104,22 +130,5 @@ A basic logger is defined in `panoptes.utils.logger.get_root_logger()`, which co
 
 For now this will remain part of this repository but may move directly to POCS in the future as it is likely to be unused by others.
 
-There is also a `get_logger`, which is convenience method to return a generic logging instance, currently implemented with [`loguru`](https://github.com/Delgan/loguru). This can be used to enable logging for the `panoptes-utils` functions:
+To access logs for the module, see
 
-```python
->>> from panoptes.utils import CountdownTimer
->>> # No logs by default
->>> t0 = CountdownTimer(5)
->>> t0.sleep()
-False
-
->>> # Enable the logs
->>> from panoptes.utils.logger import get_logger
->>> get_logger().enable('panoptes')
-
->>> t1 = CountdownTimer(5)
-2020-03-04 06:42:50 | DEBUG | panoptes.utils.time:restart:162 - Restarting Timer (blocking) 5.00/5.00
->>> t1.sleep()
-2020-03-04 06:42:53 | DEBUG | panoptes.utils.time:sleep:183 - Sleeping for 2.43 seconds
-False
-```

@@ -7,8 +7,7 @@ import shutil
 import sys
 import warnings
 
-# Set default logging handler to avoid "No handler found" warnings.
-from loguru import logger
+from .logger import logger
 
 # Use custom location for download
 from astropy.utils.iers import conf as iers_conf

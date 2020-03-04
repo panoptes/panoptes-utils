@@ -1,3 +1,3 @@
-from loguru import logger
+from .utils.logger import logger
 
 logger.disable('panoptes')
