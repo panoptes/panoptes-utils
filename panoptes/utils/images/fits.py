@@ -31,7 +31,6 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
     if solve_opts is not None:
         options = solve_opts
     else:
-        png_fn = fname.replace('.fits', '.png')
         options = [
             '--guess-scale',
             '--cpulimit', str(timeout),
@@ -41,7 +40,6 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
             '--match', 'none',
             '--corr', 'none',
             '--wcs', 'none',
-            '--pnm', png_fn,
             '--downsample', '4',
         ]
 
