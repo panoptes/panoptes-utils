@@ -1,28 +1,13 @@
 # Downloads IERS Bulletin A (Earth Orientation Parameters, used by astroplan)
 # and astrometry.net indices.
 
-import argparse
 import os
 import shutil
-import sys
-import warnings
+
+from astroplan import download_IERS_A
+from astropy.utils import data
 
 from .logger import logger
-
-# Use custom location for download
-from astropy.utils.iers import conf as iers_conf
-iers_conf.iers_auto_url = 'https://storage.googleapis.com/panoptes-resources/iers/ser7.dat'
-iers_conf.iers_auto_url_mirror = 'https://storage.googleapis.com/panoptes-resources/iers/ser7.dat'
-
-# Importing download_IERS_A can emit a scary warnings, so we suppress it.
-with warnings.catch_warnings():
-    warnings.filterwarnings('ignore', message='Your version of the IERS Bulletin A')
-    from astroplan import download_IERS_A
-    # And pep8 checks complain about an import after the top of the file, but not when
-    # in this block. Weird.
-    from astropy.utils import data
-
-DEFAULT_DATA_FOLDER = "{}/astrometry/data".format(os.getenv('PANDIR'))
 
 
 class Downloader:
@@ -35,7 +20,12 @@ class Downloader:
     which stars are in an arbitrary image of the night sky.
     """
 
-    def __init__(self, data_folder=None, wide_field=True, narrow_field=False, keep_going=True):
+    def __init__(self,
+                 data_folder=None,
+                 wide_field=True,
+                 narrow_field=False,
+                 keep_going=True,
+                 verbose=False):
         """
         Args:
             data_folder: Path to directory into which to copy the astrometry.net indices.
@@ -43,31 +33,47 @@ class Downloader:
             narrow_field: If True, downloads narrow field astrometry.net indices.
             keep_going: If False, exceptions are not suppressed. If True, returns False if there
                 are any download failures, else returns True.
+            verbose (bool, optional): If console output, default False.
         """
-        self.data_folder = data_folder or DEFAULT_DATA_FOLDER
+        self.data_folder = data_folder
         self.wide_field = wide_field
         self.narrow_field = narrow_field
         self.keep_going = keep_going
+        self.verbose = verbose
 
     def download_all_files(self):
         """Downloads the files according to the attributes of this object."""
         result = True
-        try:
-            download_IERS_A()
-        except Exception as e:
-            if not self.keep_going:
-                raise e
-            logger.warning(f'Failed to download IERS A bulletin: {e}')
-            result = False
+
+        result = self.download_iers()
+
         if self.wide_field:
             for i in range(4110, 4119):
-                if not self.download_one_file('4100/index-{}.fits'.format(i)):
+                if not self.download_one_file(f'4100/index-{i}.fits'):
                     result = False
+
         if self.narrow_field:
             for i in range(4210, 4219):
-                if not self.download_one_file('4200/index-{}.fits'.format(i)):
+                if not self.download_one_file(f'4200/index-{i}.fits'):
                     result = False
         return result
+
+    def download_iers(self):
+        """Downloads the earth rotation catalog needed for accurate coordinate positions.
+
+        Note: This download gives us a host of problems. This function should be called
+        less than every 14 days otherwise a warning will be given. Currently we
+        are downloading of our own google-based mirror of the data.
+
+        Returns:
+            TYPE: Description
+        """
+        try:
+            download_IERS_A(show_progress=self.verbose)
+            return True
+        except Exception as e:
+            logger.warning(f'Failed to download IERS A bulletin: {e}')
+            return False
 
     def download_one_file(self, fn):
         """Downloads one astrometry.net file into self.data_folder."""
@@ -98,61 +104,3 @@ class Downloader:
         if not os.path.exists(self.data_folder):
             logger.info("Creating data folder: {}.".format(self.data_folder))
             os.makedirs(self.data_folder)
-
-
-def main():
-    parser = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument(
-        '--folder',
-        help='Destination folder for astrometry indices. Default: {}'.format(DEFAULT_DATA_FOLDER),
-        default=DEFAULT_DATA_FOLDER)
-
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument(
-        '--keep-going',
-        action='store_true',
-        help='Ignore download failures and keep going to the other downloads (default)')
-    group.add_argument(
-        '--no-keep-going', action='store_true', help='Fail immediately if any download fails')
-
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument(
-        '--narrow-field', action='store_true', help='Do download narrow field indices')
-    group.add_argument(
-        '--no-narrow-field',
-        action='store_true',
-        help='Skip downloading narrow field indices (default)')
-
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument(
-        '--wide-field', action='store_true', help='Do download wide field indices (default)')
-    group.add_argument(
-        '--no-wide-field', action='store_true', help='Skip downloading wide field indices')
-
-    args = parser.parse_args()
-
-    if args.folder and not os.path.exists(args.folder):
-        logger.info("Warning, data folder {} does not exist.".format(args.folder))
-
-    keep_going = args.keep_going or not args.no_keep_going
-
-    # --no_narrow_field is the default, so the the args list below ignores args.no_narrow_field.
-    dl = Downloader(
-        data_folder=args.folder,
-        keep_going=keep_going,
-        narrow_field=args.narrow_field,
-        wide_field=args.wide_field or not args.no_wide_field)
-    success = dl.download_all_files()
-
-    # Docker builds are failing if one of the files is missing, which shouldn't
-    # be the case. This will all need to be reworked as part of our IERS updates.
-    if success is False and keep_going is True:
-        success = True
-
-    return success
-
-
-if __name__ == '__main__':
-    if not main():
-        sys.exit(1)
