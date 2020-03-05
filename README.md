@@ -18,6 +18,7 @@ PANOPTES Utils
     - [Logger](#logger)
 - [Development](#development)
   - [Logging](#logging)
+  - [Releasing](#releasing)
 
 Utility functions for use within the PANOPTES ecosystem and for general astronomical processing.
 
@@ -133,3 +134,24 @@ False
 2020-03-04 06:42:53 | DEBUG | panoptes.utils.time:sleep:183 - Sleeping for 2.43 seconds
 False
 ```
+
+
+### Releasing
+
+Instructions for making a new release of this module.
+
+> Note: This should be done with the `panoptes` repo as the `origin`, **not** from a fork.
+
+1. Make sure all relevant branches are merged into `develop`.
+2. Create a release branch:
+   1. `git checkout -b release-vX.X.X develop`
+   2. Update the [CHANGELOG](CHANGELOG.md) as necessary.
+3. Push to github and open a pull request comparing to `master`.
+   1. Resolve any conflicts as necessary. These should be minimal and can hopefully be done via github.
+   2. Merge PR into `master` via github, squashing the commits.
+   3. From the `master` branch, tag the release `git tag vX.X.X`.
+   4. Push the tags to github `git push --tags`.
+5. Create a dist release and push to [PyPi](https://www.pypi.org/) (NB: you will need credentials):
+   1. `python setup.py sdist bdist_wheel`
+   2. `python -m twine upload dist/*`
+4. Merge the release branch into `develop` via a PR.
