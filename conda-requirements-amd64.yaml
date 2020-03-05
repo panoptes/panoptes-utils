@@ -1,4 +1,3 @@
-name: panoptes
 channels:
   - astropy
   - conda-forge
