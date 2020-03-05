@@ -154,4 +154,6 @@ Instructions for making a new release of this module.
 5. Create a dist release and push to [PyPi](https://www.pypi.org/) (NB: you will need credentials):
    1. `python setup.py sdist bdist_wheel`
    2. `python -m twine upload dist/*`
-4. Merge the release branch into `develop` via a PR.
+   3. Merge the release branch into `develop` via a PR.
+6. From the `master` branch, create a new docker image.
+   1. `docker/build-image.sh amd64`
