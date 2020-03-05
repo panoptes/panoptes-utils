@@ -514,7 +514,7 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
         self.relay_queue = queue.Queue(maxsize=params.get('write_buffer_size', 100))
 
         self.device_simulator = ArduinoSimulator(message, self.relay_queue, self.json_queue,
-                                                 chunk_size, self.stop, self.logger)
+                                                 chunk_size, self.stop)
 
 
 Serial = FakeArduinoSerialHandler
