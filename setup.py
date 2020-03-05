@@ -34,7 +34,6 @@ modules = {
         'numpy',
         'photutils',
         'pyserial',
-        'python-json-logger',
         'python-dateutil',
         'PyYAML',
         'pyzmq',
