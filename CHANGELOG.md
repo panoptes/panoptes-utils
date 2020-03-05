@@ -7,15 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [Changelog](#changelog)
   - [[Unreleased]](#unreleased)
+    - [Bug fixes](#bug-fixes)
     - [Changed](#changed)
   - [[0.2.0] - 2020-03-04](#020---2020-03-04)
     - [Added](#added)
-    - [Bug fixes](#bug-fixes)
+    - [Bug fixes](#bug-fixes-1)
     - [Changed](#changed-1)
   - [[0.1.0] - 2020-03-04](#010---2020-03-04)
   - [[0.0.8] - 2019-06-29](#008---2019-06-29)
     - [Added](#added-1)
-    - [Bug fixes](#bug-fixes-1)
+    - [Bug fixes](#bug-fixes-2)
     - [Changed](#changed-2)
   - [[0.0.7] - 2019-05-26](#007---2019-05-26)
     - [Added](#added-2)
@@ -29,7 +30,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Bug fixes
+
+* Misc bugs introduced as part of last release, including to `download-data.py` script.
+
 ### Changed
+
 * New script for downloading data, `scripts/download-data.py`. This helped resolve some issues with the relative imports introduced in `v0.2.0` and is cleaner. (#129)
 
 ## [0.2.0] - 2020-03-04
