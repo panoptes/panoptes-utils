@@ -33,10 +33,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Bug fixes
 
 * Misc bugs introduced as part of last release, including to `download-data.py` script.
+* Custom exceptions now properly pass `kwargs` through to parent (#135).
 
 ### Changed
 
 * New script for downloading data, `scripts/download-data.py`. This helped resolve some issues with the relative imports introduced in `v0.2.0` and is cleaner. (#129)
+
+### Removed
+
+* The `get_root_logger` and associated tests (#134).
 
 ## [0.2.0] - 2020-03-04
 

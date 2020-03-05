@@ -3,7 +3,7 @@ import pytest
 from panoptes.utils import error
 
 
-def test_error(capsys):
+def test_error(capsys, caplog):
     with pytest.raises(error.PanError) as e_info:
         raise error.PanError(msg='Testing message')
 
@@ -17,9 +17,9 @@ def test_error(capsys):
     with pytest.raises(SystemExit) as e_info:
         raise error.PanError(msg="Testing exit", exit=True)
     assert e_info.type == SystemExit
-    assert capsys.readouterr().out.strip() == 'TERMINATING: Testing exit'
+    assert caplog.records[-1].message == 'TERMINATING: Testing exit'
 
     with pytest.raises(SystemExit) as e_info:
         raise error.PanError(exit=True)
     assert e_info.type == SystemExit
-    assert capsys.readouterr().out.strip() == 'TERMINATING: No reason specified'
+    assert caplog.records[-1].message == 'TERMINATING: No reason specified'

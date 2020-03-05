@@ -6,10 +6,10 @@ class PanError(Exception):
 
     """ Base class for Panoptes errors """
 
-    def __init__(self, msg=None, log=False, exit=False):
+    def __init__(self, msg=None, exit=False):
         self.msg = msg
 
-        if self.msg and log:
+        if self.msg:
             logger.error(str(self))
 
         if exit:
@@ -20,7 +20,9 @@ class PanError(Exception):
         if not msg:
             self.msg = 'No reason specified'
 
-        print("TERMINATING: {}".format(self.msg))
+        # Show on current display.
+        logger.add(sys.stderr, format='<red><b>{message}</></>')
+        logger.critical(f"TERMINATING: {self.msg}")
         sys.exit(1)
 
     def __str__(self):
@@ -35,40 +37,40 @@ class InvalidSystemCommand(PanError):
 
     """ Error for a system level command malfunction """
 
-    def __init__(self, msg='Problem running system command'):
-        super().__init__(msg)
+    def __init__(self, msg='Problem running system command', **kwargs):
+        super().__init__(msg, **kwargs)
 
 
 class InvalidDeserialization(PanError):
 
     """ Error for serialization errors """
 
-    def __init__(self, msg='Problem deserializing'):
-        super().__init__(msg)
+    def __init__(self, msg='Problem deserializing', **kwargs):
+        super().__init__(msg, **kwargs)
 
 
 class InvalidSerialization(PanError):
 
     """ Error for serialization errors """
 
-    def __init__(self, msg='Problem Serializing'):
-        super().__init__(msg)
+    def __init__(self, msg='Problem Serializing', **kwargs):
+        super().__init__(msg, **kwargs)
 
 
 class Timeout(PanError):
 
     """ Error called when an event times out """
 
-    def __init__(self, msg='Timeout waiting for event'):
-        super().__init__(msg)
+    def __init__(self, msg='Timeout waiting for event', **kwargs):
+        super().__init__(msg, **kwargs)
 
 
 class NoObservation(PanError):
 
     """ Generic no Observation """
 
-    def __init__(self, msg='No valid observations found.'):
-        super().__init__(msg)
+    def __init__(self, msg='No valid observations found.', **kwargs):
+        super().__init__(msg, **kwargs)
 
 
 class NotFound(PanError):
@@ -126,8 +128,8 @@ class MountNotFound(NotFound):
 
     """ Mount cannot be import """
 
-    def __init__(self, msg='Mount Not Found'):
-        super().__init__(msg)
+    def __init__(self, msg='Mount Not Found', **kwargs):
+        super().__init__(msg, **kwargs)
 
 
 class CameraNotFound(NotFound):
