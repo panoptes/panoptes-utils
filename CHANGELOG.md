@@ -6,9 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - [Changelog](#changelog)
-  - [[0.2.1] - 2020-03-04](#021---2020-03-04)
+  - [[0.2.2] - 2020-03-05](#022---2020-03-05)
     - [Bug fixes](#bug-fixes)
     - [Changed](#changed)
+    - [Removed](#removed)
+  - [[0.2.1] - 2020-03-04](#021---2020-03-04)
   - [[0.2.0] - 2020-03-04](#020---2020-03-04)
     - [Added](#added)
     - [Bug fixes](#bug-fixes-1)
@@ -28,18 +30,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - [Added](#added-4)
     - [Changed](#changed-5)
 
-## [0.2.1] - 2020-03-04
+## [0.2.2] - 2020-03-05
+Mostly some cleanup from the `v0.2.0` release based on integrating all the changes into POCS. 
 
 ### Bug fixes
-
 * Misc bugs introduced as part of last release, including to `download-data.py` script.
+* Custom exceptions now properly pass `kwargs` through to parent (#135).
 
 ### Changed
-
 * New script for downloading data, `scripts/download-data.py`. This helped resolve some issues with the relative imports introduced in `v0.2.0` and is cleaner. (#129)
+* All dependencies are smashed into one "feature" in `setup.py` to make `pip-tools` work well. This will fix the docker image problems introduced in `v0.2.1`. (#136)
+
+### Removed
+* The `get_root_logger` and associated tests (#134).
+
+## [0.2.1] - 2020-03-04
+Minor bug fix release.
 
 ## [0.2.0] - 2020-03-04
-
 First big overhaul of the repository. Pulls in features that were duplicated or scattered across [POCS](https://github.com/panoptes/POCS.git) and [PIAA](https://github.com/panoptes/PIAA.git). Removes a lot of code that wasn't being used or was otherwise clutter. Overhauls the logging system to use [`loguru`](https://github.com/Delgan/loguru) so things are simplified. Updates to documentation.
 
 ### Added

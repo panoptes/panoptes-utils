@@ -42,18 +42,17 @@ modules = {
         'scalpl',
         'scikit-image',
         'scipy',
-        'versioneer'
-    ],
-    'social': ['requests', 'tweepy'],
-    'testing': [
-        'codecov',
-        'coverage',
-        'coveralls',
-        'mocket',
-        'pycodestyle',
-        'pytest',
-        'pytest-cov',
-        'pytest-remotedata>=0.3.1'
+        'versioneer',
+        'requests',  # social
+        'tweepy',  # social
+        'codecov',  # testing
+        'coverage',  # testing
+        'coveralls',  # testing
+        'mocket',  # testing
+        'pycodestyle',  # testing
+        'pytest',  # testing
+        'pytest-cov',  # testing
+        'pytest-remotedata>=0.3.1',  # testing
     ],
 }
 
@@ -70,7 +69,7 @@ setup(name=NAME,
       keywords=KEYWORDS,
       python_requires='>=3.6',
       setup_requires=['pytest-runner'],
-      tests_require=modules['testing'],
+      tests_require=modules['required'],
       scripts=[
           'bin/cr2-to-jpg',
           'bin/panoptes-config-server',
@@ -78,11 +77,6 @@ setup(name=NAME,
           'bin/panoptes-solve-field',
       ],
       install_requires=modules['required'],
-      extras_require={
-          'social': modules['social'],
-          'testing': modules['testing'],
-          'all': list(set(itertools.chain.from_iterable(modules.values())))
-      },
       packages=find_namespace_packages(exclude=['tests', 'test_*']),
       classifiers=[
           'Development Status :: 3 - Alpha',
