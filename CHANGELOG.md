@@ -29,9 +29,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - [Added](#added-4)
     - [Changed](#changed-5)
 
+## [Unreleased]
+
+### Changed
+
+* Fixed top-level namespace so we can have other `panoptes` repos (#).
+
 ## [0.2.2] - 2020-03-05
 
-Mostly some cleanup from the `v0.2.0` release based on integrating all the changes into POCS. 
+Mostly some cleanup from the `v0.2.0` release based on integrating all the changes into POCS.
 
 ### Bug fixes
 
