@@ -4,8 +4,6 @@
 from configparser import ConfigParser
 from setuptools import setup, find_namespace_packages
 
-import itertools
-
 import versioneer
 
 
@@ -76,7 +74,8 @@ setup(name=NAME,
           'bin/panoptes-solve-field',
       ],
       install_requires=modules['required'],
-      packages=find_namespace_packages(exclude=['tests', 'test_*']),
+      packages=find_namespace_packages(include=['panoptes.*'],
+                                       exclude=['tests', 'test_*']),
       classifiers=[
           'Development Status :: 3 - Alpha',
           'Environment :: Console',
