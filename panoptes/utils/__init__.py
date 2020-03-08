@@ -1,4 +1,4 @@
-from .utils.logger import logger
+from .logger import logger
 from .utils import *
 from .time import *
 
