@@ -48,11 +48,13 @@ modules = {
         'pytest-cov',  # testing
         'pytest-remotedata>=0.3.1',  # testing
     ],
-    'dev': [
-        'photutils',
-        'scikit-image',
-        'scipy',
-    ]
+    'extras': {
+        'dev': [
+            'photutils',
+            'scikit-image',
+            'scipy',
+        ]
+    }
 }
 
 
@@ -76,7 +78,7 @@ setup(name=NAME,
           'bin/panoptes-solve-field',
       ],
       install_requires=modules['required'],
-      extras_require=modules['dev'],
+      extras_require=modules['extras'],
       packages=find_namespace_packages(include=['panoptes.*'],
                                        exclude=['tests', 'test_*']),
       classifiers=[
