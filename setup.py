@@ -26,33 +26,33 @@ modules = {
     'required': [
         'astroplan>=0.6',
         'astropy>=4.0.0',
-        'Flask',
-        'loguru',
-        'matplotlib>=3.0.0',
-        'numpy',
-        'pyserial',
-        'python-dateutil',
-        'PyYAML',
-        'pyzmq',
-        'ruamel.yaml>=0.15',
-        'scalpl',
-        'versioneer',
-        'requests',  # social
-        'tweepy',  # social
         'codecov',  # testing
         'coverage',  # testing
         'coveralls',  # testing
+        'Flask',
+        'loguru',
+        'matplotlib>=3.0.0',
         'mocket',  # testing
+        'numpy',
         'pycodestyle',  # testing
+        'pyserial',
         'pytest',  # testing
         'pytest-cov',  # testing
         'pytest-remotedata>=0.3.1',  # testing
+        'python-dateutil',
+        'PyYAML',
+        'pyzmq',
+        'requests',  # social
+        'ruamel.yaml>=0.15',
+        'scalpl',
+        'scipy',
+        'tweepy',  # social
+        'versioneer',
     ],
     'extras': {
         'dev': [
             'photutils',
             'scikit-image',
-            'scipy',
         ]
     }
 }

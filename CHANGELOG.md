@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-* Dependencies that will be deprecated soon and are causing bloat: `photutils`, `scipy`, `scikit-image`. #138
+* Dependencies that will be deprecated soon and are causing bloat: `photutils`, `scikit-image`. #138
 
 ## [0.2.2] - 2020-03-05
 
