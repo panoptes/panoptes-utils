@@ -30,15 +30,12 @@ modules = {
         'loguru',
         'matplotlib>=3.0.0',
         'numpy',
-        'photutils',
         'pyserial',
         'python-dateutil',
         'PyYAML',
         'pyzmq',
         'ruamel.yaml>=0.15',
         'scalpl',
-        'scikit-image',
-        'scipy',
         'versioneer',
         'requests',  # social
         'tweepy',  # social
@@ -51,6 +48,11 @@ modules = {
         'pytest-cov',  # testing
         'pytest-remotedata>=0.3.1',  # testing
     ],
+    'dev': [
+        'photutils',
+        'scikit-image',
+        'scipy',
+    ]
 }
 
 
@@ -74,6 +76,7 @@ setup(name=NAME,
           'bin/panoptes-solve-field',
       ],
       install_requires=modules['required'],
+      extras_require=modules['dev'],
       packages=find_namespace_packages(include=['panoptes.*'],
                                        exclude=['tests', 'test_*']),
       classifiers=[
