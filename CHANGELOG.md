@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - [Changelog](#changelog)
+  - [[0.2.3] - 2020-03-08](#023---2020-03-08)
+    - [Bug fixes](#bug-fixes)
+    - [Changed](#changed)
+    - [Removed](#removed)
   - [[0.2.2] - 2020-03-05](#022---2020-03-05)
     - [Bug fixes](#bug-fixes)
     - [Changed](#changed)
@@ -29,15 +33,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - [Added](#added-4)
     - [Changed](#changed-5)
 
-## [Unreleased]
+## [0.2.3]
+
+Small point release to correct namespace and remove some bloat.
 
 ### Changed
 
-* Fixed top-level namespace so we can have other `panoptes` repos (#137).
+* Fixed top-level namespace so we can have other `panoptes` repos. (#137)
 
 ### Removed
 
-* Dependencies that will be deprecated soon and are causing bloat: `photutils`, `scikit-image`. #138
+* Dependencies that will be deprecated soon and are causing bloat: `photutils`, `scikit-image`. (#138)
 
 ## [0.2.2] - 2020-03-05
 
