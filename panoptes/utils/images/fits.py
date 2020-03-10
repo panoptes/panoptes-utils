@@ -108,9 +108,10 @@ def get_solve_field(fname, replace=True, remove_extras=True, **kwargs):
     >>> ra = 15.23
     >>> dec = 90
     >>> fits_utils.get_solve_field(fits_fn, ra=ra, dec=dec)
-
+    ...
     >>> radius = 5 # deg
     >>> fits_utils.solve_field(fits_fn, radius=radius)
+    ...
 
     Args:
         fname ({str}): Name of FITS file to be solved
