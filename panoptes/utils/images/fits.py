@@ -15,6 +15,19 @@ from .. import error
 def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
     """ Plate solves an image.
 
+    Example:
+
+    >>> # Get our fits filename
+    >>> fits_fn = getfixture('unsolved_fits_file')
+    >>> # Perform the Solve
+    >>> solve_field(fits_fn)
+
+    >>> #Try to pass a suggested location
+    >>> ra = 15.23
+    >>> dec = 90
+    >>> solve_field(frame, '--ra'=ra, '--dec'=dec)
+
+
     Args:
         fname(str, required):       Filename to solve in .fits extension.
         timeout(int, optional):     Timeout for the solve-field command,
