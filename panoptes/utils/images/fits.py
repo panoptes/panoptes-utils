@@ -17,10 +17,11 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
 
     Example:
 
+    >>> from panoptes.utils.images import fits as fits_utils
     >>> # Get our fits filename
     >>> fits_fn = getfixture('unsolved_fits_file')
     >>> # Perform the Solve
-    >>> solve_field(fits_fn)
+    >>> fits_utils.solve_field(fits_fn)
 
     >>> #Try to pass a suggested location
     >>> ra = 15.23
