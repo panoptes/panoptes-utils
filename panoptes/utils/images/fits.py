@@ -15,22 +15,7 @@ from .. import error
 def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
     """ Plate solves an image.
 
-    Example:
-
-    >>> from panoptes.utils.images import fits as fits_utils
-    >>> # Get our fits filename
-    >>> fits_fn = getfixture('unsolved_fits_file')
-    >>> # Perform the Solve
-    >>> fits_utils.solve_field(fits_fn)
-
-    >>> #Try to pass a suggested location
-    >>> ra = 15.23
-    >>> dec = 90
-    >>> solve_field(fits_fn, 'ra'=ra, 'dec'=dec)
-
-    >>> radius = 5 # deg
-    >>> solve_field(fits_fn, 'radius'=radius)
-
+    Note: see `get_solved_field` for preferred solving function.
 
     Args:
         fname(str, required):       Filename to solve in .fits extension.
@@ -104,6 +89,28 @@ def get_solve_field(fname, replace=True, remove_extras=True, **kwargs):
     which returns a subprocess.Popen object. This function then waits for that command
     to complete, populates a dictonary with the EXIF informaiton and returns. This is often
     more useful than the raw `solve_field` function
+
+    Example:
+
+    >>> from panoptes.utils.images import fits as fits_utils
+
+    >>> # Get our fits filename
+    >>> fits_fn = getfixture('unsolved_fits_file')
+
+    >>> # Perform the Solve
+    >>> solve_info = fits_utils.get_solve_field(fits_fn)
+
+    >>> # Show solved Filename
+    >>> solve_info['solved_fits_file']
+    '/var/panoptes/panoptes-utils/panoptes/tests/data/unsolved.fits'
+
+    >>> #Try to pass a suggested location
+    >>> ra = 15.23
+    >>> dec = 90
+    >>> fits_utils.get_solve_field(fits_fn, 'ra'=ra, 'dec'=dec)
+
+    >>> radius = 5 # deg
+    >>> fits_utils.solve_field(fits_fn, 'radius'=radius)
 
     Args:
         fname ({str}): Name of FITS file to be solved
