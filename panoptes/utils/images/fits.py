@@ -25,7 +25,10 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
     >>> #Try to pass a suggested location
     >>> ra = 15.23
     >>> dec = 90
-    >>> solve_field(frame, '--ra'=ra, '--dec'=dec)
+    >>> solve_field(fits_fn, 'ra'=ra, 'dec'=dec)
+
+    >>> radius = 5 # deg
+    >>> solve_field(fits_fn, 'radius'=radius)
 
 
     Args:
