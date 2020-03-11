@@ -39,6 +39,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Disallow zipped packages, which also interfere with namespace (#142)
 
+### Removed
+
+* `photutils` dependency for recangular apertures in the `show_stamps` method.
+
 ## [0.2.3] - 2020-03-08
 
 Small point release to correct namespace and remove some bloat.
