@@ -51,7 +51,6 @@ modules = {
     ],
     'extras': {
         'dev': [
-            'photutils',
             'scikit-image',
         ]
     }
