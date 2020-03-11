@@ -100,7 +100,7 @@ def get_solve_field(fname, replace=True, remove_extras=True, **kwargs):
     >>> # Perform the Solve
     >>> solve_info = fits_utils.get_solve_field(fits_fn)
 
-    >>> # Show solved Filename
+    >>> # Show solved filename
     >>> solve_info['solved_fits_file']
     '/var/panoptes/panoptes-utils/panoptes/tests/data/unsolved.fits'
 
