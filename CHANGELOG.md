@@ -33,7 +33,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - [Added](#added-4)
     - [Changed](#changed-5)
 
-## [0.2.3]
+## [Unreleased]
+
+### Changed
+
+* Disallow zipped packages, which also interfere with namespace (#142)
+
+## [0.2.3] - 2020-03-08
 
 Small point release to correct namespace and remove some bloat.
 
