@@ -62,6 +62,7 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
         options.append('--extension=1')
 
     cmd = [solve_field_script] + options + [fname]
+    logger.trace(f'Solve command: {cmd!r}')
 
     try:
         proc = subprocess.Popen(cmd,

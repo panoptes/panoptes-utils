@@ -12,6 +12,7 @@ import pytest
 import subprocess
 import time
 import shutil
+import tempfile
 
 import logging
 from _pytest.logging import caplog as _caplog
@@ -360,22 +361,38 @@ def data_dir():
 
 @pytest.fixture(scope='session')
 def unsolved_fits_file(data_dir):
-    return os.path.join(data_dir, 'unsolved.fits')
+    orig_file = os.path.join(data_dir, 'unsolved.fits')
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        copy_file = shutil.copy2(orig_file, tmpdirname)
+        yield copy_file
 
 
 @pytest.fixture(scope='session')
 def solved_fits_file(data_dir):
-    return os.path.join(data_dir, 'solved.fits.fz')
+    orig_file = os.path.join(data_dir, 'solved.fits.fz')
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        copy_file = shutil.copy2(orig_file, tmpdirname)
+        yield copy_file
 
 
 @pytest.fixture(scope='session')
 def tiny_fits_file(data_dir):
-    return os.path.join(data_dir, 'tiny.fits')
+    orig_file = os.path.join(data_dir, 'tiny.fits')
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        copy_file = shutil.copy2(orig_file, tmpdirname)
+        yield copy_file
 
 
 @pytest.fixture(scope='session')
 def noheader_fits_file(data_dir):
-    return os.path.join(data_dir, 'noheader.fits')
+    orig_file = os.path.join(data_dir, 'noheader.fits')
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        copy_file = shutil.copy2(orig_file, tmpdirname)
+        yield copy_file
 
 
 @pytest.fixture(scope='session')
