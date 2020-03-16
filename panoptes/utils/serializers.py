@@ -9,7 +9,7 @@ import numpy as np
 from astropy.time import Time
 from astropy import units as u
 
-from panoptes.utils import error
+from . import error
 
 
 class StringYAML(YAML):

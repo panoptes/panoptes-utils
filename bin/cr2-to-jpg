@@ -41,10 +41,12 @@ function command_exists {
 
 # Use exiftool to extract preview if it exists
 if command_exists exiftool; then
+    echo "Using exiftool to extract JPG."
     exiftool -b -PreviewImage "${FNAME}" > "${JPG}"
 else
     if command_exists dcraw; then
         # Convert CR2 to JPG
+        echo "Using dcraw to convert to JPG."
         dcraw -c -q 3 -a -w -H 5 -b 5 "${FNAME}" | cjpeg -quality 90 > "${JPG}"
     else
         echo "Can't find either exiftool or dcraw, cannot proceed"

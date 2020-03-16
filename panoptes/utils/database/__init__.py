@@ -1,8 +1,9 @@
 import abc
-from warnings import warn
 
-from panoptes.utils import current_time
-from panoptes.utils.library import load_module
+from ..logger import logger
+from .. import error
+from ..time import current_time
+from ..library import load_module
 
 
 def _get_db_class(module_name='file'):
@@ -39,7 +40,7 @@ def _get_db_class(module_name='file'):
 
 
 class AbstractPanDB(metaclass=abc.ABCMeta):
-    def __init__(self, db_name=None, collection_names=list(), logger=None, **kwargs):
+    def __init__(self, db_name=None, collection_names=list(), **kwargs):
         """
         Init base class for db instances.
 
@@ -49,24 +50,13 @@ class AbstractPanDB(metaclass=abc.ABCMeta):
             logger: (Optional) logger to use for warnings.
         """
         self.logger = logger
-        if self.logger:
-            self.logger.info(f'Creating PanDB {db_name} with collections: {collection_names}')
+        self.logger.info(f'Creating PanDB {db_name} with collections: {collection_names}')
         self.db_name = db_name
         self.collection_names = collection_names
 
-    def _warn(self, *args, **kwargs):
-        if self.logger:
-            self.logger.warning(*args, **kwargs)
-        else:
-            warn(*args)
-
     def validate_collection(self, collection):
         if collection not in self.collection_names:
-            msg = 'Collection type {!r} not available'.format(collection)
-            self._warn(msg)
-            # Can't import panoptes.utils.error earlier
-            from panoptes.utils.error import InvalidCollection
-            raise InvalidCollection(msg)
+            raise error.InvalidCollection(f'Collection type {collection!r} not available')
 
     @abc.abstractclassmethod
     def insert_current(self, collection, obj, store_permanently=True):  # pragma: no cover

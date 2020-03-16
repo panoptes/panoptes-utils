@@ -1,6 +1,6 @@
 ARG arch=amd64
 
-FROM gcr.io/panoptes-survey/panoptes-base:$arch AS base-image
+FROM gcr.io/panoptes-exp/panoptes-base:$arch AS base-image
 MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
 
 ARG arch=amd64
@@ -11,11 +11,6 @@ ENV PANDIR $pan_dir
 RUN cd && \
     # Create a panoptes group and change group ownership
     groupadd panoptes && \
-    # Install anaconda packages
-    /opt/conda/bin/conda install --yes -c conda-forge -c astropy \
-        --file "${PANDIR}/panoptes-utils/conda-requirements-${arch}.yaml" && \
-    /opt/conda/bin/conda clean --all --yes && \
-    /opt/conda/bin/conda clean -f --yes && \
     # Create directories
     mkdir -p ${POCS} && \
     mkdir -p ${PANDIR}/logs && \
@@ -25,6 +20,13 @@ RUN cd && \
     cd ${PANDIR}/panoptes-utils && \
     # First deal with pip and PyYAML - see https://github.com/pypa/pip/issues/5247
     pip install --no-cache-dir --no-deps --ignore-installed pip PyYAML && \
+    # Install anaconda packages
+    /opt/conda/bin/conda env update --name base \
+        --file "${PANDIR}/panoptes-utils/conda-requirements-${arch}.yaml" \
+        --prune && \
+    /opt/conda/bin/conda clean --all --yes && \
+    /opt/conda/bin/conda clean -f --yes && \
+    # Install requirements
     pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir -e ".[all]" && \
     # Change permissions on directories
@@ -33,11 +35,12 @@ RUN cd && \
     chgrp -R panoptes /opt/conda && \
     chmod -R 775 /opt/conda && \
     # Download astrometry.net files
-    python panoptes/utils/data.py \
+    python scripts/download-data.py \
         --wide-field --narrow-field \
-        --folder /astrometry/ && \
+        --folder /astrometry/ \
+        --verbose && \
     # Cleanup apt.
-    apt-get autoremove --purge -y git gcc pkg-config && \
+    apt-get autoremove --purge -y gcc pkg-config && \
     apt-get autoremove --purge -y && \
     apt-get -y clean && \
     rm -rf /var/lib/apt/lists/*

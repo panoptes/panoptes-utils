@@ -1,46 +1,29 @@
 import os
+import re
 import subprocess
 import shutil
 from contextlib import suppress
-
 from warnings import warn
 
-from matplotlib import cm as colormap
+import numpy as np
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 from astropy.wcs import WCS
 from astropy.nddata import Cutout2D
-from astropy.io.fits import open as open_fits
 from astropy.visualization import (PercentileInterval, LogStretch, ImageNormalize)
 
-from copy import copy
 from dateutil import parser as date_parser
 
-from panoptes.utils import current_time
-from panoptes.utils import error
-from panoptes.utils.images import focus as focus_utils
-from panoptes.utils.images.plot import add_colorbar
-
-palette = copy(colormap.inferno)
-palette.set_over('w', 1.0)
-palette.set_under('k', 1.0)
-palette.set_bad('g', 1.0)
+from .. import error
+from ..logger import logger
+from ..time import current_time
+from ..images import fits as fits_utils
+from ..images.plot import add_colorbar
+from ..images.plot import get_palette
 
 
-def make_images_dir():
-    """Return the path of the PANDIR/images directory, creating it if necessary."""
-    images_dir = os.path.join(os.getenv('PANDIR'), 'images')
-    try:
-        os.makedirs(images_dir, exist_ok=True)
-        return images_dir
-    except Exception as e:
-        warn(f'Unable to create the images directory: {images_dir}')
-        warn(f'Exception during os.makedirs: {e}')
-        return None
-
-
-def crop_data(data, box_width=200, center=None, verbose=False, data_only=True, wcs=None):
+def crop_data(data, box_width=200, center=None, data_only=True, wcs=None, **kwargs):
     """Return a cropped portion of the image
 
     Shape is a box centered around the middle of the data
@@ -49,7 +32,6 @@ def crop_data(data, box_width=200, center=None, verbose=False, data_only=True, w
         data (`numpy.array`): Array of data.
         box_width (int, optional): Size of box width in pixels, defaults to 200px.
         center (tuple(int, int), optional): Crop around set of coords, default to image center.
-        verbose (bool, optional): Print extra text output.
         data_only (bool, optional): If True (default), return only data. If False
             return the `Cutout2D` object.
         wcs (None|`astropy.wcs.WCS`, optional): A valid World Coordinate System (WCS) that will
@@ -63,9 +45,6 @@ def crop_data(data, box_width=200, center=None, verbose=False, data_only=True, w
     assert data.shape[0] >= box_width, "Can't clip data, it's smaller than {} ({})".format(
         box_width, data.shape)
     # Get the center
-    if verbose:
-        print("Data to crop: {}".format(data.shape))
-
     if center is None:
         x_len, y_len = data.shape
         x_center = int(x_len / 2)
@@ -74,9 +53,8 @@ def crop_data(data, box_width=200, center=None, verbose=False, data_only=True, w
         y_center = int(center[0])
         x_center = int(center[1])
 
-    if verbose:
-        print("Using center: {} {}".format(x_center, y_center))
-        print("Box width: {}".format(box_width))
+    logger.debug("Using center: {} {}".format(x_center, y_center))
+    logger.debug("Box width: {}".format(box_width))
 
     cutout = Cutout2D(data, (y_center, x_center), box_width, wcs=wcs)
 
@@ -86,7 +64,12 @@ def crop_data(data, box_width=200, center=None, verbose=False, data_only=True, w
     return cutout
 
 
-def make_pretty_image(fname, title=None, timeout=15, img_type=None, link_latest=False, **kwargs):
+def make_pretty_image(fname,
+                      title=None,
+                      timeout=15,
+                      img_type=None,
+                      link_path=None,
+                      **kwargs):
     """Make a pretty image.
 
     This will create a jpg file from either a CR2 (Canon) or FITS file.
@@ -95,17 +78,21 @@ def make_pretty_image(fname, title=None, timeout=15, img_type=None, link_latest=
         See `/scripts/cr2_to_jpg.sh` for CR2 process.
 
     Arguments:
-        fname {str} -- Name of image file, may be either .fits or .cr2
+        fname (str): The path to the raw image.
         title (None|str, optional): Title to be placed on image, default None.
         timeout (int, optional): Timeout for conversion, default 15 seconds.
         img_type (None|str, optional): Image type of fname, one of '.cr2' or '.fits'.
             The default is `None`, in which case the file extension of fname is used.
-        link_latest (bool, optional): If the pretty picture should be linked to
-            `$PANDIR/images/latest.jpg`, default False.
+        link_path (None|str, optional): Path to location that image should be symlinked.
+            The directory must exist.
         **kwargs {dict} -- Additional arguments to be passed to external script.
 
     Returns:
         str -- Filename of image that was created.
+
+    Deleted Parameters:
+        link_latest (bool, optional): If the pretty picture should be linked to
+            `/images/latest.jpg`, default False.
     """
     if img_type is None:
         img_type = os.path.splitext(fname)[-1]
@@ -115,29 +102,25 @@ def make_pretty_image(fname, title=None, timeout=15, img_type=None, link_latest=
         return None
     elif img_type == '.cr2':
         pretty_path = _make_pretty_from_cr2(fname, title=title, timeout=timeout, **kwargs)
-    elif img_type == '.fits':
+    elif img_type in ['.fits', '.fz']:
         pretty_path = _make_pretty_from_fits(fname, title=title, **kwargs)
     else:
         warn("File must be a Canon CR2 or FITS file.")
         return None
 
-    if not link_latest or not os.path.exists(pretty_path):
+    if link_path is None or not os.path.exists(os.path.dirname(link_path)):
         return pretty_path
 
-    # Symlink latest.jpg to the image; first remove the symlink if it already exists.
-    images_dir = make_images_dir()
-    if not images_dir:
-        warn(f"Can't link latest.jpg to {pretty_path}")
-    else:
-        latest_path = os.path.join(images_dir, 'latest.jpg')
-        with suppress(FileNotFoundError):
-            os.remove(latest_path)
-        try:
-            os.symlink(pretty_path, latest_path)
-        except Exception as e:
-            warn("Can't link latest image: {}".format(e))
+    # Remove existing symlink
+    with suppress(FileNotFoundError):
+        os.remove(link_path)
 
-    return pretty_path
+    try:
+        os.symlink(pretty_path, link_path)
+    except Exception as e:
+        warn("Can't link latest image: {}".format(e))
+
+    return link_path
 
 
 def _make_pretty_from_fits(fname=None,
@@ -149,11 +132,9 @@ def _make_pretty_from_fits(fname=None,
                            clip_percent=99.9,
                            **kwargs):
 
-    with open_fits(fname) as hdu:
-        header = hdu[0].header
-        data = hdu[0].data
-        data = focus_utils.mask_saturated(data)
-        wcs = WCS(header)
+    data = mask_saturated(fits_utils.getdata(fname))
+    header = fits_utils.getheader(fname)
+    wcs = WCS(header)
 
     if not title:
         field = header.get('FIELD', 'Unknown field')
@@ -210,11 +191,11 @@ def _make_pretty_from_fits(fname=None,
         ax.set_xlabel('X / pixels')
         ax.set_ylabel('Y / pixels')
 
-    im = ax.imshow(data, norm=norm, cmap=palette, origin='lower')
+    im = ax.imshow(data, norm=norm, cmap=get_palette(), origin='lower')
     add_colorbar(im)
     fig.suptitle(title)
 
-    new_filename = fname.replace('.fits', '.jpg')
+    new_filename = re.sub('.fits(.fz)?', '.jpg', fname)
     fig.savefig(new_filename, bbox_inches='tight')
 
     # explicitly close and delete figure
@@ -225,25 +206,50 @@ def _make_pretty_from_fits(fname=None,
 
 
 def _make_pretty_from_cr2(fname, title=None, timeout=15, **kwargs):
-    verbose = kwargs.get('verbose', False)
-
     script_name = shutil.which('cr2-to-jpg')
     cmd = [script_name, fname]
 
     if title:
         cmd.append(title)
 
-    if verbose:
-        print(cmd)
+    logger.debug(cmd)
 
     try:
         output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        if verbose:
-            print(output)
+        logger.debug(output)
     except Exception as e:
-        raise error.InvalidCommand("Error executing gphoto2: {!r}\nCommand: {}".format(e, cmd))
+        raise error.InvalidCommand(f"Error executing {script_name}: {e.output!r}\nCommand: {cmd}")
 
     return fname.replace('cr2', 'jpg')
+
+
+def mask_saturated(data, saturation_level=None, threshold=0.9, dtype=np.float64):
+    """Convert data to masked array of requested dtype with saturated values masked.
+
+    Args:
+        data (array_like): The numpy data array.
+        saturation_level (float|None, optional): The saturation level. If None,
+            the level will be set to the threshold times the max value for the dtype.
+        threshold (float, optional): The percentage of the max value to use.
+        dtype (`numpy.dtype`, optional): The requested dtype for the new array.
+
+    Returns:
+        `numpy.ma.array`: The masked numpy array.
+    """
+    if not saturation_level:
+        try:
+            # If data is an integer type use iinfo to compute machine limits
+            dtype_info = np.iinfo(data.dtype)
+        except ValueError:
+            # Not an integer type. Assume for now we have 16 bit data
+            saturation_level = threshold * (2**16 - 1)
+        else:
+            # Data is an integer type, set saturation level at specified fraction of
+            # max value for the type
+            saturation_level = threshold * dtype_info.max
+
+    # Convert data to masked array of requested dtype, mask values above saturation level
+    return np.ma.array(data, mask=(data > saturation_level), dtype=dtype)
 
 
 def make_timelapse(
@@ -252,7 +258,6 @@ def make_timelapse(
         glob_pattern='20[1-9][0-9]*T[0-9]*.jpg',
         overwrite=False,
         timeout=60,
-        verbose=False,
         **kwargs):
     """Create a timelapse.
 
@@ -268,8 +273,7 @@ def make_timelapse(
             to the local directory.
         overwrite (bool, optional): Overwrite timelapse if exists, default False.
         timeout (int): Timeout for making movie, default 60 seconds.
-        verbose (bool, optional): Show output, default False.
-        **kwargs (dict): Valid keywords: verbose
+        **kwargs (dict):
 
     Returns:
         str: Name of output file
@@ -287,9 +291,6 @@ def make_timelapse(
         cam_name = head.split('/')[-1]
         fname = '{}_{}_{}.mp4'.format(field_name, cam_name, tail)
         fn_out = os.path.normpath(os.path.join(directory, fname))
-
-    if verbose:
-        print("Timelapse file: {}".format(fn_out))
 
     if os.path.exists(fn_out) and not overwrite:
         raise FileExistsError("Timelapse exists. Set overwrite=True if needed")
@@ -315,8 +316,7 @@ def make_timelapse(
 
         ffmpeg_cmd.append(fn_out)
 
-        if verbose:
-            print(ffmpeg_cmd)
+        logger.debug(ffmpeg_cmd)
 
         proc = subprocess.Popen(ffmpeg_cmd, universal_newlines=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -327,15 +327,13 @@ def make_timelapse(
             proc.kill()
             outs, errs = proc.communicate()
         finally:
-            if verbose:
-                print(outs)
-                print(errs)
+            logger.debug(f"Output: {outs}")
+            logger.debug(f"Errors: {errs}")
 
             # Double-check for file existence
             if not os.path.exists(fn_out):
                 fn_out = None
     except Exception as e:
-        warn("Problem creating timelapse in {}: {!r}".format(fn_out, e))
-        fn_out = None
+        raise error.PanError(f"Problem creating timelapse in {fn_out}: {e!r}")
 
     return fn_out

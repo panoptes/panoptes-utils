@@ -1,11 +1,12 @@
 import ctypes
 import ctypes.util
+from panoptes.utils.logger import logger
 
 from astropy.utils import resolve_name
-from panoptes.utils import error
+from . import error
 
 
-def load_c_library(name, path=None, mode=ctypes.DEFAULT_MODE, logger=None):
+def load_c_library(name, path=None, mode=ctypes.DEFAULT_MODE, **kwargs):
     """Utility function to load a shared/dynamically linked library (.so/.dylib/.dll).
 
     The name and location of the shared library can be manually specified with the library_path
@@ -18,7 +19,6 @@ def load_c_library(name, path=None, mode=ctypes.DEFAULT_MODE, logger=None):
         mode (int, optional): mode in which to load the library, see dlopen(3) man page for
             details. Should be one of ctypes.RTLD_GLOBAL, ctypes.RTLD_LOCAL, or
             ctypes.DEFAULT_MODE. Default is ctypes.DEFAULT_MODE.
-        logger (logging.Logger, optional): logger to use.
 
     Returns:
         ctypes.CDLL
@@ -32,12 +32,11 @@ def load_c_library(name, path=None, mode=ctypes.DEFAULT_MODE, logger=None):
         # Interpret a value of None as the default.
         mode = ctypes.DEFAULT_MODE
     # Open library
-    if logger:
-        logger.debug("Opening {} library".format(name))
+    logger.debug(f"Opening {name} library")
     if not path:
         path = ctypes.util.find_library(name)
         if not path:
-            raise error.NotFound("Cound not find {} library!".format(name))
+            raise error.NotFound(f"Cound not find {name} library!")
     # This CDLL loader will raise OSError if the library could not be loaded
     return ctypes.CDLL(path, mode=mode)
 
