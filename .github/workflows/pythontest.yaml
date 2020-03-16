@@ -8,7 +8,8 @@ jobs:
       matrix:
         python-version: [3.7]
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
@@ -26,10 +27,11 @@ jobs:
       matrix:
         python-version: [3.7]
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
     - name: Fetch all history for all tags and branches for versioneer
       run: git fetch --prune --unshallow
-    - name: Build panoptes-base image
+    - name: Build panoptes-base image (if master branch)
       if: github.ref == 'refs/heads/master'
       run: |
         docker build -t panoptes-base:testing -f docker/Dockerfile .
@@ -42,7 +44,20 @@ jobs:
         docker run -i \
           $ci_env \
           -e LOCAL_USER_ID=$(id -u) \
-          -e TRAVIS=true \
           -v $(pwd):/var/panoptes/panoptes-utils \
+          -v $(pwd):/var/panoptes/logs \
           panoptes-utils:testing \
           scripts/testing/run-tests.sh
+    - name: Upload coverage report to codecov.io
+      uses: codecov/codecov-action@v1
+      if: success()
+      with:
+        name: codecov-upload
+        file: ./coverage.xml
+        fail_ci_if_error: true
+    - name: Create log file artifact
+      uses: actions/upload-artifact@v1
+      if: always()
+      with:
+        name: log-files
+        path: panoptes-testing.log
