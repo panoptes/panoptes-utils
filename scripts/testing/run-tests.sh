@@ -10,4 +10,6 @@ coverage run "$(command -v pytest)" -x -vv -rfes --test-databases all
 echo "Combining coverage"
 coverage combine
 
+coverage xml
+
 exit 0
