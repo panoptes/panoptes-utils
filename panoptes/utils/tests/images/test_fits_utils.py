@@ -56,6 +56,16 @@ def test_solve_field(unsolved_fits_file):
     proc = fits_utils.solve_field(unsolved_fits_file)
     assert isinstance(proc, subprocess.Popen)
     proc.wait()
+    proc = subprocess.Popen(...)
+    try:
+        outs, errs = proc.communicate(timeout=15)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        outs, errs = proc.communicate()
+
+    print(f'outs: {outs}')
+    print(f'errs: {errs}')
+
     assert proc.returncode == 0
 
     # assert fits_utils.getval(unsolved_fits_file, 'WCSAXES') is not None
