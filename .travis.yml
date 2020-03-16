@@ -10,7 +10,7 @@ cache:
   - $HOME/data
 before_install:
 - ci_env=`bash <(curl -s https://codecov.io/env)`
-- mkdir -p $HOME/data && wget -qO- ${TEST_CR2_FILE} > $HOME/data/canon.cr2
+- mkdir -p $HOME/data && wget -qO- ${TEST_CR2_FILE} > $TRAVIS_BUILD_DIR/panoptes-utils/tests/data/canon.cr2
 - docker pull gcr.io/panoptes-exp/panoptes-utils:latest
 install: true
 script:
