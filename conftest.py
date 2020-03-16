@@ -380,7 +380,7 @@ def noheader_fits_file(data_dir):
 
 @pytest.fixture(scope='session')
 def cr2_file():
-    cr2_path = '/data/canon.cr2'
+    cr2_path = os.path.join(data_dir, 'canon.cr2')
 
     if not os.path.exists(cr2_path):
         pytest.skip("No CR2 file found, skipping test.")

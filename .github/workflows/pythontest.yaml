@@ -38,6 +38,9 @@ jobs:
     - name: Build panoptes-utils image
       run: |
         docker build -t panoptes-utils:testing -f docker/Dockerfile.utils .
+    - name: Fetch CR2 file for testing
+      run: |
+        wget -qO- ${TEST_CR2_FILE} > panoptes-utils/tests/data/canon.cr2
     - name: Test with pytest in panoptes-utils container
       run: |
         docker run -i \
