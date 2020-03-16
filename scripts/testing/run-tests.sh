@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 export PYTHONPATH="$PYTHONPATH:$PANDIR/panoptes-utils/scripts/testing/coverage"
-export COVERAGE_PROCESS_START=true
+export COVERAGE_PROCESS_START="${PANDIR}/panoptes-utils/setup.cfg"
 
 # Run coverage over the pytest suite
 echo "Staring tests"
