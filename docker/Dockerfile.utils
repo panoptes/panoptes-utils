@@ -37,7 +37,7 @@ RUN cd && \
     # Download astrometry.net files
     python scripts/download-data.py \
         --wide-field --narrow-field \
-        --folder /astrometry/data \
+        --folder "${PANDIR}/astrometry/data" \
         --verbose && \
     # Cleanup apt.
     apt-get autoremove --purge -y gcc pkg-config && \
