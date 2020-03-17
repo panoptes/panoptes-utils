@@ -46,6 +46,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Log files for testing are created as an artifact.
 * `PanLogger` helper class added. Mostly handles formatting but can also track handlers. (#145)
 
+### Changed
+
+* Data files for testing are copied before tests. Allows for reuse of unsolved fits file. (#144)
+* Fix astrometry data file directories in Docker images. (#144)
+
 ### Removed
 
 * The docker image no longer updates `panoptes-utils` when using `run-tests.sh`. (#145)
@@ -55,8 +60,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Disallow zipped packages, which also interfere with namespace (#142)
-* Data files for testing are copied before tests. Allows for reuse of unsolved fits file. (#144)
-* Fix astrometry data file directories in Docker images. (#144)
 
 ### Removed
 
