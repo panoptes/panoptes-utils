@@ -55,6 +55,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Disallow zipped packages, which also interfere with namespace (#142)
+* Data files for testing are copied before tests. Allows for reuse of unsolved fits file. (#144)
+* Fix astrometry data file directories in Docker images. (#144)
 
 ### Removed
 
