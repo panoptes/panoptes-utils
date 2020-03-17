@@ -10,7 +10,7 @@ source $ZSH/oh-my-zsh.sh
 DISABLE_AUTO_UPDATE="true"
 
 plugins=(
-  history-substring-search
+  git history-substring-search
 )
 
 export EDITOR='nano'

@@ -30,7 +30,7 @@ RUN cd && \
     pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir -e . && \
     # Change permissions on directories
-    chgrp -R panoptes /var/panoptes && chmod -R 775 /var/panoptes && \
+    chgrp -R panoptes "${PANDIR}" && chmod -R 775 "${PANDIR}" && \
     chgrp -R panoptes /opt/conda && chmod -R 775 /opt/conda && \
     # Download astrometry.net files
     python scripts/download-data.py \
