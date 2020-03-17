@@ -1,22 +1,16 @@
 #!/bin/bash -e
 
-cd "${PANDIR}/panoptes-utils"
-
-pip install --ignore-installed pip PyYAML
-# Install any updated requirements
-pip install -r requirements.txt
-
-# Install module
-pip install -e ".[all]"
-
 export PYTHONPATH="$PYTHONPATH:$PANDIR/panoptes-utils/scripts/testing/coverage"
-export COVERAGE_PROCESS_START="${PANDIR}/panoptes-utils/.coveragerc"
-coverage run "$(command -v pytest)" -vv -rfes --test-databases all
+export COVERAGE_PROCESS_START="${PANDIR}/panoptes-utils/setup.cfg"
 
-# Upload coverage reports if running from Travis.
-if [[ $TRAVIS ]]; then
-	coverage combine
-	bash <(curl -s https://codecov.io/bash)
-fi
+# Run coverage over the pytest suite
+echo "Staring tests"
+coverage run "$(command -v pytest)" -x -vv -rfes --test-databases all
+
+echo "Combining coverage"
+coverage combine
+
+echo "Making XML coverage report"
+coverage xml
 
 exit 0

@@ -12,12 +12,14 @@ import pytest
 import subprocess
 import time
 import shutil
+import tempfile
 
 import logging
 from _pytest.logging import caplog as _caplog
 from contextlib import suppress
 
 from panoptes.utils.logger import logger
+from panoptes.utils.logger import PanLogger
 from panoptes.utils.database import PanDB
 from panoptes.utils.messaging import PanMessaging
 from panoptes.utils.config.client import set_config
@@ -28,6 +30,19 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 _all_databases = ['file', 'memory']
+
+
+logger.enable('panoptes')
+LOGGER_INFO = PanLogger()
+logger.level("testing", no=15, icon="🤖", color="<YELLOW><black>")
+log_file_path = os.path.join(os.path.dirname(__file__), 'panoptes-testing.log')
+logger.add(log_file_path,
+           enqueue=True,  # multiprocessing
+           format=LOGGER_INFO.format,
+           colorize=True,
+           backtrace=True,
+           diagnose=True,
+           level='TRACE')
 
 
 def pytest_addoption(parser):
@@ -360,27 +375,43 @@ def data_dir():
 
 @pytest.fixture(scope='session')
 def unsolved_fits_file(data_dir):
-    return os.path.join(data_dir, 'unsolved.fits')
+    orig_file = os.path.join(data_dir, 'unsolved.fits')
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        copy_file = shutil.copy2(orig_file, tmpdirname)
+        yield copy_file
 
 
 @pytest.fixture(scope='session')
 def solved_fits_file(data_dir):
-    return os.path.join(data_dir, 'solved.fits.fz')
+    orig_file = os.path.join(data_dir, 'solved.fits.fz')
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        copy_file = shutil.copy2(orig_file, tmpdirname)
+        yield copy_file
 
 
 @pytest.fixture(scope='session')
 def tiny_fits_file(data_dir):
-    return os.path.join(data_dir, 'tiny.fits')
+    orig_file = os.path.join(data_dir, 'tiny.fits')
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        copy_file = shutil.copy2(orig_file, tmpdirname)
+        yield copy_file
 
 
 @pytest.fixture(scope='session')
 def noheader_fits_file(data_dir):
-    return os.path.join(data_dir, 'noheader.fits')
+    orig_file = os.path.join(data_dir, 'noheader.fits')
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        copy_file = shutil.copy2(orig_file, tmpdirname)
+        yield copy_file
 
 
 @pytest.fixture(scope='session')
-def cr2_file():
-    cr2_path = '/data/canon.cr2'
+def cr2_file(data_dir):
+    cr2_path = os.path.join(data_dir, 'canon.cr2')
 
     if not os.path.exists(cr2_path):
         pytest.skip("No CR2 file found, skipping test.")

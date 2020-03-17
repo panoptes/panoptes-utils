@@ -37,14 +37,6 @@ To install type:
 pip install panoptes-utils
 ```
 
-There are also a number of optional dependencies, which can be installed as following:
-
-```bash
-pip install "panoptes-utils[social,testing]"
-# -or-
-pip install "panoptes-utils[all]"
-```
-
 ### Docker
 
 Docker containers are available for running the `panoptes-utils` module and associated services, which also serve as the base container for all other PANOPTES related containers.

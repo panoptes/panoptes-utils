@@ -5,27 +5,15 @@ python:
   - "3.6"
 services:
 - docker
-cache:
-  directories:
-  - $HOME/data
 before_install:
-- ci_env=`bash <(curl -s https://codecov.io/env)`
-- mkdir -p $HOME/data && wget -qO- ${TEST_CR2_FILE} > $HOME/data/canon.cr2
+- mkdir -p $HOME/data && wget -qO- ${TEST_CR2_FILE} > $TRAVIS_BUILD_DIR/panoptes/tests/data/canon.cr2
 - docker pull gcr.io/panoptes-exp/panoptes-utils:latest
+- ci_env=`bash <(curl -s https://codecov.io/env)`
 install: true
 script:
 - docker run -it
   $ci_env
   -e LOCAL_USER_ID=$(id -u)
-  -v $HOME/data:/data
   -v $TRAVIS_BUILD_DIR:/var/panoptes/panoptes-utils
   gcr.io/panoptes-exp/panoptes-utils:latest
   scripts/testing/run-tests.sh
-deploy:
-  provider: pypi
-  username: panoptes
-  password:
-    secure: xXltA7ff+ut0ZhFd3N4tTe9GeqiP2dURZGYhKyvmxD7oiWXpriGSP3Xnw1290/YNPDPpXGumxBUOUS1I7Xi9QkCK3ytYUghorSVX2A7xpbNFFWND+EX68LrywvkjI4vw+BKtF9HuYxQJcNYnMS2JG0U+R2b8tdyY/djIAABCSEiVqcoznt8O0V6V+e+cjwpejXHtm6H3aiwp+k17vBXk6OlRfl9g3B2yq9CUl+dbO070RHGiRd/Cr2WrMye6/SZ7iK00weITZ102mIuRtgyVk+pPo0O+kdPIk6tqLqRkm63bVsBz8HvEE+2S3IlhMg4X9eRB0Ou1dBMag86MKAdE24LdRNh80rF/xQYgFnxYhwNuGNE7gVALOdc7SuQdz0h8WAVo01PCO9ZpbMnLlirP+nTl1d3KQSgrl2nsZZ8hAFySbGqlY3WvV5pL/qGe2GqJ0KrTamCXQojfTjQnD7hQ5pMsd41fOPeuZEGOkM2T+XBQOELon0aXUj9i1v2+sbx/dkpdpIZgOzpmYjNP8n+qo3Q++5mmgM+ftqUN0bRwqvcDKIQ0esd/tqXrgWjn7eZALWRQX6HHwxg5p5BH1vC1Ymwpa0vvVGgcbwxMjCTdQ54ocZ6Hib7UNE9LYb6UZy0Q/NeCP/xveUlLpshnuaWXkvkfnms4WU8QV8wXig5R2Tw=
-  distributions: sdist bdist_wheel
-  on:
-    branch: master
