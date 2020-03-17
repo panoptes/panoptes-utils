@@ -205,8 +205,6 @@ def get_wcsinfo(fits_fname, **kwargs):
         run_cmd.append('-e')
         run_cmd.append('1')
 
-    logger.debug("wcsinfo command: {}".format(run_cmd))
-
     proc = subprocess.Popen(run_cmd, stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT, universal_newlines=True)
     try:

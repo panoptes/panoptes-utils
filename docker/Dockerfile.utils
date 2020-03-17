@@ -28,17 +28,16 @@ RUN cd && \
     /opt/conda/bin/conda clean -f --yes && \
     # Install requirements
     pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir -e ".[all]" && \
+    pip install --no-cache-dir -e . && \
     # Change permissions on directories
-    chgrp -R panoptes /var/panoptes && \
-    chmod -R 775 /var/panoptes && \
-    chgrp -R panoptes /opt/conda && \
-    chmod -R 775 /opt/conda && \
+    chgrp -R panoptes /var/panoptes && chmod -R 775 /var/panoptes && \
+    chgrp -R panoptes /opt/conda && chmod -R 775 /opt/conda && \
     # Download astrometry.net files
     python scripts/download-data.py \
         --wide-field --narrow-field \
-        --folder /astrometry/ \
+        --folder "/astrometry/data" \
         --verbose && \
+    chgrp -R panoptes /astrometry && chmod -R 775 /astrometry && \
     # Cleanup apt.
     apt-get autoremove --purge -y gcc pkg-config && \
     apt-get autoremove --purge -y && \
