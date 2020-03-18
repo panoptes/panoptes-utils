@@ -6,7 +6,7 @@ steps:
   args:
   - 'build'
   - '-f=docker/Dockerfile'
-  - '--build-arg=python:3.8-slim-buster
+  - '--build-arg=python:3.8-slim-buster'
   - '--tag=gcr.io/${PROJECT_ID}/panoptes-base:amd64'
   - '.'
   waitFor: ['-']
