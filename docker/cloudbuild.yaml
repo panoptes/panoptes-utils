@@ -7,7 +7,7 @@ steps:
   - 'build'
   - '-f=docker/Dockerfile'
   - '--build-arg=python:3.8-slim-buster'
-  - '--tag=gcr.io/${PROJECT_ID}/panoptes-base:latest'
+  - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:latest'
   - '.'
   waitFor: ['-']
 
@@ -16,8 +16,8 @@ steps:
   id: 'push-amd64-base'
   args:
   - 'push'
-  - 'gcr.io/${PROJECT_ID}/panoptes-base:latest'
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
   waitFor: ['amd64-base']
 
 images:
-  - 'gcr.io/${PROJECT_ID}/panoptes-base:latest'
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
