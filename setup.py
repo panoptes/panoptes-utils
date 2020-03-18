@@ -26,31 +26,34 @@ modules = {
     'required': [
         'astroplan>=0.6',
         'astropy>=4.0.0',
-        'Flask',
-        'loguru',
-        'matplotlib>=3.0.0',
-        'numpy',
-        'photutils',
-        'pyserial',
-        'python-dateutil',
-        'PyYAML',
-        'pyzmq',
-        'ruamel.yaml>=0.15',
-        'scalpl',
-        'scikit-image',
-        'scipy',
-        'versioneer',
-        'requests',  # social
-        'tweepy',  # social
         'codecov',  # testing
         'coverage',  # testing
         'coveralls',  # testing
+        'Flask',
+        'loguru',
+        'matplotlib>=3.0.0',
         'mocket',  # testing
+        'numpy',
         'pycodestyle',  # testing
+        'pyserial',
         'pytest',  # testing
         'pytest-cov',  # testing
         'pytest-remotedata>=0.3.1',  # testing
+        'python-dateutil',
+        'PyYAML',
+        'pyzmq',
+        'requests',  # social
+        'ruamel.yaml>=0.15',
+        'scalpl',
+        'scipy',
+        'tweepy',  # social
+        'versioneer',
     ],
+    'extras': {
+        'dev': [
+            'scikit-image',
+        ]
+    }
 }
 
 
@@ -74,7 +77,8 @@ setup(name=NAME,
           'bin/panoptes-solve-field',
       ],
       install_requires=modules['required'],
-      packages=find_namespace_packages(include=['panoptes.*'],
+      extras_require=modules['extras'],
+      packages=find_namespace_packages(include=['panoptes.utils.*'],
                                        exclude=['tests', 'test_*']),
       classifiers=[
           'Development Status :: 3 - Alpha',
@@ -90,4 +94,5 @@ setup(name=NAME,
           'Topic :: Scientific/Engineering :: Astronomy',
           'Topic :: Scientific/Engineering :: Physics',
       ],
+      zip_safe=False
       )
