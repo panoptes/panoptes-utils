@@ -50,6 +50,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Data files for testing are copied before tests. Allows for reuse of unsolved fits file. (#144)
 * Fix astrometry data file directories in Docker images. (#144)
+* Docker changes: (#149)
+  * Docker base for amd64 changed to `python:3.8-slim-buster`, removing anaconda from system.
+  * Docker permissions fixed so there is no longer a silly work-around.
+  * Only provide amd64 images for now and simplify all files accordingly.
 
 ### Removed
 
