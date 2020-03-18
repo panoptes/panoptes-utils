@@ -54,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Docker base for amd64 changed to `python:3.8-slim-buster`, removing anaconda from system.
   * Docker permissions fixed so there is no longer a silly work-around.
   * Only provide amd64 images for now and simplify all files accordingly.
+  * Use `docker` in cloudbuild instead of the cloud based version so we can access version 19+.
 
 ### Removed
 
