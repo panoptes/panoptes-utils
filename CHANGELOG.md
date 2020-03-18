@@ -77,6 +77,12 @@ Small point release to correct namespace and remove some bloat.
 
 * Dependencies that will be deprecated soon and are causing bloat: `photutils`, `scikit-image`. (#138)
 
+## [Unreleased]
+
+### Changed
+
+* Fixed top-level namespace so we can have other `panoptes` repos (#137, #150).
+
 ## [0.2.2] - 2020-03-05
 
 Mostly some cleanup from the `v0.2.0` release based on integrating all the changes into POCS.
