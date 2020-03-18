@@ -10,7 +10,7 @@ source $ZSH/oh-my-zsh.sh
 DISABLE_AUTO_UPDATE="true"
 
 plugins=(
-  history-substring-search
+  git history-substring-search
 )
 
 export EDITOR='nano'
@@ -38,6 +38,8 @@ SPACESHIP_PROMPT_ORDER=(
   exit_code     # Exit code section
   char          # Prompt character
 )
+
+alias ll='ls -lrsth'
 
 # PANOPTES related
 export PANDIR=/var/panoptes
