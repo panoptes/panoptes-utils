@@ -1,7 +1,7 @@
-ARG base_image=continuumio/miniconda3
+ARG base_image=python:3.8-slim-buster
 
 FROM $base_image AS base-image
-MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
+LABEL maintainer="developers@projectpanoptes.org"
 
 ARG pan_dir=/var/panoptes
 ARG pocs_dir="${pan_dir}/POCS"
@@ -9,10 +9,11 @@ ARG pocs_dir="${pan_dir}/POCS"
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV SOLVE_FIELD=/usr/bin/solve-field
-ENV PANDIR $pan_dir
-ENV POCS $pocs_dir
 ENV SHELL /bin/zsh
 ENV ZSH_CUSTOM "/.oh-my-zsh/custom"
+
+ENV PANDIR $pan_dir
+ENV POCS $pocs_dir
 
 # For now we copy from local - can have bad effects if in wrong branch
 COPY . ${PANDIR}/panoptes-utils/
@@ -35,8 +36,38 @@ RUN apt-get update && \
     cat "${PANDIR}/panoptes-utils/docker/zshrc" >> /etc/skel/.zshrc && \
     # Astrometry folders
     mkdir -p "/astrometry/data" && \
-    echo "add_path /astrometry/data" >> /etc/astrometry.cfg
+    echo "add_path /astrometry/data" >> /etc/astrometry.cfg && \
+    # Create a panoptes group and change group ownership
+    groupadd panoptes && \
+    # Create directories
+    mkdir -p ${POCS} && \
+    mkdir -p ${PANDIR}/logs && \
+    mkdir -p ${PANDIR}/images && \
+    mkdir -p ${PANDIR}/panoptes-utils && \
+    # Install module
+    cd ${PANDIR}/panoptes-utils && \
+    # First deal with pip and PyYAML - see https://github.com/pypa/pip/issues/5247
+    pip install --no-cache-dir --no-deps --ignore-installed pip PyYAML && \
+    # Install requirements
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir -e . && \
+    # Change permissions on directories
+    chgrp -R panoptes /var/panoptes && chmod -R 775 /var/panoptes && \
+    # Download astrometry.net files
+    python scripts/download-data.py \
+        --wide-field --narrow-field \
+        --folder "/astrometry/data" \
+        --verbose && \
+    chgrp -R panoptes /astrometry && chmod -R 775 /astrometry && \
+    # Cleanup apt.
+    apt-get autoremove --purge -y gcc pkg-config && \
+    apt-get autoremove --purge -y && \
+    apt-get -y clean && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR ${PANDIR}/panoptes-utils
 
-# No ENTRYPOINT or CMD because this is used as a first stage
+# Comes from base image - hard-coded for now ☹.
+ENTRYPOINT ["/bin/sh", "/var/panoptes/panoptes-utils/docker/entrypoint.sh"]
+
+CMD ["/bin/zsh"]
