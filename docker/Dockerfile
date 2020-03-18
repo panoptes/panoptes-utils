@@ -1,4 +1,4 @@
-ARG base_image=continuumio/miniconda3
+ARG base_image=python:3.8-slim-buster
 
 FROM $base_image AS base-image
 MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
