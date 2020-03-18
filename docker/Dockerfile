@@ -24,6 +24,12 @@ RUN apt-get update && \
         astrometry.net dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
         libfreetype6-dev libpng-dev libpq-dev fonts-lato \
         gcc git pkg-config sudo && \
+    # Create directories
+    mkdir -p ${POCS} && \
+    mkdir -p ${PANDIR}/logs && \
+    mkdir -p ${PANDIR}/images && \
+    mkdir -p ${PANDIR}/panoptes-utils && \
+    mkdir -p /astrometry/data && \
     # Oh My ZSH. :)
     mkdir -p "${ZSH_CUSTOM}" && \
     chmod -R 755 "${ZSH_CUSTOM}" && \
@@ -35,15 +41,7 @@ RUN apt-get update && \
     # Copy zshrc to /etc/skel for new users
     cat "${PANDIR}/panoptes-utils/docker/zshrc" >> /etc/skel/.zshrc && \
     # Astrometry folders
-    mkdir -p "/astrometry/data" && \
     echo "add_path /astrometry/data" >> /etc/astrometry.cfg && \
-    # Create a panoptes group and change group ownership
-    groupadd panoptes && \
-    # Create directories
-    mkdir -p ${POCS} && \
-    mkdir -p ${PANDIR}/logs && \
-    mkdir -p ${PANDIR}/images && \
-    mkdir -p ${PANDIR}/panoptes-utils && \
     # Install module
     cd ${PANDIR}/panoptes-utils && \
     # First deal with pip and PyYAML - see https://github.com/pypa/pip/issues/5247
@@ -51,6 +49,8 @@ RUN apt-get update && \
     # Install requirements
     pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir -e . && \
+    # Create a panoptes group
+    groupadd panoptes && \
     # Change permissions on directories
     chgrp -R panoptes /var/panoptes && chmod -R 775 /var/panoptes && \
     # Download astrometry.net files
