@@ -302,7 +302,7 @@ def message_forwarder(messaging_ports):
         args.append(str(pub))
 
     print(f'message_forwarder fixture starting: {args!r}')
-    proc = subprocess.Popen(' '.join(args), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(' '.join(args), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # It takes a while for the forwarder to start, so allow for that.
     # TODO(jamessynge): Come up with a way to speed up these fixtures.
     time.sleep(3)
