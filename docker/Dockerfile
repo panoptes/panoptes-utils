@@ -1,4 +1,4 @@
-ARG base_image=python:3.8-slim-buster
+ARG base_image=python:3.7-slim-buster
 
 FROM $base_image AS base-image
 LABEL maintainer="developers@projectpanoptes.org"
