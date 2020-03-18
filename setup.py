@@ -26,9 +26,7 @@ modules = {
     'required': [
         'astroplan>=0.6',
         'astropy>=4.0.0',
-        'codecov',  # testing
         'coverage',  # testing
-        'coveralls',  # testing
         'Flask',
         'loguru',
         'matplotlib>=3.0.0',

@@ -10,12 +10,9 @@ attrs==19.3.0             # via pytest
 certifi==2019.11.28       # via requests
 chardet==3.0.4            # via requests
 click==7.0                # via flask
-codecov==2.0.16           # via panoptes-utils (setup.py)
-coverage==5.0.3           # via codecov, coveralls, panoptes-utils (setup.py), pytest-cov
-coveralls==1.11.1         # via panoptes-utils (setup.py)
+coverage==5.0.3           # via panoptes-utils (setup.py), pytest-cov
 cycler==0.10.0            # via matplotlib
 decorator==4.4.1          # via mocket
-docopt==0.6.2             # via coveralls
 flask==1.1.1              # via panoptes-utils (setup.py)
 idna==2.9                 # via requests
 importlib-metadata==1.5.0  # via pluggy, pytest
@@ -45,7 +42,7 @@ pytz==2019.3              # via astroplan
 pyyaml==5.3               # via panoptes-utils (setup.py)
 pyzmq==18.1.1             # via panoptes-utils (setup.py)
 requests-oauthlib==1.3.0  # via tweepy
-requests==2.23.0          # via codecov, coveralls, panoptes-utils (setup.py), requests-oauthlib, tweepy
+requests==2.23.0          # via panoptes-utils (setup.py), requests-oauthlib, tweepy
 ruamel.yaml.clib==0.2.0   # via ruamel.yaml
 ruamel.yaml==0.16.10      # via panoptes-utils (setup.py)
 scalpl==0.3.0             # via panoptes-utils (setup.py)
