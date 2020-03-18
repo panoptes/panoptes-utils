@@ -65,7 +65,8 @@ RUN apt-get update && \
 # Copy files as "panoptes" user.
 WORKDIR ${PANDIR}/panoptes-utils
 USER $PANUSER
-COPY --chown=$user_id:$user_id . ${PANDIR}/panoptes-utils/
+# Note: can't make interpolation of $user_id work so hard-coded.
+COPY --chown=1000:1000 . ${PANDIR}/panoptes-utils/
 
 ENV PATH "/home/${PANUSER}/.local/bin:$PATH"
 
