@@ -1,4 +1,4 @@
-# This is in the root PANDIR directory so that pytest will recognize the
+    # This is in the root PANDIR directory so that pytest will recognize the
 # options added below without having to also specify pocs/test, or a
 # one of the tests in that directory, on the command line; i.e. pytest
 # doesn't load pocs/tests/conftest.py until after it has searched for
@@ -302,7 +302,7 @@ def message_forwarder(messaging_ports):
         args.append(str(pub))
 
     print(f'message_forwarder fixture starting: {args!r}')
-    proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(' '.join(args), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # It takes a while for the forwarder to start, so allow for that.
     # TODO(jamessynge): Come up with a way to speed up these fixtures.
     time.sleep(3)
