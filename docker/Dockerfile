@@ -49,7 +49,7 @@ RUN apt-get update && \
     pip install --no-cache-dir --no-deps --ignore-installed pip PyYAML && \
     # Install anaconda packages
     /opt/conda/bin/conda env update --name base \
-        --file "${PANDIR}/panoptes-utils/conda-requirements-${arch}.yaml" \
+        --file "${PANDIR}/panoptes-utils/conda-requirements-amd64.yaml" \
         --prune && \
     /opt/conda/bin/conda clean --all --yes && \
     /opt/conda/bin/conda clean -f --yes && \
