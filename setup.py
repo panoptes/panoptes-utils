@@ -56,8 +56,8 @@ modules = {
 
 
 setup(name=NAME,
-      # version=versioneer.get_version(),
-      # cmdclass=versioneer.get_cmdclass(),
+      version=versioneer.get_version(),
+      cmdclass=versioneer.get_cmdclass(),
       description=DESCRIPTION,
       long_description=LONG_DESCRIPTION,
       author=AUTHOR,
