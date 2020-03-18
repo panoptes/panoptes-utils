@@ -39,7 +39,6 @@ jobs:
         ci_env=`bash <(curl -s https://codecov.io/env)`
         docker run -i \
           $ci_env \
-          -e LOCAL_USER_ID=$(id -u) \
           -v $(pwd):/var/panoptes/panoptes-utils \
           -v $(pwd):/var/panoptes/logs \
           panoptes-utils:testing \
