@@ -45,15 +45,11 @@ modules = {
         'requests',  # social
         'ruamel.yaml>=0.15',
         'scalpl',
+        'scikit-image',
         'scipy',
         'tweepy',  # social
         'versioneer',
     ],
-    'extras': {
-        'dev': [
-            'scikit-image',
-        ]
-    }
 }
 
 
@@ -77,7 +73,6 @@ setup(name=NAME,
           'bin/panoptes-solve-field',
       ],
       install_requires=modules['required'],
-      extras_require=modules['extras'],
       packages=find_namespace_packages(include=['panoptes.utils.*'],
                                        exclude=['tests', 'test_*']),
       classifiers=[
