@@ -6,7 +6,6 @@ LABEL website="https://projectpanoptes.org"
 ARG panuser=panoptes
 ARG pan_dir=/var/panoptes
 ARG pocs_dir="${pan_dir}/POCS"
-ARG user_id=1000
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
@@ -44,8 +43,8 @@ RUN apt-get update && \
     echo "add_path /astrometry/data" >> /etc/astrometry.cfg && \
     # Create a panoptes group and change group ownership
     groupadd ${PANUSER} &&  \
-    useradd --uid $user_id \
-        --gid $user_id \
+    useradd --uid 1000 \
+        --gid 1000 \
         --create-home \
         --non-unique \
         --shell /bin/zsh \
@@ -65,7 +64,6 @@ RUN apt-get update && \
 # Copy files as "panoptes" user.
 WORKDIR ${PANDIR}/panoptes-utils
 USER $PANUSER
-# Note: can't make interpolation of $user_id work so hard-coded.
 COPY --chown=1000:1000 . ${PANDIR}/panoptes-utils/
 
 ENV PATH "/home/${PANUSER}/.local/bin:$PATH"
@@ -93,7 +91,6 @@ RUN apt-get autoremove --purge -y gcc pkg-config && \
     rm -rf /var/lib/apt/lists/*
 
 # Back to regular user.
-USER $PANUSER
 WORKDIR ${PANDIR}/panoptes-utils
 
 # Comes from base image - hard-coded for now ☹.
