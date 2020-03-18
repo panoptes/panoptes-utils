@@ -4,9 +4,7 @@ channels:
 dependencies:
   - astroplan>=0.6
   - astropy>=4.0.0
-  - codecov
   - coverage
-  - coveralls
   - Flask
   - ipython
   - loguru

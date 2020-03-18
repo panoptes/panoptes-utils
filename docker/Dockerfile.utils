@@ -1,49 +1,48 @@
 ARG arch=amd64
+ARG base_image=gcr.io/panoptes-exp/panoptes-base:$arch
 
-FROM gcr.io/panoptes-exp/panoptes-base:$arch AS base-image
-MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
+FROM $base_image AS base-image
+LABEL maintainer="developers@projectpanoptes.org"
+LABEL website="https://projectpanoptes.org"
 
+ARG panuser=panoptes
 ARG arch=amd64
 ARG pan_dir=/var/panoptes
+ARG user_id=1000
 
 ENV PANDIR $pan_dir
+ENV PANUSER $panuser
 
-RUN cd && \
-    # Create a panoptes group and change group ownership
-    groupadd panoptes && \
-    # Create directories
-    mkdir -p ${POCS} && \
-    mkdir -p ${PANDIR}/logs && \
-    mkdir -p ${PANDIR}/images && \
-    mkdir -p ${PANDIR}/panoptes-utils && \
-    # Install module
-    cd ${PANDIR}/panoptes-utils && \
-    # First deal with pip and PyYAML - see https://github.com/pypa/pip/issues/5247
+USER $PANUSER
+ENV PATH "/home/${PANUSER}/.local/bin:$PATH"
+
+# Copy files as "first" user.
+COPY --chown=$user_id:$user_id . ${PANDIR}/panoptes-utils/
+
+# Install module.
+RUN cd ${PANDIR}/panoptes-utils && \
+    # Install requirements.
+    # First deal with pip and PyYAML - see https://github.com/pypa/pip/issues/5247.
     pip install --no-cache-dir --no-deps --ignore-installed pip PyYAML && \
-    # Install anaconda packages
-    /opt/conda/bin/conda env update --name base \
-        --file "${PANDIR}/panoptes-utils/conda-requirements-${arch}.yaml" \
-        --prune && \
-    /opt/conda/bin/conda clean --all --yes && \
-    /opt/conda/bin/conda clean -f --yes && \
-    # Install requirements
     pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir -e . && \
-    # Change permissions on directories
-    chgrp -R panoptes "${PANDIR}" && chmod -R 775 "${PANDIR}" && \
-    chgrp -R panoptes /opt/conda && chmod -R 775 /opt/conda && \
-    # Download astrometry.net files
+    # Download astrometry.net files.
     python scripts/download-data.py \
         --wide-field --narrow-field \
         --folder "/astrometry/data" \
         --verbose && \
-    chgrp -R panoptes /astrometry && chmod -R 775 /astrometry && \
-    # Cleanup apt.
-    apt-get autoremove --purge -y gcc pkg-config && \
+    # Create an SSH key
+    ssh-keygen -q -t rsa -N "" -f "${HOME}/.ssh/id_rsa"
+
+# Cleanup apt.
+USER root
+RUN apt-get autoremove --purge -y gcc pkg-config && \
     apt-get autoremove --purge -y && \
     apt-get -y clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Back to regular user.
+USER $PANUSER
 WORKDIR ${PANDIR}/panoptes-utils
 
 # Comes from base image - hard-coded for now ☹.

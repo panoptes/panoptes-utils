@@ -1,0 +1,33 @@
+docs/*
+.git/*
+.cache
+.eggs
+.vscode
+*.egg-info
+
+# Development support
+sftp-config.json
+
+# emacs backups
+*~
+\#*\#
+
+# ignore all markdown files (md) beside all README*.md
+*.md
+!README*.md
+
+*.aux
+*.log
+*.pdf
+*.toc
+
+# Compiled files
+*.py[co]
+*.a
+*.o
+*.so
+__pycache__
+
+# Coverage files except config
+*.coverage*
+!.coveragerc
