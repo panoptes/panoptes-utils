@@ -1,5 +1,9 @@
 #!/bin/bash -ie
 
+USER_ID=${LOCAL_USER_ID:-1000}
+
+usermod -a -G "${USER_ID}" panoptes
+
 # Authenticate if key has been set - used on local units
 if [ ! -z ${GOOGLE_APPLICATION_CREDENTIALS} ]; then
     echo "Found Google credentials, activating service account."
