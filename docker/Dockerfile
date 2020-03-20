@@ -14,6 +14,7 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV SHELL /bin/zsh
 ENV ZSH_CUSTOM "/.oh-my-zsh/custom"
 
+ENV USERID $userid
 ENV PANDIR $pan_dir
 ENV PANUSER $panuser
 ENV POCS $pocs_dir
@@ -43,21 +44,21 @@ RUN apt-get update && \
     mkdir -p ${PANDIR}/images && \
     mkdir -p ${PANDIR}/panoptes-utils && \
     # Create $PANUSER
-    useradd --shell /bin/zsh -u $userid -o -c "PANOPTES User" -m -G plugdev,dialout $panuser && \
+    useradd --shell /bin/zsh -u ${USERID} -o -c "PANOPTES User" -m -G plugdev,dialout $panuser && \
     # Create ssh-key for user
     mkdir -p /home/$panuser/.key && \
     ssh-keygen -q -t rsa -N "" -f "/home/${panuser}/.key/id_rsa" && \
     # Update permissions for current user.
-    chown -R $userid:$userid ${HOME} && \
-    chown -R $userid:$userid ${PANDIR} && \
+    chown -R ${USERID}:${USERID} ${HOME} && \
+    chown -R ${USERID}:${USERID} ${PANDIR} && \
     # Astrometry folders
     mkdir -p "${astrometry_dir}" && \
-    chown -R $userid:$userid ${astrometry_dir} && \
+    chown -R ${USERID}:${USERID} ${astrometry_dir} && \
     echo "add_path ${astrometry_dir}" >> /etc/astrometry.cfg
 
 USER $PANUSER
 
-COPY --chown="$userid:$userid" . ${PANDIR}/panoptes-utils/
+COPY --chown="${USERID}:${USERID}" . ${PANDIR}/panoptes-utils/
 
 RUN cd ${PANDIR}/panoptes-utils && \
     export PATH="/home/$panuser/.local/bin:$PATH" && \
