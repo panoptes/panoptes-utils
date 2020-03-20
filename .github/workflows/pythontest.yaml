@@ -41,7 +41,7 @@ jobs:
           $ci_env \
           --network "host" \
           -e LOCAL_USER_ID=$(id -u) \
-          -v $(pwd):/var/panoptes/logs \
+          -v $(pwd):/var/panoptes/POCS \
           panoptes-utils:testing \
           scripts/testing/run-tests.sh
     - name: Upload coverage report to codecov.io
