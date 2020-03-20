@@ -100,7 +100,7 @@ def get_solve_field(fname, replace=True, remove_extras=True, **kwargs):
 
     >>> # Show solved Filename
     >>> solve_info['solved_fits_file']
-    '/var/panoptes/panoptes-utils/panoptes/tests/data/unsolved.fits'
+    '.../unsolved.fits'
 
     >>> # Pass a suggested location
     >>> ra = 15.23
