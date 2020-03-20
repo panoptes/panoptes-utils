@@ -18,6 +18,7 @@ ENV USERID $userid
 ENV PANDIR $pan_dir
 ENV PANUSER $panuser
 ENV POCS $pocs_dir
+ENV PATH "/home/${PANUSER}/.local/bin:$PATH"
 
 # For now we copy from local - can have bad effects if in wrong branch
 COPY docker/zshrc /tmp
@@ -58,11 +59,11 @@ RUN apt-get update && \
 
 USER $PANUSER
 
+
 # Can't seem to get around the hard-coding
 COPY --chown=panoptes:panoptes . ${PANDIR}/panoptes-utils/
 
 RUN cd ${PANDIR}/panoptes-utils && \
-    export PATH="/home/$panuser/.local/bin:$PATH" && \
     # First deal with pip and PyYAML - see https://github.com/pypa/pip/issues/5247
     pip install --no-cache-dir --no-deps --ignore-installed pip PyYAML && \
     # Install requirements
