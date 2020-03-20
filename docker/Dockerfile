@@ -19,6 +19,7 @@ ENV PANDIR $pan_dir
 ENV PANUSER $panuser
 ENV POCS $pocs_dir
 ENV PATH "/home/${PANUSER}/.local/bin:$PATH"
+ENV SOLVE_FIELD /usr/bin/solve-field
 
 # For now we copy from local - can have bad effects if in wrong branch
 COPY docker/zshrc /tmp
