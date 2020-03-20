@@ -102,7 +102,7 @@ def get_solve_field(fname, replace=True, remove_extras=True, **kwargs):
     >>> solve_info['solved_fits_file']
     '/var/panoptes/panoptes-utils/panoptes/tests/data/unsolved.fits'
 
-    >>> #Try to pass a suggested location
+    >>> # Pass a suggested location
     >>> ra = 15.23
     >>> dec = 90
     >>> radius = 5 # deg
