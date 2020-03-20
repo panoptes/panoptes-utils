@@ -41,7 +41,7 @@ jobs:
           $ci_env \
           --network "host" \
           -e LOCAL_USER_ID=$(id -u) \
-          -v $(pwd):/var/panoptes/POCS \
+          -v $(pwd):/var/panoptes/panoptes-utils \
           -v $(pwd):/var/panoptes/logs \
           panoptes-utils:testing \
           scripts/testing/run-tests.sh
