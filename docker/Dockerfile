@@ -58,7 +58,8 @@ RUN apt-get update && \
 
 USER $PANUSER
 
-COPY --chown="${USERID}:${USERID}" . ${PANDIR}/panoptes-utils/
+# Can't seem to get around the hard-coding
+COPY --chown=panoptes:panoptes . ${PANDIR}/panoptes-utils/
 
 RUN cd ${PANDIR}/panoptes-utils && \
     export PATH="/home/$panuser/.local/bin:$PATH" && \
