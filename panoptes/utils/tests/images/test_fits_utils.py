@@ -62,7 +62,7 @@ def test_solve_field(unsolved_fits_file):
         proc.kill()
         outs, errs = proc.communicate()
 
-    assert proc.returncode == 0
+    assert proc.returncode == 0, f'{outs}\n{errs}'
 
     # assert fits_utils.getval(unsolved_fits_file, 'WCSAXES') is not None
     wcs_info = fits_utils.get_wcsinfo(unsolved_fits_file.replace('.fits', '.new'))
