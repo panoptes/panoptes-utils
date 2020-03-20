@@ -31,7 +31,6 @@ from matplotlib import pyplot as plt
 
 _all_databases = ['file', 'memory']
 
-
 logger.enable('panoptes')
 LOGGER_INFO = PanLogger()
 logger.level("testing", no=15, icon="🤖", color="<YELLOW><black>")
