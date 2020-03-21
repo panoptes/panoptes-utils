@@ -59,6 +59,11 @@ def get_stars(
 
     try:
         df = bq_client.query(sql).to_dataframe()
+
+        # Adjust the RA to be -180 to 180
+        df.loc[df.ra > 180, 'ra'] = df.loc[df.ra > 180, 'ra'] - 360
+
+        df.rename(columns={'id': 'picid'}, inplace=True)
     except Exception as e:
         logger.warning(e)
         df = None
