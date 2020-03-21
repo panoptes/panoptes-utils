@@ -75,7 +75,8 @@ def test_get_solve_field_solved(solved_fits_file):
 
     solve_info = fits_utils.get_solve_field(solved_fits_file, skip_solved=False)
     assert isinstance(solve_info, dict)
-    assert 'crpix0' in solve_info
+    # 1-based numbering fro WCS
+    assert 'CRPIX1' in solve_info
 
 
 def test_solve_options(solved_fits_file):

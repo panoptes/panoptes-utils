@@ -170,7 +170,10 @@ def get_solve_field(fname, replace=True, remove_extras=True, **kwargs):
     else:
 
         try:
-            out_dict.update(getheader(fname))
+            header = getheader(fname)
+            header.remove('COMMENT', ignore_missing=True, remove_all=True)
+            header.remove('HISTORY', ignore_missing=True, remove_all=True)
+            out_dict.update(header)
         except OSError:
             logger.warning(f"Can't read fits header for: {fname}")
 
