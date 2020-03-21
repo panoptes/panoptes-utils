@@ -68,12 +68,6 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
                                 universal_newlines=True,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
-    except OSError as e:
-        raise error.InvalidCommand(
-            "Can't send command to panoptes-solve-field: {} \t {}".format(e, cmd))
-    except ValueError as e:
-        raise error.InvalidCommand(
-            "Bad parameters to solve_field: {} \t {}".format(e, cmd))
     except Exception as e:
         raise error.PanError("Timeout on plate solving: {}".format(e))
 
