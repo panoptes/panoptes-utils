@@ -36,9 +36,11 @@ jobs:
         docker build --build-arg "userid=$(id -u)" -t panoptes-utils:testing -f docker/Dockerfile .
     - name: Test with pytest in panoptes-utils container
       run: |
+        mkdir -p coverage_dir && chmod 777 coverage_dir
         ci_env=`bash <(curl -s https://codecov.io/env)`
         docker run -i \
           $ci_env \
+          -e REPORT_FILE="coverage_dir/coverage.xml" \
           --network "host" \
           -v $(pwd):/var/panoptes/panoptes-utils \
           -v $(pwd):/var/panoptes/logs \
@@ -50,7 +52,7 @@ jobs:
       if: success()
       with:
         name: codecov-upload
-        file: ./coverage.xml
+        file: ./coverage_dir/coverage.xml
         fail_ci_if_error: true
     - name: Create log file artifact
       uses: actions/upload-artifact@v1
