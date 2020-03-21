@@ -73,20 +73,10 @@ def test_get_solve_field_solved(solved_fits_file):
     orig_wcs = fits_utils.get_wcsinfo(solved_fits_file)
     assert 'crpix0' in orig_wcs
 
-    proc = fits_utils.get_solve_field(solved_fits_file, skip_solved=False)
-    assert isinstance(proc, subprocess.Popen)
-    proc.wait()
-    try:
-        outs, errs = proc.communicate(timeout=15)
-    except subprocess.TimeoutExpired:
-        proc.kill()
-        outs, errs = proc.communicate()
+    solve_info = fits_utils.get_solve_field(solved_fits_file, skip_solved=False)
+    assert isinstance(solve_info, dict)
 
-    assert proc.returncode == 0, f'{outs}\n{errs}'
-
-    new_wcs = fits_utils.get_wcsinfo(solved_fits_file)
-    assert 'crpix0' in new_wcs
-    assert orig_wcs == new_wcs
+    assert 'crpix0' in solve_info
 
 
 def test_solve_options(solved_fits_file):
