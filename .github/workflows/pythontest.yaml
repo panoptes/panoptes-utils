@@ -33,15 +33,14 @@ jobs:
       run: git fetch --prune --unshallow
     - name: Build panoptes-utils image
       run: |
-        docker build -t panoptes-utils:testing -f docker/Dockerfile .
+        docker build -t panoptes-utils:testing --build-arg=userid=$(id -u) -f docker/Dockerfile .
     - name: Test with pytest in panoptes-utils container
       run: |
-        mkdir ./logs && chmod 777 ./logs
         ci_env=`bash <(curl -s https://codecov.io/env)`
         docker run -i \
           $ci_env \
           --network "host" \
-          -v logs:/var/panoptes/logs \
+          -v $(pwd):/var/panoptes/logs \
           panoptes-utils:testing \
           scripts/testing/run-tests.sh
     - name: Upload coverage report to codecov.io
