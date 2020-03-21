@@ -29,9 +29,10 @@ modules = {
         'coverage',  # testing
         'Flask',
         'loguru',
-        'matplotlib>=3.0.0',
+        'matplotlib>=3.1.3',
         'mocket',  # testing
         'numpy',
+        'Pillow',
         'pycodestyle',  # testing
         'pyserial',
         'pytest',  # testing
@@ -43,7 +44,6 @@ modules = {
         'requests',  # social
         'ruamel.yaml>=0.15',
         'scalpl',
-        'scikit-image',
         'scipy',
         'tweepy',  # social
         'versioneer',
