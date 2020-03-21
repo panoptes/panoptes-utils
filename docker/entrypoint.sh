@@ -10,6 +10,7 @@ if [ "${USER_ID}" != 1000 ]; then
     # Change permissions
     chown -R "${USER_ID}:${USER_ID}" "${PANDIR}"
     chown -R "${USER_ID}:${USER_ID}" "/home/panoptes"
+    chown -R "${USER_ID}:${USER_ID}" "/astrometry"
 fi
 
 # Authenticate if key has been set - used on local units
