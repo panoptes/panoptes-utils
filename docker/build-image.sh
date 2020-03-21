@@ -1,6 +1,6 @@
 #!/bin/bash -e
 SOURCE_DIR="${PANDIR}/panoptes-utils"
-BASE_CLOUD_FILE="cloudbuild-base-amd64.yaml"
+BASE_CLOUD_FILE="cloudbuild.yaml"
 
 cd "${SOURCE_DIR}"
 
