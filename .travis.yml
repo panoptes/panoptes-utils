@@ -1,19 +1,19 @@
 dist: xenial
 sudo: required
 language: python
+addons:
+  apt:
+    packages:
+      - docker-ce
 python:
   - "3.6"
 services:
 - docker
 before_install:
 - mkdir -p $HOME/data && wget -qO- ${TEST_CR2_FILE} > $TRAVIS_BUILD_DIR/panoptes/tests/data/canon.cr2
-- docker pull gcr.io/panoptes-exp/panoptes-utils:latest
-- ci_env=`bash <(curl -s https://codecov.io/env)`
+- docker build -t panoptes-utils:testing -f ${TRAVIS_BUILD_DIR}/docker/Dockerfile ${TRAVIS_BUILD_DIR}
 install: true
 script:
 - docker run -it
-  $ci_env
-  -e LOCAL_USER_ID=$(id -u)
-  -v $TRAVIS_BUILD_DIR:/var/panoptes/panoptes-utils
-  gcr.io/panoptes-exp/panoptes-utils:latest
+  panoptes-utils:testing
   scripts/testing/run-tests.sh

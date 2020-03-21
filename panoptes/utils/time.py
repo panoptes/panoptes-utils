@@ -159,7 +159,7 @@ class CountdownTimer(object):
     def restart(self):
         """Restart the timed duration."""
         self.target_time = time.monotonic() + self.duration
-        logger.trace(f'Restarting {self}')
+        logger.debug(f'Restarting {self}')
 
     def sleep(self, max_sleep=None):
         """Sleep until the timer expires, or for max_sleep, whichever is sooner.
@@ -180,7 +180,7 @@ class CountdownTimer(object):
             assert max_sleep > 0
             sleep_time = max_sleep
 
-        logger.trace(f'Sleeping for {sleep_time:.02f} seconds')
+        logger.debug(f'Sleeping for {sleep_time:.02f} seconds')
         time.sleep(sleep_time)
 
         return sleep_time < remaining
