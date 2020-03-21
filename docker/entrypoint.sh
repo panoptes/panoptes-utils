@@ -6,6 +6,7 @@ USER_ID=${LOCAL_USER_ID:-1000}
 if [ "${USER_ID}" != 1000 ]; then
     echo "Starting with UID : $USER_ID"
     # Modify panoptes default group.
+    addgroup --gid "${USER_ID}"
     usermod --gid "${USER_ID}"
     # Change permissions
     chown -R "${USER_ID}:${USER_ID}" "${PANDIR}"
