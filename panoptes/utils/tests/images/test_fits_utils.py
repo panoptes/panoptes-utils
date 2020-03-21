@@ -47,7 +47,7 @@ def test_getval(solved_fits_file):
     assert img_id == 'PAN001_XXXXXX_20160909T081152'
 
 
-def test_solve_field(unsolved_fits_file):
+def test_solve_field_unsolved(unsolved_fits_file):
     with pytest.raises(KeyError):
         fits_utils.getval(unsolved_fits_file, 'WCSAXES')
 
@@ -64,8 +64,26 @@ def test_solve_field(unsolved_fits_file):
 
     assert proc.returncode == 0, f'{outs}\n{errs}'
 
-    # assert fits_utils.getval(unsolved_fits_file, 'WCSAXES') is not None
     wcs_info = fits_utils.get_wcsinfo(unsolved_fits_file.replace('.fits', '.new'))
+    assert 'crpix0' in wcs_info
+    assert wcs_info['crpix0'] == 350.5 * u.pixel
+
+
+def test_solve_field_solved(solved_fits_file):
+    assert 'crpix0' in fits_utils.get_wcsinfo(solved_fits_file)
+
+    proc = fits_utils.solve_field(solved_fits_file, skip_solved=False)
+    assert isinstance(proc, subprocess.Popen)
+    proc.wait()
+    try:
+        outs, errs = proc.communicate(timeout=15)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        outs, errs = proc.communicate()
+
+    assert proc.returncode == 0, f'{outs}\n{errs}'
+
+    wcs_info = fits_utils.get_wcsinfo(solved_fits_file.replace('.fits', '.new'))
     assert 'crpix0' in wcs_info
     assert wcs_info['crpix0'] == 350.5 * u.pixel
 
