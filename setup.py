@@ -43,7 +43,6 @@ modules = {
         'requests',  # social
         'ruamel.yaml>=0.15',
         'scalpl',
-        'scikit-image',
         'scipy',
         'tweepy',  # social
         'versioneer',
