@@ -43,6 +43,7 @@ jobs:
           -e REPORT_FILE="coverage_dir/coverage.xml" \
           --network "host" \
           -v $(pwd):/var/panoptes/logs \
+          -v coverage_dir:coverage_dir \
           panoptes-utils:testing \
           scripts/testing/run-tests.sh
         ls -lhrst coverage_dir
