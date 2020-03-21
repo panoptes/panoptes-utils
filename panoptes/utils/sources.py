@@ -4,7 +4,8 @@ from .logger import logger
 def get_stars_from_footprint(wcs_footprint, **kwargs):
     """Lookup star information from WCS footprint.
 
-    This is just a thin wrapper around `get_stars`.
+    Generates the correct layout for an SQL `POLYGON` that can be passed to
+    `get_stars`.
 
     Args:
         wcs_footprint (`astropy.wcs.WCS`): The world coordinate system (WCS) for an image.
@@ -31,8 +32,9 @@ def get_stars(
         **kwargs):
     """Look star information from the TESS catalog.
 
-    Note:
+    Todo:
 
+        Add support for `ra_min`, `ra_max`, etc.
 
     Args:
         bq_client (TYPE): The BigQuery Client connection.
