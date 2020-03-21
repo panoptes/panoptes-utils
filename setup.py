@@ -34,6 +34,7 @@ modules = {
         'matplotlib>=3.0.0',
         'mocket',  # testing
         'numpy',
+        'photutils',
         'pycodestyle',  # testing
         'pyserial',
         'pytest',  # testing
