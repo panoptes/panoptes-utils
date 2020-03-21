@@ -10,21 +10,19 @@ attrs==19.3.0             # via pytest
 certifi==2019.11.28       # via requests
 chardet==3.0.4            # via requests
 click==7.0                # via flask
-codecov==2.0.16           # via panoptes-utils (setup.py)
-coverage==5.0.3           # via codecov, coveralls, panoptes-utils (setup.py), pytest-cov
-coveralls==1.11.1         # via panoptes-utils (setup.py)
+coverage==5.0.3           # via panoptes-utils (setup.py), pytest-cov
 cycler==0.10.0            # via matplotlib
-decorator==4.4.1          # via mocket
-docopt==0.6.2             # via coveralls
+decorator==4.4.1          # via mocket, networkx
 flask==1.1.1              # via panoptes-utils (setup.py)
 idna==2.9                 # via requests
+imageio==2.8.0            # via scikit-image
 importlib-metadata==1.5.0  # via pluggy, pytest
 itsdangerous==1.1.0       # via flask
 jinja2==2.11.1            # via flask
 kiwisolver==1.1.0         # via matplotlib
 loguru==0.4.1             # via panoptes-utils (setup.py)
 markupsafe==1.1.1         # via jinja2
-matplotlib==3.1.3         # via panoptes-utils (setup.py)
+matplotlib==3.1.3         # via panoptes-utils (setup.py), scikit-image
 mocket==3.8.4             # via panoptes-utils (setup.py)
 more-itertools==8.2.0     # via pytest
 numpy==1.18.1             # via astroplan, astropy, matplotlib, panoptes-utils (setup.py), photutils, scipy
@@ -43,14 +41,16 @@ pytest==5.3.5             # via panoptes-utils (setup.py), pytest-cov, pytest-re
 python-dateutil==2.8.1    # via matplotlib, panoptes-utils (setup.py)
 python-magic==0.4.15      # via mocket
 pytz==2019.3              # via astroplan
+pywavelets==1.1.1         # via scikit-image
 pyyaml==5.3               # via panoptes-utils (setup.py)
 pyzmq==18.1.1             # via panoptes-utils (setup.py)
 requests-oauthlib==1.3.0  # via tweepy
-requests==2.23.0          # via codecov, coveralls, panoptes-utils (setup.py), requests-oauthlib, tweepy
+requests==2.23.0          # via panoptes-utils (setup.py), requests-oauthlib, tweepy
 ruamel.yaml.clib==0.2.0   # via ruamel.yaml
 ruamel.yaml==0.16.10      # via panoptes-utils (setup.py)
 scalpl==0.3.0             # via panoptes-utils (setup.py)
-scipy==1.4.1              # via panoptes-utils (setup.py)
+scikit-image==0.16.2      # via panoptes-utils (setup.py)
+scipy==1.4.1              # via panoptes-utils (setup.py), scikit-image
 six==1.14.0               # via astroplan, cycler, mocket, packaging, pytest-remotedata, python-dateutil, tweepy
 tweepy==3.8.0             # via panoptes-utils (setup.py)
 urllib3==1.25.8           # via mocket, requests
