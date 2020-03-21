@@ -16,6 +16,7 @@ ENV ZSH_CUSTOM "/.oh-my-zsh/custom"
 
 ENV USERID $userid
 ENV PANDIR $pan_dir
+ENV PANLOG "$pan_dir/logs"
 ENV PANUSER $panuser
 ENV POCS $pocs_dir
 ENV PATH "/home/${PANUSER}/.local/bin:$PATH"

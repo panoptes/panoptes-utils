@@ -36,11 +36,12 @@ jobs:
         docker build -t panoptes-utils:testing -f docker/Dockerfile .
     - name: Test with pytest in panoptes-utils container
       run: |
+        mkdir ./logs && chmod 777 ./logs
         ci_env=`bash <(curl -s https://codecov.io/env)`
         docker run -i \
           $ci_env \
           --network "host" \
-          -v $(pwd):/var/panoptes/logs \
+          -v ./logs:/var/panoptes/logs \
           panoptes-utils:testing \
           scripts/testing/run-tests.sh
     - name: Upload coverage report to codecov.io
