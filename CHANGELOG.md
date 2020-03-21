@@ -48,10 +48,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## Bug fixes
-
-* Properly solve previously solved files when `skip_solved` is passed. (#156)
-
 ## Changed
 
 * Docker (#155)
