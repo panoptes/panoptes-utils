@@ -119,7 +119,7 @@ def get_solve_field(fname, replace=True, remove_extras=True, **kwargs):
     # Set a default radius of 15
     kwargs.setdefault('radius', 15)
 
-    proc = solve_field(fname, **kwargs)
+    proc = solve_field(fname, skip_solved=skip_solved, **kwargs)
     try:
         output, errs = proc.communicate(timeout=kwargs.get('timeout', 30))
     except subprocess.TimeoutExpired:
