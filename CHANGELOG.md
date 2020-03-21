@@ -64,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Docker (#155)
   * Remove anaconda
+* Polar alignment utils (#156)
 
 
 ## [0.2.5] - 2020-03-18
