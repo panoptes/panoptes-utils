@@ -69,7 +69,7 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
     except Exception as e:
-        raise error.PanError("Timeout on plate solving: {}".format(e))
+        raise error.PanError("Problem plate-solving in solve_field: {}".format(e))
 
     return proc
 
