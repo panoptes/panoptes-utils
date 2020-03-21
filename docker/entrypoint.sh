@@ -5,7 +5,7 @@ USER_ID=${LOCAL_USER_ID:-1000}
 # See https://denibertovic.com/posts/handling-permissions-with-docker-volumes/
 if [ "${USER_ID}" != 1000 ]; then
     echo "Starting with UID : $USER_ID"
-    useradd --shell /bin/zsh -u "${USER_ID}" -o -c "PANOPTES User" -m -G plugdev,dialout,panoptes
+    useradd --shell /bin/zsh --uid "${USER_ID}" -c "PANOPTES Docker User" -MN -G plugdev,dialout,panoptes
     export HOME=/home/panoptes
 fi
 
