@@ -29,7 +29,7 @@ modules = {
         'coverage',  # testing
         'Flask',
         'loguru',
-        'matplotlib>=3.0.0',
+        'matplotlib>=3.1.3',
         'mocket',  # testing
         'numpy',
         'pycodestyle',  # testing
