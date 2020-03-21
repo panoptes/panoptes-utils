@@ -1,24 +1,5 @@
 #!/bin/bash -ie
 
-USER_ID=${LOCAL_USER_ID:-1000}
-
-# See https://denibertovic.com/posts/handling-permissions-with-docker-volumes/
-if [ "${USER_ID}" != 1000 ]; then
-    echo "Starting with UID : $USER_ID"
-    # Modify panoptes default group.
-    addgroup --gid "${USER_ID}" panoptes-docker
-    usermod --gid "${USER_ID}" panoptes
-    # Change permissions
-    chown -R "${USER_ID}:${USER_ID}" "${PANDIR}"
-    chown -R "${USER_ID}:${USER_ID}" "/home/panoptes"
-    chown -R "${USER_ID}:${USER_ID}" "/astrometry"
-
-    # Install requirements
-    pip install --no-cache-dir -r requirements.txt
-    # Install module
-    pip install --no-cache-dir -e .
-fi
-
 # Authenticate if key has been set - used on local units
 if [ -n "${GOOGLE_APPLICATION_CREDENTIALS}" ]; then
     echo "Found Google credentials, activating service account."

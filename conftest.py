@@ -34,7 +34,7 @@ _all_databases = ['file', 'memory']
 logger.enable('panoptes')
 LOGGER_INFO = PanLogger()
 logger.level("testing", no=15, icon="🤖", color="<YELLOW><black>")
-log_file_path = os.path.join(os.path.dirname(__file__), 'panoptes-testing.log')
+log_file_path = os.path.expandvars('$PANDIR/logs/panoptes-testing.log')
 logger.add(log_file_path,
            enqueue=True,  # multiprocessing
            format=LOGGER_INFO.format,
