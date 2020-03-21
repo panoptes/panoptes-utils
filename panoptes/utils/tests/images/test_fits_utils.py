@@ -70,7 +70,8 @@ def test_solve_field_unsolved(unsolved_fits_file):
 
 
 def test_solve_field_solved(solved_fits_file):
-    assert 'crpix0' in fits_utils.get_wcsinfo(solved_fits_file)
+    orig_wcs = fits_utils.get_wcsinfo(solved_fits_file)
+    assert 'crpix0' in orig_wcs
 
     proc = fits_utils.solve_field(solved_fits_file, skip_solved=False)
     assert isinstance(proc, subprocess.Popen)
@@ -83,9 +84,9 @@ def test_solve_field_solved(solved_fits_file):
 
     assert proc.returncode == 0, f'{outs}\n{errs}'
 
-    wcs_info = fits_utils.get_wcsinfo(solved_fits_file.replace('.fits', '.new'))
-    assert 'crpix0' in wcs_info
-    assert wcs_info['crpix0'] == 350.5 * u.pixel
+    new_wcs = fits_utils.get_wcsinfo(solved_fits_file.replace('.fits.fz', '.new'))
+    assert 'crpix0' in new_wcs
+    assert orig_wcs == new_wcs
 
 
 def test_solve_options(solved_fits_file):
