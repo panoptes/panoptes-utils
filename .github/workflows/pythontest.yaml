@@ -45,7 +45,6 @@ jobs:
           -v $(pwd):/var/panoptes/logs \
           panoptes-utils:testing \
           scripts/testing/run-tests.sh
-        ls -lhrst
         ls -lhrst coverage_dir
     - name: Upload coverage report to codecov.io
       uses: codecov/codecov-action@v1
