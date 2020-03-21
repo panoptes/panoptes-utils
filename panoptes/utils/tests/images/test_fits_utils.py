@@ -84,7 +84,7 @@ def test_solve_field_solved(solved_fits_file):
 
     assert proc.returncode == 0, f'{outs}\n{errs}'
 
-    new_wcs = fits_utils.get_wcsinfo(solved_fits_file.replace('.fits.fz', '.new'))
+    new_wcs = fits_utils.get_wcsinfo(solved_fits_file)
     assert 'crpix0' in new_wcs
     assert orig_wcs == new_wcs
 
