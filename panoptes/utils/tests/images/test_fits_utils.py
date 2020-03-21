@@ -69,11 +69,11 @@ def test_solve_field_unsolved(unsolved_fits_file):
     assert wcs_info['crpix0'] == 350.5 * u.pixel
 
 
-def test_solve_field_solved(solved_fits_file):
+def test_get_solve_field_solved(solved_fits_file):
     orig_wcs = fits_utils.get_wcsinfo(solved_fits_file)
     assert 'crpix0' in orig_wcs
 
-    proc = fits_utils.solve_field(solved_fits_file, skip_solved=False)
+    proc = fits_utils.get_solve_field(solved_fits_file, skip_solved=False)
     assert isinstance(proc, subprocess.Popen)
     proc.wait()
     try:
