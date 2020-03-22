@@ -114,7 +114,7 @@ def lookup_point_sources(fits_file,
     max    304.648913   47.018996  700.000000  ...  11640.210000   24.970000   27.000000
     ...
     >>> type(point_sources)
-    pandas.core.frame.DataFrame
+    <class 'pandas.core.frame.DataFrame'>
 
     Args:
         fits_file (str, optional): Path to FITS file to search for stars.
