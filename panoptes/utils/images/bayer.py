@@ -184,6 +184,19 @@ def get_rgb_background(fits_fn,
     Most of the options are described in the `photutils.Background2D` page:
     https://photutils.readthedocs.io/en/stable/background.html#d-background-and-noise-estimation
 
+    >>> from panoptes.utils.images.bayer import get_rgb_background
+    >>> from panoptes.utils.images.fits import getdata
+
+    >>> solved_file = getfixture('solved_fits_file')
+
+    >>> data = getdata(solved_file)
+    >>> data.mean()
+    2236.817
+    >>> rgb_back = get_rgb_background(solved_file)
+    >>> rgb_back.mean()
+    2202.393
+
+
     Args:
         fits_fn (str): The filename of the FITS image.
         box_size (tuple, optional): The box size over which to compute the
