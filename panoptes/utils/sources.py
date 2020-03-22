@@ -236,9 +236,9 @@ def _lookup_via_sextractor(fits_file,
                 raise Exception('sextractor not found')
 
         if sextractor_params is None:
+            resources_dir = os.path.expandvars('$PANDIR/panoptes-utils/resources/sextractor')
             sextractor_params = [
-                '-c', '{}/PIAA/resources/conf_files/sextractor/panoptes.sex'.format(
-                    os.getenv('PANDIR')),
+                '-c', os.path.join(resources_dir, 'panoptes.sex'),
                 '-CATALOG_NAME', source_file,
             ]
 
