@@ -187,12 +187,11 @@ def get_rgb_background(fits_fn,
     >>> from panoptes.utils.images.bayer import get_rgb_background
     >>> from panoptes.utils.images.fits import getdata
 
-    >>> solved_file = getfixture('solved_fits_file')
-
-    >>> data = getdata(solved_file)
+    >>> fits_fn = getfixture('solved_fits_file')
+    >>> data = getdata(fits_fn)
     >>> data.mean()
     2236.816...
-    >>> rgb_back = get_rgb_background(solved_file)
+    >>> rgb_back = get_rgb_background(fits_fn)
     >>> rgb_back.mean()
     2202.392...
 
