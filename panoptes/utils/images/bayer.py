@@ -1,8 +1,4 @@
-
 import numpy as np
-
-from .logger import logger
-from .images import fits as fits_utils
 
 from astropy.stats import SigmaClip
 
@@ -12,6 +8,9 @@ from photutils import MMMBackground
 from photutils import MedianBackground
 from photutils import SExtractorBackground
 from photutils import BkgZoomInterpolator
+
+from ..logger import logger
+from . import fits as fits_utils
 
 
 def get_rgb_data(data, separate_green=False):
@@ -181,8 +180,10 @@ def get_rgb_background(fits_fn,
                        exclude_percentile=100
                        ):
     """Get the background for each color channel.
+
     Most of the options are described in the `photutils.Background2D` page:
     https://photutils.readthedocs.io/en/stable/background.html#d-background-and-noise-estimation
+
     Args:
         fits_fn (str): The filename of the FITS image.
         box_size (tuple, optional): The box size over which to compute the
@@ -197,6 +198,7 @@ def get_rgb_background(fits_fn,
         iters (int, optional): The number of iterations to sigma filter, default 5.
         exclude_percentile (int, optional): The percentage of the data (per channel)
             that can be masked, default 100 (i.e. all).
+
     Returns:
         list: A list containing a `photutils.Background2D` for each color channel, in RGB order.
     """
