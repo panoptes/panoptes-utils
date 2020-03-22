@@ -191,10 +191,10 @@ def get_rgb_background(fits_fn,
 
     >>> data = getdata(solved_file)
     >>> data.mean()
-    2236.817
+    2236.816...
     >>> rgb_back = get_rgb_background(solved_file)
     >>> rgb_back.mean()
-    2202.393
+    2202.392...
 
 
     Args:
