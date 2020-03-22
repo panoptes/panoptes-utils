@@ -52,7 +52,7 @@ RUN apt-get update && \
     mkdir -p /home/$panuser/.key && \
     ssh-keygen -q -t rsa -N "" -f "/home/${panuser}/.key/id_rsa" && \
     # Update permissions for current user.
-    chown -R ${USERID}:${USERID} ${HOME} && \
+    chown -R ${USERID}:${USERID} "/home/${panuser}" && \
     chown -R ${USERID}:${USERID} ${PANDIR} && \
     # Astrometry folders
     mkdir -p "${astrometry_dir}" && \
