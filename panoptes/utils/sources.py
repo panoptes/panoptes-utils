@@ -85,7 +85,7 @@ def get_stars(
 
 
 def lookup_point_sources(fits_file,
-                         catalog_match=True,
+                         catalog_match=False,
                          method='sextractor',
                          force_new=False,
                          max_catalog_separation=25,  # arcsecs
@@ -93,10 +93,16 @@ def lookup_point_sources(fits_file,
                          ):
     """ Extract point sources from image
 
+    >>> from panoptes.utils.sources import lookup_point_sources
+    >>> fits_fn = getfixture('solved_fits_file')
+
+    >>> point_sources = lookup_point_sources(fits_fn)
+    >>> point_sources.describe()
+
     Args:
         fits_file (str, optional): Path to FITS file to search for stars.
         force_new (bool, optional): Force a new catalog to be created,
-            defaults to False
+            defaults to False.
 
     Raises:
         error.InvalidSystemCommand: Description
