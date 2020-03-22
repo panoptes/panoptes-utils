@@ -91,7 +91,12 @@ def lookup_point_sources(fits_file,
                          max_catalog_separation=25,  # arcsecs
                          **kwargs
                          ):
-    """ Extract point sources from image
+    """ Extract point sources from image.
+
+    This function will extract the sources from the image using the given method
+    (currently only `sextractor`). This is returned as a `pandas.DataFrame`. If
+    `catalog_match=True` then the resulting sources will be matched against the
+    PANOPTES catalog, which is a filtered version of the TESS Input Catalog.
 
     >>> from panoptes.utils.sources import lookup_point_sources
     >>> fits_fn = getfixture('solved_fits_file')
@@ -107,8 +112,6 @@ def lookup_point_sources(fits_file,
     50%    303.238772   46.015271  350.000000  ...   1018.907000    2.915000    0.000000
     75%    303.932212   46.533257  530.000000  ...   2318.909000    3.795000    0.000000
     max    304.648913   47.018996  700.000000  ...  11640.210000   24.970000   27.000000
-
-    [8 rows x 15 columns]
     >>> type(point_sources)
     pandas.core.frame.DataFrame
 
@@ -196,25 +199,12 @@ def get_catalog_match(point_sources, wcs, **kwargs):
     idx, d2d, d3d = match_coordinates_sky(stars_coords, catalog_coords)
     logger.debug(f'Got {len(idx)} matched sources (includes duplicates)')
 
-    # logger.debug(f'Adding catalog_stars columns: {catalog_stars.columns}')
-
     # Get some properties from the catalog
     point_sources['picid'] = catalog_stars.iloc[idx]['id'].values
     # point_sources['twomass'] = catalog_stars[idx]['twomass']
-    point_sources['tmag'] = catalog_stars.iloc[idx]['tmag'].values
-    point_sources['tmag_err'] = catalog_stars.iloc[idx]['e_tmag'].values
     point_sources['vmag'] = catalog_stars.iloc[idx]['vmag'].values
     point_sources['vmag_err'] = catalog_stars.iloc[idx]['e_vmag'].values
-    point_sources['lumclass'] = catalog_stars.iloc[idx]['lumclass'].values
-    point_sources['lum'] = catalog_stars.iloc[idx]['lum'].values
-    point_sources['lum_err'] = catalog_stars.iloc[idx]['e_lum'].values
-    # Contamination ratio
-    point_sources['contratio'] = catalog_stars.iloc[idx]['contratio'].values
-    # Number of sources in TESS aperture
-    point_sources['numcont'] = catalog_stars.iloc[idx]['numcont'].values
     point_sources['catalog_sep_arcsec'] = d2d.to(u.arcsec).value
-
-    # logger.debug(f'point_sources.columns: {point_sources.columns}')
 
     return point_sources
 
