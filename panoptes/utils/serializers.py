@@ -337,7 +337,8 @@ def _serialize_object(obj, default=None):
     if default is not None:
         return default(obj)
 
-    # Exceptions
+    # Exceptions - if not a class object, then `issubclass` raises a `TypeError`,
+    # so we ignore those and let the object pass through.
     with suppress(TypeError):
         if issubclass(obj, Exception):
             return str(obj)
