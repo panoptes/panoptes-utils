@@ -553,6 +553,32 @@ def getheader(fn, *args, **kwargs):
     return fits.getheader(fn, ext=ext)
 
 
+def getwcs(fn, *args, **kwargs):
+    """Get the WCS for the FITS file.
+
+    Small wrapper around `astropy.wcs.WCS`.
+
+    >>> from panoptes.utils.images import fits as fits_utils
+    >>> fits_fn = getfixture('solved_fits_file')
+    >>> wcs = fits_utils.getwcs(fits_fn)
+    >>> wcs.is_celestial
+    True
+    >>> fits_fn = getfixture('unsolved_fits_file')
+    >>> wcs = fits_utils.getwcs(fits_fn)
+    >>> wcs.is_celestial
+    False
+
+    Args:
+        fn (str): Path to FITS file.
+        *args: Passed to `astropy.io.fits.getheader`.
+        **kwargs: Passed to `astropy.io.fits.getheader`.
+
+    Returns:
+        `astropy.io.fits.header.Header`: The FITS header for the data.
+    """
+    return WCS(getheader(fn, *args, **kwargs), *args, **kwargs)
+
+
 def getval(fn, *args, **kwargs):
     """Get a value from the FITS header.
 

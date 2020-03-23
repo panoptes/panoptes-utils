@@ -7,11 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [Changelog](#changelog)
   - [[Unreleased]](#unreleased)
+  - [Added](#added)
   - [Bug fixes](#bug-fixes)
   - [Changed](#changed)
     - [Removed](#removed)
   - [[0.2.5] - 2020-03-18](#025---2020-03-18)
-    - [Added](#added)
+    - [Added](#added-1)
     - [Bug fixes](#bug-fixes-1)
     - [Changed](#changed-1)
     - [Removed](#removed-1)
@@ -28,38 +29,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - [Changed](#changed-5)
     - [Removed](#removed-4)
   - [[0.2.0] - 2020-03-04](#020---2020-03-04)
-    - [Added](#added-1)
+    - [Added](#added-2)
     - [Bug fixes](#bug-fixes-3)
     - [Changed](#changed-6)
   - [[0.1.0] - 2020-03-04](#010---2020-03-04)
   - [[0.0.8] - 2019-06-29](#008---2019-06-29)
-    - [Added](#added-2)
+    - [Added](#added-3)
     - [Bug fixes](#bug-fixes-4)
     - [Changed](#changed-7)
   - [[0.0.7] - 2019-05-26](#007---2019-05-26)
-    - [Added](#added-3)
+    - [Added](#added-4)
     - [Changed](#changed-8)
   - [[0.0.6] - 2019-04-29](#006---2019-04-29)
-    - [Added](#added-4)
+    - [Added](#added-5)
     - [Changed](#changed-9)
   - [[0.0.5] - 2019-04-09](#005---2019-04-09)
-    - [Added](#added-5)
+    - [Added](#added-6)
     - [Changed](#changed-10)
 
 ## [Unreleased]
 
+## Added
+
+* `get_rgb_background` added to the `bayer` module. (#158)
+* `getwcs` thin-wrapper added to `fits` module. (#158)
+* Added `sources` utils. (#158)
+
+## Bug fixes
+
+* Changed scope of test data files to `function`. (#158)
+
 ## Changed
 
-* Docker (#155)
-  * Change to `python:3.8-slim-buster` for base image. Only `amd64` support for now.
-  * Simplified docker files.
-  * Switching from Travis to GHA:
+* Docker
+  * Change to `python:3.8-slim-buster` for base image. Only `amd64` support for now. (#155)
+  * Simplified docker files. (#155)
+  * Switching from Travis to GHA: (#155)
     * Travis builds docker image before testing.
     * Travis doesn't upload coverage.
     * Don't update module inside container during entrypoint.
-  * Fixed user permissions for $HOME and $PANDIR.
+  * Fixed user permissions for $HOME and $PANDIR. (#155)
     * :warning: The docker container only really likes it when user id `1000` is running the system.
   * Remove GCP Cloud SQL proxy support.
+  * Installed `sextractor`. (#158)
+  * Added `pandas`. (#158)
+  * Default `panoptes` user has password `panoptes`. (#158)
 
 ### Removed
 

@@ -32,6 +32,8 @@ modules = {
         'matplotlib>=3.1.3',
         'mocket',  # testing
         'numpy',
+        'pandas',
+        'photutils',
         'Pillow',
         'pycodestyle',  # testing
         'pyserial',
