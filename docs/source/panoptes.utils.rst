@@ -87,22 +87,6 @@ panoptes.utils.serializers module
     :undoc-members:
     :show-inheritance:
 
-panoptes.utils.social\_slack module
------------------------------------
-
-.. automodule:: panoptes.utils.social_slack
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-panoptes.utils.social\_twitter module
--------------------------------------
-
-.. automodule:: panoptes.utils.social_twitter
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 panoptes.utils.theskyx module
 -----------------------------
 

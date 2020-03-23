@@ -10,8 +10,9 @@ import numpy as np
 
 from astropy.io import fits
 
-from panoptes.utils import error
-from panoptes.utils.images import fits as fits_utils
+from .. import error
+from ..logger import logger
+from ..images import fits as fits_utils
 
 
 def cr2_to_fits(
@@ -44,15 +45,11 @@ def cr2_to_fits(
         str: The full path to the generated FITS file.
 
     """
-
-    verbose = kwargs.get('verbose', False)
-
     if fits_fname is None:
         fits_fname = cr2_fname.replace('.cr2', '.fits')
 
     if not os.path.exists(fits_fname) or overwrite:
-        if verbose:
-            print("Converting CR2 to PGM: {}".format(cr2_fname))
+        logger.debug("Converting CR2 to PGM: {}".format(cr2_fname))
 
         # Convert the CR2 to a PGM file then delete PGM
         pgm = read_pgm(cr2_to_pgm(cr2_fname), remove_after=True)
@@ -86,9 +83,6 @@ def cr2_to_fits(
         hdu.header.set('WBRGGB', exif.get('WB RGGBLevelAsShot', ''), 'From CR2')
         hdu.header.set('DATE-OBS', obs_date)
 
-        if verbose:
-            print("Adding provided FITS header")
-
         for key, value in fits_headers.items():
             try:
                 hdu.header.set(key.upper()[0: 8], value)
@@ -96,8 +90,7 @@ def cr2_to_fits(
                 pass
 
         try:
-            if verbose:
-                print("Saving fits file to: {}".format(fits_fname))
+            logger.debug("Saving fits file to: {}".format(fits_fname))
 
             hdu.writeto(fits_fname, output_verify='silentfix', overwrite=overwrite)
         except Exception as e:
@@ -139,8 +132,6 @@ def cr2_to_pgm(
         str -- Filename of PGM that was created
 
     """
-    verbose = kwargs.get('verbose', False)
-
     dcraw = shutil.which('dcraw')
     if dcraw is None:
         raise error.InvalidCommand('dcraw not found')
@@ -149,21 +140,17 @@ def cr2_to_pgm(
         pgm_fname = cr2_fname.replace('.cr2', '.pgm')
 
     if os.path.exists(pgm_fname) and not overwrite:
-        if verbose:
-            print("PGM file exists, returning existing file: {}".format(
-                  pgm_fname))
+        logger.warning(f"PGM file exists, returning existing file: {pgm_fname}")
     else:
         try:
             # Build the command for this file
             command = '{} -t 0 -D -4 {}'.format(dcraw, cr2_fname)
             cmd_list = command.split()
-            if verbose:
-                print("PGM Conversion command: \n {}".format(cmd_list))
+            logger.debug("PGM Conversion command: \n {}".format(cmd_list))
 
             # Run the command
             if subprocess.check_call(cmd_list) == 0:
-                if verbose:
-                    print("PGM Conversion command successful")
+                logger.debug("PGM Conversion command successful")
 
         except subprocess.CalledProcessError as err:
             raise error.InvalidSystemCommand(msg="File: {} \n err: {}".format(cr2_fname, err))

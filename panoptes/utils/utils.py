@@ -11,9 +11,11 @@ from astropy.coordinates import AltAz
 from astropy.coordinates import ICRS
 from astropy.coordinates import SkyCoord
 
-from panoptes.utils.time import current_time
+from .time import current_time
 
-PATH_MATCHER = re.compile(r'.*(?P<unit_id>PAN\d{3})/(?P<camera_id>[a-gA-G1-9]{6})/(?P<sequence_id>.*?)/(?P<image_id>.*?)\..*')
+
+PATH_MATCHER = re.compile(
+    r'.*(?P<unit_id>PAN\d{3})/(?P<camera_id>[a-gA-G1-9]{6})/(?P<sequence_id>.*?)/(?P<image_id>.*?)\..*')
 
 
 def listify(obj):
@@ -65,8 +67,11 @@ def get_free_space(dir=None):
     """Return the amoung of freespace in gigabytes for given dir.
 
     >>> from panoptes.utils import get_free_space
-    >>> get_free_space()        # doctest: +SKIP
-    <Quantity 10.245 Gbyte>
+    >>> get_free_space()
+    <Quantity ... Gbyte>
+
+    >>> get_free_space(dir='/')
+    <Quantity ... Gbyte>
 
     Args:
         dir (str, optional): Path to directory. If None defaults to $PANDIR.
@@ -157,15 +162,40 @@ def string_to_params(opts):
     return args, kwargs
 
 
-def altaz_to_radec(alt=35, az=90, location=None, obstime=None, verbose=False):
+def altaz_to_radec(alt=35, az=90, location=None, obstime=None, **kwargs):
     """Convert alt/az degrees to RA/Dec SkyCoord.
+
+    >>> from panoptes.utils import altaz_to_radec
+    >>> from astropy.coordinates import EarthLocation
+    >>> keck = EarthLocation.of_site('Keck Observatory')
+    ...
+
+    >>> altaz_to_radec(alt=75, az=180, location=keck, obstime='2020-02-02T20:20:02.02')
+    <SkyCoord (ICRS): (ra, dec) in deg
+        (281.78..., 4.807...)>
+
+    >>> # Will use current time if none given
+    >>> altaz_to_radec(location=keck)
+    <SkyCoord (ICRS): (ra, dec) in deg
+        (..., ...)>
+
+    >>> altaz_to_radec(location=keck, obstime='2020-02-02T20:20:02.02')
+    <SkyCoord (ICRS): (ra, dec) in deg
+        (338.40968035, 11.11755983)>
+
+    >>> # Must pass a `location` instance.
+    >>> altaz_to_radec()
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+      ...
+        assert location is not None
+    AssertionError
 
     Args:
         alt (int, optional): Altitude, defaults to 35
         az (int, optional): Azimute, defaults to 90 (east)
         location (None|astropy.coordinates.EarthLocation, required): A valid location.
         obstime (None, optional): Time for object, defaults to `current_time`
-        verbose (bool, optional): Verbose, default False.
 
     Returns:
         astropy.coordinates.SkyCoord: Coordinates corresponding to the AltAz.
@@ -173,10 +203,6 @@ def altaz_to_radec(alt=35, az=90, location=None, obstime=None, verbose=False):
     assert location is not None
     if obstime is None:
         obstime = current_time()
-
-    if verbose:
-        print("Getting coordinates for Alt {} Az {}, from {} at {}".format(
-            alt, az, location, obstime))
 
     altaz = AltAz(obstime=obstime, location=location, alt=alt * u.deg, az=az * u.deg)
     return SkyCoord(altaz.transform_to(ICRS))
@@ -231,9 +257,25 @@ class DelaySigTerm(contextlib.ContextDecorator):
 
 
 def get_quantity_value(quantity, unit=None):
-    """ Return the numerical value of a Quantity, optionally converting to unit at the same time.
+    """ Thin-wrapper around the `astropy.units.Quantity.to_value` method.
 
     If passed something other than a Quantity will simply return the original object.
+
+    >>> from astropy import units as u
+    >>> from panoptes.utils import get_quantity_value
+
+    >>> get_quantity_value(60 * u.second)
+    60.0
+
+    >>> # Can convert between units.
+    >>> get_quantity_value(60 * u.minute, unit='second')
+    3600.0
+
+    >>> get_quantity_value(60 * u.minute, unit=u.second)
+    3600.0
+
+    >>> get_quantity_value(60)
+    60
 
     Args:
         quantity (astropy.units.Quantity): Quantity to extract numerical value from.
@@ -242,11 +284,9 @@ def get_quantity_value(quantity, unit=None):
     Returns:
         float: numerical value of the Quantity after conversion to the specified unit.
     """
-    if isinstance(quantity, u.Quantity):
-        if unit is not None:
-            quantity = quantity.to(unit)
-        return quantity.value
-    else:
+    try:
+        return quantity.to_value(unit)
+    except AttributeError:
         return quantity
 
 

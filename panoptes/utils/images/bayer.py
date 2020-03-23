@@ -1,7 +1,16 @@
-
 import numpy as np
 
-from decimal import Decimal
+from astropy.stats import SigmaClip
+
+from photutils import Background2D
+from photutils import MeanBackground
+from photutils import MMMBackground
+from photutils import MedianBackground
+from photutils import SExtractorBackground
+from photutils import BkgZoomInterpolator
+
+from ..logger import logger
+from . import fits as fits_utils
 
 
 def get_rgb_data(data, separate_green=False):
@@ -99,7 +108,7 @@ def get_rgb_data(data, separate_green=False):
 def get_rgb_masks(data, separate_green=False):
     """Get the RGGB Bayer pattern for the given data.
 
-    See `get_rgb_data` for description of data.
+    > Note: See `get_rgb_data` for a description of the RGGB pattern.
 
     Args:
         data (`numpy.array`): An array of data representing an image.
@@ -130,7 +139,7 @@ def get_rgb_masks(data, separate_green=False):
         g2_mask[..., 0::2, 0::2] = False
         b_mask[..., 0::2, 1::2] = False
     else:
-        raise Exception('Only 2D and 3D data allowed')
+        raise TypeError('Only 2D and 3D data allowed')
 
     if separate_green:
         return np.array([r_mask, g1_mask, g2_mask, b_mask])
@@ -138,68 +147,10 @@ def get_rgb_masks(data, separate_green=False):
         return np.array([r_mask, g1_mask, b_mask])
 
 
-def pixel_color(x, y):
+def get_pixel_color(x, y):
     """ Given an x,y position, return the corresponding color.
 
-    The Bayer array defines a superpixel as a collection of 4 pixels
-    set in a square grid:
-
-                     R G
-                     G B
-
-    `ds9` and other image viewers define the coordinate axis from the
-    lower left corner of the image, which is how a traditional x-y plane
-    is defined and how most images would expect to look when viewed. This
-    means that the `(0, 0)` coordinate position will be in the lower left
-    corner of the image.
-
-    When the data is loaded into a `numpy` array the data is flipped on the
-    vertical axis in order to maintain the same indexing/slicing features.
-    This means the the `(0, 0)` coordinate position is in the upper-left
-    corner of the array when output. When plotting this array one can use
-    the `origin='lower'` option to view the array as would be expected in
-    a normal image although this does not change the actual index.
-
-    Note:
-
-        Image dimensions:
-
-         ----------------------------
-         x | width  | i | columns |  5208
-         y | height | j | rows    |  3476
-
-        Bayer Pattern (as seen in ds9):
-
-                                      x / j
-
-                      0     1    2     3 ... 5204 5205 5206 5207
-                    --------------------------------------------
-               3475 |  R   G1    R    G1        R   G1    R   G1
-               3474 | G2    B   G2     B       G2    B   G2    B
-               3473 |  R   G1    R    G1        R   G1    R   G1
-               3472 | G2    B   G2     B       G2    B   G2    B
-                  . |
-         y / i    . |
-                  . |
-                  3 |  R   G1    R    G1        R   G1    R   G1
-                  2 | G2    B   G2     B       G2    B   G2    B
-                  1 |  R   G1    R    G1        R   G1    R   G1
-                  0 | G2    B   G2     B       G2    B   G2    B
-
-
-        This can be described by:
-
-                 | row (y) |  col (x)
-             --------------| ------
-              R  |  odd i, |  even j
-              G1 |  odd i, |   odd j
-              G2 | even i, |  even j
-              B  | even i, |   odd j
-
-            bayer[1::2, 0::2] = 1 # Red
-            bayer[1::2, 1::2] = 1 # Green
-            bayer[0::2, 0::2] = 1 # Green
-            bayer[0::2, 1::2] = 1 # Blue
+    > Note: See `get_rgb_data` for a description of the RGGB pattern.
 
     Returns:
         str: one of 'R', 'G1', 'G2', 'B'
@@ -218,78 +169,94 @@ def pixel_color(x, y):
             return 'G1'
 
 
-def get_stamp_slice(x, y, stamp_size=(14, 14), verbose=False, ignore_superpixel=False):
-    """Get the slice around a given position with fixed Bayer pattern.
+def get_rgb_background(fits_fn,
+                       box_size=(84, 84),
+                       filter_size=(3, 3),
+                       camera_bias=0,
+                       estimator='mean',
+                       interpolator='zoom',
+                       sigma=5,
+                       iters=5,
+                       exclude_percentile=100,
+                       *args,
+                       **kwargs
+                       ):
+    """Get the background for each color channel.
 
-    Given an x,y pixel position, get the slice object for a stamp of a given size
-    but make sure the first position corresponds to a red-pixel. This means that
-    x,y will not necessarily be at the center of the resulting stamp.
+    Most of the options are described in the `photutils.Background2D` page:
+    https://photutils.readthedocs.io/en/stable/background.html#d-background-and-noise-estimation
+
+    >>> from panoptes.utils.images import fits as fits_utils
+    >>> fits_fn = getfixture('solved_fits_file')
+
+    >>> data = fits_utils.getdata(fits_fn)
+    >>> data.mean()
+    2236.816...
+
+    >>> rgb_back = get_rgb_background(fits_fn)
+    >>> rgb_back.mean()
+    2202.392...
+
 
     Args:
-        x (float): X pixel position.
-        y (float): Y pixel position.
-        stamp_size (tuple, optional): The size of the cutout, default (14, 14).
-        verbose (bool, optional): Verbose, default False.
+        fits_fn (str): The filename of the FITS image.
+        box_size (tuple, optional): The box size over which to compute the
+            2D-Background, default (84, 84).
+        filter_size (tuple, optional): The filter size for determining the median,
+            default (3, 3).
+        camera_bias (int, optional): The built-in camera bias, default 0. A zero camera
+            bias means the bias will be considered as part of the background.
+        estimator (str, optional): The estimator object to use, default 'median'.
+        interpolator (str, optional): The interpolater object to user, default 'zoom'.
+        sigma (int, optional): The sigma on which to filter values, default 5.
+        iters (int, optional): The number of iterations to sigma filter, default 5.
+        exclude_percentile (int, optional): The percentage of the data (per channel)
+            that can be masked, default 100 (i.e. all).
 
     Returns:
-        `slice`: A slice object for the data.
+        list: A list containing a `photutils.Background2D` for each color channel, in RGB order.
     """
-    # Make sure requested size can have superpixels on each side.
-    if not ignore_superpixel:
-        for side_length in stamp_size:
-            side_length -= 2  # Subtract center superpixel
-            if int(side_length / 2) % 2 != 0:
-                print("Invalid slice size: ", side_length + 2,
-                      " Slice must have even number of pixels on each side of",
-                      " the center superpixel.",
-                      "i.e. 6, 10, 14, 18...")
-                return
+    logger.info(f"Getting background for {fits_fn}")
+    logger.debug(
+        f"{estimator} {interpolator} {box_size} {filter_size} {camera_bias} σ={sigma} n={iters}")
 
-    # Pixels have nasty 0.5 rounding issues
-    x = Decimal(float(x)).to_integral()
-    y = Decimal(float(y)).to_integral()
-    color = pixel_color(x, y)
-    if verbose:
-        print(x, y, color)
+    estimators = {
+        'sexb': SExtractorBackground,
+        'median': MedianBackground,
+        'mean': MeanBackground,
+        'mmm': MMMBackground
+    }
+    interpolators = {
+        'zoom': BkgZoomInterpolator,
+    }
 
-    x_half = int(stamp_size[0] / 2)
-    y_half = int(stamp_size[1] / 2)
+    bkg_estimator = estimators[estimator]()
+    interp = interpolators[interpolator]()
 
-    x_min = int(x - x_half)
-    x_max = int(x + x_half)
+    data = fits_utils.getdata(fits_fn) - camera_bias
 
-    y_min = int(y - y_half)
-    y_max = int(y + y_half)
+    # Get the data per color channel.
+    rgb_data = get_rgb_data(data)
 
-    # Alter the bounds depending on identified center pixel
-    if color == 'B':
-        x_min -= 1
-        x_max -= 1
-        y_min -= 0
-        y_max -= 0
-    elif color == 'G1':
-        x_min -= 1
-        x_max -= 1
-        y_min -= 1
-        y_max -= 1
-    elif color == 'G2':
-        x_min -= 0
-        x_max -= 0
-        y_min -= 0
-        y_max -= 0
-    elif color == 'R':
-        x_min -= 0
-        x_max -= 0
-        y_min -= 1
-        y_max -= 1
+    backgrounds = list()
+    for color, color_data in zip(['R', 'G', 'B'], rgb_data):
+        logger.debug(f'Performing background {color} for {fits_fn}')
 
-    # if stamp_size is odd add extra
-    if (stamp_size[0] % 2 == 1):
-        x_max += 1
-        y_max += 1
+        bkg = Background2D(color_data,
+                           box_size,
+                           filter_size=filter_size,
+                           sigma_clip=SigmaClip(sigma=sigma, maxiters=iters),
+                           bkg_estimator=bkg_estimator,
+                           exclude_percentile=exclude_percentile,
+                           mask=color_data.mask,
+                           interpolator=interp)
 
-    if verbose:
-        print(x_min, x_max, y_min, y_max)
-        print()
+        # Create a masked array for the background
+        backgrounds.append(np.ma.array(data=bkg.background, mask=color_data.mask))
+        logger.debug(
+            f"{color} Value: {bkg.background_median:.02f} RMS: {bkg.background_rms_median:.02f}")
 
-    return (slice(y_min, y_max), slice(x_min, x_max))
+    # Create one array for the backgrounds, where any holes are filled with zeros.
+    full_background = np.ma.array(backgrounds).sum(0).filled(0)
+
+    return full_background
