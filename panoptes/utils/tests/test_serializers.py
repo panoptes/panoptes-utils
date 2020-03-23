@@ -4,6 +4,7 @@ from astropy import units as u
 
 from panoptes.utils import current_time
 from panoptes.utils import serializers
+from panoptes.utils import error
 
 
 @pytest.fixture(scope='function')
@@ -38,7 +39,8 @@ def obj():
         "empty": {},
         "current_time": current_time(),
         "bool": True,
-
+        "exception": TypeError,
+        "panoptes_exception": error.InvalidObservation
     }
 
 

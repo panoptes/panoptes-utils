@@ -177,7 +177,9 @@ def get_rgb_background(fits_fn,
                        interpolator='zoom',
                        sigma=5,
                        iters=5,
-                       exclude_percentile=100
+                       exclude_percentile=100,
+                       *args,
+                       **kwargs
                        ):
     """Get the background for each color channel.
 
