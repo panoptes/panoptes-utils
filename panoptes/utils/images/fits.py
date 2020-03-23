@@ -68,14 +68,8 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
                                 universal_newlines=True,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
-    except OSError as e:
-        raise error.InvalidCommand(
-            "Can't send command to panoptes-solve-field: {} \t {}".format(e, cmd))
-    except ValueError as e:
-        raise error.InvalidCommand(
-            "Bad parameters to solve_field: {} \t {}".format(e, cmd))
     except Exception as e:
-        raise error.PanError("Timeout on plate solving: {}".format(e))
+        raise error.PanError("Problem plate-solving in solve_field: {}".format(e))
 
     return proc
 
@@ -170,7 +164,10 @@ def get_solve_field(fname, replace=True, remove_extras=True, **kwargs):
     else:
 
         try:
-            out_dict.update(getheader(fname))
+            header = getheader(fname)
+            header.remove('COMMENT', ignore_missing=True, remove_all=True)
+            header.remove('HISTORY', ignore_missing=True, remove_all=True)
+            out_dict.update(header)
         except OSError:
             logger.warning(f"Can't read fits header for: {fname}")
 
@@ -554,6 +551,32 @@ def getheader(fn, *args, **kwargs):
     if fn.endswith('.fz'):
         ext = 1
     return fits.getheader(fn, ext=ext)
+
+
+def getwcs(fn, *args, **kwargs):
+    """Get the WCS for the FITS file.
+
+    Small wrapper around `astropy.wcs.WCS`.
+
+    >>> from panoptes.utils.images import fits as fits_utils
+    >>> fits_fn = getfixture('solved_fits_file')
+    >>> wcs = fits_utils.getwcs(fits_fn)
+    >>> wcs.is_celestial
+    True
+    >>> fits_fn = getfixture('unsolved_fits_file')
+    >>> wcs = fits_utils.getwcs(fits_fn)
+    >>> wcs.is_celestial
+    False
+
+    Args:
+        fn (str): Path to FITS file.
+        *args: Passed to `astropy.io.fits.getheader`.
+        **kwargs: Passed to `astropy.io.fits.getheader`.
+
+    Returns:
+        `astropy.io.fits.header.Header`: The FITS header for the data.
+    """
+    return WCS(getheader(fn, *args, **kwargs), *args, **kwargs)
 
 
 def getval(fn, *args, **kwargs):
