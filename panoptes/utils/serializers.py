@@ -320,6 +320,10 @@ def _serialize_all_objects(obj):
 
 
 def _serialize_object(obj, default=None):
+    # Exceptions
+    if issubclass(obj, Exception):
+        return str(obj)
+
     # Astropy Quantity.
     if isinstance(obj, u.Quantity):
         return str(obj)
