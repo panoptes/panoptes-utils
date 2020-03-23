@@ -478,10 +478,10 @@ def update_observation_headers(file_path, info):
     with fits.open(file_path, 'update') as f:
 
         # Let us check the headers
-        >>> fits_fn=getfixture('unsolved_fits_file')
+        >>> fits_fn = getfixture('unsolved_fits_file')
         >>> info = {'field_name': 'M42'}
-		>>> update_observation_headers{fits_fn, info}
-		>>> fits_utils.getval(fits_fn, 'FIELD')
+        >>> update_observation_headers{fits_fn, info}
+        >>> fits_utils.getval(fits_fn, 'FIELD')
 		M42
 
         hdu = f[0]
