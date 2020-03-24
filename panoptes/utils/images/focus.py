@@ -1,4 +1,3 @@
-import numpy as np
 
 
 def focus_metric(data, merit_function='vollath_F4', **kwargs):
@@ -43,41 +42,21 @@ def vollath_F4(data, axis=None):
     Returns:
         float64: Calculated F4 value for y, x axis or both
     """
-    if axis == 'Y' or axis == 'y':
-        return _vollath_F4_y(data)
-    elif axis == 'X' or axis == 'x':
-        return _vollath_F4_x(data)
+    def _vollath_F4_y():
+        A1 = (data[1:] * data[:-1]).mean()
+        A2 = (data[2:] * data[:-2]).mean()
+        return A1 - A2
+
+    def _vollath_F4_x():
+        A1 = (data[:, 1:] * data[:, :-1]).mean()
+        A2 = (data[:, 2:] * data[:, :-2]).mean()
+        return A1 - A2
+
+    if str(axis).lower() == 'y':
+        return _vollath_F4_y()
+    elif str(axis).lower() == 'x':
+        return _vollath_F4_x()
     elif not axis:
-        return (_vollath_F4_y(data) + _vollath_F4_x(data)) / 2
+        return (_vollath_F4_y() + _vollath_F4_x()) / 2
     else:
-        raise ValueError(
-            "axis must be one of 'Y', 'y', 'X', 'x' or None, got {}!".format(axis))
-
-
-def mask_saturated(data, saturation_level=None, threshold=0.9, dtype=np.float64):
-    if not saturation_level:
-        try:
-            # If data is an integer type use iinfo to compute machine limits
-            dtype_info = np.iinfo(data.dtype)
-        except ValueError:
-            # Not an integer type. Assume for now we have 16 bit data
-            saturation_level = threshold * (2**16 - 1)
-        else:
-            # Data is an integer type, set saturation level at specified fraction of
-            # max value for the type
-            saturation_level = threshold * dtype_info.max
-
-    # Convert data to masked array of requested dtype, mask values above saturation level
-    return np.ma.array(data, mask=(data > saturation_level), dtype=dtype)
-
-
-def _vollath_F4_y(data):
-    A1 = (data[1:] * data[:-1]).mean()
-    A2 = (data[2:] * data[:-2]).mean()
-    return A1 - A2
-
-
-def _vollath_F4_x(data):
-    A1 = (data[:, 1:] * data[:, :-1]).mean()
-    A2 = (data[:, 2:] * data[:, :-2]).mean()
-    return A1 - A2
+        raise ValueError(f"axis must be one of 'Y', 'y', 'X', 'x' or None, got {axis}!")

@@ -1,10 +1,10 @@
 import re
 import zmq
 
-from panoptes.utils import current_time
-from panoptes.utils.logger import get_root_logger
-from panoptes.utils.serializers import from_json
-from panoptes.utils.serializers import to_json
+from .logger import logger
+from .time import current_time
+from .serializers import from_json
+from .serializers import to_json
 
 
 class PanMessaging(object):
@@ -69,7 +69,7 @@ class PanMessaging(object):
     a byte array of this format:
         <topic-name><space><serialized-value>
     """
-    logger = get_root_logger()
+    logger = logger
 
     # Topic names must consist of the characters.
     topic_name_re = re.compile('[a-zA-Z][-a-zA-Z0-9_.:]*')
