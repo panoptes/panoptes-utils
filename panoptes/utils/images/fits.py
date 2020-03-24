@@ -465,7 +465,7 @@ def update_observation_headers(file_path, info):
     >>> fits_fn = getfixture('unsolved_fits_file')
     >>> info = {'field_name': 'M42'}
     >>> update_observation_headers(fits_fn, info)
-    >>> fits_utils.getval(fits_fn, 'FIELD')
+    >>> fits_utils.getval(fits_fn, FIELD)
     M42
 
     Args:
