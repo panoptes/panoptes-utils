@@ -463,10 +463,10 @@ def update_observation_headers(file_path, info):
     >>> # Check the headers
     >>> from panoptes.utils.images import fits as fits_utils
     >>> fits_fn = getfixture('unsolved_fits_file')
-    >>> info = {'field_name': M42}
+    >>> info = {'field_name': 'M42'}
     >>> update_observation_headers(fits_fn, info)
     >>> fits_utils.getval(fits_fn, 'FIELD')
-    M42
+    'M42'
 
     Args:
         file_path (str): Path to a FITS file.
