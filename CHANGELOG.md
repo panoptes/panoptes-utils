@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - [Changelog](#changelog)
+  - [[0.2.9] - 2020-03-27](#029---2020-03-27)
   - [[0.2.8] - 2020-03-27](#028---2020-03-27)
   - [Changed](#changed)
   - [[0.2.7] - 2020-03-22 (hotfix)](#027---2020-03-22-hotfix)
@@ -51,6 +52,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - [[0.0.5] - 2019-04-09](#005---2019-04-09)
     - [Added](#added-7)
     - [Changed](#changed-11)
+
+## [0.2.9] - 2020-03-27
+
+Pointless version bump because of issue with [PyPi](https://github.com/pypa/packaging-problems/issues/74).
 
 ## [0.2.8] - 2020-03-27
 
