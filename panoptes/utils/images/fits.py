@@ -460,6 +460,19 @@ def write_fits(data, header, filename, exposure_event=None, **kwargs):
 def update_observation_headers(file_path, info):
     """Update FITS headers with items from the Observation status.
 
+    >>> # Check the headers
+    >>> from panoptes.utils.images import fits as fits_utils
+    >>> fits_fn = getfixture('unsolved_fits_file')
+    >>> # Show original value
+    >>> fits_utils.getval(fits_fn, 'FIELD')
+    'KIC 8462852'
+    
+    >>> info = {'field_name': 'Tabbys Star'}
+    >>> update_observation_headers(fits_fn, info)
+    >>> # Show new value
+    >>> fits_utils.getval(fits_fn, 'FIELD')
+    'Tabbys Star'
+    
     Args:
         file_path (str): Path to a FITS file.
         info (dict): The return dict from `pocs.observatory.Observation.status`,
