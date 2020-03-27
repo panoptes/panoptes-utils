@@ -375,7 +375,7 @@ def data_dir():
     return os.path.expandvars('$PANDIR/panoptes-utils/panoptes/tests/data')
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def unsolved_fits_file(data_dir):
     orig_file = os.path.join(data_dir, 'unsolved.fits')
 
@@ -384,7 +384,7 @@ def unsolved_fits_file(data_dir):
         yield copy_file
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def solved_fits_file(data_dir):
     orig_file = os.path.join(data_dir, 'solved.fits.fz')
 
@@ -393,7 +393,7 @@ def solved_fits_file(data_dir):
         yield copy_file
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def tiny_fits_file(data_dir):
     orig_file = os.path.join(data_dir, 'tiny.fits')
 
@@ -402,7 +402,7 @@ def tiny_fits_file(data_dir):
         yield copy_file
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def noheader_fits_file(data_dir):
     orig_file = os.path.join(data_dir, 'noheader.fits')
 
@@ -411,7 +411,7 @@ def noheader_fits_file(data_dir):
         yield copy_file
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def cr2_file(data_dir):
     cr2_path = os.path.join(data_dir, 'canon.cr2')
 

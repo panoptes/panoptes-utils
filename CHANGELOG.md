@@ -6,64 +6,101 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - [Changelog](#changelog)
-  - [[Unreleased]](#unreleased)
+  - [Unreleased](#unreleased)
   - [Changed](#changed)
-    - [Removed](#removed)
-  - [[0.2.5] - 2020-03-18](#025---2020-03-18)
+  - [[0.2.7] - 2020-03-22 (hotfix)](#027---2020-03-22-hotfix)
     - [Added](#added)
     - [Bug fixes](#bug-fixes)
+  - [[0.2.6] - 2020-03-22](#026---2020-03-22)
+    - [Added](#added-1)
+    - [Bug fixes](#bug-fixes-1)
     - [Changed](#changed-1)
+    - [Removed](#removed)
+  - [[0.2.5] - 2020-03-18](#025---2020-03-18)
+    - [Added](#added-2)
+    - [Bug fixes](#bug-fixes-2)
+    - [Changed](#changed-2)
     - [Removed](#removed-1)
   - [[0.2.4] - 2020-03-11](#024---2020-03-11)
-    - [Changed](#changed-2)
+    - [Changed](#changed-3)
     - [Removed](#removed-2)
   - [[0.2.3] - 2020-03-08](#023---2020-03-08)
-    - [Changed](#changed-3)
+    - [Changed](#changed-4)
     - [Removed](#removed-3)
   - [[Unreleased]](#unreleased-1)
-    - [Changed](#changed-4)
-  - [[0.2.2] - 2020-03-05](#022---2020-03-05)
-    - [Bug fixes](#bug-fixes-1)
     - [Changed](#changed-5)
+  - [[0.2.2] - 2020-03-05](#022---2020-03-05)
+    - [Bug fixes](#bug-fixes-3)
+    - [Changed](#changed-6)
     - [Removed](#removed-4)
   - [[0.2.0] - 2020-03-04](#020---2020-03-04)
-    - [Added](#added-1)
-    - [Bug fixes](#bug-fixes-2)
-    - [Changed](#changed-6)
+    - [Added](#added-3)
+    - [Bug fixes](#bug-fixes-4)
+    - [Changed](#changed-7)
   - [[0.1.0] - 2020-03-04](#010---2020-03-04)
   - [[0.0.8] - 2019-06-29](#008---2019-06-29)
-    - [Added](#added-2)
-    - [Bug fixes](#bug-fixes-3)
-    - [Changed](#changed-7)
-  - [[0.0.7] - 2019-05-26](#007---2019-05-26)
-    - [Added](#added-3)
-    - [Changed](#changed-8)
-  - [[0.0.6] - 2019-04-29](#006---2019-04-29)
     - [Added](#added-4)
-    - [Changed](#changed-9)
-  - [[0.0.5] - 2019-04-09](#005---2019-04-09)
+    - [Bug fixes](#bug-fixes-5)
+    - [Changed](#changed-8)
+  - [[0.0.7] - 2019-05-26](#007---2019-05-26)
     - [Added](#added-5)
+    - [Changed](#changed-9)
+  - [[0.0.6] - 2019-04-29](#006---2019-04-29)
+    - [Added](#added-6)
     - [Changed](#changed-10)
+  - [[0.0.5] - 2019-04-09](#005---2019-04-09)
+    - [Added](#added-7)
+    - [Changed](#changed-11)
 
-## [Unreleased]
+## Unreleased
 
 ## Changed
 
-* Docker (#155)
-  * Change to `python:3.8-slim-buster` for base image. Only `amd64` support for now.
-  * Simplified docker files.
-  * Switching from Travis to GHA:
+* Ability to return separate RGB backgrounds. (#162)
+
+## [0.2.7] - 2020-03-22 (hotfix)
+
+### Added
+
+* Basic serialization of `Exception`. (#160)
+
+### Bug fixes
+
+* Add `args` and `kwargs` to `get_rgb_background`. (#160)
+
+## [0.2.6] - 2020-03-22
+
+### Added
+
+* `get_rgb_background` added to the `bayer` module. (#158)
+* `getwcs` thin-wrapper added to `fits` module. (#158)
+* Added `sources` utils. (#158)
+
+### Bug fixes
+
+* Changed scope of test data files to `function`. (#158)
+
+### Changed
+
+* Docker
+  * Change to `python:3.8-slim-buster` for base image. Only `amd64` support for now. (#155)
+  * Simplified docker files. (#155)
+  * Switching from Travis to GHA: (#155)
     * Travis builds docker image before testing.
     * Travis doesn't upload coverage.
     * Don't update module inside container during entrypoint.
-  * Fixed user permissions for $HOME and $PANDIR.
+  * Fixed user permissions for $HOME and $PANDIR. (#155)
     * :warning: The docker container only really likes it when user id `1000` is running the system.
   * Remove GCP Cloud SQL proxy support.
+  * Installed `sextractor`. (#158)
+  * Added `pandas`. (#158)
+  * Default `panoptes` user has password `panoptes`. (#158)
 
 ### Removed
 
 * Docker (#155)
   * Remove anaconda
+* Polar alignment utils (#156)
 
 
 ## [0.2.5] - 2020-03-18

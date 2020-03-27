@@ -28,7 +28,7 @@ COPY docker/zshrc /tmp
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         gosu wget curl bzip2 ca-certificates zsh openssh-client nano \
-        astrometry.net dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
+        astrometry.net sextractor dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
         libfreetype6-dev libpng-dev libpq-dev fonts-lato \
         gcc git pkg-config sudo && \
     # Oh My ZSH. :)
@@ -47,12 +47,12 @@ RUN apt-get update && \
     mkdir -p ${PANDIR}/images && \
     mkdir -p ${PANDIR}/panoptes-utils && \
     # Create $PANUSER
-    useradd --shell /bin/zsh -u ${USERID} -o -c "PANOPTES User" -m -G plugdev,dialout $panuser && \
+    useradd --shell /bin/zsh -u ${USERID} -o -c "PANOPTES User" -p panoptes -m -G plugdev,dialout $panuser && \
     # Create ssh-key for user
     mkdir -p /home/$panuser/.key && \
     ssh-keygen -q -t rsa -N "" -f "/home/${panuser}/.key/id_rsa" && \
     # Update permissions for current user.
-    chown -R ${USERID}:${USERID} ${HOME} && \
+    chown -R ${USERID}:${USERID} "/home/${panuser}" && \
     chown -R ${USERID}:${USERID} ${PANDIR} && \
     # Astrometry folders
     mkdir -p "${astrometry_dir}" && \

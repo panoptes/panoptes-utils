@@ -324,17 +324,23 @@ def _serialize_object(obj, default=None):
     if isinstance(obj, u.Quantity):
         return str(obj)
 
-    # Numpy array.
-    if isinstance(obj, np.ndarray):
-        return obj.tolist()
-
     # Astropy Time-like (including datetime).
     with suppress(ValueError):
         if isinstance(Time(obj), Time):
             return Time(obj).isot
 
+    # Numpy array.
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+
     # If we are given a default object type, e.g. str
     if default is not None:
         return default(obj)
+
+    # Exceptions - if not a class object, then `issubclass` raises a `TypeError`,
+    # so we ignore those and let the object pass through.
+    with suppress(TypeError):
+        if issubclass(obj, Exception):
+            return str(obj)
 
     return obj
