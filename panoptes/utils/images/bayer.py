@@ -178,6 +178,7 @@ def get_rgb_background(fits_fn,
                        sigma=5,
                        iters=5,
                        exclude_percentile=100,
+                       return_separate=False,
                        *args,
                        **kwargs
                        ):
@@ -197,6 +198,10 @@ def get_rgb_background(fits_fn,
     >>> rgb_back.mean()
     2202.392...
 
+    >>> rgb_back = get_rgb_background(fits_fn, return_separate=True)
+    >>> [np.ma.median(x) for x in rgb_back]
+    [2144.411..., 2241.219..., 2182.822...]
+
 
     Args:
         fits_fn (str): The filename of the FITS image.
@@ -212,9 +217,16 @@ def get_rgb_background(fits_fn,
         iters (int, optional): The number of iterations to sigma filter, default 5.
         exclude_percentile (int, optional): The percentage of the data (per channel)
             that can be masked, default 100 (i.e. all).
+        return_separate (bool, optional): If the function should return a separate array
+            for color channel, default False.
+        *args: Description
+        **kwargs: Description
 
     Returns:
-        list: A list containing a `photutils.Background2D` for each color channel, in RGB order.
+        `numpy.array`|list: Either a single numpy array representing the entire
+          background, or a list of masked numpy arrays in RGB order. The background
+          for each channel has full interploation across all pixels, but the mask covers
+          them.
     """
     logger.info(f"Getting background for {fits_fn}")
     logger.debug(
@@ -255,6 +267,9 @@ def get_rgb_background(fits_fn,
         backgrounds.append(np.ma.array(data=bkg.background, mask=color_data.mask))
         logger.debug(
             f"{color} Value: {bkg.background_median:.02f} RMS: {bkg.background_rms_median:.02f}")
+
+    if return_separate:
+        return backgrounds
 
     # Create one array for the backgrounds, where any holes are filled with zeros.
     full_background = np.ma.array(backgrounds).sum(0).filled(0)
