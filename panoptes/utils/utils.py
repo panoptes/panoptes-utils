@@ -314,7 +314,7 @@ def image_id_from_path(path):
 
     >>> path = 'nothing/to/match'
     >>> image_id_from_path(path)
-    None
+
 
     Args:
         path (str): A path or uri for a file.
@@ -345,7 +345,7 @@ def sequence_id_from_path(path):
 
     >>> path = 'nothing/to/match'
     >>> sequence_id_from_path(path)
-    None
+
 
     Args:
         path (str): A path or uri for a file.
