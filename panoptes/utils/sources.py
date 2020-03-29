@@ -12,19 +12,22 @@ from astropy.coordinates import SkyCoord, match_coordinates_sky
 from .images import fits as fits_utils
 
 
-def get_stars_from_footprint(wcs_footprint, **kwargs):
+def get_stars_from_footprint(wcs_or_footprint, **kwargs):
     """Lookup star information from WCS footprint.
 
     Generates the correct layout for an SQL `POLYGON` that can be passed to
     `get_stars`.
 
     Args:
-        wcs_footprint (`astropy.wcs.WCS`): The world coordinate system (WCS) for an image.
+        wcs_or_footprint (`astropy.wcs.WCS` or array): Either the WCS or the output from `calc_footprint`.
         **kwargs: Optional keywords to pass to `get_stars`.
 
-    Returns:
-        TYPE: Description
     """
+    if isinstance(wcs_or_footprint, WCS):
+        wcs_footprint = wcs_or_footprint.calc_footprint()
+    else:
+        wcs_footprint = wcs_or_footprint
+
     wcs_footprint = list(wcs_footprint)
     # Add the first entry to the end to complete polygon
     wcs_footprint.append(wcs_footprint[0])
@@ -35,7 +38,7 @@ def get_stars_from_footprint(wcs_footprint, **kwargs):
 
 
 def get_stars(
-        bq_client,
+        bq_client=None,
         shape=None,
         vmag_min=6,
         vmag_max=12,
@@ -63,7 +66,7 @@ def get_stars(
         sql_constraint = f"AND ST_CONTAINS(ST_GEOGFROMTEXT('POLYGON(({shape}))'), coords)"
 
     sql = f"""
-    SELECT id, ra, dec, vmag
+    SELECT id, ra, dec, vmag, e_vmag
     FROM catalog.pic
     WHERE
       vmag_partition BETWEEN {vmag_min} AND {vmag_max}
@@ -147,20 +150,20 @@ def lookup_point_sources(fits_file,
         logger.debug(f'Doing catalog match against stars {fits_file}')
         try:
             point_sources = get_catalog_match(point_sources, wcs, **kwargs)
+            logger.debug(f'Done with catalog match {fits_file}')
         except Exception as e:
             logger.debug(f'Error in catalog match: {e!r} {fits_file}')
-        logger.debug(f'Done with catalog match {fits_file}')
+        else:
+            # Change the index to the picid
+            point_sources.set_index('picid', inplace=True)
 
-        # Change the index to the picid
-        point_sources.set_index('picid', inplace=True)
+            logger.debug(f'Point sources: {len(point_sources)}')
 
-        logger.debug(f'Point sources: {len(point_sources)}')
-
-        # Remove catalog matches that are too large
-        logger.debug(
-            f'Removing matches that are greater than {max_catalog_separation} arcsec from catalog.')
-        point_sources = point_sources.loc[point_sources.catalog_sep_arcsec <
-                                          max_catalog_separation]
+            # Remove catalog matches that are too far away.
+            logger.debug(
+                f'Removing matches that are greater than {max_catalog_separation} arcsec from catalog.')
+            point_sources = point_sources.loc[point_sources.catalog_sep_arcsec <
+                                              max_catalog_separation]
 
     logger.debug(f'Point sources: {len(point_sources)} {fits_file}')
 
@@ -201,7 +204,7 @@ def get_catalog_match(point_sources, wcs, **kwargs):
     logger.debug(f'Got {len(idx)} matched sources (includes duplicates)')
 
     # Get some properties from the catalog
-    point_sources['picid'] = catalog_stars.iloc[idx]['id'].values
+    point_sources['picid'] = catalog_stars.iloc[idx]['picid'].values
     # point_sources['twomass'] = catalog_stars[idx]['twomass']
     point_sources['vmag'] = catalog_stars.iloc[idx]['vmag'].values
     point_sources['vmag_err'] = catalog_stars.iloc[idx]['e_vmag'].values
