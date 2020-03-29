@@ -61,6 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * `get_stars_from_footprint` can accept a `WCS` directly instead of just the output from `calc_footprint()`. (#164)
+* Ability to create different tags for the docker image. The `develop` directory is now used to create a `develop` image and is provided along with `latest`. (#165)
 
 ### Bug fixes
 
