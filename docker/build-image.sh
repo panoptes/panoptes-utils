@@ -8,7 +8,7 @@ BASE_CLOUD_FILE="cloudbuild.yaml"
 cd "${SOURCE_DIR}"
 
 echo "Using ${BASE_CLOUD_FILE}"
-echo "Building panoptes-utils"
+echo "Building panoptes-utils:${TAG}"
 gcloud builds submit \
     --timeout="5h" \
     --substitutions=_TAG="${TAG}" \
