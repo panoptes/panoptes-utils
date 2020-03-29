@@ -198,9 +198,11 @@ def get_rgb_background(fits_fn,
     >>> rgb_back.mean()
     2202.392...
 
-    >>> rgb_back = get_rgb_background(fits_fn, return_separate=True)
-    >>> [np.ma.median(x) for x in rgb_back]
-    [2144.411..., 2241.219..., 2182.822...]
+    >>> rgb_backs = get_rgb_background(fits_fn, return_separate=True)
+    >>> rgb_backs[0]
+    <photutils.background.background_2d.Background2D...>
+    >>> {color:data.background_rms_median for color, data in zip('rgb', rgb_backs)}
+    {'r': 20.566..., 'g': 32.787..., 'b': 23.820...}
 
 
     Args:
@@ -264,7 +266,10 @@ def get_rgb_background(fits_fn,
                            interpolator=interp)
 
         # Create a masked array for the background
-        backgrounds.append(np.ma.array(data=bkg.background, mask=color_data.mask))
+        if return_separate:
+            backgrounds.append(bkg)
+        else:
+            backgrounds.append(np.ma.array(data=bkg.background, mask=color_data.mask))
         logger.debug(
             f"{color} Value: {bkg.background_median:.02f} RMS: {bkg.background_rms_median:.02f}")
 
