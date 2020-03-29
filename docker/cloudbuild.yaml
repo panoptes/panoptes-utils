@@ -5,7 +5,7 @@ steps:
   args:
   - 'build'
   - '-f=docker/Dockerfile'
-  - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:latest'
+  - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}'
   - '.'
   waitFor: ['-']
 
@@ -14,8 +14,8 @@ steps:
   id: 'push-amd64-base'
   args:
   - 'push'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}'
   waitFor: ['amd64-base']
 
 images:
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}'
