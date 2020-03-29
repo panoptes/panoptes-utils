@@ -61,6 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * `get_stars_from_footprint` can accept a `WCS` directly instead of just the output from `calc_footprint()`. (#164)
+* `get_rgb_backgrounds(return_separate)` will now return the `Background2D` objects. (#166)
 
 ### Bug fixes
 
