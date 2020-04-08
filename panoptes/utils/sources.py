@@ -7,6 +7,7 @@ import subprocess
 from warnings import warn
 
 from google.cloud import bigquery
+from google.auth.exceptions import DefaultCredentialsError
 
 from astropy.table import Table
 from astropy.wcs import WCS
@@ -19,8 +20,9 @@ from .images import fits as fits_utils
 # Storage
 try:
     bigquery_client = bigquery.Client()
-except RuntimeError:
-    warn(f"Can't load Google credentials. Set GOOGLE_APPLICATION_CREDENTIALS to use sources module.")
+except DefaultCredentialsError:
+    warn("Can't load Google credentials, catalog matching will not be available. "
+         "Set GOOGLE_APPLICATION_CREDENTIALS to use sources module.")
 
 
 def get_stars_from_footprint(wcs_or_footprint, **kwargs):
