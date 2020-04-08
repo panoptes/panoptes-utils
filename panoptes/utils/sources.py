@@ -4,12 +4,23 @@ import os
 import shutil
 import subprocess
 
+from warnings import warn
+
+from google.cloud import bigquery
+
 from astropy.table import Table
 from astropy.wcs import WCS
 from astropy import units as u
 from astropy.coordinates import SkyCoord, match_coordinates_sky
 
 from .images import fits as fits_utils
+
+
+# Storage
+try:
+    bigquery_client = bigquery.Client()
+except RuntimeError:
+    warn(f"Can't load Google credentials. Set GOOGLE_APPLICATION_CREDENTIALS to use sources module.")
 
 
 def get_stars_from_footprint(wcs_or_footprint, **kwargs):
@@ -72,6 +83,9 @@ def get_stars(
       vmag_partition BETWEEN {vmag_min} AND {vmag_max}
       {sql_constraint}
     """
+
+    if bq_client is None:
+        bq_client = bigquery_client
 
     try:
         df = bq_client.query(sql).to_dataframe()
