@@ -54,7 +54,7 @@ def get_stars(
         bq_client=None,
         shape=None,
         vmag_min=6,
-        vmag_max=12,
+        vmag_max=15,
         client=None,
         **kwargs):
     """Look star information from the TESS catalog.
@@ -79,7 +79,12 @@ def get_stars(
         sql_constraint = f"AND ST_CONTAINS(ST_GEOGFROMTEXT('POLYGON(({shape}))'), coords)"
 
     sql = f"""
-    SELECT id, ra, dec, vmag, e_vmag
+    SELECT
+        id as picid, twomass, gaia,
+        ra as catalog_ra,
+        dec as catalog_dec,
+        vmag as catalog_vmag,
+        e_vmag as catalog_vmag_err
     FROM catalog.pic
     WHERE
       vmag_partition BETWEEN {vmag_min} AND {vmag_max}
@@ -91,11 +96,8 @@ def get_stars(
 
     try:
         df = bq_client.query(sql).to_dataframe()
+        logger.debug(f'Found {len(df)} in Vmag=[{vmag_min}, {vmag_max+1}) and bounds=[{shape}]')
 
-        # Adjust the RA to be -180 to 180
-        df.loc[df.ra > 180, 'ra'] = df.loc[df.ra > 180, 'ra'] - 360
-
-        df.rename(columns={'id': 'picid'}, inplace=True)
     except Exception as e:
         logger.warning(e)
         df = None
@@ -165,36 +167,37 @@ def lookup_point_sources(fits_file,
     if catalog_match:
         logger.debug(f'Doing catalog match against stars {fits_file}')
         try:
-            point_sources = get_catalog_match(point_sources, wcs, **kwargs)
+            point_sources, unmatched = get_catalog_match(point_sources,
+                                                         wcs,
+                                                         return_unmatched=True,
+                                                         **kwargs)
             logger.debug(f'Done with catalog match {fits_file}')
         except Exception as e:
-            logger.debug(f'Error in catalog match: {e!r} {fits_file}')
+            logger.error(f'Error in catalog match: {e!r} {fits_file}')
         else:
-            # Change the index to the picid
-            point_sources.set_index('picid', inplace=True)
-
-            logger.debug(f'Point sources: {len(point_sources)}')
+            logger.debug(f'Matched: {len(point_sources)} Unmatched: {len(unmatched)}')
+            return point_sources, unmatched
 
             # Remove catalog matches that are too far away.
-            logger.debug(
-                f'Removing matches that are greater than {max_catalog_separation} arcsec from catalog.')
-            point_sources = point_sources.loc[point_sources.catalog_sep_arcsec <
-                                              max_catalog_separation]
+            # logger.debug(
+            #     f'Removing matches that are greater than {max_catalog_separation} arcsec from catalog.')
+            # point_sources = point_sources.loc[point_sources.catalog_sep_arcsec <
+            #                                   max_catalog_separation]
 
     logger.debug(f'Point sources: {len(point_sources)} {fits_file}')
 
     return point_sources
 
 
-def get_catalog_match(point_sources, wcs, **kwargs):
+def get_catalog_match(point_sources, wcs, return_unmatched=False, origin=1, **kwargs):
     assert point_sources is not None
 
     logger.debug(f'Getting catalog stars')
 
     # Get coords from detected point sources
     stars_coords = SkyCoord(
-        ra=point_sources['ra'].values * u.deg,
-        dec=point_sources['dec'].values * u.deg
+        ra=point_sources['sextractor_ra'].values * u.deg,
+        dec=point_sources['sextractor_dec'].values * u.deg
     )
 
     # Lookup stars in catalog
@@ -206,12 +209,10 @@ def get_catalog_match(point_sources, wcs, **kwargs):
         logger.debug('No catalog matches, returning table without ids')
         return point_sources
 
-    logger.debug(f'Found {len(catalog_stars)} catalog sources in WCS footprint: {wcs.calc_footprint()}')
-
     # Get coords for catalog stars
     catalog_coords = SkyCoord(
-        ra=catalog_stars['ra'] * u.deg,
-        dec=catalog_stars['dec'] * u.deg
+        ra=catalog_stars['catalog_ra'] * u.deg,
+        dec=catalog_stars['catalog_dec'] * u.deg
     )
 
     # Do catalog matching
@@ -219,12 +220,41 @@ def get_catalog_match(point_sources, wcs, **kwargs):
     idx, d2d, d3d = match_coordinates_sky(stars_coords, catalog_coords)
     logger.debug(f'Got {len(idx)} matched sources (includes duplicates)')
 
-    # Get some properties from the catalog
-    point_sources['picid'] = catalog_stars.iloc[idx]['picid'].values
-    # point_sources['twomass'] = catalog_stars[idx]['twomass']
-    point_sources['vmag'] = catalog_stars.iloc[idx]['vmag'].values
-    point_sources['vmag_err'] = catalog_stars.iloc[idx]['e_vmag'].values
+    # Add the matches and their separation.
+    matches = catalog_stars.iloc[idx]
+    point_sources = point_sources.join(matches.reset_index(drop=True))
     point_sources['catalog_sep_arcsec'] = d2d.to(u.arcsec).value
+
+    # Get the xy pixel coordinates for all sources according to WCS.
+    xs, ys = wcs.all_world2pix(point_sources.sextractor_ra,
+                               point_sources.sextractor_dec,
+                               origin,
+                               ra_dec_order=True)
+    point_sources['catalog_x'] = xs
+    point_sources['catalog_y'] = ys
+
+    point_sources.eval('catalog_sextractor_diff_x = catalog_x - sextractor_x_image', inplace=True)
+    point_sources.eval('catalog_sextractor_diff_y = catalog_y - sextractor_y_image', inplace=True)
+
+    ra_diff_arcsec = ((point_sources.catalog_ra - point_sources.sextractor_ra).values * u.degree).to(u.arcsec)
+    dec_diff_arcsec = ((point_sources.catalog_dec - point_sources.sextractor_dec).values * u.degree).to(u.arcsec)
+
+    point_sources['catalog_sextractor_diff_arcsec_ra'] = ra_diff_arcsec
+    point_sources['catalog_sextractor_diff_arcsec_dec'] = dec_diff_arcsec
+
+    # Sources that didn't match
+    if return_unmatched:
+        unmatched = catalog_stars.iloc[catalog_stars.index.difference(idx)].copy()
+
+        # Get the xy pixel coordinates for all sources according to WCS.
+        xs, ys = wcs.all_world2pix(unmatched.catalog_ra,
+                                   unmatched.catalog_dec,
+                                   origin,
+                                   ra_dec_order=True)
+        unmatched['catalog_x'] = xs
+        unmatched['catalog_y'] = ys
+
+        return point_sources, unmatched
 
     return point_sources
 
@@ -303,15 +333,21 @@ def _lookup_via_sextractor(fits_file,
 
     point_sources = point_sources[top & bottom & right & left].to_pandas()
     point_sources.columns = [
-        'ra', 'dec',
-        'x', 'y',
-        'x_image', 'y_image',
-        'ellipticity', 'theta_image',
-        'flux_best', 'fluxerr_best',
-        'mag_best', 'magerr_best',
-        'flux_max',
-        'fwhm_image',
-        'flags',
+        'sextractor_ra',
+        'sextractor_dec',
+        'sextractor_x',
+        'sextractor_y',
+        'sextractor_x_image',
+        'sextractor_y_image',
+        'sextractor_ellipticity',
+        'sextractor_theta_image',
+        'sextractor_flux_best',
+        'sextractor_fluxerr_best',
+        'sextractor_mag_best',
+        'sextractor_magerr_best',
+        'sextractor_flux_max',
+        'sextractor_fwhm_image',
+        'sextractor_flags',
     ]
 
     logger.debug(f'Returning {len(point_sources)} sources from sextractor')
