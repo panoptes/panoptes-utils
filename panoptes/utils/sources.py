@@ -109,6 +109,7 @@ def lookup_point_sources(fits_file,
                          catalog_match=False,
                          method='sextractor',
                          force_new=False,
+                         return_unmatched=False,
                          max_catalog_separation=25,  # arcsecs
                          **kwargs
                          ):
@@ -167,18 +168,16 @@ def lookup_point_sources(fits_file,
     if catalog_match:
         logger.debug(f'Doing catalog match against stars {fits_file}')
         try:
-            point_sources, unmatched = get_catalog_match(point_sources,
-                                                         wcs,
-                                                         return_unmatched=True,
-                                                         **kwargs)
+            point_sources = get_catalog_match(point_sources,
+                                              wcs,
+                                              return_unmatched=return_unmatched,
+                                              **kwargs)
             logger.debug(f'Done with catalog match {fits_file}')
         except Exception as e:
             logger.error(f'Error in catalog match: {e!r} {fits_file}')
         else:
-            logger.debug(f'Matched: {len(point_sources)} Unmatched: {len(unmatched)}')
-            return point_sources, unmatched
-
             # Remove catalog matches that are too far away.
+            pass
             # logger.debug(
             #     f'Removing matches that are greater than {max_catalog_separation} arcsec from catalog.')
             # point_sources = point_sources.loc[point_sources.catalog_sep_arcsec <
@@ -254,7 +253,7 @@ def get_catalog_match(point_sources, wcs, return_unmatched=False, origin=1, **kw
         unmatched['catalog_x'] = xs
         unmatched['catalog_y'] = ys
 
-        return point_sources, unmatched
+        return point_sources.append(unmatched)
 
     return point_sources
 
