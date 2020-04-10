@@ -110,7 +110,7 @@ def lookup_point_sources(fits_file,
                          method='sextractor',
                          force_new=False,
                          return_unmatched=False,
-                         max_catalog_separation=25,  # arcsecs
+                         max_separation_arcsec=None,  # arcsecs
                          **kwargs
                          ):
     """ Extract point sources from image.
@@ -177,11 +177,9 @@ def lookup_point_sources(fits_file,
             logger.error(f'Error in catalog match: {e!r} {fits_file}')
         else:
             # Remove catalog matches that are too far away.
-            pass
-            # logger.debug(
-            #     f'Removing matches that are greater than {max_catalog_separation} arcsec from catalog.')
-            # point_sources = point_sources.loc[point_sources.catalog_sep_arcsec <
-            #                                   max_catalog_separation]
+            if max_separation_arcsec is not None:
+                logger.debug(f'Removing matches > {max_separation_arcsec} arcsec from catalog.')
+                point_sources = point_sources.query('catalog_sep_arcsec <= @max_separation_arcsec')
 
     logger.debug(f'Point sources: {len(point_sources)} {fits_file}')
 
