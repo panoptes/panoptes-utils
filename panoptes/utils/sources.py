@@ -53,8 +53,8 @@ def get_stars_from_footprint(wcs_or_footprint, **kwargs):
 def get_stars(
         bq_client=None,
         shape=None,
-        vmag_min=6,
-        vmag_max=15,
+        vmag_min=4,
+        vmag_max=17,
         client=None,
         **kwargs):
     """Look star information from the TESS catalog.
@@ -78,6 +78,8 @@ def get_stars(
     if shape is not None:
         sql_constraint = f"AND ST_CONTAINS(ST_GEOGFROMTEXT('POLYGON(({shape}))'), coords)"
 
+    # Note that for how the BigQuery partition works, we need the parition one step
+    # below the requested vmag_max.
     sql = f"""
     SELECT
         id as picid, twomass, gaia,
@@ -87,7 +89,7 @@ def get_stars(
         e_vmag as catalog_vmag_err
     FROM catalog.pic
     WHERE
-      vmag_partition BETWEEN {vmag_min} AND {vmag_max}
+      vmag_partition BETWEEN {vmag_min} AND {vmag_max-1}
       {sql_constraint}
     """
 
@@ -96,7 +98,7 @@ def get_stars(
 
     try:
         df = bq_client.query(sql).to_dataframe()
-        logger.debug(f'Found {len(df)} in Vmag=[{vmag_min}, {vmag_max+1}) and bounds=[{shape}]')
+        logger.debug(f'Found {len(df)} in Vmag=[{vmag_min}, {vmag_max}) and bounds=[{shape}]')
 
     except Exception as e:
         logger.warning(e)
