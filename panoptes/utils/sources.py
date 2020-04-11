@@ -219,11 +219,6 @@ def get_catalog_match(point_sources, wcs, return_unmatched=False, origin=1, **kw
     idx, d2d, d3d = match_coordinates_sky(stars_coords, catalog_coords)
     logger.debug(f'Got {len(idx)} matched sources (includes duplicates)')
 
-    # Add the matches and their separation.
-    matches = catalog_stars.iloc[idx]
-    point_sources = point_sources.join(matches.reset_index(drop=True))
-    point_sources['catalog_sep_arcsec'] = d2d.to(u.arcsec).value
-
     # Get the xy pixel coordinates for all sources according to WCS.
     xs, ys = wcs.all_world2pix(point_sources.sextractor_ra,
                                point_sources.sextractor_dec,
@@ -231,6 +226,11 @@ def get_catalog_match(point_sources, wcs, return_unmatched=False, origin=1, **kw
                                ra_dec_order=True)
     point_sources['catalog_x'] = xs
     point_sources['catalog_y'] = ys
+
+    # Add the matches and their separation.
+    matches = catalog_stars.iloc[idx]
+    point_sources = point_sources.join(matches.reset_index(drop=True))
+    point_sources['catalog_sep_arcsec'] = d2d.to(u.arcsec).value
 
     point_sources.eval('catalog_sextractor_diff_x = catalog_x - sextractor_x_image', inplace=True)
     point_sources.eval('catalog_sextractor_diff_y = catalog_y - sextractor_y_image', inplace=True)
@@ -244,16 +244,9 @@ def get_catalog_match(point_sources, wcs, return_unmatched=False, origin=1, **kw
     # Sources that didn't match
     if return_unmatched:
         unmatched = catalog_stars.iloc[catalog_stars.index.difference(idx)].copy()
+        point_sources = point_sources.append(unmatched)
 
-        # Get the xy pixel coordinates for all sources according to WCS.
-        xs, ys = wcs.all_world2pix(unmatched.catalog_ra,
-                                   unmatched.catalog_dec,
-                                   origin,
-                                   ra_dec_order=True)
-        unmatched['catalog_x'] = xs
-        unmatched['catalog_y'] = ys
-
-        return point_sources.append(unmatched)
+    # Reorder columns
 
     return point_sources
 
@@ -342,11 +335,14 @@ def _lookup_via_sextractor(fits_file,
         'sextractor_theta_image',
         'sextractor_flux_best',
         'sextractor_fluxerr_best',
+        'sextractor_flux_max',
+        'sextractor_flux_growth',
         'sextractor_mag_best',
         'sextractor_magerr_best',
-        'sextractor_flux_max',
         'sextractor_fwhm_image',
+        'sextractor_background',
         'sextractor_flags',
+        'sextractor_class_star',
     ]
 
     logger.debug(f'Returning {len(point_sources)} sources from sextractor')
