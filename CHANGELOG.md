@@ -61,9 +61,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* `get_stars_from_footprint` can accept a `WCS` directly instead of just the output from `calc_footprint()`. (#164)
+* `get_stars_from_footpr  int` can accept a `WCS` directly instead of just the output from `calc_footprint()`. (#164)
 * Ability to create different tags for the docker image. The `develop` directory is now used to create a `develop` image and is provided along with `latest`. (#165)
 * `get_rgb_backgrounds(return_separate=True)` will now return the `Background2D` objects. (#166)
+* Added BigQuery pandas dependencies. (#168)
 
 ### Bug fixes
 
@@ -74,6 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Docker entrypoint no longer tries to activate service account if `$GOOGLE_APPLICATION_CREDENTIALS` is found. The python client libraries will recognize the env var so this means we can avoid installing `gcloud` utilities just to activate. (#165)
 * The `sources` module does not require a BigQuery client to be passed but can start it's own. A warning is given if `$GOOGLE_APPLICATION_CREDENTIALS` is not found. (#167)
+* `lookup_point_sources` updates: default vmag range expanded so less false positive matches [4,18). (#168)
 
 
 ## [0.2.9] - 2020-03-27
