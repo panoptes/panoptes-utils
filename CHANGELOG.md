@@ -70,6 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * `image_id_from_path` and `sequence_id_from_path` can recognize a zero in the `camera_id` and `None` when no match. (#163)
 * Fixed the bigquery client param for star lookup. (#164)
+* Unquote paths before id matching. (#169)
 
 ### Changed
 
