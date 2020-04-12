@@ -127,15 +127,16 @@ def lookup_point_sources(fits_file,
 
     >>> point_sources = lookup_point_sources(fits_fn)
     >>> point_sources.describe()
-                   ra         dec           x  ...      flux_max  fwhm_image       flags
-    count  726.000000  726.000000  726.000000  ...    726.000000  726.000000  726.000000
-    mean   303.259396   46.023160  353.399449  ...   2215.879774    3.248939    0.819559
-    std      0.820234    0.574604  200.200817  ...   2748.420911    2.209067    2.880939
-    min    301.794797   45.038730   11.000000  ...    307.825100  -27.170000    0.000000
-    25%    302.546731   45.539239  183.250000  ...    673.398775    2.280000    0.000000
-    50%    303.238772   46.015271  350.000000  ...   1018.907000    2.915000    0.000000
-    75%    303.932212   46.533257  530.000000  ...   2318.909000    3.795000    0.000000
-    max    304.648913   47.018996  700.000000  ...  11640.210000   24.970000   27.000000
+           sextractor_ra  sextractor_dec  ...  sextractor_flags  sextractor_class_star
+    count     726.000000      726.000000  ...        726.000000             726.000000
+    mean      303.259396       46.023160  ...          0.973829               0.051439
+    std         0.820234        0.574604  ...          3.239519               0.063995
+    min       301.794797       45.038730  ...          0.000000               0.000000
+    25%       302.546731       45.539239  ...          0.000000               0.001000
+    50%       303.238772       46.015271  ...          0.000000               0.056000
+    75%       303.932212       46.533257  ...          0.000000               0.061000
+    max       304.648913       47.018996  ...         27.000000               0.845000
+
     ...
     >>> type(point_sources)
     <class 'pandas.core.frame.DataFrame'>
@@ -241,12 +242,19 @@ def get_catalog_match(point_sources, wcs, return_unmatched=False, origin=1, **kw
     point_sources['catalog_sextractor_diff_arcsec_ra'] = ra_diff_arcsec
     point_sources['catalog_sextractor_diff_arcsec_dec'] = dec_diff_arcsec
 
+    # Reorder columns so id cols are first then alpha.
+    new_column_order = sorted(list(point_sources.columns))
+    id_cols = ['picid', 'gaia', 'twomass']
+    for i, col in enumerate(id_cols):
+        new_column_order.remove(col)
+        new_column_order.insert(i, col)
+
+    point_sources = point_sources.reindex(columns=new_column_order)
+
     # Sources that didn't match
     if return_unmatched:
         unmatched = catalog_stars.iloc[catalog_stars.index.difference(idx)].copy()
         point_sources = point_sources.append(unmatched)
-
-    # Reorder columns
 
     return point_sources
 
