@@ -136,7 +136,6 @@ def lookup_point_sources(fits_file,
     50%       303.238772       46.015271  ...          0.000000               0.056000
     75%       303.932212       46.533257  ...          0.000000               0.061000
     max       304.648913       47.018996  ...         27.000000               0.845000
-
     ...
     >>> type(point_sources)
     <class 'pandas.core.frame.DataFrame'>
