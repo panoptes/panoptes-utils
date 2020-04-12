@@ -61,7 +61,6 @@ RUN apt-get update && \
 
 USER $PANUSER
 
-
 # Can't seem to get around the hard-coding
 COPY --chown=panoptes:panoptes . ${PANDIR}/panoptes-utils/
 
