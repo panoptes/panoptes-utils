@@ -1,3 +1,4 @@
+-r requirements.txt
 altair
 bokeh
 fastparquet

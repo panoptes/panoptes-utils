@@ -19,9 +19,6 @@ ENV PANUSER $panuser
 ENV POCS $pocs_dir
 ENV PATH "/home/${PANUSER}/.local/bin:$PATH"
 
-# For now we copy from local - can have bad effects if in wrong branch
-COPY docker/zshrc /tmp
-
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         wget curl bzip2 ca-certificates nano neovim \
@@ -33,10 +30,8 @@ USER $PANUSER
 COPY --chown=panoptes:panoptes . ${PANDIR}/panoptes-utils/
 
 RUN cd ${PANDIR}/panoptes-utils && \
-    pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir -r requirements-dev.txt
-
-RUN pip install --no-cache-dir -e .
+    pip install --no-cache-dir -r dev-requirements.txt && \
+    pip install --no-cache-dir -e .
 
 USER root
 
@@ -47,4 +42,4 @@ RUN apt-get autoremove --purge -y && \
 
 WORKDIR ${PANDIR}
 
-CMD ["/home/panoptes/.local/bin/jupyter-lab", "--no-browser", "/var/panoptes/panoptes-utils/README.md"]
+CMD ["/home/panoptes/.local/bin/jupyter-lab", "--no-browser", "-y"]
