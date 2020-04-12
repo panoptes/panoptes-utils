@@ -28,6 +28,7 @@ modules = {
         'astropy>=4.0.0',
         'coverage',  # testing
         'Flask',
+        'fastparquet',
         'google-cloud-bigquery[pandas]',
         'loguru',
         'matplotlib>=3.1.3',
