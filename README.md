@@ -95,6 +95,24 @@ panoptes-messaging-hub --from-config
 
 ## Development
 
+### Environment
+
+There is a docker development environment that has a number of support modules installed. This also
+defaults to running a `jupyter-lab` instance with the `$PANDIR` folder as the root.
+
+You should have all `panoptes` repositories for development (maybe `POCS`, `panoptes-utils`, `panoptes-tutorials`) inside the `$PANDIR` folder (default `/var/panoptes`). Ideally you have just run
+the install script at **TODO: reference install script here.**.
+
+You can then start the development environment by:
+
+
+```sh
+bin/start-panoptes-dev
+```
+
+This should open your browser to the `jupyter-lab` instance.
+
+
 ### Logging
 
 The `panoptes-utils` module uses [`loguru`](https://github.com/Delgan/loguru) for logging, which also serves as the basis for the POCS logger (see [Logger](#logger)).
