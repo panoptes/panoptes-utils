@@ -12,7 +12,7 @@ PARAMETERS_NAME  /var/panoptes/panoptes-utils/resources/sextractor/panoptes.para
 #------------------------------- Extraction ----------------------------------
 
 DETECT_TYPE      CCD            # CCD (linear) or PHOTO (with gamma correction)
-DETECT_MINAREA   3              # min. # of pixels above threshold
+DETECT_MINAREA   10             # min. # of pixels above threshold
 
 DETECT_THRESH    3.0            # <sigmas> or <threshold>,<ZP> in mag.arcsec-2
 ANALYSIS_THRESH  1.5            # <sigmas> or <threshold>,<ZP> in mag.arcsec-2
@@ -47,7 +47,7 @@ PHOT_PETROPARAMS 2.0, 3.5       # MAG_PETRO parameters: <Petrosian_fact>,
 PHOT_AUTOAPERS   0.0,0.0        # <estimation>,<measurement> minimum apertures
                                 # for MAG_AUTO and MAG_PETRO
 
-SATUR_LEVEL      13559.0        # level (in ADUs) at which arises saturation
+SATUR_LEVEL      13550.0        # level (in ADUs) at which arises saturation
 SATUR_KEY        SATURATE       # keyword for saturation level (in ADUs)
 
 MAG_ZEROPOINT    25.0            # magnitude zero-point
@@ -58,7 +58,7 @@ PIXEL_SCALE      10.3            # size of pixel in arcsec (0=use FITS WCS info)
 
 #------------------------- Star/Galaxy Separation ----------------------------
 
-SEEING_FWHM      0.7            # stellar FWHM in arcsec
+SEEING_FWHM      15.3            # stellar FWHM in arcsec
 STARNNW_NAME     /usr/share/sextractor/default.nnw    # Neural-Network_Weight table filename
 
 #------------------------------ Background -----------------------------------

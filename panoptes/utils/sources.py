@@ -17,14 +17,6 @@ from astropy.coordinates import SkyCoord, match_coordinates_sky
 from .images import fits as fits_utils
 
 
-# Storage
-try:
-    bigquery_client = bigquery.Client()
-except DefaultCredentialsError:
-    warn("Can't load Google credentials, catalog matching will not be available. "
-         "Set GOOGLE_APPLICATION_CREDENTIALS to use sources module.")
-
-
 def get_stars_from_footprint(wcs_or_footprint, **kwargs):
     """Lookup star information from WCS footprint.
 
@@ -94,7 +86,7 @@ def get_stars(
     """
 
     if bq_client is None:
-        bq_client = bigquery_client
+        bq_client = bigquery.Client()
 
     try:
         df = bq_client.query(sql).to_dataframe()
@@ -121,6 +113,33 @@ def lookup_point_sources(fits_file,
     (currently only `sextractor`). This is returned as a `pandas.DataFrame`. If
     `catalog_match=True` then the resulting sources will be matched against the
     PANOPTES catalog, which is a filtered version of the TESS Input Catalog.
+
+    Sextractor will return the following columns:
+
+        * ALPHA_J2000   ->  sextractor_ra
+        * DELTA_J2000   ->  sextractor_dec
+        * XPEAK_IMAGE   ->  sextractor_x
+        * YPEAK_IMAGE   ->  sextractor_y
+        * X_IMAGE       ->  sextractor_x_image
+        * Y_IMAGE       ->  sextractor_y_image
+        * ELLIPTICITY   ->  sextractor_ellipticity
+        * THETA_IMAGE   ->  sextractor_theta_image
+        * FLUX_BEST     ->  sextractor_flux_best
+        * FLUXERR_BEST  ->  sextractor_fluxerr_best
+        * FLUX_MAX      ->  sextractor_flux_max
+        * FLUX_GROWTH   ->  sextractor_flux_growth
+        * MAG_BEST      ->  sextractor_mag_best
+        * MAGERR_BEST   ->  sextractor_magerr_best
+        * FWHM_IMAGE    ->  sextractor_fwhm_image
+        * BACKGROUND    ->  sextractor_background
+        * FLAGS         ->  sextractor_flags
+
+
+    Notes:
+
+        * Sources within a certain `trim_size` (default 10) of the image edges will be
+        automatically pruned.
+
 
     >>> from panoptes.utils.sources import lookup_point_sources
     >>> fits_fn = getfixture('solved_fits_file')
@@ -305,16 +324,11 @@ def _lookup_via_sextractor(fits_file,
                            timeout=60,
                            check=True)
         except subprocess.CalledProcessError as e:
-            raise Exception("Problem running sextractor: {}".format(e))
+            raise Exception(f"Problem running sextractor: {e.stderr}\n\n{e.stdout}")
 
     # Read catalog
     logger.debug(f'Building detected source table with {source_file}')
     point_sources = Table.read(source_file, format='ascii.sextractor')
-
-    # Remove the point sources that sextractor has flagged
-    # if 'FLAGS' in point_sources.keys():
-    #    point_sources = point_sources[point_sources['FLAGS'] == 0]
-    #    point_sources.remove_columns(['FLAGS'])
 
     # Rename columns
     point_sources.rename_column('XPEAK_IMAGE', 'x')
@@ -349,7 +363,6 @@ def _lookup_via_sextractor(fits_file,
         'sextractor_fwhm_image',
         'sextractor_background',
         'sextractor_flags',
-        'sextractor_class_star',
     ]
 
     logger.debug(f'Returning {len(point_sources)} sources from sextractor')
