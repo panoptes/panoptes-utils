@@ -19,23 +19,21 @@ def load_config(config_files=None, simulator=None, parse=True, ignore_local=Fals
 
         The `config_files` parameter supports a number of options:
         * `config_files` is a list and loaded in order, so the first entry
-            will have any values overwritten by similarly named keys in
-            the second entry.
+        will have any values overwritten by similarly named keys in the second entry.
         * Entries can be placed in the `$PANDIR/conf_files` folder and
-            should be passed as just the file name, e.g.
-            [`weather.yaml`, `email.yaml`] for loading
-            `$PANDIR/conf_files/weather.yaml` and `$PANDIR/conf_files/email.yaml`
-        * The `.yaml` extension will be added if not present, so list can
-            be written as just ['weather', 'email'].
-        * `config_files` can also be specified by an absolute path, which
-            can exist anywhere on the filesystem.
-        * Local versions of files can override built-in versions and are
-            automatically loaded if placed in the `$PANDIR/conf_files` folder.
-            The files have a `<>_local.yaml` name, where `<>` is the built-in
-            file. So a `$PANDIR/conf_files/pocs_local.yaml` will override any
-            setting in the default `pocs.yaml` file.
+        should be passed as just the file name, e.g. [`weather.yaml`, `email.yaml`]
+        for loading `$PANDIR/conf_files/weather.yaml` and `$PANDIR/conf_files/email.yaml`
+        * The `.yaml` extension will be added if not present, so list can be
+        written as just ['weather', 'email'].
+        * `config_files` can also be specified by an absolute path, which can
+        exist anywhere on the filesystem.
+        * Local versions of files can override built-in versions and are automatically
+        loaded if placed in the `$PANDIR/conf_files` folder. The files have a
+        `<>_local.yaml` name, where `<>` is the built-in file. So a
+        `$PANDIR/conf_files/pocs_local.yaml` will override any setting in the
+        default `pocs.yaml` file.
         * Local files can be ignored (mostly for testing purposes) with the
-            `ignore_local` parameter.
+        `ignore_local` parameter.
 
     Args:
         config_files (list, optional): A list of files to load as config,
