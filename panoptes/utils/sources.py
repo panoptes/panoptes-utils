@@ -4,10 +4,7 @@ import os
 import shutil
 import subprocess
 
-from warnings import warn
-
 from google.cloud import bigquery
-from google.auth.exceptions import DefaultCredentialsError
 
 from astropy.table import Table
 from astropy.wcs import WCS
@@ -146,15 +143,15 @@ def lookup_point_sources(fits_file,
 
     >>> point_sources = lookup_point_sources(fits_fn)
     >>> point_sources.describe()
-           sextractor_ra  sextractor_dec  ...  sextractor_flags  sextractor_class_star
-    count     726.000000      726.000000  ...        726.000000             726.000000
-    mean      303.259396       46.023160  ...          0.973829               0.051439
-    std         0.820234        0.574604  ...          3.239519               0.063995
-    min       301.794797       45.038730  ...          0.000000               0.000000
-    25%       302.546731       45.539239  ...          0.000000               0.001000
-    50%       303.238772       46.015271  ...          0.000000               0.056000
-    75%       303.932212       46.533257  ...          0.000000               0.061000
-    max       304.648913       47.018996  ...         27.000000               0.845000
+           sextractor_ra  sextractor_dec  ...  sextractor_background  sextractor_flags
+    count     473.000000      473.000000  ...             473.000000        473.000000
+    mean      303.284052       46.011116  ...            2218.525156          1.143763
+    std         0.810261        0.582264  ...               4.545206          3.130030
+    min       301.794797       45.038730  ...            2205.807000          0.000000
+    25%       302.598079       45.503276  ...            2215.862000          0.000000
+    50%       303.243873       46.021710  ...            2218.392000          0.000000
+    75%       303.982358       46.497813  ...            2221.577000          0.000000
+    max       304.637887       47.015707  ...            2229.050000         27.000000
     ...
     >>> type(point_sources)
     <class 'pandas.core.frame.DataFrame'>
