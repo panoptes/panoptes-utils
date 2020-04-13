@@ -320,16 +320,23 @@ def get_catalog_match(point_sources,
 
     # Reorder columns so id cols are first then alpha.
     new_column_order = sorted(list(point_sources.columns))
-    id_cols = ['picid', 'gaia', 'twomass']
+    id_cols = ['picid', 'gaia', 'twomass', 'status']
     for i, col in enumerate(id_cols):
         new_column_order.remove(col)
         new_column_order.insert(i, col)
     point_sources = point_sources.reindex(columns=new_column_order)
 
+    # All point sources so far are matched.
+    point_sources['status'] = 'matched'
+
     # Sources that didn't match
     if return_unmatched:
         unmatched = catalog_stars.iloc[catalog_stars.index.difference(idx)].copy()
+        unmatched['status'] = 'unmatched'
         point_sources = point_sources.append(unmatched)
+
+    # Correct some dtypes.
+    point_sources.status = point_sources.status.astype('category')
 
     # Remove catalog matches that are too far away.
     if max_separation_arcsec is not None:
