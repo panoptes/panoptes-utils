@@ -32,7 +32,15 @@ COPY --chown=panoptes:panoptes . ${PANDIR}/panoptes-utils/
 
 RUN cd ${PANDIR}/panoptes-utils && \
     pip install --no-cache-dir -r dev-requirements.txt && \
-    pip install --no-cache-dir -e .
+    pip install --no-cache-dir -e . && \
+    # Set some jupyterlab defaults
+    mkdir -p /home/panoptes/.jupyter && \
+    echo "c.JupyterApp.answer_yesBool = True" >> \
+        "/home/panoptes/.jupyter/jupyter_notebook_config.py" && \
+    echo "c.JupyterApp.open_browserBool = False" >> \
+        "/home/panoptes/.jupyter/jupyter_notebook_config.py" && \
+    echo "FileContentsManager.root_dirUnicode = '${PANDIR}'" >> \
+        "/home/panoptes/.jupyter/jupyter_notebook_config.py"
 
 USER root
 
@@ -43,4 +51,4 @@ RUN apt-get autoremove --purge -y && \
 
 WORKDIR ${PANDIR}
 
-CMD ["/home/panoptes/.local/bin/jupyter-lab", "--config", "/var/panoptes/panoptes-utils/resources/jupyter_notebook_config.py"]
+CMD ["/home/panoptes/.local/bin/jupyter-lab"]
