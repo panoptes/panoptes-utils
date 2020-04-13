@@ -24,6 +24,10 @@ All notable changes to this project will be documented in this file.
 * The `sources` module does not require a BigQuery client to be passed but can start it's own. A warning is given if `$GOOGLE_APPLICATION_CREDENTIALS` is not found. (#167)
 * `lookup_point_sources` updates: default vmag range expanded so less false positive matches [4,18). (#168)
 * Removed TOC from changelog. (#170)
+* Sextractor param changes: (#171)
+  * Threshold for detecton changed from 3 pixels to 10 pixels.
+  * Seeing changed from 0.7 arcsec to 15.3 arcsec. (Isn't used.)
+  * Removed `class_star` from sextractor results.
 
 
 ## [0.2.9] - 2020-03-27
