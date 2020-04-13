@@ -100,19 +100,17 @@ def lookup_point_sources(fits_file,
                          catalog_match=False,
                          method='sextractor',
                          force_new=False,
-                         return_unmatched=False,
-                         max_separation_arcsec=None,  # arcsecs
                          **kwargs
                          ):
-    """ Extract point sources from image.
+    """Extract point sources from image.
 
     This function will extract the sources from the image using the given method
     (currently only `sextractor`). This is returned as a `pandas.DataFrame`. If
     `catalog_match=True` then the resulting sources will be matched against the
-    PANOPTES catalog, which is a filtered version of the TESS Input Catalog.
+    PANOPTES catalog, which is a filtered version of the TESS Input Catalog. See
+    `get_catalog_match` for details and column list.
 
     Sextractor will return the following columns:
-
         * ALPHA_J2000   ->  sextractor_ra
         * DELTA_J2000   ->  sextractor_dec
         * XPEAK_IMAGE   ->  sextractor_x
@@ -131,46 +129,50 @@ def lookup_point_sources(fits_file,
         * BACKGROUND    ->  sextractor_background
         * FLAGS         ->  sextractor_flags
 
-
     Notes:
+            * Sources within a certain `trim_size` (default 10) of the image edges will be
+            automatically pruned.
 
-        * Sources within a certain `trim_size` (default 10) of the image edges will be
-        automatically pruned.
+        >>> from panoptes.utils.sources import lookup_point_sources
+        >>> fits_fn = getfixture('solved_fits_file')
 
-
-    >>> from panoptes.utils.sources import lookup_point_sources
-    >>> fits_fn = getfixture('solved_fits_file')
-
-    >>> point_sources = lookup_point_sources(fits_fn)
-    >>> point_sources.describe()
-           sextractor_ra  sextractor_dec  ...  sextractor_background  sextractor_flags
-    count     473.000000      473.000000  ...             473.000000        473.000000
-    mean      303.284052       46.011116  ...            2218.525156          1.143763
-    std         0.810261        0.582264  ...               4.545206          3.130030
-    min       301.794797       45.038730  ...            2205.807000          0.000000
-    25%       302.598079       45.503276  ...            2215.862000          0.000000
-    50%       303.243873       46.021710  ...            2218.392000          0.000000
-    75%       303.982358       46.497813  ...            2221.577000          0.000000
-    max       304.637887       47.015707  ...            2229.050000         27.000000
-    ...
-    >>> type(point_sources)
-    <class 'pandas.core.frame.DataFrame'>
+        >>> point_sources = lookup_point_sources(fits_fn)
+        >>> point_sources.describe()
+               sextractor_ra  sextractor_dec  ...  sextractor_background  sextractor_flags
+        count     473.000000      473.000000  ...             473.000000        473.000000
+        mean      303.284052       46.011116  ...            2218.525156          1.143763
+        std         0.810261        0.582264  ...               4.545206          3.130030
+        min       301.794797       45.038730  ...            2205.807000          0.000000
+        25%       302.598079       45.503276  ...            2215.862000          0.000000
+        50%       303.243873       46.021710  ...            2218.392000          0.000000
+        75%       303.982358       46.497813  ...            2221.577000          0.000000
+        max       304.637887       47.015707  ...            2229.050000         27.000000
+        ...
+        >>> type(point_sources)
+        <class 'pandas.core.frame.DataFrame'>
 
     Args:
         fits_file (str, optional): Path to FITS file to search for stars.
+        catalog_match (bool, optional): If `get_catalog_match` should be called after looking up sources. Default False. If True, the `args` and `kwargs` will be passed to `get_catalog_match`.
+        method (str, optional): Method for looking up sources, default (and currently only) is `sextractor`.
         force_new (bool, optional): Force a new catalog to be created,
             defaults to False.
+        **kwargs: Passed to `get_catalog_match` when `catalog_match=True`.
 
     Raises:
-        error.InvalidSystemCommand: Description
+        Exception: Raised for any exception.
+
+    Returns:
+        `pandas.DataFrame`: A dataframe contained the sources.
+
     """
-    if catalog_match or method == 'tess_catalog':
-        fits_header = fits_utils.getheader(fits_file)
-        wcs = WCS(fits_header)
+    if catalog_match:
+        wcs = fits_utils.getwcs(fits_file)
         assert wcs is not None and wcs.is_celestial, logger.warning("Need a valid WCS")
 
     logger.debug(f"Looking up sources for {fits_file}")
 
+    # Only one supported method for now.
     lookup_function = {
         'sextractor': _lookup_via_sextractor,
     }
@@ -180,34 +182,28 @@ def lookup_point_sources(fits_file,
         logger.debug(f"Using {method} method for {fits_file}")
         point_sources = lookup_function[method](fits_file, force_new=force_new, **kwargs)
     except Exception as e:
-        logger.debug(f"Problem looking up sources: {e!r} {fits_file}")
         raise Exception(f"Problem looking up sources: {e!r} {fits_file}")
 
     if catalog_match:
         logger.debug(f'Doing catalog match against stars {fits_file}')
         try:
-            point_sources = get_catalog_match(point_sources,
-                                              wcs,
-                                              return_unmatched=return_unmatched,
-                                              **kwargs)
-            logger.debug(f'Done with catalog match {fits_file}')
+            point_sources = get_catalog_match(point_sources, wcs, **kwargs)
+            logger.debug(f'Done with catalog match for {fits_file}')
         except Exception as e:
-            logger.error(f'Error in catalog match: {e!r} {fits_file}')
-        else:
-            # Remove catalog matches that are too far away.
-            if max_separation_arcsec is not None:
-                logger.debug(f'Removing matches > {max_separation_arcsec} arcsec from catalog.')
-                point_sources = point_sources.query('catalog_sep_arcsec <= @max_separation_arcsec')
+            logger.error(f'Error in catalog match, returning unmathed results: {e!r} {fits_file}')
 
     logger.debug(f'Point sources: {len(point_sources)} {fits_file}')
-
     return point_sources
 
 
-def get_catalog_match(point_sources, wcs, return_unmatched=False, origin=1, **kwargs):
+def get_catalog_match(point_sources,
+                      wcs,
+                      origin=1,
+                      max_separation_arcsec=None,  # arcsecs
+                      return_unmatched=False,
+                      **kwargs):
     assert point_sources is not None
-
-    logger.debug(f'Getting catalog stars')
+    logger.debug(f'Doing catalog match for wcs={wcs!r}')
 
     # Get coords from detected point sources
     stars_coords = SkyCoord(
@@ -270,6 +266,11 @@ def get_catalog_match(point_sources, wcs, return_unmatched=False, origin=1, **kw
     if return_unmatched:
         unmatched = catalog_stars.iloc[catalog_stars.index.difference(idx)].copy()
         point_sources = point_sources.append(unmatched)
+
+    # Remove catalog matches that are too far away.
+    if max_separation_arcsec is not None:
+        logger.debug(f'Removing matches > {max_separation_arcsec} arcsec from catalog.')
+        point_sources = point_sources.query('catalog_sep_arcsec <= @max_separation_arcsec')
 
     return point_sources
 
