@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 * Ability to create different tags for the docker image. The `develop` directory is now used to create a `develop` image and is provided along with `latest`. (#165)
 * `get_rgb_backgrounds(return_separate=True)` will now return the `Background2D` objects. (#166)
 * Added BigQuery pandas dependencies. (#168)
-* Added a developer image at `panoptes-utils:dev`, which is also auto-built along with the `latest` in the cloudbuild. Offers a `jupyter-lab` instance along with a number of plotting modules. Can be easily started via `start-panoptes-dev`. (#170)
+* Added a developer image at `panoptes-utils:dev`, which is also auto-built along with the `latest` in the cloudbuild. Offers a `jupyter-lab` instance along with a number of plotting modules. Can be easily started via `panoptes-dev`. (#170, #171)
 
 ### Bug fixes
 
