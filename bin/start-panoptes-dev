@@ -18,11 +18,11 @@ fi
 # Run the docker-compose command with user params.
 eval "${CMD} ${PARAMS}"
 
-# if [[ "$PARAMS" == "up -d" ]]; then
-#     # Prompt for password
-#     "${PANDIR}/panoptes-utils/bin/wait-for-it.sh" \
-#         localhost:8888 \
-#         -- \
-#         # Then open the browser
-#         xdg-open http://127.0.0.1:8888/lab/tree/panoptes-utils/Welcome.ipynb
-# fi
+if [[ "$PARAMS" == "up -d" ]]; then
+    # Prompt for password
+    "${PANDIR}/panoptes-utils/bin/wait-for-it.sh" \
+        localhost:8888 \
+        -- \
+        # Then open the browser
+        xdg-open http://127.0.0.1:8888/lab/tree/panoptes-utils/resources/jupyter/README.md
+fi
