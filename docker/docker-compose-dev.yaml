@@ -1,0 +1,19 @@
+version: '3.7'
+services:
+  dev-env:
+    image: gcr.io/panoptes-exp/panoptes-utils:dev
+    init: true
+    container_name: dev-env
+    privileged: true
+    network_mode: host
+    env_file: $PANDIR/.env
+    volumes:
+      - pandir:/var/panoptes
+volumes:
+    pandir:
+      driver: local
+      driver_opts:
+        type: none
+        device: /var/panoptes
+        o: bind
+

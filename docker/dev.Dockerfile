@@ -20,9 +20,10 @@ ENV POCS $pocs_dir
 ENV PATH "/home/${PANUSER}/.local/bin:$PATH"
 
 RUN apt-get update && \
+    curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
     apt-get install -y --no-install-recommends \
         wget curl bzip2 ca-certificates nano neovim \
-        gcc git pkg-config ncdu
+        gcc git pkg-config ncdu sudo nodejs
 
 USER $PANUSER
 
@@ -42,4 +43,4 @@ RUN apt-get autoremove --purge -y && \
 
 WORKDIR ${PANDIR}
 
-CMD ["/home/panoptes/.local/bin/jupyter-lab", "--no-browser", "-y"]
+CMD ["/home/panoptes/.local/bin/jupyter-lab", "--config", "/var/panoptes/panoptes-utils/resources/jupyter_notebook_config.py"]
