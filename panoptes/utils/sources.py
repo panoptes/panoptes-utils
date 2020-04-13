@@ -111,6 +111,7 @@ def lookup_point_sources(fits_file,
     `get_catalog_match` for details and column list.
 
     Sextractor will return the following columns:
+
         * ALPHA_J2000   ->  sextractor_ra
         * DELTA_J2000   ->  sextractor_dec
         * XPEAK_IMAGE   ->  sextractor_x
@@ -199,9 +200,27 @@ def lookup_point_sources(fits_file,
 def get_catalog_match(point_sources,
                       wcs,
                       origin=1,
-                      max_separation_arcsec=None,  # arcsecs
+                      max_separation_arcsec=None,
                       return_unmatched=False,
                       **kwargs):
+    """Match the point source positions to the catalog.
+
+    Returns:
+        `pandas.DataFrame`: A dataframe contained the sources.
+
+    Args:
+        point_sources (`pandas.DataFrame`): The DataFrame containted point sources
+            to be matched. This usually comes from the output of `lookup_point_sources`
+            but could be done manually.
+        wcs (`astropy.wcs.WCS`): The WCS instance.
+        origin (int, optional): The origin for catalog matching, either 0 or 1 (default).
+        max_separation_arcsec (float|None, optional): If not None, sources more
+            than this many arcsecs from catalog will be filtered.
+        return_unmatched (bool, optional): If all results from catalog should be
+            returned, not just those with a positive match.
+        **kwargs: Unused.
+
+    """
     assert point_sources is not None
     logger.debug(f'Doing catalog match for wcs={wcs!r}')
 

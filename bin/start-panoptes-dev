@@ -24,5 +24,6 @@ if [[ "$PARAMS" == "up -d" ]]; then
         localhost:8888 \
         -- \
         # Then open the browser
-        xdg-open http://127.0.0.1:8888/lab/tree/panoptes-utils/resources/jupyter/README.md
+        docker exec -it -u panoptes dev-env /bin/zsh -c "jupyter notebook list"
+        # xdg-open http://127.0.0.1:8888/lab/tree/panoptes-utils/resources/jupyter/README.md
 fi
