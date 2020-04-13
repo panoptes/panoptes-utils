@@ -34,6 +34,7 @@ RUN cd ${PANDIR}/panoptes-utils && \
     pip install --no-cache-dir -r dev-requirements.txt && \
     pip install --no-cache-dir -e . && \
     # Set some jupyterlab defaults
+    mkdir -p /home/panoptes/.jupyter && \
     echo "c.JupyterApp.answer_yesBool = True" >> \
         "/home/panoptes/.jupyter/jupyter_notebook_config.py" && \
     echo "c.JupyterApp.open_browserBool = False" >> \
