@@ -199,14 +199,69 @@ def lookup_point_sources(fits_file,
 
 def get_catalog_match(point_sources,
                       wcs,
-                      origin=1,
+                      vmag_min=4,
+                      vmag_max=17,
                       max_separation_arcsec=None,
                       return_unmatched=False,
+                      origin=1,
                       **kwargs):
     """Match the point source positions to the catalog.
 
+    The catalog is matched to the PANOPTES Input Catalog (PIC), which is derived
+    from the [TESS Input Catalog](https://tess.mit.edu/science/tess-input-catalogue/)
+    [v8](https://heasarc.gsfc.nasa.gov/docs/tess/tess-input-catalog-version-8-tic-8-is-now-available-at-mast.html).
+
+    The catalog is stored in a BigQuery dataset. This function will match the
+    `sextractor_ra` and `sextractor_dec` columns (as output from `lookup_point_sources`)
+    to the `ra` and `dec` colums of the catalog.  The actual lookup is done via
+    the `get_stars_from_footprint` function.
+
+    The columns are added to `point_sources`, which is then returned to the user.
+
+    Columns that are added to `point_sources` include:
+
+        * picid
+        * gaia
+        * twomass
+        * catalog_dec
+        * catalog_ra
+        * catalog_sep_arcsec
+        * catalog_sextractor_diff_arcsec_dec
+        * catalog_sextractor_diff_arcsec_ra
+        * catalog_sextractor_diff_x
+        * catalog_sextractor_diff_y
+        * catalog_vmag
+        * catalog_vmag_err
+        * catalog_x
+        * catalog_y
+
+    Note:
+
+        Note all fields are expected to have values. In particular, the `gaia`
+        and `twomass` fields are often mutually exclusive.  If `return_unmatched=True`
+        (see below) then all values related to matching will be `NA` for all `sextractor`
+        related columns.
+
+    By default only the sources that are successfully matched by the catalog are returned.
+    This behavior can be changed by setting `return_unmatched=True`. This will append
+    *all* catalog entries within the Vmag range [vmag_min, vmag_max).
+
+    Warning:
+
+        Using `return_unmatched=True` can return a very large datafraame depending
+        on the chosen Vmag range and galactic coordinates. However, it should be
+        noted that limiting the Vmag range makes results less accurate.
+
+        The best policy would be to try to minimize calls to this function. The
+        resulting dataframe can be saved locally with `point_sources.to_csv(path_name)`.
+
+    If a `max_separation_arcsec` is given then results will be filtered if their
+    match with `sextractor` was larger than the number given. Typical values would
+    be in the range of 20-30 arcsecs, which corresponds to 2-3 pixels.
+
     Returns:
-        `pandas.DataFrame`: A dataframe contained the sources.
+        `pandas.DataFrame`: A dataframe with the catalog information added to the
+        sources.
 
     Args:
         point_sources (`pandas.DataFrame`): The DataFrame containted point sources
