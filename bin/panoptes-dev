@@ -23,6 +23,5 @@ if [[ "$PARAMS" == "up -d" ]]; then
     "${PANDIR}/panoptes-utils/bin/wait-for-it.sh" \
         localhost:8888 \
         -- \
-        # List the running browsers.
-        docker exec -it -u panoptes dev-env /bin/zsh -c "jupyter notebook list"
+        docker exec -it -u panoptes dev-env jupyter notebook list | grep http | cut -d ' ' -f 1 | xargs xdg-open
 fi
