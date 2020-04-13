@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   config-server:
-    image: gcr.io/panoptes-exp/panoptes-utils:${TAG}
+    image: gcr.io/panoptes-exp/panoptes-utils:latest
     init: true
     container_name: config-server
     privileged: true
@@ -12,7 +12,7 @@ services:
       - pandir:/var/panoptes
     command: ["$PANDIR/panoptes-utils/bin/panoptes-config-server", "--public"]
   messaging-hub:
-    image: gcr.io/panoptes-exp/panoptes-utils:${TAG}
+    image: gcr.io/panoptes-exp/panoptes-utils:latest
     init: true
     container_name: messaging-hub
     privileged: true
