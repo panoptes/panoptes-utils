@@ -1,0 +1,27 @@
+#!/bin/bash
+
+PARAMS="$@"
+
+cd "${PANDIR}"
+
+CMD="docker-compose \
+    --project-directory ${PANDIR} \
+    -f panoptes-utils/docker/docker-compose.yaml \
+    -f panoptes-utils/docker/docker-compose-dev.yaml \
+    -p panoptes"
+
+# If user only asked to start, check if already running and if so use "-d" option.
+if [[ "$PARAMS" == "up" ]]; then
+    PARAMS="up -d"
+fi
+
+# Run the docker-compose command with user params.
+eval "${CMD} ${PARAMS}"
+
+if [[ "$PARAMS" == "up -d" ]]; then
+    # Prompt for password
+    "${PANDIR}/panoptes-utils/bin/wait-for-it.sh" \
+        localhost:8888 \
+        -- \
+        docker exec -it -u panoptes dev-env jupyter notebook list | grep http | cut -d ' ' -f 1 | xargs xdg-open
+fi

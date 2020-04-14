@@ -28,6 +28,8 @@ modules = {
         'astropy>=4.0.0',
         'coverage',  # testing
         'Flask',
+        'fastparquet',
+        'google-cloud-bigquery[pandas]',
         'loguru',
         'matplotlib>=3.1.3',
         'mocket',  # testing
@@ -71,6 +73,7 @@ setup(name=NAME,
           'bin/panoptes-config-server',
           'bin/panoptes-messaging-hub',
           'bin/panoptes-solve-field',
+          'bin/panoptes-dev',
       ],
       install_requires=modules['required'],
       packages=find_namespace_packages(include=['panoptes.utils.*'],

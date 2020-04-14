@@ -16,6 +16,7 @@ PANOPTES Utils
     - [Config Server](#config-server)
     - [Messaging Hub](#messaging-hub)
 - [Development](#development)
+  - [Environment](#environment)
   - [Logging](#logging)
 
 Utility functions for use within the PANOPTES ecosystem and for general astronomical processing.
@@ -95,13 +96,36 @@ panoptes-messaging-hub --from-config
 
 ## Development
 
+### Environment
+
+There is a docker development environment that has a number of support modules installed. This also
+defaults to running a `jupyter-lab` instance with the `$PANDIR` folder as the root.
+
+You should have all `panoptes` repositories for development (maybe `POCS`, `panoptes-utils`, `panoptes-tutorials`) inside the `$PANDIR` folder (default `/var/panoptes`). Ideally you have just run
+the install script at **TODO: reference install script here.**.
+
+You can then start the development environment by:
+
+```sh
+bin/panoptes-dev up
+```
+
+You can then connect to the provided url in your browser. The default password is `panotpes`, which is not supplied for security purposes but just to allow access.
+
+The environment can be stopped with:
+
+```sh
+bin/panoptes-dev down
+```
+
+
 ### Logging
 
 The `panoptes-utils` module uses [`loguru`](https://github.com/Delgan/loguru) for logging, which also serves as the basis for the POCS logger (see [Logger](#logger)).
 
 To access the logs for the module, you can import directly from the `logger` module, i.e., `from panoptes.utils.logger import logger`. This is a simple wrapper around `luguru` with no extra configuration:
 
-```python
+```py
 >>> from panoptes.utils import CountdownTimer
 >>> # No logs by default
 >>> t0 = CountdownTimer(5)

@@ -4,6 +4,8 @@ import os
 import shutil
 import subprocess
 
+from google.cloud import bigquery
+
 from astropy.table import Table
 from astropy.wcs import WCS
 from astropy import units as u
@@ -12,19 +14,22 @@ from astropy.coordinates import SkyCoord, match_coordinates_sky
 from .images import fits as fits_utils
 
 
-def get_stars_from_footprint(wcs_footprint, **kwargs):
+def get_stars_from_footprint(wcs_or_footprint, **kwargs):
     """Lookup star information from WCS footprint.
 
     Generates the correct layout for an SQL `POLYGON` that can be passed to
     `get_stars`.
 
     Args:
-        wcs_footprint (`astropy.wcs.WCS`): The world coordinate system (WCS) for an image.
+        wcs_or_footprint (`astropy.wcs.WCS` or array): Either the WCS or the output from `calc_footprint`.
         **kwargs: Optional keywords to pass to `get_stars`.
 
-    Returns:
-        TYPE: Description
     """
+    if isinstance(wcs_or_footprint, WCS):
+        wcs_footprint = wcs_or_footprint.calc_footprint()
+    else:
+        wcs_footprint = wcs_or_footprint
+
     wcs_footprint = list(wcs_footprint)
     # Add the first entry to the end to complete polygon
     wcs_footprint.append(wcs_footprint[0])
@@ -35,10 +40,10 @@ def get_stars_from_footprint(wcs_footprint, **kwargs):
 
 
 def get_stars(
-        bq_client,
+        bq_client=None,
         shape=None,
-        vmag_min=6,
-        vmag_max=12,
+        vmag_min=4,
+        vmag_max=17,
         client=None,
         **kwargs):
     """Look star information from the TESS catalog.
@@ -62,21 +67,28 @@ def get_stars(
     if shape is not None:
         sql_constraint = f"AND ST_CONTAINS(ST_GEOGFROMTEXT('POLYGON(({shape}))'), coords)"
 
+    # Note that for how the BigQuery partition works, we need the parition one step
+    # below the requested vmag_max.
     sql = f"""
-    SELECT id, ra, dec, vmag
+    SELECT
+        id as picid, twomass, gaia,
+        ra as catalog_ra,
+        dec as catalog_dec,
+        vmag as catalog_vmag,
+        e_vmag as catalog_vmag_err
     FROM catalog.pic
     WHERE
-      vmag_partition BETWEEN {vmag_min} AND {vmag_max}
+      vmag_partition BETWEEN {vmag_min} AND {vmag_max-1}
       {sql_constraint}
     """
 
+    if bq_client is None:
+        bq_client = bigquery.Client()
+
     try:
         df = bq_client.query(sql).to_dataframe()
+        logger.debug(f'Found {len(df)} in Vmag=[{vmag_min}, {vmag_max}) and bounds=[{shape}]')
 
-        # Adjust the RA to be -180 to 180
-        df.loc[df.ra > 180, 'ra'] = df.loc[df.ra > 180, 'ra'] - 360
-
-        df.rename(columns={'id': 'picid'}, inplace=True)
     except Exception as e:
         logger.warning(e)
         df = None
@@ -88,49 +100,80 @@ def lookup_point_sources(fits_file,
                          catalog_match=False,
                          method='sextractor',
                          force_new=False,
-                         max_catalog_separation=25,  # arcsecs
                          **kwargs
                          ):
-    """ Extract point sources from image.
+    """Extract point sources from image.
 
     This function will extract the sources from the image using the given method
     (currently only `sextractor`). This is returned as a `pandas.DataFrame`. If
     `catalog_match=True` then the resulting sources will be matched against the
-    PANOPTES catalog, which is a filtered version of the TESS Input Catalog.
+    PANOPTES catalog, which is a filtered version of the TESS Input Catalog. See
+    `get_catalog_match` for details and column list.
 
-    >>> from panoptes.utils.sources import lookup_point_sources
-    >>> fits_fn = getfixture('solved_fits_file')
+    Sextractor will return the following columns:
 
-    >>> point_sources = lookup_point_sources(fits_fn)
-    >>> point_sources.describe()
-                   ra         dec           x  ...      flux_max  fwhm_image       flags
-    count  726.000000  726.000000  726.000000  ...    726.000000  726.000000  726.000000
-    mean   303.259396   46.023160  353.399449  ...   2215.879774    3.248939    0.819559
-    std      0.820234    0.574604  200.200817  ...   2748.420911    2.209067    2.880939
-    min    301.794797   45.038730   11.000000  ...    307.825100  -27.170000    0.000000
-    25%    302.546731   45.539239  183.250000  ...    673.398775    2.280000    0.000000
-    50%    303.238772   46.015271  350.000000  ...   1018.907000    2.915000    0.000000
-    75%    303.932212   46.533257  530.000000  ...   2318.909000    3.795000    0.000000
-    max    304.648913   47.018996  700.000000  ...  11640.210000   24.970000   27.000000
-    ...
-    >>> type(point_sources)
-    <class 'pandas.core.frame.DataFrame'>
+        * ALPHA_J2000   ->  sextractor_ra
+        * DELTA_J2000   ->  sextractor_dec
+        * XPEAK_IMAGE   ->  sextractor_x
+        * YPEAK_IMAGE   ->  sextractor_y
+        * X_IMAGE       ->  sextractor_x_image
+        * Y_IMAGE       ->  sextractor_y_image
+        * ELLIPTICITY   ->  sextractor_ellipticity
+        * THETA_IMAGE   ->  sextractor_theta_image
+        * FLUX_BEST     ->  sextractor_flux_best
+        * FLUXERR_BEST  ->  sextractor_fluxerr_best
+        * FLUX_MAX      ->  sextractor_flux_max
+        * FLUX_GROWTH   ->  sextractor_flux_growth
+        * MAG_BEST      ->  sextractor_mag_best
+        * MAGERR_BEST   ->  sextractor_magerr_best
+        * FWHM_IMAGE    ->  sextractor_fwhm_image
+        * BACKGROUND    ->  sextractor_background
+        * FLAGS         ->  sextractor_flags
+
+    Notes:
+            * Sources within a certain `trim_size` (default 10) of the image edges will be
+            automatically pruned.
+
+        >>> from panoptes.utils.sources import lookup_point_sources
+        >>> fits_fn = getfixture('solved_fits_file')
+
+        >>> point_sources = lookup_point_sources(fits_fn)
+        >>> point_sources.describe()
+               sextractor_ra  sextractor_dec  ...  sextractor_background  sextractor_flags
+        count     473.000000      473.000000  ...             473.000000        473.000000
+        mean      303.284052       46.011116  ...            2218.525156          1.143763
+        std         0.810261        0.582264  ...               4.545206          3.130030
+        min       301.794797       45.038730  ...            2205.807000          0.000000
+        25%       302.598079       45.503276  ...            2215.862000          0.000000
+        50%       303.243873       46.021710  ...            2218.392000          0.000000
+        75%       303.982358       46.497813  ...            2221.577000          0.000000
+        max       304.637887       47.015707  ...            2229.050000         27.000000
+        ...
+        >>> type(point_sources)
+        <class 'pandas.core.frame.DataFrame'>
 
     Args:
         fits_file (str, optional): Path to FITS file to search for stars.
+        catalog_match (bool, optional): If `get_catalog_match` should be called after looking up sources. Default False. If True, the `args` and `kwargs` will be passed to `get_catalog_match`.
+        method (str, optional): Method for looking up sources, default (and currently only) is `sextractor`.
         force_new (bool, optional): Force a new catalog to be created,
             defaults to False.
+        **kwargs: Passed to `get_catalog_match` when `catalog_match=True`.
 
     Raises:
-        error.InvalidSystemCommand: Description
+        Exception: Raised for any exception.
+
+    Returns:
+        `pandas.DataFrame`: A dataframe contained the sources.
+
     """
-    if catalog_match or method == 'tess_catalog':
-        fits_header = fits_utils.getheader(fits_file)
-        wcs = WCS(fits_header)
+    if catalog_match:
+        wcs = fits_utils.getwcs(fits_file)
         assert wcs is not None and wcs.is_celestial, logger.warning("Need a valid WCS")
 
     logger.debug(f"Looking up sources for {fits_file}")
 
+    # Only one supported method for now.
     lookup_function = {
         'sextractor': _lookup_via_sextractor,
     }
@@ -140,42 +183,106 @@ def lookup_point_sources(fits_file,
         logger.debug(f"Using {method} method for {fits_file}")
         point_sources = lookup_function[method](fits_file, force_new=force_new, **kwargs)
     except Exception as e:
-        logger.debug(f"Problem looking up sources: {e!r} {fits_file}")
         raise Exception(f"Problem looking up sources: {e!r} {fits_file}")
 
     if catalog_match:
         logger.debug(f'Doing catalog match against stars {fits_file}')
         try:
             point_sources = get_catalog_match(point_sources, wcs, **kwargs)
+            logger.debug(f'Done with catalog match for {fits_file}')
         except Exception as e:
-            logger.debug(f'Error in catalog match: {e!r} {fits_file}')
-        logger.debug(f'Done with catalog match {fits_file}')
-
-        # Change the index to the picid
-        point_sources.set_index('picid', inplace=True)
-
-        logger.debug(f'Point sources: {len(point_sources)}')
-
-        # Remove catalog matches that are too large
-        logger.debug(
-            f'Removing matches that are greater than {max_catalog_separation} arcsec from catalog.')
-        point_sources = point_sources.loc[point_sources.catalog_sep_arcsec <
-                                          max_catalog_separation]
+            logger.error(f'Error in catalog match, returning unmathed results: {e!r} {fits_file}')
 
     logger.debug(f'Point sources: {len(point_sources)} {fits_file}')
-
     return point_sources
 
 
-def get_catalog_match(point_sources, wcs, **kwargs):
-    assert point_sources is not None
+def get_catalog_match(point_sources,
+                      wcs,
+                      vmag_min=4,
+                      vmag_max=17,
+                      max_separation_arcsec=None,
+                      return_unmatched=False,
+                      origin=1,
+                      **kwargs):
+    """Match the point source positions to the catalog.
 
-    logger.debug(f'Getting catalog stars')
+    The catalog is matched to the PANOPTES Input Catalog (PIC), which is derived
+    from the [TESS Input Catalog](https://tess.mit.edu/science/tess-input-catalogue/)
+    [v8](https://heasarc.gsfc.nasa.gov/docs/tess/tess-input-catalog-version-8-tic-8-is-now-available-at-mast.html).
+
+    The catalog is stored in a BigQuery dataset. This function will match the
+    `sextractor_ra` and `sextractor_dec` columns (as output from `lookup_point_sources`)
+    to the `ra` and `dec` colums of the catalog.  The actual lookup is done via
+    the `get_stars_from_footprint` function.
+
+    The columns are added to `point_sources`, which is then returned to the user.
+
+    Columns that are added to `point_sources` include:
+
+        * picid
+        * gaia
+        * twomass
+        * catalog_dec
+        * catalog_ra
+        * catalog_sep_arcsec
+        * catalog_sextractor_diff_arcsec_dec
+        * catalog_sextractor_diff_arcsec_ra
+        * catalog_sextractor_diff_x
+        * catalog_sextractor_diff_y
+        * catalog_vmag
+        * catalog_vmag_err
+        * catalog_x
+        * catalog_y
+
+    Note:
+
+        Note all fields are expected to have values. In particular, the `gaia`
+        and `twomass` fields are often mutually exclusive.  If `return_unmatched=True`
+        (see below) then all values related to matching will be `NA` for all `sextractor`
+        related columns.
+
+    By default only the sources that are successfully matched by the catalog are returned.
+    This behavior can be changed by setting `return_unmatched=True`. This will append
+    *all* catalog entries within the Vmag range [vmag_min, vmag_max).
+
+    Warning:
+
+        Using `return_unmatched=True` can return a very large datafraame depending
+        on the chosen Vmag range and galactic coordinates. However, it should be
+        noted that limiting the Vmag range makes results less accurate.
+
+        The best policy would be to try to minimize calls to this function. The
+        resulting dataframe can be saved locally with `point_sources.to_csv(path_name)`.
+
+    If a `max_separation_arcsec` is given then results will be filtered if their
+    match with `sextractor` was larger than the number given. Typical values would
+    be in the range of 20-30 arcsecs, which corresponds to 2-3 pixels.
+
+    Returns:
+        `pandas.DataFrame`: A dataframe with the catalog information added to the
+        sources.
+
+    Args:
+        point_sources (`pandas.DataFrame`): The DataFrame containted point sources
+            to be matched. This usually comes from the output of `lookup_point_sources`
+            but could be done manually.
+        wcs (`astropy.wcs.WCS`): The WCS instance.
+        origin (int, optional): The origin for catalog matching, either 0 or 1 (default).
+        max_separation_arcsec (float|None, optional): If not None, sources more
+            than this many arcsecs from catalog will be filtered.
+        return_unmatched (bool, optional): If all results from catalog should be
+            returned, not just those with a positive match.
+        **kwargs: Unused.
+
+    """
+    assert point_sources is not None
+    logger.debug(f'Doing catalog match for wcs={wcs!r}')
 
     # Get coords from detected point sources
     stars_coords = SkyCoord(
-        ra=point_sources['ra'].values * u.deg,
-        dec=point_sources['dec'].values * u.deg
+        ra=point_sources['sextractor_ra'].values * u.deg,
+        dec=point_sources['sextractor_dec'].values * u.deg
     )
 
     # Lookup stars in catalog
@@ -187,12 +294,10 @@ def get_catalog_match(point_sources, wcs, **kwargs):
         logger.debug('No catalog matches, returning table without ids')
         return point_sources
 
-    logger.debug(f'Found {len(catalog_stars)} catalog sources in WCS footprint: {wcs.calc_footprint()}')
-
     # Get coords for catalog stars
     catalog_coords = SkyCoord(
-        ra=catalog_stars['ra'] * u.deg,
-        dec=catalog_stars['dec'] * u.deg
+        ra=catalog_stars['catalog_ra'] * u.deg,
+        dec=catalog_stars['catalog_dec'] * u.deg
     )
 
     # Do catalog matching
@@ -200,12 +305,43 @@ def get_catalog_match(point_sources, wcs, **kwargs):
     idx, d2d, d3d = match_coordinates_sky(stars_coords, catalog_coords)
     logger.debug(f'Got {len(idx)} matched sources (includes duplicates)')
 
-    # Get some properties from the catalog
-    point_sources['picid'] = catalog_stars.iloc[idx]['id'].values
-    # point_sources['twomass'] = catalog_stars[idx]['twomass']
-    point_sources['vmag'] = catalog_stars.iloc[idx]['vmag'].values
-    point_sources['vmag_err'] = catalog_stars.iloc[idx]['e_vmag'].values
+    # Get the xy pixel coordinates for all sources according to WCS.
+    xs, ys = wcs.all_world2pix(catalog_stars.catalog_ra,
+                               catalog_stars.catalog_dec,
+                               origin,
+                               ra_dec_order=True)
+    catalog_stars['catalog_x'] = xs
+    catalog_stars['catalog_y'] = ys
+
+    # Add the matches and their separation.
+    matches = catalog_stars.iloc[idx]
+    point_sources = point_sources.join(matches.reset_index(drop=True))
     point_sources['catalog_sep_arcsec'] = d2d.to(u.arcsec).value
+
+    # All point sources so far are matched.
+    point_sources['status'] = 'matched'
+
+    # Reorder columns so id cols are first then alpha.
+    new_column_order = sorted(list(point_sources.columns))
+    id_cols = ['picid', 'gaia', 'twomass', 'status']
+    for i, col in enumerate(id_cols):
+        new_column_order.remove(col)
+        new_column_order.insert(i, col)
+    point_sources = point_sources.reindex(columns=new_column_order)
+
+    # Sources that didn't match.
+    if return_unmatched:
+        unmatched = catalog_stars.iloc[catalog_stars.index.difference(idx)].copy()
+        unmatched['status'] = 'unmatched'
+        point_sources = point_sources.append(unmatched)
+
+    # Correct some dtypes.
+    point_sources.status = point_sources.status.astype('category')
+
+    # Remove catalog matches that are too far away.
+    if max_separation_arcsec is not None:
+        logger.debug(f'Removing matches > {max_separation_arcsec} arcsec from catalog.')
+        point_sources = point_sources.query('catalog_sep_arcsec <= @max_separation_arcsec')
 
     return point_sources
 
@@ -257,16 +393,11 @@ def _lookup_via_sextractor(fits_file,
                            timeout=60,
                            check=True)
         except subprocess.CalledProcessError as e:
-            raise Exception("Problem running sextractor: {}".format(e))
+            raise Exception(f"Problem running sextractor: {e.stderr}\n\n{e.stdout}")
 
     # Read catalog
     logger.debug(f'Building detected source table with {source_file}')
     point_sources = Table.read(source_file, format='ascii.sextractor')
-
-    # Remove the point sources that sextractor has flagged
-    # if 'FLAGS' in point_sources.keys():
-    #    point_sources = point_sources[point_sources['FLAGS'] == 0]
-    #    point_sources.remove_columns(['FLAGS'])
 
     # Rename columns
     point_sources.rename_column('XPEAK_IMAGE', 'x')
@@ -284,15 +415,23 @@ def _lookup_via_sextractor(fits_file,
 
     point_sources = point_sources[top & bottom & right & left].to_pandas()
     point_sources.columns = [
-        'ra', 'dec',
-        'x', 'y',
-        'x_image', 'y_image',
-        'ellipticity', 'theta_image',
-        'flux_best', 'fluxerr_best',
-        'mag_best', 'magerr_best',
-        'flux_max',
-        'fwhm_image',
-        'flags',
+        'sextractor_ra',
+        'sextractor_dec',
+        'sextractor_x',
+        'sextractor_y',
+        'sextractor_x_image',
+        'sextractor_y_image',
+        'sextractor_ellipticity',
+        'sextractor_theta_image',
+        'sextractor_flux_best',
+        'sextractor_fluxerr_best',
+        'sextractor_flux_max',
+        'sextractor_flux_growth',
+        'sextractor_mag_best',
+        'sextractor_magerr_best',
+        'sextractor_fwhm_image',
+        'sextractor_background',
+        'sextractor_flags',
     ]
 
     logger.debug(f'Returning {len(point_sources)} sources from sextractor')

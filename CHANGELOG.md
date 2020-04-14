@@ -2,55 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [0.2.10] - 2020-04-13
 
-- [Changelog](#changelog)
-  - [[0.2.9] - 2020-03-27](#029---2020-03-27)
-  - [[0.2.8] - 2020-03-27](#028---2020-03-27)
-  - [Changed](#changed)
-  - [[0.2.7] - 2020-03-22 (hotfix)](#027---2020-03-22-hotfix)
-    - [Added](#added)
-    - [Bug fixes](#bug-fixes)
-  - [[0.2.6] - 2020-03-22](#026---2020-03-22)
-    - [Added](#added-1)
-    - [Bug fixes](#bug-fixes-1)
-    - [Changed](#changed-1)
-    - [Removed](#removed)
-  - [[0.2.5] - 2020-03-18](#025---2020-03-18)
-    - [Added](#added-2)
-    - [Bug fixes](#bug-fixes-2)
-    - [Changed](#changed-2)
-    - [Removed](#removed-1)
-  - [[0.2.4] - 2020-03-11](#024---2020-03-11)
-    - [Changed](#changed-3)
-    - [Removed](#removed-2)
-  - [[0.2.3] - 2020-03-08](#023---2020-03-08)
-    - [Changed](#changed-4)
-    - [Removed](#removed-3)
-  - [[0.2.2] - 2020-03-05](#022---2020-03-05)
-    - [Bug fixes](#bug-fixes-3)
-    - [Changed](#changed-5)
-    - [Removed](#removed-4)
-  - [[0.2.1] - 2020-03-04](#021---2020-03-04)
-  - [[0.2.0] - 2020-03-04](#020---2020-03-04)
-    - [Added](#added-3)
-    - [Bug fixes](#bug-fixes-4)
-    - [Changed](#changed-6)
-  - [[0.1.0] - 2020-03-04](#010---2020-03-04)
-  - [[0.0.8] - 2019-06-29](#008---2019-06-29)
-    - [Added](#added-4)
-    - [Bug fixes](#bug-fixes-5)
-    - [Changed](#changed-7)
-  - [[0.0.7] - 2019-05-26](#007---2019-05-26)
-    - [Added](#added-5)
-    - [Changed](#changed-8)
-  - [[0.0.6] - 2019-04-29](#006---2019-04-29)
-    - [Added](#added-6)
-    - [Changed](#changed-9)
-  - [[0.0.5] - 2019-04-09](#005---2019-04-09)
-    - [Added](#added-7)
-    - [Changed](#changed-10)
+### Added
+
+* `get_stars_from_footpr  int` can accept a `WCS` directly instead of just the output from `calc_footprint()`. (#164)
+* Ability to create different tags for the docker image. The `develop` directory is now used to create a `develop` image and is provided along with `latest`. (#165)
+* `get_rgb_backgrounds(return_separate=True)` will now return the `Background2D` objects. (#166)
+* Added BigQuery pandas dependencies. (#168)
+* Added a developer image at `panoptes-utils:dev`, which is also auto-built along with the `latest` in the cloudbuild. Offers a `jupyter-lab` instance along with a number of plotting modules. Can be easily started via `panoptes-dev`. (#170, #171)
+
+### Bug fixes
+
+* `image_id_from_path` and `sequence_id_from_path` can recognize a zero in the `camera_id` and `None` when no match. (#163)
+* Fixed the bigquery client param for star lookup. (#164)
+* Unquote paths before id matching. (#169)
+* Do WCS match for all unmatched sources, not just matched sources. (#172)
+
+### Changed
+
+* Docker entrypoint no longer tries to activate service account if `$GOOGLE_APPLICATION_CREDENTIALS` is found. The python client libraries will recognize the env var so this means we can avoid installing `gcloud` utilities just to activate. (#165)
+* The `sources` module does not require a BigQuery client to be passed but can start it's own. A warning is given if `$GOOGLE_APPLICATION_CREDENTIALS` is not found. (#167)
+* `lookup_point_sources` updates: default vmag range expanded so less false positive matches [4,18). (#168)
+* Removed TOC from changelog. (#170)
+* Sextractor param changes: (#171)
+  * Threshold for detecton changed from 3 pixels to 10 pixels.
+  * Seeing changed from 0.7 arcsec to 15.3 arcsec. (Isn't used.)
+  * Removed `class_star` from sextractor results.
+
 
 ## [0.2.9] - 2020-03-27
 
@@ -60,7 +39,7 @@ Pointless version bump because of issue with [PyPi](https://github.com/pypa/pack
 
 Thanks first-time contributer @preethi524! :tada:
 
-## Changed
+### Changed
 
 * Ability to return separate RGB backgrounds. (#162)
 * Increase coverage. (#161)
@@ -274,3 +253,7 @@ Bringing things in line with updates to `POCS` for docker and `panoptes-utils` u
 ### Changed
 
 * Drop `orjson` and revert to `json` for the JSON serializers.
+
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).

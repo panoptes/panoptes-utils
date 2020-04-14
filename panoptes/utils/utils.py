@@ -4,6 +4,7 @@ import re
 import shutil
 import signal
 import collections.abc
+from urllib.parse import unquote as unquote_url
 
 import numpy as np
 from astropy import units as u
@@ -14,8 +15,14 @@ from astropy.coordinates import SkyCoord
 from .time import current_time
 
 
-PATH_MATCHER = re.compile(
-    r'.*(?P<unit_id>PAN\d{3})/(?P<camera_id>[a-gA-G1-9]{6})/(?P<sequence_id>.*?)/(?P<image_id>.*?)\..*')
+PATH_MATCHER = re.compile(r'''
+    .*?
+    (?P<unit_id>PAN\d{3})[/_]{1}
+    (?P<camera_id>[a-gA-G0-9]{6})[/_]{1}
+    (?P<sequence_id>[0-9]{8}T[0-9]{6})[/_]{1}
+    (?P<image_id>[0-9]{8}T[0-9]{6})
+    .*?
+''', re.VERBOSE)
 
 
 def listify(obj):
@@ -181,7 +188,7 @@ def altaz_to_radec(alt=35, az=90, location=None, obstime=None, **kwargs):
 
     >>> altaz_to_radec(location=keck, obstime='2020-02-02T20:20:02.02')
     <SkyCoord (ICRS): (ra, dec) in deg
-        (338.40968035, 11.11755983)>
+        (338.4096..., 11.1175...)>
 
     >>> # Must pass a `location` instance.
     >>> altaz_to_radec()
@@ -308,9 +315,13 @@ def image_id_from_path(path):
     """Return the `image_id` from the given path or uri.
 
     >>> from panoptes.utils import image_id_from_path
-    >>> path = 'gs://panoptes-raw-images/PAN012/95cdbc/20190820T111638/20190820T122447.fits'
+    >>> path = 'gs://panoptes-raw-images/PAN012/ee04d1/20190820T111638/20190820T122447.fits'
     >>> image_id_from_path(path)
-    'PAN012_95cdbc_20190820T122447'
+    'PAN012_ee04d1_20190820T122447'
+
+    >>> path = 'nothing/to/match'
+    >>> image_id_from_path(path)
+
 
     Args:
         path (str): A path or uri for a file.
@@ -318,21 +329,30 @@ def image_id_from_path(path):
     Returns:
         str: The image id in the form "<unit_id>_<camera_id>_<image_id>"
     """
-    result = PATH_MATCHER.match(path)
-    return '{}_{}_{}'.format(
-        result.group('unit_id'),
-        result.group('camera_id'),
-        result.group('image_id')
-    )
+    result = PATH_MATCHER.match(unquote_url(path))
+
+    with contextlib.suppress(AttributeError):
+        match = '{}_{}_{}'.format(
+            result.group('unit_id'),
+            result.group('camera_id'),
+            result.group('image_id')
+        )
+        return match
+
+    return None
 
 
 def sequence_id_from_path(path):
     """Return the `sequence_id` from the given path or uri.
 
     >>> from panoptes.utils import sequence_id_from_path
-    >>> path = 'gs://panoptes-raw-images/PAN012/95cdbc/20190820T111638/20190820T122447.fits'
+    >>> path = 'gs://panoptes-raw-images/PAN012/ee04d1/20190820T111638/20190820T122447.fits'
     >>> sequence_id_from_path(path)
-    'PAN012_95cdbc_20190820T111638'
+    'PAN012_ee04d1_20190820T111638'
+
+    >>> path = 'nothing/to/match'
+    >>> sequence_id_from_path(path)
+
 
     Args:
         path (str): A path or uri for a file.
@@ -340,9 +360,14 @@ def sequence_id_from_path(path):
     Returns:
         str: The image id in the form "<unit_id>_<camera_id>_<sequence_id>"
     """
-    result = PATH_MATCHER.match(path)
-    return '{}_{}_{}'.format(
-        result.group('unit_id'),
-        result.group('camera_id'),
-        result.group('sequence_id')
-    )
+    result = PATH_MATCHER.match(unquote_url(path))
+
+    with contextlib.suppress(AttributeError):
+        match = '{}_{}_{}'.format(
+            result.group('unit_id'),
+            result.group('camera_id'),
+            result.group('sequence_id')
+        )
+        return match
+
+    return None
