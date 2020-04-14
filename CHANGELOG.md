@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.2.10dev]
+## [0.2.10] - 2020-04-13
 
 ### Added
 
