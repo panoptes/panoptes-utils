@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 * `image_id_from_path` and `sequence_id_from_path` can recognize a zero in the `camera_id` and `None` when no match. (#163)
 * Fixed the bigquery client param for star lookup. (#164)
 * Unquote paths before id matching. (#169)
+* Do WCS match for all unmatched sources, not just matched sources. (#172)
 
 ### Changed
 

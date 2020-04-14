@@ -306,40 +306,37 @@ def get_catalog_match(point_sources,
     logger.debug(f'Got {len(idx)} matched sources (includes duplicates)')
 
     # Get the xy pixel coordinates for all sources according to WCS.
-    xs, ys = wcs.all_world2pix(point_sources.sextractor_ra,
-                               point_sources.sextractor_dec,
+    xs, ys = wcs.all_world2pix(catalog_stars.catalog_ra,
+                               catalog_stars.catalog_dec,
                                origin,
                                ra_dec_order=True)
-    point_sources['catalog_x'] = xs
-    point_sources['catalog_y'] = ys
+    catalog_stars['catalog_x'] = xs
+    catalog_stars['catalog_y'] = ys
 
     # Add the matches and their separation.
     matches = catalog_stars.iloc[idx]
     point_sources = point_sources.join(matches.reset_index(drop=True))
     point_sources['catalog_sep_arcsec'] = d2d.to(u.arcsec).value
 
-    point_sources.eval('catalog_sextractor_diff_x = catalog_x - sextractor_x_image', inplace=True)
-    point_sources.eval('catalog_sextractor_diff_y = catalog_y - sextractor_y_image', inplace=True)
-
-    ra_diff_arcsec = ((point_sources.catalog_ra - point_sources.sextractor_ra).values * u.degree).to(u.arcsec)
-    dec_diff_arcsec = ((point_sources.catalog_dec - point_sources.sextractor_dec).values * u.degree).to(u.arcsec)
-
-    point_sources['catalog_sextractor_diff_arcsec_ra'] = ra_diff_arcsec
-    point_sources['catalog_sextractor_diff_arcsec_dec'] = dec_diff_arcsec
+    # All point sources so far are matched.
+    point_sources['status'] = 'matched'
 
     # Reorder columns so id cols are first then alpha.
     new_column_order = sorted(list(point_sources.columns))
-    id_cols = ['picid', 'gaia', 'twomass']
+    id_cols = ['picid', 'gaia', 'twomass', 'status']
     for i, col in enumerate(id_cols):
         new_column_order.remove(col)
         new_column_order.insert(i, col)
-
     point_sources = point_sources.reindex(columns=new_column_order)
 
-    # Sources that didn't match
+    # Sources that didn't match.
     if return_unmatched:
         unmatched = catalog_stars.iloc[catalog_stars.index.difference(idx)].copy()
+        unmatched['status'] = 'unmatched'
         point_sources = point_sources.append(unmatched)
+
+    # Correct some dtypes.
+    point_sources.status = point_sources.status.astype('category')
 
     # Remove catalog matches that are too far away.
     if max_separation_arcsec is not None:
