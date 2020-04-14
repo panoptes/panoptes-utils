@@ -318,6 +318,9 @@ def get_catalog_match(point_sources,
     point_sources = point_sources.join(matches.reset_index(drop=True))
     point_sources['catalog_sep_arcsec'] = d2d.to(u.arcsec).value
 
+    # All point sources so far are matched.
+    point_sources['status'] = 'matched'
+
     # Reorder columns so id cols are first then alpha.
     new_column_order = sorted(list(point_sources.columns))
     id_cols = ['picid', 'gaia', 'twomass', 'status']
@@ -326,10 +329,7 @@ def get_catalog_match(point_sources,
         new_column_order.insert(i, col)
     point_sources = point_sources.reindex(columns=new_column_order)
 
-    # All point sources so far are matched.
-    point_sources['status'] = 'matched'
-
-    # Sources that didn't match
+    # Sources that didn't match.
     if return_unmatched:
         unmatched = catalog_stars.iloc[catalog_stars.index.difference(idx)].copy()
         unmatched['status'] = 'unmatched'
