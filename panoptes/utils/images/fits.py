@@ -37,13 +37,13 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
             '--no-verify',
             '--crpix-center',
             '--index-xyls', 'none',
-            '--no-plots',
             '--axy', 'none',
             '--solved', 'none',
             '--match', 'none',
             '--rdls', 'none',
             '--corr', 'none',
             '--downsample', '4',
+            '--no-plots',
         ]
 
         if kwargs.get('overwrite', False):

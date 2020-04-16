@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.dev11]
+
+### Bug fixes
+
+* FITS Utils fixes (#173):
+    * Fix docstring return types for some functions.
+
+### Changed
+
+* FITS Utils changes (#173):
+    * Uncompressed file is always used for solve because we were occasionally seeing odd errors as described in dstndstn/astrometry.net#182. (#173)
+    * Better log output for solving.
+    * Better checking for solved file at end (via `is_celestial`).
+    * Cleanup the cleanup of solve files, removing `remove_extras` option.
+    * Pass `kwargs` to underlying `writeto` method for `write_fits`. Needed for, e.g. `overwrite`.
+
+### Removed
+
+FITS Utils removals (#173):
+    * Removing unused and confusing `improve_wcs`.
+
 ## [0.2.10] - 2020-04-13
 
 ### Added
