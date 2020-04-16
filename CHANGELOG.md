@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 
 * FITS Utils changes (#173):
     * Uncompressed file is always used for solve because we were occasionally seeing odd errors as described in dstndstn/astrometry.net#182. (#173)
+    * :warning: `get_solve_field` will `overwrite` by default.
     * Better log output for solving.
     * Better checking for solved file at end (via `is_celestial`).
     * Cleanup the cleanup of solve files, removing `remove_extras` option.
