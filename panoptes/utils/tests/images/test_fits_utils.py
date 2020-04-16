@@ -2,6 +2,7 @@ import os
 import pytest
 import subprocess
 import shutil
+from contextlib import suppress
 
 from astropy.io.fits import Header
 from astropy import units as u
@@ -67,6 +68,10 @@ def test_solve_field_unsolved(unsolved_fits_file):
     wcs_info = fits_utils.get_wcsinfo(unsolved_fits_file.replace('.fits', '.new'))
     assert 'crpix0' in wcs_info
     assert wcs_info['crpix0'] == 350.5 * u.pixel
+
+    for ext in ['.wcs', '.new']:
+        with suppress(FileNotFoundError):
+            os.remove(unsolved_fits_file.replace('.fits', ext))
 
 
 def test_get_solve_field_solved(solved_fits_file):
