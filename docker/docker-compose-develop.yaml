@@ -1,9 +1,9 @@
 version: '3.7'
 services:
-  dev-env:
-    image: gcr.io/panoptes-exp/panoptes-utils:dev
+  develop-env:
+    image: gcr.io/panoptes-exp/panoptes-utils:develop
     init: true
-    container_name: dev-env
+    container_name: develop-env
     privileged: true
     network_mode: host
     env_file: $PANDIR/.env

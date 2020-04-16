@@ -7,7 +7,7 @@ cd "${PANDIR}"
 CMD="docker-compose \
     --project-directory ${PANDIR} \
     -f panoptes-utils/docker/docker-compose.yaml \
-    -f panoptes-utils/docker/docker-compose-dev.yaml \
+    -f panoptes-utils/docker/docker-compose-develop.yaml \
     -p panoptes"
 
 # If user only asked to start, check if already running and if so use "-d" option.
