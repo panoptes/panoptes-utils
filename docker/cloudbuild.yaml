@@ -1,32 +1,18 @@
 steps:
 - name: 'docker'
-  id: 'amd64-latest'
+  id: 'amd64-build'
   args:
   - 'build'
-  - '-f=docker/Dockerfile'
-  - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:latest'
-  - '.'
-- name: 'docker'
-  id: 'amd64-dev'
-  args:
-  - 'build'
-  - '-f=docker/dev.Dockerfile'
-  - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:dev'
+  - '-f=docker/${_TAG}.Dockerfile'
+  - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}'
   - '.'
 
 - name: 'docker'
-  id: 'push-amd64-latest'
+  id: 'amd64-push'
   args:
   - 'push'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
-  waitFor: ['amd64-latest']
-- name: 'docker'
-  id: 'push-amd64-dev'
-  args:
-  - 'push'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:dev'
-  waitFor: ['amd64-dev']
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}'
+  waitFor: ['amd64-build']
 
 images:
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:dev'
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}'

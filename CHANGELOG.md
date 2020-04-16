@@ -11,6 +11,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+* Docker
+    * Changed developer tag from `dev` to `develop`. (#174)
 * FITS Utils changes (#173):
     * Uncompressed file is always used for solve because we were occasionally seeing odd errors as described in dstndstn/astrometry.net#182. (#173)
     * :warning: `get_solve_field` will `overwrite` by default.
