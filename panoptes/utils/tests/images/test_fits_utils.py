@@ -37,6 +37,23 @@ def test_fpack(solved_fits_file):
     os.remove(copy_file)
 
 
+def test_no_overwrite_fpack(solved_fits_file):
+    new_file = solved_fits_file.replace('solved', 'solved_copy')
+    copy_file = shutil.copyfile(solved_fits_file, new_file)
+
+    uncompressed = fits_utils.funpack(copy_file)
+
+    with pytest.raises(FileExistsError):
+        _ = fits_utils.fpack(uncompressed, overwrite=False)
+
+    with pytest.raises(FileExistsError):
+        compressed = fits_utils.fpack(uncompressed)
+
+    for file in [copy_file, uncompressed, compressed]:
+        with suppress(FileNotFoundError):
+            os.remove(file)
+
+
 def test_getheader(solved_fits_file):
     header = fits_utils.getheader(solved_fits_file)
     assert isinstance(header, Header)

@@ -23,5 +23,5 @@ if [[ "$PARAMS" == "up -d" ]]; then
     "${PANDIR}/panoptes-utils/bin/wait-for-it.sh" \
         localhost:8888 \
         -- \
-        docker exec -it -u panoptes dev-env jupyter notebook list | grep http | cut -d ' ' -f 1 | xargs xdg-open
+        docker exec -it -u panoptes develop-env jupyter notebook list | grep http | cut -d ' ' -f 1 | xargs xdg-open
 fi
