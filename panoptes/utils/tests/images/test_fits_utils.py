@@ -42,6 +42,8 @@ def test_no_overwrite_fpack(solved_fits_file):
     copy_file = shutil.copyfile(solved_fits_file, new_file)
 
     uncompressed = fits_utils.funpack(copy_file)
+    # Copy file again so now the packed version still exists.
+    copy_file = shutil.copyfile(solved_fits_file, new_file)
 
     with pytest.raises(FileExistsError):
         _ = fits_utils.fpack(uncompressed, overwrite=False)
