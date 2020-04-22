@@ -165,7 +165,7 @@ def get_solve_field(fname, replace=True, overwrite=True, **kwargs):
     new_fname = fname.replace('.fits', '.new')
     if replace:
         logger.debug(f'Overwriting original {fname}')
-        shutil.move(new_fname, fname)
+        os.replace(new_fname, fname)
     else:
         fname = new_fname
 
@@ -284,7 +284,7 @@ def get_wcsinfo(fits_fname, **kwargs):
     return wcs_info
 
 
-def fpack(fits_fname, unpack=False):
+def fpack(fits_fname, unpack=False, overwrite=True):
     """Compress/Decompress a FITS file
 
     Uses `fpack` (or `funpack` if `unpack=True`) to compress a FITS file
@@ -307,6 +307,12 @@ def fpack(fits_fname, unpack=False):
         fpack = shutil.which('fpack')
         run_cmd = [fpack, '-D', '-Y', fits_fname]
         out_file = fits_fname.replace('.fits', '.fits.fz')
+
+    if os.path.exists(out_file):
+        if overwrite is False:
+            raise FileExistsError(f'Destination file already exists at location and overwrite=False')
+        else:
+            os.remove(out_file)
 
     try:
         assert fpack is not None

@@ -1,11 +1,11 @@
 import os
-import pytest
-import subprocess
 import shutil
+import subprocess
 from contextlib import suppress
 
-from astropy.io.fits import Header
+import pytest
 from astropy import units as u
+from astropy.io.fits import Header
 
 from panoptes.utils.images import fits as fits_utils
 
@@ -35,6 +35,29 @@ def test_fpack(solved_fits_file):
     assert os.stat(compressed).st_size == info.st_size
 
     os.remove(copy_file)
+
+
+def test_no_overwrite_fpack(solved_fits_file):
+    new_file = solved_fits_file.replace('solved', 'solved_copy')
+    copy_file = shutil.copyfile(solved_fits_file, new_file)
+
+    # Unpack the file. This removes the packed version.
+    uncompressed = fits_utils.funpack(copy_file)
+
+    # Copy file again so now the packed version exists alongside unpacked.
+    copy_file = shutil.copyfile(solved_fits_file, new_file)
+
+    # Deny overwriting gives error.
+    with pytest.raises(FileExistsError):
+        _ = fits_utils.fpack(uncompressed, overwrite=False)
+
+    # Default is overwrite=True.
+    compressed = fits_utils.fpack(uncompressed)
+
+    # Cleanup test.
+    for file in [copy_file, uncompressed, compressed]:
+        with suppress(FileNotFoundError):
+            os.remove(file)
 
 
 def test_getheader(solved_fits_file):

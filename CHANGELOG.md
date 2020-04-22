@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 * FITS Utils fixes (#173):
     * Fix docstring return types for some functions.
+* `fpack`/`funpack` and `get_solve_field` were not properly overwriting FITS files under certain conditions when an uncompressed file of the same name was present alongside the compressed version. (#175)
 
 ### Changed
 
@@ -20,6 +21,7 @@ All notable changes to this project will be documented in this file.
     * Better checking for solved file at end (via `is_celestial`).
     * Cleanup the cleanup of solve files, removing `remove_extras` option.
     * Pass `kwargs` to underlying `writeto` method for `write_fits`. Needed for, e.g. `overwrite`.
+* Changed `bin/panoptes-dev` -> `bin/panoptes-develop` for naming consistency. (#175)
 
 ### Removed
 
