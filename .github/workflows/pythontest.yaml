@@ -42,6 +42,7 @@ jobs:
           $ci_env \
           -e REPORT_FILE="/tmp/coverage/coverage.xml" \
           --network "host" \
+          --privileged \
           -v $(pwd):/var/panoptes/logs \
           -v $PWD/coverage_dir:/tmp/coverage \
           panoptes-utils:testing \

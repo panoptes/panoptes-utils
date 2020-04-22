@@ -14,6 +14,6 @@ before_install:
 - docker build -t panoptes-utils:testing -f ${TRAVIS_BUILD_DIR}/docker/latest.Dockerfile ${TRAVIS_BUILD_DIR}
 install: true
 script:
-- docker run -it
+- docker run -it --privileged
   panoptes-utils:testing
   scripts/testing/run-tests.sh
