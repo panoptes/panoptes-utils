@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
 import os
-import click
+import shutil
 
-from panoptes.utils.data import Downloader
+import click
+from astropy.utils import data
+
 from panoptes.utils.logger import logger
 
 DEFAULT_DATA_FOLDER = os.path.expandvars("$PANDIR/astrometry/data")
@@ -28,7 +30,6 @@ def main(folder=DEFAULT_DATA_FOLDER,
          narrow_field=False,
          wide_field=False,
          verbose=False):
-
     if verbose:
         logger.enable('panoptes')
     else:
@@ -43,13 +44,93 @@ def main(folder=DEFAULT_DATA_FOLDER,
         keep_going=keep_going,
         narrow_field=narrow_field,
         wide_field=wide_field,
-        verbose=verbose)
+    )
 
     success = dl.download_all_files()
     if success:
         logger.success(f'Downloaded all files')
 
     return success
+
+
+class Downloader:
+    """Downloads IERS Bulletin A and astrometry.net indices.
+
+    IERS Bulletin A contains rapid determinations for earth orientation
+    parameters, and is used by astroplan. Learn more at: https://www.iers.org
+
+    Astrometry.net provides indices used to 'plate solve', i.e. to determine
+    which stars are in an arbitrary image of the night sky.
+    """
+
+    def __init__(self,
+                 data_folder=None,
+                 wide_field=True,
+                 narrow_field=False,
+                 keep_going=True,
+                 ):
+        """
+        Args:
+            data_folder: Path to directory into which to copy the astrometry.net indices.
+            wide_field: If True, downloads wide field astrometry.net indices.
+            narrow_field: If True, downloads narrow field astrometry.net indices.
+            keep_going: If False, exceptions are not suppressed. If True, returns False if there
+                are any download failures, else returns True.
+        """
+        self.data_folder = data_folder
+        self.wide_field = wide_field
+        self.narrow_field = narrow_field
+        self.keep_going = keep_going
+
+    def download_all_files(self):
+        """Downloads the files according to the attributes of this object."""
+        result = True
+
+        if self.wide_field:
+            for i in range(4110, 4119):
+                result = self.download_one_file(f'4100/index-{i}.fits')
+
+                if result is False and not self.keep_going:
+                    break
+
+        if self.narrow_field:
+            for i in range(4210, 4219):
+                result = self.download_one_file(f'4200/index-{i}.fits')
+                if result is False and not self.keep_going:
+                    break
+        return result
+
+    def download_one_file(self, fn):
+        """Downloads one astrometry.net file into self.data_folder."""
+        dest = os.path.join(self.data_folder, os.path.basename(fn))
+        if os.path.exists(dest):
+            return True
+
+        url = f'http://data.astrometry.net/{fn}'
+        try:
+            df = data.download_file(url)
+        except Exception as e:
+            if not self.keep_going:
+                raise e
+            logger.warning(f'Failed to download {url}: {e!r}')
+            return False
+
+        # The file has been downloaded to some directory. Move the file into the data folder.
+        try:
+            self.create_data_folder()
+            shutil.move(df, dest)
+            return True
+        except OSError as e:
+            if not self.keep_going:
+                raise e
+            logger.warning(f'Problem saving {url}. Check permissions: {e!r}')
+            return False
+
+    def create_data_folder(self):
+        """Creates the data folder if it does not exist."""
+        if not os.path.exists(self.data_folder):
+            logger.info("Creating data folder: {}.".format(self.data_folder))
+            os.makedirs(self.data_folder)
 
 
 if __name__ == '__main__':
