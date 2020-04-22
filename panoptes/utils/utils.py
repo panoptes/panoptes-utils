@@ -14,7 +14,6 @@ from astropy.coordinates import SkyCoord
 
 from .time import current_time
 
-
 PATH_MATCHER = re.compile(r'''
     .*?
     (?P<unit_id>PAN\d{3})[/_]{1}
@@ -228,6 +227,7 @@ class DelaySigTerm(contextlib.ContextDecorator):
             db.WriteCurrentRecord(record)
 
     """
+
     # TODO(jamessynge): Consider generalizing as DelaySignal(signum).
 
     def __enter__(self, callback=None):
@@ -295,20 +295,6 @@ def get_quantity_value(quantity, unit=None):
         return quantity.to_value(unit)
     except AttributeError:
         return quantity
-
-
-def moving_average(data_set, periods=3):
-    """Moving average.
-
-    Args:
-        data_set (`numpy.array`): An array of values over which to perform the moving average.
-        periods (int, optional): Number of periods.
-
-    Returns:
-        `numpy.array`: An array of the computed averages.
-    """
-    weights = np.ones(periods) / periods
-    return np.convolve(data_set, weights, mode='same')
 
 
 def image_id_from_path(path):
