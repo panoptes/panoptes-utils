@@ -4,6 +4,7 @@
 import os
 import shutil
 
+import pandas as pd
 from astroplan import download_IERS_A
 from astropy.utils import data
 from google.cloud import firestore
@@ -20,13 +21,27 @@ def get_data(image_id=None, sequence_id=None, firestore_client=None):
 
     Example:
 
-        >>> # Download a specific image.
-        >>> from panoptes.utils.images import fits as fits_utils
-        >>> from panoptes.utils.data import get_data
-        >>> image_id = 'PAN001_14d3bd_20160911T101445'
-        >>> fits_file = get_data(image_id=image_id)  # doctest: +SKIP
-        >>> fits_utils.getval(fits_file, 'FIELD')  # doctest: +SKIP
-        Wasp 33
+            >>> # Download a specific image.
+            >>> from panoptes.utils.images import fits as fits_utils
+            >>> from panoptes.utils.data import get_data
+            >>> image_id = 'PAN001_14d3bd_20160911T101445'
+            >>> fits_file = get_data(image_id=image_id)  # doctest: +SKIP
+            >>> fits_utils.getval(fits_file, 'FIELD')  # doctest: +SKIP
+            Wasp 33
+
+            >>> # Download observation information
+            >>> sequence_id = 'PAN001_14d3bd_20160911T095804'
+            >>> observation = get_data(sequence_id=sequence_id) # doctest: +SKIP
+            >>> observation.describe() # doctest: +SKIP
+                      exptime    dec_mnt     moonsep  ...     ha_mnt    airmass  dec_image
+            count   10.000000  10.000000   10.000000  ...  10.000000  10.000000   3.000000
+            mean   133.150000  37.550481  121.816168  ...  20.785812   1.432349  37.551674
+            std     40.635268   0.000000    0.058508  ...   0.142363   0.043384   0.002784
+            min    120.300000  37.550481  121.734949  ...  20.538607   1.375450  37.548547
+            25%    120.300000  37.550481  121.773715  ...  20.704128   1.400616  37.550569
+            50%    120.300000  37.550481  121.812113  ...  20.796700   1.427342  37.552590
+            75%    120.300000  37.550481  121.850095  ...  20.889282   1.455701  37.553237
+            max    248.800000  37.550481  121.916972  ...  20.981754   1.510904  37.553885
 
     Args:
         image_id (str|None): The id associated with an image.
@@ -51,7 +66,7 @@ def get_data(image_id=None, sequence_id=None, firestore_client=None):
 
     # Get observation metadata from firestore.
     if sequence_id is not None:
-        return get_observation(sequence_id)
+        return get_observation(sequence_id, firestore_client=firestore_client)
 
 
 def get_image(bucket_path, bucket_name='panoptes-raw-images'):
@@ -75,17 +90,29 @@ def get_image(bucket_path, bucket_name='panoptes-raw-images'):
     return image_path
 
 
-def get_observation(sequence_id):
+def get_observation(sequence_id, firestore_client=None):
     """Get the observation metadata.
+
+    TODO(wtgee): Support returning the observation metatdata.
 
     Args:
         sequence_id (str): The id for the given observation.
 
     Returns:
-
+        `pandas.DataFrame`: The
     """
-    logger.debug(f'Gettings observation={sequence_id}')
-    pass
+    if firestore_client is None:
+        firestore_client = firestore.Client()
+
+    logger.debug(f'Getting observation={sequence_id}')
+
+    # Build query
+    obs_query = firestore_client.collection('images').where('sequence_id', '==', sequence_id)
+
+    # Fetch documents into a DataFrame.
+    df = pd.DataFrame([dict(id=doc.id, **doc.to_dict()) for doc in obs_query.stream()])
+
+    return df
 
 
 class Downloader:
