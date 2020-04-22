@@ -1,6 +1,3 @@
-# Downloads IERS Bulletin A (Earth Orientation Parameters, used by astroplan)
-# and astrometry.net indices.
-
 import os
 import shutil
 
