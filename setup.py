@@ -30,6 +30,7 @@ modules = {
         'Flask',
         'fastparquet',
         'google-cloud-bigquery[pandas]',
+        'google-cloud-firestore',
         'loguru',
         'matplotlib>=3.1.3',
         'mocket',  # testing
