@@ -48,8 +48,8 @@ def test_no_overwrite_fpack(solved_fits_file):
     with pytest.raises(FileExistsError):
         _ = fits_utils.fpack(uncompressed, overwrite=False)
 
-    with pytest.raises(FileExistsError):
-        compressed = fits_utils.fpack(uncompressed)
+    # Default is overwrite=True.
+    compressed = fits_utils.fpack(uncompressed)
 
     for file in [copy_file, uncompressed, compressed]:
         with suppress(FileNotFoundError):
