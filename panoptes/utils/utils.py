@@ -1,12 +1,12 @@
+import collections.abc
 import contextlib
 import os
 import re
 import shutil
 import signal
-import collections.abc
 from urllib.parse import unquote as unquote_url
 
-import numpy as np
+from astroplan import download_IERS_A
 from astropy import units as u
 from astropy.coordinates import AltAz
 from astropy.coordinates import ICRS
@@ -357,3 +357,14 @@ def sequence_id_from_path(path):
         return match
 
     return None
+
+
+def download_iers(*args, **kwargs):
+    """Downloads the earth rotation catalog needed for accurate coordinate positions.
+
+    Note:
+
+        This is currently just a thin-wrapper around the `astroplan.download_IERS_A`
+        function. It is left as a thin-wrapper to support future functionality.
+    """
+    download_IERS_A(*args, **kwargs)
