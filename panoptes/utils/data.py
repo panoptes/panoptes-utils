@@ -6,8 +6,86 @@ import shutil
 
 from astroplan import download_IERS_A
 from astropy.utils import data
+from google.cloud import firestore
+from google.cloud import storage
 
 from .logger import logger
+
+
+def get_data(image_id=None, sequence_id=None, firestore_client=None):
+    """Access PANOPTES data from the network.
+
+    This function is capable of searching one type of object at a time, which is
+    specified via the respective id parameter.
+
+    Example:
+
+        >>> # Download a specific image.
+        >>> from panoptes.utils.images import fits as fits_utils
+        >>> from panoptes.utils.data import get_data
+        >>> image_id = 'PAN001_14d3bd_20160911T101445'
+        >>> fits_file = get_data(image_id=image_id)  # doctest: +SKIP
+        >>> fits_utils.getval(fits_file, 'FIELD')  # doctest: +SKIP
+        Wasp 33
+
+    Args:
+        image_id (str|None): The id associated with an image.
+        sequence_id (str|None): The id associated with an observation.
+        firestore_client (`google.cloud.firestore.Client`|None): The client instance
+            to use. If `None` is provided (the default), then client will attempt
+            to connect with default environmental credentials.
+
+    Returns:
+
+    """
+    if firestore_client is None:
+        firestore_client = firestore.Client()
+
+    # Get a FITS image from the bucket.
+    if image_id is not None:
+        # Lookup the full path from the firestore db
+        bucket_path = firestore_client.document(f'images/{image_id}').get().get('bucket_path')
+        logger.debug(f'Bucket path for {image_id}: {bucket_path}')
+
+        return get_image(bucket_path)
+
+    # Get observation metadata from firestore.
+    if sequence_id is not None:
+        return get_observation(sequence_id)
+
+
+def get_image(bucket_path, bucket_name='panoptes-raw-images'):
+    """Downloads the image at the given path.
+
+    Args:
+        bucket_path (str): The relative path to the object in the bucket.
+        bucket_name (str): The name of the bucket to use, default `panoptes-raw-images`.
+
+    Returns:
+        str: The full path to the downloaded image.
+    """
+    # Get access to the storage bucket
+    bucket = storage.Client().bucket(bucket_name)
+
+    # Get image blob.
+    image_path = bucket_path.replace('/', '_')
+    logger.debug(f'Downloading {bucket_path} to {image_path}')
+    bucket.blob(bucket_path).download_to_filename(image_path)
+
+    return image_path
+
+
+def get_observation(sequence_id):
+    """Get the observation metadata.
+
+    Args:
+        sequence_id (str): The id for the given observation.
+
+    Returns:
+
+    """
+    logger.debug(f'Gettings observation={sequence_id}')
+    pass
 
 
 class Downloader:
