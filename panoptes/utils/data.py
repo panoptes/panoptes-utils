@@ -1,14 +1,11 @@
-# Downloads IERS Bulletin A (Earth Orientation Parameters, used by astroplan)
-# and astrometry.net indices.
-
 import os
 import shutil
+from contextlib import suppress
 
 import pandas as pd
 from astroplan import download_IERS_A
 from astropy.utils import data
 from google.cloud import firestore
-from google.cloud import storage
 
 from .logger import logger
 
@@ -19,29 +16,29 @@ def get_data(image_id=None, sequence_id=None, firestore_client=None):
     This function is capable of searching one type of object at a time, which is
     specified via the respective id parameter.
 
-    Example:
+    >>> from panoptes.utils.data import get_data
+    >>> # Get image metadata as a DataFrame with one record.
+    >>> image_id = 'PAN001_14d3bd_20160911T101445'
+    >>> image_info = get_data(image_id=image_id)  # doctest: +SKIP
+    >>> image_info
+        airmass  background_median  ...                      time unit_id
+    0  1.421225               <NA>  ... 2016-09-11 10:14:45+00:00  PAN001
+    >>> type(image_info)
+    pandas.core.frame.DataFrame
 
-        >>> # Download a specific image.
-        >>> from panoptes.utils.images import fits as fits_utils
-        >>> from panoptes.utils.data import get_data
-        >>> image_id = 'PAN001_14d3bd_20160911T101445'
-        >>> fits_file = get_data(image_id=image_id)  # doctest: +SKIP
-        >>> fits_utils.getval(fits_file, 'FIELD')  # doctest: +SKIP
-        Wasp 33
-
-        >>> # Download observation information
-        >>> sequence_id = 'PAN001_14d3bd_20160911T095804'
-        >>> observation = get_data(sequence_id=sequence_id) # doctest: +SKIP
-        >>> observation.describe() # doctest: +SKIP
-                  exptime    dec_mnt     moonsep  ...     ha_mnt    airmass  dec_image
-        count   10.000000  10.000000   10.000000  ...  10.000000  10.000000   3.000000
-        mean   133.150000  37.550481  121.816168  ...  20.785812   1.432349  37.551674
-        std     40.635268   0.000000    0.058508  ...   0.142363   0.043384   0.002784
-        min    120.300000  37.550481  121.734949  ...  20.538607   1.375450  37.548547
-        25%    120.300000  37.550481  121.773715  ...  20.704128   1.400616  37.550569
-        50%    120.300000  37.550481  121.812113  ...  20.796700   1.427342  37.552590
-        75%    120.300000  37.550481  121.850095  ...  20.889282   1.455701  37.553237
-        max    248.800000  37.550481  121.916972  ...  20.981754   1.510904  37.553885
+    >>> # Get all image metadata for the observation.
+    >>> sequence_id = 'PAN001_14d3bd_20160911T095804'
+    >>> observation = get_data(sequence_id=sequence_id) # doctest: +SKIP
+    >>> observation.describe() # doctest: +SKIP
+             airmass  dec_image    dec_mnt  ...     moonsep   ra_image     ra_mnt
+    count  10.000000   4.000000  10.000000  ...   10.000000   4.000000  10.000000
+    mean    1.432349  37.551726  37.550481  ...  121.816168  36.698585  36.712742
+    std     0.043384   0.002276   0.000000  ...    0.058508   0.007672   0.000000
+    min     1.375450  37.548547  37.550481  ...  121.734949  36.690686  36.712742
+    25%     1.400616  37.551047  37.550481  ...  121.773715  36.692726  36.712742
+    50%     1.427342  37.552235  37.550481  ...  121.812113  36.698786  36.712742
+    75%     1.455701  37.552914  37.550481  ...  121.850095  36.704645  36.712742
+    max     1.510904  37.553885  37.550481  ...  121.916972  36.706083  36.712742
 
     Args:
         image_id (str|None): The id associated with an image.
@@ -54,64 +51,86 @@ def get_data(image_id=None, sequence_id=None, firestore_client=None):
 
     """
     if firestore_client is None:
+        logger.debug(f'Getting new firestore client')
         firestore_client = firestore.Client()
 
     # Get a FITS image from the bucket.
     if image_id is not None:
-        # Lookup the full path from the firestore db
-        bucket_path = firestore_client.document(f'images/{image_id}').get().get('bucket_path')
-        logger.debug(f'Bucket path for {image_id}: {bucket_path}')
-
-        return get_image(bucket_path)
+        return get_image(image_id=image_id, firestore_client=firestore_client)
 
     # Get observation metadata from firestore.
     if sequence_id is not None:
         return get_observation(sequence_id, firestore_client=firestore_client)
 
 
-def get_image(bucket_path, bucket_name='panoptes-raw-images'):
+def get_image(image_id, firestore_client=None):
     """Downloads the image at the given path.
 
-    Args:
-        bucket_path (str): The relative path to the object in the bucket.
-        bucket_name (str): The name of the bucket to use, default `panoptes-raw-images`.
+    This function by default returns a `pandas.DataFrame` to be consistent with
+    the `get_observation` function however that DataFrame should only contain
+    a single row. Note that it will still be a DataFrame and not a `pandas.Series`.
 
     Returns:
-        str: The full path to the downloaded image.
+        `pandas.DataFrame`: DataFrame containing the image metadata.
     """
-    # Get access to the storage bucket
-    bucket = storage.Client().bucket(bucket_name)
+    if firestore_client is None:
+        firestore_client = firestore.Client()
 
-    # Get image blob.
-    image_path = bucket_path.replace('/', '_')
-    logger.debug(f'Downloading {bucket_path} to {image_path}')
-    bucket.blob(bucket_path).download_to_filename(image_path)
+    logger.debug(f'Getting metadata for image={image_id}')
 
-    return image_path
+    # Get document reference.
+    image_doc_ref = firestore_client.document(f'images/{image_id}')
+    image_doc_snapshot = image_doc_ref.get()
+
+    # Get the actual image metadata.
+    image_doc = image_doc_snapshot.to_dict()
+    image_doc['image_id'] = image_doc_snapshot.id
+
+    # Remove metadata metadata.
+    remove_cols = ['received_time']
+    for field in remove_cols:
+        with suppress(KeyError):
+            del image_doc[field]
+
+    # Put document into dataframe
+    df = pd.DataFrame(image_doc, index=[0])
+    df = df.convert_dtypes()
+    df = df.reindex(sorted(df.columns), axis=1)
+
+    # TODO(wtgee) any data cleaning or preparation for images here.
+
+    return df
 
 
 def get_observation(sequence_id, firestore_client=None):
     """Get the observation metadata.
 
-    TODO(wtgee): Support returning the observation metatdata.
-
     Args:
         sequence_id (str): The id for the given observation.
 
     Returns:
-        `pandas.DataFrame`: The
+        `pandas.DataFrame`: DataFrame containing the observation metadata.
     """
     if firestore_client is None:
         firestore_client = firestore.Client()
 
-    logger.debug(f'Getting observation={sequence_id}')
+    logger.debug(f'Getting images metadata for observation={sequence_id}')
 
     # Build query
     obs_query = firestore_client.collection('images').where('sequence_id', '==', sequence_id)
 
     # Fetch documents into a DataFrame.
-    df = pd.DataFrame([dict(id=doc.id, **doc.to_dict()) for doc in obs_query.stream()])
+    df = pd.DataFrame([dict(image_id=doc.id, **doc.to_dict()) for doc in obs_query.stream()])
+    df = df.convert_dtypes()
+    df = df.reindex(sorted(df.columns), axis=1)
 
+    # TODO(wtgee) any data cleaning or preparation for observations here.
+
+    # Remove the background fields at single image level.
+    remove_cols = ['background_median', 'background_rms']
+    df.drop(columns=remove_cols, inplace=True)
+
+    df.sort_values(by=['time'], inplace=True)
     return df
 
 
