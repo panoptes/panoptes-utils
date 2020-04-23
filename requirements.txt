@@ -16,12 +16,15 @@ cycler==0.10.0            # via matplotlib
 decorator==4.4.1          # via mocket
 fastparquet==0.3.3        # via panoptes-utils (setup.py)
 flask==1.1.1              # via panoptes-utils (setup.py)
-google-api-core==1.16.0   # via google-cloud-bigquery, google-cloud-core
-google-auth==1.13.1       # via google-api-core, google-cloud-bigquery
+google-api-core[grpc]==1.16.0  # via google-cloud-bigquery, google-cloud-core, google-cloud-firestore
+google-auth==1.13.1       # via google-api-core, google-cloud-bigquery, google-cloud-storage
 google-cloud-bigquery[pandas]==1.24.0  # via panoptes-utils (setup.py)
-google-cloud-core==1.3.0  # via google-cloud-bigquery
-google-resumable-media==0.5.0  # via google-cloud-bigquery
+google-cloud-core==1.3.0  # via google-cloud-bigquery, google-cloud-firestore, google-cloud-storage
+google-cloud-firestore==1.6.2  # via panoptes-utils (setup.py)
+google-cloud-storage==1.28.0  # via panoptes-utils (setup.py)
+google-resumable-media==0.5.0  # via google-cloud-bigquery, google-cloud-storage
 googleapis-common-protos==1.51.0  # via google-api-core
+grpcio==1.28.1            # via google-api-core
 idna==2.9                 # via requests
 importlib-metadata==1.5.0  # via pluggy, pytest
 itsdangerous==1.1.0       # via flask
@@ -54,7 +57,7 @@ pytest-remotedata==0.3.2  # via panoptes-utils (setup.py)
 pytest==5.3.5             # via panoptes-utils (setup.py), pytest-cov, pytest-remotedata
 python-dateutil==2.8.1    # via matplotlib, pandas, panoptes-utils (setup.py)
 python-magic==0.4.15      # via mocket
-pytz==2019.3              # via astroplan, google-api-core, pandas
+pytz==2019.3              # via astroplan, google-api-core, google-cloud-firestore, pandas
 pyyaml==5.3               # via panoptes-utils (setup.py)
 pyzmq==18.1.1             # via panoptes-utils (setup.py)
 requests-oauthlib==1.3.0  # via tweepy
@@ -64,7 +67,7 @@ ruamel.yaml.clib==0.2.0   # via ruamel.yaml
 ruamel.yaml==0.16.10      # via panoptes-utils (setup.py)
 scalpl==0.3.0             # via panoptes-utils (setup.py)
 scipy==1.4.1              # via panoptes-utils (setup.py)
-six==1.14.0               # via astroplan, cycler, fastparquet, google-api-core, google-auth, google-cloud-bigquery, google-resumable-media, mocket, packaging, protobuf, pytest-remotedata, python-dateutil, thrift, tweepy
+six==1.14.0               # via astroplan, cycler, fastparquet, google-api-core, google-auth, google-cloud-bigquery, google-resumable-media, grpcio, mocket, packaging, protobuf, pytest-remotedata, python-dateutil, thrift, tweepy
 thrift==0.13.0            # via fastparquet
 tweepy==3.8.0             # via panoptes-utils (setup.py)
 urllib3==1.25.8           # via mocket, requests
