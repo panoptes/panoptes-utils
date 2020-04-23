@@ -97,6 +97,10 @@ def get_image(image_id, fields=None, firestore_client=None):
     image_doc_ref = firestore_client.document(f'images/{image_id}')
     image_doc_snapshot = image_doc_ref.get()
 
+    if image_doc_snapshot is None:
+        logger.debug(f'No document found for {image_id}')
+        return
+
     # Get the actual image metadata.
     image_doc = image_doc_snapshot.to_dict()
     image_doc['image_id'] = image_doc_snapshot.id
@@ -139,6 +143,11 @@ def get_observation(sequence_id, firestore_client=None, fields=None):
 
     # Fetch documents into a DataFrame.
     df = pd.DataFrame([dict(image_id=doc.id, **doc.to_dict()) for doc in obs_query.stream()])
+
+    if len(df) == 0:
+        logger.debug(f'No document found for {image_id}')
+        return
+
     df = df.convert_dtypes()
     df = df.reindex(sorted(df.columns), axis=1)
     df.sort_values(by=['time'], inplace=True)
