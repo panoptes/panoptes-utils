@@ -98,7 +98,7 @@ def get_image(image_id, fields=None, firestore_client=None):
     image_doc_snapshot = image_doc_ref.get()
 
     if image_doc_snapshot is None:
-        logger.debug(f'No document found for {image_id}')
+        logger.debug(f'No document found for image_id={image_id}')
         return
 
     # Get the actual image metadata.
@@ -145,7 +145,7 @@ def get_observation(sequence_id, firestore_client=None, fields=None):
     df = pd.DataFrame([dict(image_id=doc.id, **doc.to_dict()) for doc in obs_query.stream()])
 
     if len(df) == 0:
-        logger.debug(f'No document found for {image_id}')
+        logger.debug(f'No documents found for sequence_id={sequence_id}')
         return
 
     df = df.convert_dtypes()
