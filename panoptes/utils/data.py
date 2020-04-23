@@ -4,6 +4,7 @@ import shutil
 import pandas as pd
 from astroplan import download_IERS_A
 from astropy.utils import data
+from google.auth.credentials import AnonymousCredentials
 from google.cloud import firestore
 
 from .logger import logger
@@ -53,7 +54,7 @@ def get_data(image_id=None, sequence_id=None, fields=None, firestore_client=None
     """
     if firestore_client is None:
         logger.debug(f'Getting new firestore client')
-        firestore_client = firestore.Client()
+        firestore_client = firestore.Client(credentials=AnonymousCredentials())
 
     # Get a FITS image from the bucket.
     if image_id is not None:
