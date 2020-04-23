@@ -19,10 +19,10 @@ def get_data(image_id=None, sequence_id=None, fields=None, firestore_client=None
     >>> # Get image metadata as a DataFrame with one record.
     >>> image_id = 'PAN001_14d3bd_20160911T101445'
     >>> image_info = get_data(image_id=image_id)  # doctest: +SKIP
-    >>> image_info
+    >>> image_info # doctest: +SKIP
         airmass  background_median  ...                      time unit_id
     0  1.421225               <NA>  ... 2016-09-11 10:14:45+00:00  PAN001
-    >>> type(image_info)
+    >>> type(image_info) # doctest: +SKIP
     pandas.core.frame.DataFrame
 
     >>> # Get all image metadata for the observation.
