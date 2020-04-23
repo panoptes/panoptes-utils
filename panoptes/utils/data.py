@@ -18,17 +18,17 @@ def get_data(image_id=None, sequence_id=None, fields=None, firestore_client=None
     >>> from panoptes.utils.data import get_data
     >>> # Get image metadata as a DataFrame with one record.
     >>> image_id = 'PAN001_14d3bd_20160911T101445'
-    >>> image_info = get_data(image_id=image_id)  # doctest: +SKIP
-    >>> image_info # doctest: +SKIP
+    >>> image_info = get_data(image_id=image_id)
+    >>> image_info
         airmass  background_median  ...                      time unit_id
     0  1.421225               <NA>  ... 2016-09-11 10:14:45+00:00  PAN001
-    >>> type(image_info) # doctest: +SKIP
+    >>> type(image_info)
     pandas.core.frame.DataFrame
 
     >>> # Get all image metadata for the observation.
     >>> sequence_id = 'PAN001_14d3bd_20160911T095804'
-    >>> observation = get_data(sequence_id=sequence_id) # doctest: +SKIP
-    >>> observation.describe() # doctest: +SKIP
+    >>> observation = get_data(sequence_id=sequence_id)
+    >>> observation.describe()
              airmass  dec_image    dec_mnt  ...     moonsep   ra_image     ra_mnt
     count  10.000000   4.000000  10.000000  ...   10.000000   4.000000  10.000000
     mean    1.432349  37.551726  37.550481  ...  121.816168  36.698585  36.712742
@@ -39,7 +39,7 @@ def get_data(image_id=None, sequence_id=None, fields=None, firestore_client=None
     75%     1.455701  37.552914  37.550481  ...  121.850095  36.704645  36.712742
     max     1.510904  37.553885  37.550481  ...  121.916972  36.706083  36.712742
     >>> # It's also possible to request certain fields
-    >>> urls = get_data(sequence_id=sequence_id, fields=['public_url']) # doctest: +SKIP
+    >>> urls = get_data(sequence_id=sequence_id, fields=['public_url'])
 
     Args:
         image_id (str|None): The id associated with an image.
