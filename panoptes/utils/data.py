@@ -9,6 +9,8 @@ from google.cloud import firestore
 
 from .logger import logger
 
+PROJECT_ID = os.getenv('PROJECT_ID', 'panoptes-exp')
+
 
 def get_data(image_id=None, sequence_id=None, fields=None, firestore_client=None):
     """Access PANOPTES data from the network.
@@ -56,7 +58,11 @@ def get_data(image_id=None, sequence_id=None, fields=None, firestore_client=None
     """
     if firestore_client is None:
         logger.debug(f'Getting new firestore client')
-        firestore_client = firestore.Client(credentials=AnonymousCredentials())
+        firestore_client = firestore.Client(
+            database=PROJECT_ID,
+            project=PROJECT_ID,
+            credentials=AnonymousCredentials()
+        )
 
     # Get a FITS image from the bucket.
     if image_id is not None:
