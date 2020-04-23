@@ -16,6 +16,8 @@ def get_data(image_id=None, sequence_id=None, fields=None, firestore_client=None
     This function is capable of searching one type of object at a time, which is
     specified via the respective id parameter.
 
+    #TODO(wtgee): Setup firestore emulator for testing.
+
     >>> from panoptes.utils.data import get_data
     >>> # Get image metadata as a DataFrame with one record.
     >>> image_id = 'PAN001_14d3bd_20160911T101445'
