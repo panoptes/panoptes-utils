@@ -1,5 +1,7 @@
 import os
 import shutil
+from datetime import datetime as dt
+from datetime import timezone as tz
 
 import pandas as pd
 from astroplan import download_IERS_A
@@ -157,6 +159,79 @@ def get_observation(sequence_id, firestore_client=None, fields=None):
         return
 
     df = df.convert_dtypes()
+    df = df.reindex(sorted(df.columns), axis=1)
+    df.sort_values(by=['time'], inplace=True)
+
+    # TODO(wtgee) any data cleaning or preparation for observations here.
+
+    # Remove fields if only certain fields requested.
+    # TODO(wtgee) implement this filtering at the firestore level.
+    if fields is not None:
+        remove_cols = set(df.columns).difference(fields)
+        df.drop(columns=remove_cols, inplace=True)
+
+    return df
+
+
+def search_observations(
+        ra_limits,
+        dec_limits,
+        start_date=dt.strptime('2018-01-01', '%Y-%m-%d'),
+        end_date=None,
+        unit_id=None,
+        status=None,
+        field_name=None,
+        fields=None,
+        limit=1000,
+        firestore_client=None,
+):
+    assert isinstance(ra_limits, tuple), logger.warning(f'ra_limits must be 2-tuple of limits')
+    assert isinstance(dec_limits, tuple), logger.warning(f'dec_limits must be 2-tuple of limits')
+
+    if firestore_client is None:
+        firestore_client = firestore.Client()
+
+    logger.debug(f'Setting up search params')
+
+    # Setup defaults for search.
+    if end_date is None:
+        end_date = dt.now()
+
+    logger.debug(f'Searching for observations')
+    obs_query = firestore_client.collection('observations') \
+        .where('dec', '>=', dec_limits[0]) \
+        .where('dec', '<=', dec_limits[1])
+
+    def filter_rows(row):
+        valid = False
+        if row.ra >= ra_limits[0] and row.ra <= ra_limits[1]:
+            valid = True
+
+        return valid
+
+    docs = filter(filter_rows, obs_query.stream())
+    # Fetch documents into a DataFrame.
+    # docs = [dict(sequence_id=doc.id, **doc.to_dict()) for doc in obs_query.stream()]
+
+    if len(docs) == 0:
+        logger.debug(f'No documents found for collections query')
+        return
+
+    df = pd.DataFrame(docs).convert_dtypes()
+    logger.debug(f'Found {len(df)} observations')
+
+    # Perform filtering on other fields here.
+    logger.debug(f'Filtering observations')
+    df.query(
+        f'ra >= {ra_limits[0]} and ra <= {ra_limits[1]}'
+        ' and '
+        f'dec >= {dec_limits[0]} and dec <= {dec_limits[1]}'
+        ' and '
+        f'time >= "{start_date.astimezone(tz.utc)}" and time <= "{end_date.astimezone(tz.utc)}"',
+        inplace=True
+    )
+    logger.debug(f'Found {len(df)} observations after filtering')
+
     df = df.reindex(sorted(df.columns), axis=1)
     df.sort_values(by=['time'], inplace=True)
 
