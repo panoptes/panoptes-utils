@@ -49,6 +49,8 @@ def get_data(image_id=None, sequence_id=None, fields=None, firestore_client=None
     Args:
         image_id (str|None): The id associated with an image.
         sequence_id (str|None): The id associated with an observation.
+        fields (list|None):  A list of fields to fetch from the database. If None,
+            returns all fields.
         firestore_client (`google.cloud.firestore.Client`|None): The client instance
             to use. If `None` is provided (the default), then client will attempt
             to connect with default environmental credentials.
@@ -81,9 +83,12 @@ def get_image(image_id, fields=None, firestore_client=None):
     a single row. Note that it will still be a DataFrame and not a `pandas.Series`.
 
     Args:
+        image_id (str): The id for the given image.
         fields (list|None):  A list of fields to fetch from the database. If None,
             returns all fields.
-        image_id (str): The id for the given image.
+        firestore_client (`google.cloud.firestore.Client`): An authenticated
+            client instance. If None is provided then an anonymous connection will
+            be made.
 
     Returns:
         `pandas.DataFrame`: DataFrame containing the image metadata.
@@ -126,9 +131,12 @@ def get_observation(sequence_id, firestore_client=None, fields=None):
     """Get the observation metadata.
 
     Args:
+        sequence_id (str): The id for the given observation.
         fields (list|None):  A list of fields to fetch from the database. If None,
             returns all fields.
-        sequence_id (str): The id for the given observation.
+        firestore_client (`google.cloud.firestore.Client`): An authenticated
+            client instance. If None is provided then an anonymous connection will
+            be made.
 
     Returns:
         `pandas.DataFrame`: DataFrame containing the observation metadata.
