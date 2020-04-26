@@ -166,9 +166,6 @@ def get_solve_field(fname, replace=True, overwrite=True, *args, **kwargs):
     except subprocess.TimeoutExpired:
         proc.kill()
         output, errs = proc.communicate()
-        logger.debug(f'Timeout on {fname}')
-        logger.debug(f'Output on {fname}: {output}')
-        logger.debug(f'Errors on {fname}: {errs}')
         raise error.Timeout(f'Timeout while solving: {output!r} {errs!r}')
     else:
         if proc.returncode != 0:
