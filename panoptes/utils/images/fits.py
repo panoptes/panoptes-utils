@@ -467,7 +467,8 @@ def getdata(fn, *args, **kwargs):
     image.
 
     >>> fits_fn = getfixture('solved_fits_file')
-    >>> getdata(fits_fn)
+    >>> d0 = getdata(fits_fn)
+    >>> d0
     array([[2215, 2169, 2200, ..., 2169, 2235, 2168],
            [2123, 2191, 2133, ..., 2212, 2127, 2217],
            [2208, 2154, 2209, ..., 2159, 2233, 2187],
@@ -475,6 +476,11 @@ def getdata(fn, *args, **kwargs):
            [2120, 2201, 2120, ..., 2209, 2126, 2195],
            [2219, 2151, 2199, ..., 2173, 2214, 2166],
            [2114, 2194, 2122, ..., 2202, 2125, 2204]], dtype=uint16)
+    >>> d1, h1 = getdata(fits_fn, header=True)
+    >>> d0 == d1
+    True
+    >>> h1['FIELD']
+    'KIC 8462852'
 
     Args:
         fn (str): Path to FITS file.
@@ -484,7 +490,7 @@ def getdata(fn, *args, **kwargs):
     Returns:
         `np.ndarray`: The FITS data.
     """
-    return fits.getdata(fn)
+    return fits.getdata(fn, *args, **kwargs)
 
 
 def getheader(fn, *args, **kwargs):

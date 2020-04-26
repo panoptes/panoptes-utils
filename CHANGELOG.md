@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
     * `fpack`/`funpack` and `get_solve_field` were not properly overwriting FITS files under 
     certain conditions when an uncompressed file of the same name was present alongside the 
     compressed version. (#175)
+    * Properly pass `args` and `kwargs` to `astropy.io.fits.getdata`. (#180)
 
 ### Changed
 
