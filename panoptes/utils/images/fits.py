@@ -148,9 +148,6 @@ def get_solve_field(fname, replace=True, overwrite=True, *args, **kwargs):
         return out_dict
 
     # Set a default radius of 15
-    kwargs.setdefault('--scale-low', 10)
-    kwargs.setdefault('--scale-high', 16)
-    kwargs.setdefault('--scale-units', 'degwidth')
     if overwrite:
         args = list(args)
         args.append('--overwrite')
