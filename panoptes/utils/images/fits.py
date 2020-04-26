@@ -50,11 +50,6 @@ def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
             '--no-plots',
         ]
 
-        if kwargs.get('overwrite', False):
-            options.append('--overwrite')
-        if kwargs.get('skip_solved', False):
-            options.append('--skip-solved')
-
         if 'ra' in kwargs:
             options.append('--ra')
             options.append(str(kwargs.get('ra')))
@@ -91,7 +86,7 @@ def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
     return proc
 
 
-def get_solve_field(fname, replace=True, overwrite=True, **kwargs):
+def get_solve_field(fname, replace=True, overwrite=True, *args, **kwargs):
     """Convenience function to wait for `solve_field` to finish.
 
     This function merely passes the `fname` of the image to be solved along to `solve_field`,
@@ -156,7 +151,8 @@ def get_solve_field(fname, replace=True, overwrite=True, **kwargs):
     kwargs.setdefault('--scale-low', 10)
     kwargs.setdefault('--scale-high', 16)
     kwargs.setdefault('--scale-units', 'degwidth')
-    kwargs.setdefault('--overwrite', overwrite)
+    if overwrite:
+        args.append('--overwrite')
 
     # Use unpacked version of file.
     was_compressed = False
@@ -166,7 +162,7 @@ def get_solve_field(fname, replace=True, overwrite=True, **kwargs):
         logger.debug(f'Using {fname} for solving')
         was_compressed = True
 
-    proc = solve_field(fname, **kwargs)
+    proc = solve_field(fname, *args, **kwargs)
     try:
         output, errs = proc.communicate(timeout=kwargs.get('timeout', 30))
     except subprocess.TimeoutExpired:
