@@ -24,6 +24,8 @@ All notable changes to this project will be documented in this file.
     * Cleanup the cleanup of solve files, removing `remove_extras` option.
     * Pass `kwargs` to underlying `writeto` method for `write_fits`. Needed for, e.g. `overwrite`.
     * Allow additional options to be passed to solve field functions without having to override all options. (#180)
+    * Changed default options in `get_solve_field` to use `scale-low` and `scale-high` instead of `radius` (which
+    requires an `ra` and `dec`). (#180)
 * Changed `bin/panoptes-dev` -> `bin/panoptes-develop` for naming consistency. (#175)
 
 ### Removed

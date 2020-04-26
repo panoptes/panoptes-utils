@@ -129,7 +129,8 @@ def get_solve_field(fname, replace=True, overwrite=True, **kwargs):
         replace (bool, optional): Saves the WCS back to the original file,
             otherwise output base filename with `.new` extension. Default True.
         overwrite (bool, optional): Clobber file, default True. Required if `replace=True`.
-        **kwargs ({dict}): Options to pass to `solve_field`.
+        **args ({dict}): Options to pass to `solve_field` should start with `--`.
+        **kwargs ({dict}): Options to pass to `solve_field` should start with `--`.
 
     Returns:
         dict: Keyword information from the solved field.
@@ -152,8 +153,10 @@ def get_solve_field(fname, replace=True, overwrite=True, **kwargs):
         return out_dict
 
     # Set a default radius of 15
-    kwargs.setdefault('radius', 15)
-    kwargs.setdefault('overwrite', overwrite)
+    kwargs.setdefault('--scale-low', 10)
+    kwargs.setdefault('--scale-high', 16)
+    kwargs.setdefault('--scale-units', 'degwidth')
+    kwargs.setdefault('--overwrite', overwrite)
 
     # Use unpacked version of file.
     was_compressed = False
@@ -170,8 +173,8 @@ def get_solve_field(fname, replace=True, overwrite=True, **kwargs):
         proc.kill()
         output, errs = proc.communicate()
         logger.debug(f'Timeout on {fname}')
-        logger.debug(f'Output on {fname}: {output}')
-        logger.debug(f'Errors on {fname}: {errs}')
+        logger.debug(f'Output on {fname}: {output.decode()}')
+        logger.debug(f'Errors on {fname}: {errs.decode()}')
         raise error.Timeout(f'Timeout while solving: {output!r} {errs!r}')
     else:
         if proc.returncode != 0:
