@@ -1,19 +1,22 @@
 import os
 import shutil
 import subprocess
-
 from warnings import warn
 
+from astropy import units as u
 from astropy.io import fits
 from astropy.wcs import WCS
-from astropy import units as u
 
-from ..logger import logger
 from .. import error
+from ..logger import logger
 
 
-def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
+def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
     """ Plate solves an image.
+
+    Note: This is a low-level wrapper around the underlying `solve-field`
+        program. See `get_solve_field` for more typical usage and examples.
+
 
     Args:
         fname(str, required):       Filename to solve in .fits extension.
@@ -31,6 +34,7 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
     if solve_opts is not None:
         options = solve_opts
     else:
+        # Default options
         options = [
             '--guess-scale',
             '--cpulimit', str(timeout),
@@ -61,6 +65,18 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
             options.append('--radius')
             options.append(str(kwargs.get('radius')))
 
+    # Gather all the kwargs that start with `--` and are not already present.
+    logger.debug(f'Adding args: {kwargs!r}')
+    options.extend([opt
+                    for opt
+                    in args
+                    if opt.startswith('--') and opt not in options])
+    logger.debug(f'Adding kwargs: {kwargs!r}')
+    options.extend([f'{opt}={val}'
+                    for opt, val
+                    in kwargs.items()
+                    if opt.startswith('--') and opt not in options])
+
     cmd = [solve_field_script] + options + [fname]
 
     logger.debug(f'Solving with: {cmd}')
@@ -87,21 +103,26 @@ def get_solve_field(fname, replace=True, overwrite=True, **kwargs):
 
     >>> from panoptes.utils.images import fits as fits_utils
 
-    >>> # Get our fits filename
+    >>> # Get our fits filename.
     >>> fits_fn = getfixture('unsolved_fits_file')
 
-    >>> # Perform the Solve
+    >>> # Perform the solve.
     >>> solve_info = fits_utils.get_solve_field(fits_fn)
 
-    >>> # Show solved Filename
+    >>> # Show solved filename.
     >>> solve_info['solved_fits_file']
     '.../unsolved.fits'
 
-    >>> # Pass a suggested location
+    >>> # Pass a suggested location.
     >>> ra = 15.23
     >>> dec = 90
     >>> radius = 5 # deg
     >>> solve_info = fits_utils.solve_field(fits_fn, ra=ra, dec=dec, radius=radius)
+
+    >>> # Pass args and kwargs to `solve-field` program.
+    >>> solve_args = ['--use-wget']
+    >>> solve_kwargs = {'--pnm': './awesome.bmp'}
+    >>> solve_info = fu.get_solve_field(fn, *solve_args, **solve_kwargs, skip_solved=False)
 
     Args:
         fname ({str}): Name of FITS file to be solved.
