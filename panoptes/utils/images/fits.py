@@ -151,8 +151,6 @@ def get_solve_field(fname, replace=True, overwrite=True, *args, **kwargs):
     kwargs.setdefault('--scale-low', 10)
     kwargs.setdefault('--scale-high', 16)
     kwargs.setdefault('--scale-units', 'degwidth')
-    if overwrite:
-        args.append('--overwrite')
 
     # Use unpacked version of file.
     was_compressed = False
@@ -162,7 +160,7 @@ def get_solve_field(fname, replace=True, overwrite=True, *args, **kwargs):
         logger.debug(f'Using {fname} for solving')
         was_compressed = True
 
-    proc = solve_field(fname, *args, **kwargs)
+    proc = solve_field(fname, overwrite=overwrite, *args, **kwargs)
     try:
         output, errs = proc.communicate(timeout=kwargs.get('timeout', 30))
     except subprocess.TimeoutExpired:
