@@ -66,7 +66,7 @@ def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
             options.append(str(kwargs.get('radius')))
 
     # Gather all the kwargs that start with `--` and are not already present.
-    logger.debug(f'Adding args: {kwargs!r}')
+    logger.debug(f'Adding args: {args!r}')
     options.extend([opt
                     for opt
                     in args
