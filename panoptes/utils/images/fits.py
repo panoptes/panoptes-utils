@@ -1,19 +1,22 @@
 import os
 import shutil
 import subprocess
-
 from warnings import warn
 
+from astropy import units as u
 from astropy.io import fits
 from astropy.wcs import WCS
-from astropy import units as u
 
-from ..logger import logger
 from .. import error
+from ..logger import logger
 
 
-def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
+def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
     """ Plate solves an image.
+
+    Note: This is a low-level wrapper around the underlying `solve-field`
+        program. See `get_solve_field` for more typical usage and examples.
+
 
     Args:
         fname(str, required):       Filename to solve in .fits extension.
@@ -31,6 +34,7 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
     if solve_opts is not None:
         options = solve_opts
     else:
+        # Default options
         options = [
             '--guess-scale',
             '--cpulimit', str(timeout),
@@ -46,11 +50,6 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
             '--no-plots',
         ]
 
-        if kwargs.get('overwrite', False):
-            options.append('--overwrite')
-        if kwargs.get('skip_solved', False):
-            options.append('--skip-solved')
-
         if 'ra' in kwargs:
             options.append('--ra')
             options.append(str(kwargs.get('ra')))
@@ -60,6 +59,18 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
         if 'radius' in kwargs:
             options.append('--radius')
             options.append(str(kwargs.get('radius')))
+
+    # Gather all the kwargs that start with `--` and are not already present.
+    logger.debug(f'Adding args: {args!r}')
+    options.extend([opt
+                    for opt
+                    in args
+                    if opt.startswith('--') and opt not in options])
+    logger.debug(f'Adding kwargs: {kwargs!r}')
+    options.extend([f'{opt}={val}'
+                    for opt, val
+                    in kwargs.items()
+                    if opt.startswith('--') and opt not in options])
 
     cmd = [solve_field_script] + options + [fname]
 
@@ -75,7 +86,7 @@ def solve_field(fname, timeout=15, solve_opts=None, **kwargs):
     return proc
 
 
-def get_solve_field(fname, replace=True, overwrite=True, **kwargs):
+def get_solve_field(fname, replace=True, overwrite=True, *args, **kwargs):
     """Convenience function to wait for `solve_field` to finish.
 
     This function merely passes the `fname` of the image to be solved along to `solve_field`,
@@ -87,28 +98,34 @@ def get_solve_field(fname, replace=True, overwrite=True, **kwargs):
 
     >>> from panoptes.utils.images import fits as fits_utils
 
-    >>> # Get our fits filename
+    >>> # Get our fits filename.
     >>> fits_fn = getfixture('unsolved_fits_file')
 
-    >>> # Perform the Solve
+    >>> # Perform the solve.
     >>> solve_info = fits_utils.get_solve_field(fits_fn)
 
-    >>> # Show solved Filename
+    >>> # Show solved filename.
     >>> solve_info['solved_fits_file']
     '.../unsolved.fits'
 
-    >>> # Pass a suggested location
+    >>> # Pass a suggested location.
     >>> ra = 15.23
     >>> dec = 90
     >>> radius = 5 # deg
     >>> solve_info = fits_utils.solve_field(fits_fn, ra=ra, dec=dec, radius=radius)
+
+    >>> # Pass args and kwargs to `solve-field` program.
+    >>> solve_args = ['--use-wget']
+    >>> solve_kwargs = {'--pnm': './awesome.bmp'}
+    >>> solve_info = fits_utils.get_solve_field(fits_fn, *solve_args, **solve_kwargs, skip_solved=False)
 
     Args:
         fname ({str}): Name of FITS file to be solved.
         replace (bool, optional): Saves the WCS back to the original file,
             otherwise output base filename with `.new` extension. Default True.
         overwrite (bool, optional): Clobber file, default True. Required if `replace=True`.
-        **kwargs ({dict}): Options to pass to `solve_field`.
+        **args ({dict}): Options to pass to `solve_field` should start with `--`.
+        **kwargs ({dict}): Options to pass to `solve_field` should start with `--`.
 
     Returns:
         dict: Keyword information from the solved field.
@@ -131,8 +148,9 @@ def get_solve_field(fname, replace=True, overwrite=True, **kwargs):
         return out_dict
 
     # Set a default radius of 15
-    kwargs.setdefault('radius', 15)
-    kwargs.setdefault('overwrite', overwrite)
+    if overwrite:
+        args = list(args)
+        args.append('--overwrite')
 
     # Use unpacked version of file.
     was_compressed = False
@@ -142,15 +160,12 @@ def get_solve_field(fname, replace=True, overwrite=True, **kwargs):
         logger.debug(f'Using {fname} for solving')
         was_compressed = True
 
-    proc = solve_field(fname, **kwargs)
+    proc = solve_field(fname, *args, **kwargs)
     try:
         output, errs = proc.communicate(timeout=kwargs.get('timeout', 30))
     except subprocess.TimeoutExpired:
         proc.kill()
         output, errs = proc.communicate()
-        logger.debug(f'Timeout on {fname}')
-        logger.debug(f'Output on {fname}: {output}')
-        logger.debug(f'Errors on {fname}: {errs}')
         raise error.Timeout(f'Timeout while solving: {output!r} {errs!r}')
     else:
         if proc.returncode != 0:
@@ -447,7 +462,8 @@ def getdata(fn, *args, **kwargs):
     image.
 
     >>> fits_fn = getfixture('solved_fits_file')
-    >>> getdata(fits_fn)
+    >>> d0 = getdata(fits_fn)
+    >>> d0
     array([[2215, 2169, 2200, ..., 2169, 2235, 2168],
            [2123, 2191, 2133, ..., 2212, 2127, 2217],
            [2208, 2154, 2209, ..., 2159, 2233, 2187],
@@ -455,6 +471,11 @@ def getdata(fn, *args, **kwargs):
            [2120, 2201, 2120, ..., 2209, 2126, 2195],
            [2219, 2151, 2199, ..., 2173, 2214, 2166],
            [2114, 2194, 2122, ..., 2202, 2125, 2204]], dtype=uint16)
+    >>> d1, h1 = getdata(fits_fn, header=True)
+    >>> (d0 == d1).all()
+    True
+    >>> h1['FIELD']
+    'KIC 8462852'
 
     Args:
         fn (str): Path to FITS file.
@@ -464,7 +485,7 @@ def getdata(fn, *args, **kwargs):
     Returns:
         `np.ndarray`: The FITS data.
     """
-    return fits.getdata(fn)
+    return fits.getdata(fn, *args, **kwargs)
 
 
 def getheader(fn, *args, **kwargs):
