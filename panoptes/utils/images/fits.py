@@ -122,7 +122,7 @@ def get_solve_field(fname, replace=True, overwrite=True, **kwargs):
     >>> # Pass args and kwargs to `solve-field` program.
     >>> solve_args = ['--use-wget']
     >>> solve_kwargs = {'--pnm': './awesome.bmp'}
-    >>> solve_info = fits_utils.get_solve_field(fn, *solve_args, **solve_kwargs, skip_solved=False)
+    >>> solve_info = fits_utils.get_solve_field(fits_fn, *solve_args, **solve_kwargs, skip_solved=False)
 
     Args:
         fname ({str}): Name of FITS file to be solved.
