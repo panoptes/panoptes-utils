@@ -472,7 +472,7 @@ def getdata(fn, *args, **kwargs):
            [2219, 2151, 2199, ..., 2173, 2214, 2166],
            [2114, 2194, 2122, ..., 2202, 2125, 2204]], dtype=uint16)
     >>> d1, h1 = getdata(fits_fn, header=True)
-    >>> all(d0 == d1)
+    >>> (d0 == d1).all()
     True
     >>> h1['FIELD']
     'KIC 8462852'
