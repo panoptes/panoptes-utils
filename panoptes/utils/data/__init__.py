@@ -203,7 +203,7 @@ def search_observations(
             Default `None` will include all.
         status (str|list|None): A str or list of observation status to include.
             Default `None` will include all.
-        min_num_images (int): Mininmum number of images the observation should have, defaul 1.
+        min_num_images (int): Minimum number of images the observation should have, default 1.
         fields (str|list|None): A list of fields (columns) to include.
             Default `None` will include all.
         limit (int): The maximum number of firestore records to return, default 5000.
@@ -261,12 +261,10 @@ def search_observations(
         inplace=True
     )
     if unit_ids is not None and unit_ids != 'The Whole World! 🌎':
-        unit_ids = listify(unit_ids)
-        df.query(f'unit_id in @unit_ids', inplace=True)
+        df.query(f'unit_id in {listify(unit_ids)}', inplace=True)
 
     if status is not None:
-        status = listify(status)
-        df.query(f'status in @status', inplace=True)
+        df.query(f'status in {listify(status)}', inplace=True)
 
     logger.debug(f'Found {len(df)} observations after filtering')
 
@@ -278,7 +276,7 @@ def search_observations(
     # Remove fields if only certain fields requested.
     # TODO(wtgee) implement this filtering at the firestore level.
     if fields is not None:
-        remove_cols = set(df.columns).difference(fields)
+        remove_cols = set(df.columns).difference(listify(fields))
         df.drop(columns=remove_cols, inplace=True)
 
     return df
