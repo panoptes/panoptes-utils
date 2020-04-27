@@ -59,20 +59,27 @@ def get_metadata(image_id=None, sequence_id=None, fields=None, firestore_client=
     <class 'pandas.core.frame.DataFrame'>
 
     >>> # Get all image metadata for the observation.
-    >>> sequence_id = 'PAN001_14d3bd_20160911T095804'
+    >>> sequence_id = 'PAN001_14d3bd_20181119T131353'
     >>> observation = get_metadata(sequence_id=sequence_id)
     >>> observation.describe()
-             airmass  dec_image    dec_mnt  ...     moonsep   ra_image     ra_mnt
-    count  10.000000   4.000000  10.000000  ...   10.000000   4.000000  10.000000
-    mean    1.432349  37.551726  37.550481  ...  121.816168  36.698585  36.712742
-    std     0.043384   0.002276   0.000000  ...    0.058508   0.007672   0.000000
-    min     1.375450  37.548547  37.550481  ...  121.734949  36.690686  36.712742
-    25%     1.400616  37.551047  37.550481  ...  121.773715  36.692726  36.712742
-    50%     1.427342  37.552235  37.550481  ...  121.812113  36.698786  36.712742
-    75%     1.455701  37.552914  37.550481  ...  121.850095  36.704645  36.712742
-    max     1.510904  37.553885  37.550481  ...  121.916972  36.706083  36.712742
+             airmass  dec_image   dec_mnt  ...    moonsep   ra_image    ra_mnt
+    count  40.000000  40.000000  40.00000  ...  40.000000  40.000000  40.00000
+    mean    1.335805  -5.390427  -5.39111  ...  37.878005  83.815345  83.82208
+    std     0.133423   0.002305   0.00000  ...   0.014893   0.009459   0.00000
+    min     1.161770  -5.393899  -5.39111  ...  37.853242  83.798776  83.82208
+    25%     1.221510  -5.392543  -5.39111  ...  37.865554  83.807101  83.82208
+    50%     1.309247  -5.389900  -5.39111  ...  37.877977  83.815334  83.82208
+    75%     1.434251  -5.388331  -5.39111  ...  37.890434  83.824132  83.82208
+    max     1.611507  -5.386972  -5.39111  ...  37.902877  83.831588  83.82208
     >>> # It's also possible to request certain fields
-    >>> urls = get_metadata(sequence_id=sequence_id, fields=['public_url'])
+    >>> airmass_df = get_metadata(sequence_id=sequence_id, fields=['airmass'])
+    >>> airmass_df.head()
+        airmass
+    0  1.161770
+    1  1.166703
+    2  1.172055
+    3  1.177555
+    4  1.183283
 
     Args:
         image_id (str|None): The id associated with an image.
