@@ -26,7 +26,7 @@ def _get_firestore_client(project_id='panoptes-exp', database='(default)'):
     return firestore_client
 
 
-def get_data(image_id=None, sequence_id=None, fields=None, firestore_client=None):
+def get_metadata(image_id=None, sequence_id=None, fields=None, firestore_client=None):
     """Access PANOPTES data from the network.
 
     This function is capable of searching one type of object at a time, which is
@@ -34,10 +34,10 @@ def get_data(image_id=None, sequence_id=None, fields=None, firestore_client=None
 
     #TODO(wtgee): Setup firestore emulator for testing.
 
-    >>> from panoptes.utils.data import get_data
+    >>> from panoptes.utils.data import get_metadata
     >>> # Get image metadata as a DataFrame with one record.
     >>> image_id = 'PAN001_14d3bd_20160911T101445'
-    >>> image_info = get_data(image_id=image_id)
+    >>> image_info = get_metadata(image_id=image_id)
     >>> image_info
         airmass  background_median  ...                      time unit_id
     0  1.421225               <NA>  ... 2016-09-11 10:14:45+00:00  PAN001
@@ -46,7 +46,7 @@ def get_data(image_id=None, sequence_id=None, fields=None, firestore_client=None
 
     >>> # Get all image metadata for the observation.
     >>> sequence_id = 'PAN001_14d3bd_20160911T095804'
-    >>> observation = get_data(sequence_id=sequence_id)
+    >>> observation = get_metadata(sequence_id=sequence_id)
     >>> observation.describe()
              airmass  dec_image    dec_mnt  ...     moonsep   ra_image     ra_mnt
     count  10.000000   4.000000  10.000000  ...   10.000000   4.000000  10.000000
@@ -58,7 +58,7 @@ def get_data(image_id=None, sequence_id=None, fields=None, firestore_client=None
     75%     1.455701  37.552914  37.550481  ...  121.850095  36.704645  36.712742
     max     1.510904  37.553885  37.550481  ...  121.916972  36.706083  36.712742
     >>> # It's also possible to request certain fields
-    >>> urls = get_data(sequence_id=sequence_id, fields=['public_url'])
+    >>> urls = get_metadata(sequence_id=sequence_id, fields=['public_url'])
 
     Args:
         image_id (str|None): The id associated with an image.
@@ -77,19 +77,31 @@ def get_data(image_id=None, sequence_id=None, fields=None, firestore_client=None
 
     # Get a FITS image from the bucket.
     if image_id is not None:
-        return get_image(image_id=image_id, fields=fields, firestore_client=firestore_client)
+        return get_image_metadata(image_id=image_id, fields=fields, firestore_client=firestore_client)
 
     # Get observation metadata from firestore.
     if sequence_id is not None:
-        return get_observation(sequence_id, fields=fields, firestore_client=firestore_client)
+        return get_observation_metadata(sequence_id, fields=fields, firestore_client=firestore_client)
 
 
-def get_image(image_id, fields=None, firestore_client=None):
+def get_image_metadata(image_id, fields=None, firestore_client=None):
     """Downloads the image at the given path.
 
     This function by default returns a `pandas.DataFrame` to be consistent with
-    the `get_observation` function however that DataFrame should only contain
+    the `get_observation_metadata` function however that DataFrame should only contain
     a single row. Note that it will still be a DataFrame and not a `pandas.Series`.
+
+    >>> from panoptes.utils.data import get_image_metadata
+    >>> # Get image metadata as a DataFrame with one record.
+    >>> image_id = 'PAN001_14d3bd_20181204T134406'
+    >>> image_df = get_image_metadata(image_id=image_id, fields=['bucket_path'])
+    >>> # Always includes the image_id and timestamp.
+    >>> image_df.to_dict(orient='record')
+    [{'bucket_path': 'PAN001/14d3bd/20181204T133735/20181204T134406.fits.fz',
+      'image_id': 'PAN001_14d3bd_20181204T134406',
+      'time': Timestamp('2018-12-04 13:44:06+0000', tz='UTC')}]
+    >>> type(image_df)
+    pandas.core.frame.DataFrame
 
     Args:
         image_id (str): The id for the given image.
@@ -129,6 +141,9 @@ def get_image(image_id, fields=None, firestore_client=None):
     # TODO(wtgee) implement this filtering at the firestore level.
     if fields is not None:
         remove_cols = set(df.columns).difference(fields)
+        # Don't remove the id or time.
+        remove_cols.remove('image_id')
+        remove_cols.remove('time')
         df.drop(columns=remove_cols, inplace=True)
 
     # TODO(wtgee) any data cleaning or preparation for images here.
@@ -136,7 +151,7 @@ def get_image(image_id, fields=None, firestore_client=None):
     return df
 
 
-def get_observation(sequence_id, firestore_client=None, fields=None):
+def get_observation_metadata(sequence_id, firestore_client=None, fields=None):
     """Get the observation metadata.
 
     Args:
