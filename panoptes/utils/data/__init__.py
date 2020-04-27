@@ -178,29 +178,37 @@ def search_observations(
         dec=None,
         coords=None,
         radius=10,  # degrees
-        start_date=dt.strptime('2018-01-01', '%Y-%m-%d'),
+        start_date=None,
         end_date=None,
         unit_ids=None,
         status=None,
         min_num_images=1,
         fields=None,
-        limit=1000,
+        limit=5000,
         firestore_client=None,
 ):
     """Search PANOPTES observations.
 
     Args:
-        ra:
-        dec:
-        coords:
-        radius:
-        start_date:
-        end_date:
-        unit_ids:
-        status:
-        fields:
-        limit:
-        firestore_client:
+        ra (float|None): The RA position in degrees of the center of search.
+        dec (float|None): The Dec position in degrees of the center of the search.
+        coords (`astropy.coordinates.SkyCoord`|None): A valid coordinate instance.
+        radius (float): The search radius in degrees. Searches are currently done in
+            a square box, so this is half the length of the side of the box.
+        start_date (`datetime.datetime`|None): A valid datetime instance or `None` (default).
+            If `None` then the beginning of 2018 is used as a start date.
+        end_date (`datetime.datetime`|None): A valid datetime instance or `None` (default).
+            If `None` then today is used.
+        unit_ids (str|list|None): A str or list of strs of unit_ids to include.
+            Default `None` will include all.
+        status (str|list|None): A str or list of observation status to include.
+            Default `None` will include all.
+        min_num_images (int): Mininmum number of images the observation should have, defaul 1.
+        fields (str|list|None): A list of fields (columns) to include.
+            Default `None` will include all.
+        limit (int): The maximum number of firestore records to return, default 5000.
+        firestore_client (`google.cloud.firestore.Client`|None): A firestore client instance.
+            If default `None`, then the function will attempt to make an anonymous connection.
 
     Returns:
         `pandas.DataFrame`: A table with the matching observation results.
@@ -214,6 +222,8 @@ def search_observations(
         coords = SkyCoord(ra=ra, dec=dec, unit='degree')
 
     # Setup defaults for search.
+    if start_date is None:
+        start_date = dt.strptime('2018-01-01', '%Y-%m-%d')
     if end_date is None:
         end_date = dt.now()
 
