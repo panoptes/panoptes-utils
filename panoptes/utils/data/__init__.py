@@ -84,7 +84,7 @@ def get_metadata(image_id=None, sequence_id=None, fields=None, firestore_client=
 
     Args:
         image_id (str|None): The id associated with an image.
-        sequence_id (str|None): The id associated with an observation.
+        sequence_id (str|list|None): The list of sequence_ids associated with an observation.
         fields (list|None):  A list of fields to fetch from the database. If None,
             returns all fields.
         firestore_client (`google.cloud.firestore.Client`|None): The client instance
@@ -103,7 +103,7 @@ def get_metadata(image_id=None, sequence_id=None, fields=None, firestore_client=
 
     # Get observation metadata from firestore.
     if sequence_id is not None:
-        return get_observation_metadata(sequence_id, fields=fields, firestore_client=firestore_client)
+        return get_observation_metadata(listify(sequence_id), fields=fields, firestore_client=firestore_client)
 
 
 def get_image_metadata(image_id, fields=None, firestore_client=None):
@@ -172,11 +172,11 @@ def get_image_metadata(image_id, fields=None, firestore_client=None):
     return df
 
 
-def get_observation_metadata(sequence_id, firestore_client=None, fields=None):
-    """Get the observation metadata.
+def get_observation_metadata(sequence_ids, firestore_client=None, fields=None):
+    """Get the metadata for given sequence_ids.
 
     Args:
-        sequence_id (str): The id for the given observation.
+        sequence_ids (list): A list of sequence_ids as strings.
         fields (list|None):  A list of fields to fetch from the database. If None,
             returns all fields.
         firestore_client (`google.cloud.firestore.Client`): An authenticated
@@ -189,19 +189,24 @@ def get_observation_metadata(sequence_id, firestore_client=None, fields=None):
     if firestore_client is None:
         firestore_client = _get_firestore_client()
 
-    logger.debug(f'Getting images metadata for observation={sequence_id}')
+    sequence_ids = listify(sequence_ids)
 
-    # Build query
-    obs_query = firestore_client.collection('images').where('sequence_id', '==', sequence_id)
+    observation_dfs = list()
+    for sequence_id in sequence_ids:
+        logger.debug(f'Getting images metadata for observation={sequence_id}')
 
-    # Fetch documents into a DataFrame.
-    df = pd.DataFrame([dict(image_id=doc.id, **doc.to_dict()) for doc in obs_query.stream()])
+        # Build query
+        obs_query = firestore_client.collection('images').where('sequence_id', '==', sequence_id)
 
-    if len(df) == 0:
-        logger.debug(f'No documents found for sequence_id={sequence_id}')
+        # Fetch documents into a DataFrame.
+        df = pd.DataFrame([dict(image_id=doc.id, **doc.to_dict()) for doc in obs_query.stream()])
+        observation_dfs.append(df.convert_dtypes())
+
+    if len(observation_dfs) == 0:
+        logger.debug(f'No documents found for sequence_ids={sequence_ids}')
         return
 
-    df = df.convert_dtypes()
+    df = pd.concat(observation_dfs)
     df = df.reindex(sorted(df.columns), axis=1)
     df.sort_values(by=['time'], inplace=True)
 
