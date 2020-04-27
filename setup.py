@@ -32,6 +32,8 @@ modules = {
         'google-cloud-bigquery[pandas]',
         'google-cloud-firestore',
         'google-cloud-storage',
+        'holoviews',
+        'hvplot',
         'loguru',
         'matplotlib>=3.1.3',
         'mocket',  # testing
