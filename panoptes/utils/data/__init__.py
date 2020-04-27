@@ -101,7 +101,7 @@ def get_image_metadata(image_id, fields=None, firestore_client=None):
       'image_id': 'PAN001_14d3bd_20181204T134406',
       'time': Timestamp('2018-12-04 13:44:06+0000', tz='UTC')}]
     >>> type(image_df)
-    pandas.core.frame.DataFrame
+    <class 'pandas.core.frame.DataFrame'>
 
     Args:
         image_id (str): The id for the given image.
