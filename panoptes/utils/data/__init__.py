@@ -154,8 +154,7 @@ def get_image_metadata(image_id, fields=None, firestore_client=None):
     image_doc['image_id'] = image_doc_snapshot.id
 
     # Put document into dataframe.
-    df = pd.DataFrame(image_doc, index=[0])
-    df = df.convert_dtypes()
+    df = pd.DataFrame(image_doc, index=[0]).convert_dtypes()
     df = df.reindex(sorted(df.columns), axis=1)
 
     # Remove metadata metadata.
