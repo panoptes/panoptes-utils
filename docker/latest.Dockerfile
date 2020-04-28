@@ -29,7 +29,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         gosu wget curl bzip2 ca-certificates zsh openssh-client nano \
         astrometry.net sextractor dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
-        libfreetype6-dev libpng-dev libpq-dev fonts-lato \
+        libzmq3-dev libfreetype6-dev libpng-dev libpq-dev fonts-lato \
         gcc git pkg-config sudo && \
     # Oh My ZSH. :)
     mkdir -p "${ZSH_CUSTOM}" && \
