@@ -60,18 +60,12 @@ def get_metadata(image_id=None, sequence_id=None, fields=None, firestore_client=
 
     >>> # Get all image metadata for the observation.
     >>> sequence_id = 'PAN001_14d3bd_20181119T131353'
-    >>> observation = get_metadata(sequence_id=sequence_id)
-    >>> observation.describe()
-             airmass  dec_image   dec_mnt  ...    moonsep   ra_image    ra_mnt
-    count  40.000000  40.000000  40.00000  ...  40.000000  40.000000  40.00000
-    mean    1.335805  -5.390427  -5.39111  ...  37.878005  83.815345  83.82208
-    std     0.133423   0.002305   0.00000  ...   0.014893   0.009459   0.00000
-    min     1.161770  -5.393899  -5.39111  ...  37.853242  83.798776  83.82208
-    25%     1.221510  -5.392543  -5.39111  ...  37.865554  83.807101  83.82208
-    50%     1.309247  -5.389900  -5.39111  ...  37.877977  83.815334  83.82208
-    75%     1.434251  -5.388331  -5.39111  ...  37.890434  83.824132  83.82208
-    max     1.611507  -5.386972  -5.39111  ...  37.902877  83.831588  83.82208
-    ...
+    >>> observation_df = get_metadata(sequence_id=sequence_id)
+    >>> type(observation_df)
+    <class 'pandas.core.frame.DataFrame'>
+    >>> len(observation_df)
+    40
+
     >>> # It's also possible to request certain fields
     >>> airmass_df = get_metadata(sequence_id=sequence_id, fields=['airmass'])
     >>> airmass_df.head()
