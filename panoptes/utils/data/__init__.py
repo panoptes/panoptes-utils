@@ -72,6 +72,7 @@ def get_metadata(image_id=None, sequence_id=None, fields=None, firestore_client=
     75%     1.434251  -5.388331  -5.39111  ...  37.890434  83.824132  83.82208
     max     1.611507  -5.386972  -5.39111  ...  37.902877  83.831588  83.82208
     ...
+
     >>> # It's also possible to request certain fields
     >>> airmass_df = get_metadata(sequence_id=sequence_id, fields=['airmass'])
     >>> airmass_df.head()
