@@ -38,25 +38,14 @@ def get_metadata(image_id=None, sequence_id=None, fields=None, firestore_client=
     >>> # Get image metadata as a DataFrame with one record.
     >>> image_id = 'PAN001_14d3bd_20181204T134406'
     >>> image_df = get_metadata(image_id=image_id)
-    >>> image_df.to_dict(orient='record')
-    [{'airmass': 1.448405572358143,
-      'bucket_path': 'PAN001/14d3bd/20181204T133735/20181204T134406.fits.fz',
-      'dec_image': -5.41566868893,
-      'dec_mnt': -5.39111,
-      'exptime': 59.9,
-      'ha_mnt': 2.663025317826093,
-      'image_id': 'PAN001_14d3bd_20181204T134406',
-      'moonfrac': 0.08026499021211647,
-      'moonsep': 30.44217250032207,
-      'ra_image': 83.8304932884,
-      'ra_mnt': 83.82207999999999,
-      'received_time': Timestamp('2020-04-17 09:16:20.371000+0000', tz='UTC'),
-      'sequence_id': 'PAN001_14d3bd_20181204T133735',
-      'status': 'received',
-      'time': Timestamp('2018-12-04 13:44:06+0000', tz='UTC'),
-      'unit_id': 'PAN001'}]
     >>> type(image_df)
     <class 'pandas.core.frame.DataFrame'>
+    >>> # This can easily be saved to csv or cast to dict.
+    >>> image_metadata = image_df.to_dict(orient='record')[0]
+    >>> image_metadata['status']
+    'solved'
+    >>> image_metadata['received_time']
+    Timestamp('2020-04-17 09:16:20.371000+0000', tz='UTC')
 
     >>> # Get all image metadata for the observation.
     >>> sequence_id = 'PAN001_14d3bd_20181119T131353'
