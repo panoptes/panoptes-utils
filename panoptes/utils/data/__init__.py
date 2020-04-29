@@ -32,7 +32,7 @@ def get_metadata(image_id=None, sequence_id=None, fields=None, firestore_client=
     This function is capable of searching one type of object at a time, which is
     specified via the respective id parameter.
 
-    #TODO(wtgee): Setup firestore emulator for testing.
+    #TODO(wtgee): Setup firestore emulator for testing. #179
 
     >>> from panoptes.utils.data import get_metadata
     >>> # Get image metadata as a DataFrame with one record.
