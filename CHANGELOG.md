@@ -46,6 +46,7 @@ All notable changes to this project will be documented in this file.
 
 FITS Utils removals (#173):
     * Removing unused and confusing `improve_wcs`.
+PanLogger class moved to POCS. (#186)
 
 ## [0.2.10] - 2020-04-13
 
