@@ -2,6 +2,52 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.11] - 2020-04-29
+
+### Added
+
+* Data
+    * Added basic data access components for getting observation and image metadata. (#178, #181)
+    * Added a `search_observations` function for searching by various criteria. (#181)
+        * Uses anonymous credentials to connect to firestore.
+        * Added a basic notebook demonstrating features.
+    * Adding `holoviews` and `hvplot` as required dependencies.
+    
+
+### Bug fixes
+
+* FITS Utils fixes:
+    * Fix docstring return types for some functions. (#173)
+    * `fpack`/`funpack` and `get_solve_field` were not properly overwriting FITS files under 
+    certain conditions when an uncompressed file of the same name was present alongside the 
+    compressed version. (#175)
+    * Properly pass `args` and `kwargs` to `astropy.io.fits.getdata`. (#180)
+
+### Changed
+
+* Docker
+    * Changed developer tag from `dev` to `develop`. (#174)
+* FITS Utils changes (#173):
+    * Uncompressed file is always used for solve because we were occasionally seeing odd errors as described in dstndstn/astrometry.net#182. (#173)
+    * :warning: `get_solve_field` will `overwrite` by default.
+    * Better log output for solving.
+    * Better checking for solved file at end (via `is_celestial`).
+    * Cleanup the cleanup of solve files, removing `remove_extras` option.
+    * Pass `kwargs` to underlying `writeto` method for `write_fits`. Needed for, e.g. `overwrite`.
+    * Allow additional options to be passed to solve field functions without having to override all options. (#180)
+    * Changed default options in `get_solve_field` to use `scale-low` and `scale-high` instead of `radius` (which
+    requires an `ra` and `dec`). (#180)
+* Changed `bin/panoptes-dev` -> `bin/panoptes-develop` for naming consistency. (#175)
+* Data
+    * **BREAKING** The `panoptes.utils.data.py` has moved into the `panoptes.utils.data` namespace with the relevant existing `Downloader` class placed in the `assets.py` module. (#181)
+    * Changed the `get_data` (and images and observations equivalent) to `get_metadata`. (#181)
+
+### Removed
+
+FITS Utils removals (#173):
+    * Removing unused and confusing `improve_wcs`.
+PanLogger class moved to POCS. (#186)
+
 ## [0.2.10] - 2020-04-13
 
 ### Added

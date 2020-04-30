@@ -19,7 +19,6 @@ from _pytest.logging import caplog as _caplog
 from contextlib import suppress
 
 from panoptes.utils.logger import logger
-from panoptes.utils.logger import PanLogger
 from panoptes.utils.database import PanDB
 from panoptes.utils.messaging import PanMessaging
 from panoptes.utils.config.client import set_config
@@ -32,15 +31,19 @@ from matplotlib import pyplot as plt
 _all_databases = ['file', 'memory']
 
 logger.enable('panoptes')
-LOGGER_INFO = PanLogger()
 logger.level("testing", no=15, icon="🤖", color="<YELLOW><black>")
 log_file_path = os.path.join(
     os.getenv('PANLOG', os.path.expandvars('$PANDIR/logs')),
     'panoptes-testing.log'
 )
+log_fmt = "<lvl>{level:.1s}</lvl> " \
+          "<light-blue>{time:MM-DD HH:mm:ss.ss!UTC}</>" \
+          "<blue>({time:HH:mm:ss.ss})</> " \
+          "| <c>{name} {function}:{line}{extra[padding]}</c> | " \
+          "<lvl>{message}</lvl>\n"
 logger.add(log_file_path,
            enqueue=True,  # multiprocessing
-           format=LOGGER_INFO.format,
+           format=log_fmt,
            colorize=True,
            backtrace=True,
            diagnose=True,
@@ -71,7 +74,7 @@ def pytest_addoption(parser):
         default=False,
         dest="test_cloud_storage",
         help="Tests cloud strorage functions." +
-        "Requires $PANOPTES_CLOUD_KEY to be set to path of valid json service key")
+             "Requires $PANOPTES_CLOUD_KEY to be set to path of valid json service key")
     group.addoption(
         "--test-databases",
         nargs="+",
@@ -124,7 +127,6 @@ def config_path():
 
 @pytest.fixture(scope='session', autouse=True)
 def static_config_server(config_host, static_config_port, config_path, images_dir, db_name):
-
     print(f'Starting config_server for testing session')
 
     proc = config_server(
@@ -253,7 +255,6 @@ def fake_logger():
 
 @pytest.fixture(scope='function', params=_all_databases)
 def db_type(request):
-
     db_list = request.config.option.test_databases
     if request.param not in db_list and 'all' not in db_list:
         pytest.skip("Skipping {} DB, set --test-all-databases=True".format(request.param))

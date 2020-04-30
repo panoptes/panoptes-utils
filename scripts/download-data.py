@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 import os
+
 import click
 
-from panoptes.utils.data import Downloader
+from panoptes.utils.data.assets import Downloader
 from panoptes.utils.logger import logger
 
 DEFAULT_DATA_FOLDER = os.path.expandvars("$PANDIR/astrometry/data")
