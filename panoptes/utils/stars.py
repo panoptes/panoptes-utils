@@ -32,18 +32,32 @@ def get_stars_from_footprint(wcs_or_footprint, **kwargs):
         **kwargs: Optional keywords to pass to `get_stars`.
 
     """
+    wcs = None
     if isinstance(wcs_or_footprint, WCS):
+        wcs = wcs_or_footprint
         wcs_footprint = wcs_or_footprint.calc_footprint()
     else:
         wcs_footprint = wcs_or_footprint
 
     wcs_footprint = list(wcs_footprint)
+    logger.debug(f'Looking up catalog stars for WCS: {wcs_or_footprint}')
     # Add the first entry to the end to complete polygon
     wcs_footprint.append(wcs_footprint[0])
 
     poly = ','.join([f'{c[0]:.05} {c[1]:.05f}' for c in wcs_footprint])
 
-    return get_stars(shape=poly, **kwargs)
+    catalog_stars = get_stars(shape=poly, **kwargs)
+
+    # Get the XY positions via the WCS
+    if wcs is not None:
+        catalog_coords = catalog_stars[['catalog_ra', 'catalog_dec']]
+        catalog_xy = wcs.all_world2pix(catalog_coords, 1)
+        catalog_stars['x'] = catalog_xy.T[0]
+        catalog_stars['y'] = catalog_xy.T[1]
+        catalog_stars['x_int'] = catalog_stars.x.astype(int)
+        catalog_stars['y_int'] = catalog_stars.y.astype(int)
+
+    return catalog_stars
 
 
 def get_stars(
@@ -135,7 +149,7 @@ def lookup_point_sources(fits_file,
             * Sources within a certain `trim_size` (default 10) of the image edges will be
             automatically pruned.
 
-        >>> from panoptes.utils.sources import lookup_point_sources
+        >>> from panoptes.utils.stars import lookup_point_sources
         >>> fits_fn = getfixture('solved_fits_file')
 
         >>> point_sources = lookup_point_sources(fits_fn)
