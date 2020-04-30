@@ -1,10 +1,9 @@
-from .logger import logger
-
 import os
 import shutil
 import subprocess
 
 from google.cloud import bigquery
+from google.auth.credentials import AnonymousCredentials
 
 from astropy.table import Table
 from astropy.wcs import WCS
@@ -12,6 +11,14 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord, match_coordinates_sky
 
 from .images import fits as fits_utils
+from .logger import logger
+
+
+def _get_bq_client(project_id='panoptes-exp', credentials=AnonymousCredentials()):
+    logger.debug(f'Getting new bigquery client')
+
+    bq_client = bigquery.Client(project=project_id, credentials=credentials)
+    return bq_client
 
 
 def get_stars_from_footprint(wcs_or_footprint, **kwargs):
@@ -40,24 +47,18 @@ def get_stars_from_footprint(wcs_or_footprint, **kwargs):
 
 
 def get_stars(
-        bq_client=None,
         shape=None,
         vmag_min=4,
         vmag_max=17,
-        client=None,
+        bq_client=None,
         **kwargs):
     """Look star information from the TESS catalog.
 
-    Todo:
-
-        Add support for `ra_min`, `ra_max`, etc.
-
     Args:
-        bq_client (TYPE): The BigQuery Client connection.
         shape (str, optional): A string representation of an SQL shape, e.g. `POLYGON`.
-        vmag_min (int, optional): Description
-        vmag_max (int, optional): Description
-        client (None, optional): Description
+        vmag_min (int, optional): Minimum Vmag to include, default 4 inclusive.
+        vmag_max (int, optional): Maximum Vmag to include, default 17 non-inclusive.
+        bq_client (`google.cloud.bigquery.Client`): The BigQuery Client connection.
         **kwargs: Description
 
     Returns:
@@ -68,7 +69,7 @@ def get_stars(
         sql_constraint = f"AND ST_CONTAINS(ST_GEOGFROMTEXT('POLYGON(({shape}))'), coords)"
 
     # Note that for how the BigQuery partition works, we need the parition one step
-    # below the requested vmag_max.
+    # below the requested Vmag_max.
     sql = f"""
     SELECT
         id as picid, twomass, gaia,
@@ -78,12 +79,12 @@ def get_stars(
         e_vmag as catalog_vmag_err
     FROM catalog.pic
     WHERE
-      vmag_partition BETWEEN {vmag_min} AND {vmag_max-1}
+      vmag_partition BETWEEN {vmag_min} AND {vmag_max - 1}
       {sql_constraint}
     """
 
     if bq_client is None:
-        bq_client = bigquery.Client()
+        bq_client = _get_bq_client()
 
     try:
         df = bq_client.query(sql).to_dataframe()
@@ -350,7 +351,6 @@ def _lookup_via_sextractor(fits_file,
                            sextractor_params=None,
                            trim_size=10,
                            *args, **kwargs):
-
     # Write the sextractor catalog to a file
     base_dir = os.path.dirname(fits_file)
     source_dir = os.path.join(base_dir, 'sextractor')

@@ -16,12 +16,12 @@ from .. import listify
 from ..logger import logger
 
 
-def _get_firestore_client(project_id='panoptes-exp', database='(default)'):
+def _get_firestore_client(project_id='panoptes-exp', database='(default)', credentials=AnonymousCredentials()):
     logger.debug(f'Getting new firestore client')
     firestore_client = firestore.Client(
         project=project_id,
         database=database,
-        credentials=AnonymousCredentials()
+        credentials=credentials
     )
     return firestore_client
 
