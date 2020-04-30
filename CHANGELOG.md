@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bug fixes
 
-* `panoptes.utils.sources` not included in package. (#187)
+* `panoptes.utils.sources` not included in package. (#187, #188)
 
 ### Changed
 
