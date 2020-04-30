@@ -8,7 +8,7 @@ Quick release to get the `panoptes.utils.sources` into the package.
 
 ### Bug fixes
 
-* `panoptes.utils.sources` not included in package. (#187)
+* `panoptes.utils.sources` not included in package. (#187, #188)
 
 ### Changed
 
