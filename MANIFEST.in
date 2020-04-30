@@ -1,2 +1,3 @@
 include versioneer.py
 include panoptes/utils/_version.py
+include panoptes/utils/sources.py

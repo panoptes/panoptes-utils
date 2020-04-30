@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.12dev]
+
+### Bug fixes
+
+* `panoptes.utils.sources` not included in package. (#187)
+
+### Changed
+
+* Ability to pass credentials to underlying google client functions. (#187)
+
 ## [0.2.11] - 2020-04-29
 
 ### Added
