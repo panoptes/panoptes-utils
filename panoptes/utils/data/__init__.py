@@ -233,7 +233,7 @@ def search_observations(
              Wasp 35        141
     Name: num_images, dtype: Int64
     >>> search_results.total_minutes_exptime.sum()
-    1876.0
+    2792.0
 
     Args:
         ra (float|None): The RA position in degrees of the center of search.
