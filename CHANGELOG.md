@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.13dev]
+
+### Bug fixes
+
+* Fix some passing of options between `get_solve_field` and `solve_field` that was leading to double parameter issues. (#189)
+
 ## [0.2.12] - 2020-04-29
 
 Quick release to get the `panoptes.utils.sources` into the package.

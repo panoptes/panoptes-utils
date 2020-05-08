@@ -227,13 +227,13 @@ def search_observations(
     >>> # The result is a DataFrame you can further work with.
     >>> search_results.groupby(['unit_id', 'field_name']).num_images.sum()
     unit_id  field_name
-    PAN001   FlameNebula    436
-             M42            422
-    PAN006   M42             40
-             Wasp 35         69
+    PAN001   FlameNebula    754
+             M42            923
+    PAN006   M42             58
+             Wasp 35        141
     Name: num_images, dtype: Int64
     >>> search_results.total_minutes_exptime.sum()
-    1422.0
+    2792.0
 
     Args:
         ra (float|None): The RA position in degrees of the center of search.

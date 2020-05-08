@@ -61,16 +61,19 @@ def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
             options.append(str(kwargs.get('radius')))
 
     # Gather all the kwargs that start with `--` and are not already present.
-    logger.debug(f'Adding args: {args!r}')
-    options.extend([opt
-                    for opt
-                    in args
-                    if opt.startswith('--') and opt not in options])
     logger.debug(f'Adding kwargs: {kwargs!r}')
-    options.extend([f'{opt}={val}'
+    def _modify_opt(opt, val):
+        if isinstance(val, bool):
+          opt_string = str(opt)
+        else:
+          opt_string = f'{opt}={val}'
+
+        return opt_string
+
+    options.extend([_modify_opt(opt, val)
                     for opt, val
                     in kwargs.items()
-                    if opt.startswith('--') and opt not in options])
+                    if opt.startswith('--') and opt not in options and not isinstance(val, bool)])
 
     cmd = [solve_field_script] + options + [fname]
 
@@ -86,13 +89,13 @@ def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
     return proc
 
 
-def get_solve_field(fname, replace=True, overwrite=True, *args, **kwargs):
+def get_solve_field(fname, replace=True, overwrite=True, timeout=30, **kwargs):
     """Convenience function to wait for `solve_field` to finish.
 
     This function merely passes the `fname` of the image to be solved along to `solve_field`,
     which returns a subprocess.Popen object. This function then waits for that command
     to complete, populates a dictonary with the EXIF informaiton and returns. This is often
-    more useful than the raw `solve_field` function
+    more useful than the raw `solve_field` function.
 
     Example:
 
@@ -114,17 +117,16 @@ def get_solve_field(fname, replace=True, overwrite=True, *args, **kwargs):
     >>> radius = 5 # deg
     >>> solve_info = fits_utils.solve_field(fits_fn, ra=ra, dec=dec, radius=radius)
 
-    >>> # Pass args and kwargs to `solve-field` program.
-    >>> solve_args = ['--use-wget']
-    >>> solve_kwargs = {'--pnm': './awesome.bmp'}
-    >>> solve_info = fits_utils.get_solve_field(fits_fn, *solve_args, **solve_kwargs, skip_solved=False)
+    >>> # Pass kwargs to `solve-field` program.
+    >>> solve_kwargs = {'--pnm': './awesome.bmp', '--use-wget': True}
+    >>> solve_info = fits_utils.get_solve_field(fits_fn, **solve_kwargs, skip_solved=False)
 
     Args:
         fname ({str}): Name of FITS file to be solved.
         replace (bool, optional): Saves the WCS back to the original file,
             otherwise output base filename with `.new` extension. Default True.
         overwrite (bool, optional): Clobber file, default True. Required if `replace=True`.
-        **args ({dict}): Options to pass to `solve_field` should start with `--`.
+        timeout (int, optional): The timeout for solving, default 30 seconds.
         **kwargs ({dict}): Options to pass to `solve_field` should start with `--`.
 
     Returns:
@@ -149,8 +151,7 @@ def get_solve_field(fname, replace=True, overwrite=True, *args, **kwargs):
 
     # Set a default radius of 15
     if overwrite:
-        args = list(args)
-        args.append('--overwrite')
+        kwargs['--overwrite'] = True
 
     # Use unpacked version of file.
     was_compressed = False
@@ -160,9 +161,10 @@ def get_solve_field(fname, replace=True, overwrite=True, *args, **kwargs):
         logger.debug(f'Using {fname} for solving')
         was_compressed = True
 
-    proc = solve_field(fname, *args, **kwargs)
+    logger.debug(f'Solving with: {kwargs!r}')
+    proc = solve_field(fname, **kwargs)
     try:
-        output, errs = proc.communicate(timeout=kwargs.get('timeout', 30))
+        output, errs = proc.communicate(timeout=timeout)
     except subprocess.TimeoutExpired:
         proc.kill()
         output, errs = proc.communicate()
