@@ -62,10 +62,18 @@ def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
 
     # Gather all the kwargs that start with `--` and are not already present.
     logger.debug(f'Adding kwargs: {kwargs!r}')
-    options.extend([f'{opt}={val}'
+    def _modify_opt(opt, val):
+        if isinstance(val, bool):
+          opt_string = str(opt)
+        else:
+          opt_string = f'{opt}={val}'
+
+        return opt_string
+
+    options.extend([_modify_opt(opt, val)
                     for opt, val
                     in kwargs.items()
-                    if opt.startswith('--') and opt not in options])
+                    if opt.startswith('--') and opt not in options and not isinstance(val, bool)])
 
     cmd = [solve_field_script] + options + [fname]
 
