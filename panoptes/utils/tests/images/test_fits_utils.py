@@ -110,12 +110,12 @@ def test_get_solve_field_solved(solved_fits_file):
 
 def test_get_solve_field_timeout(unsolved_fits_file):
     with pytest.raises(error.Timeout):
-        solve_info = fits_utils.get_solve_field(solved_fits_file, timeout=1)
+        solve_info = fits_utils.get_solve_field(unsolved_fits_file, timeout=1)
 
 
 def test_solve_options(unsolved_fits_file):
     proc = fits_utils.solve_field(
-        solved_fits_file, solve_opts=['--guess-scale'])
+        unsolved_fits_file, solve_opts=['--guess-scale'])
     assert isinstance(proc, subprocess.Popen)
     proc.wait()
     assert proc.returncode == 0
