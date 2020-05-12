@@ -8,7 +8,6 @@ cd "${PANDIR}"
 
 CMD="docker-compose \
     --project-directory ${PANDIR} \
-    -f panoptes-utils/docker/docker-compose.yaml \
     -f panoptes-utils/docker/docker-compose-develop.yaml \
     -p panoptes"
 

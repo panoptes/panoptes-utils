@@ -10,4 +10,7 @@ holoviews
 hvplot
 jupyterlab
 pandas
+pendulum
+pyarrow
 seaborn
+tabulate
