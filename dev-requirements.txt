@@ -41,7 +41,7 @@ ipykernel==5.2.0          # via notebook
 ipython-genutils==0.2.0   # via nbformat, notebook, traitlets
 ipython==7.13.0           # via ipykernel
 itsdangerous==1.1.0       # via -r requirements.txt, flask
-jedi==0.16.0              # via ipython
+jedi==0.15.2              # via ipython
 jinja2==2.11.1            # via -r requirements.txt, altair, bokeh, flask, jupyterlab, jupyterlab-server, nbconvert, notebook
 json5==0.9.4              # via jupyterlab-server
 jsonschema==3.2.0         # via altair, jupyterlab-server, nbformat
@@ -84,7 +84,7 @@ py==1.8.1                 # via -r requirements.txt, pytest
 pyarrow==0.17.0           # via -r dev-requirements.in
 pyasn1-modules==0.2.8     # via -r requirements.txt, google-auth
 pyasn1==0.4.8             # via -r requirements.txt, pyasn1-modules, rsa
-pycodestyle==2.5.0        # via -r requirements.txt
+pycodestyle==2.6.0        # via -r requirements.txt
 pyct==0.4.6               # via -r requirements.txt, colorcet, panel
 pygments==2.6.1           # via ipython, nbconvert
 pyparsing==2.4.6          # via -r requirements.txt, matplotlib, packaging

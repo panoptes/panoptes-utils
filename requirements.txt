@@ -54,7 +54,7 @@ protobuf==3.11.3          # via google-api-core, google-cloud-bigquery, googleap
 py==1.8.1                 # via pytest
 pyasn1-modules==0.2.8     # via google-auth
 pyasn1==0.4.8             # via pyasn1-modules, rsa
-pycodestyle==2.5.0        # via panoptes-utils (setup.py)
+pycodestyle==2.6.0        # via panoptes-utils (setup.py)
 pyct==0.4.6               # via colorcet, panel
 pyparsing==2.4.6          # via matplotlib, packaging
 pyserial==3.4             # via panoptes-utils (setup.py)

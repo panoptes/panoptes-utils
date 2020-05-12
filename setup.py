@@ -6,7 +6,6 @@ from setuptools import setup, find_namespace_packages
 
 import versioneer
 
-
 # Get some values from the setup.cfg
 conf = ConfigParser()
 conf.read(['setup.cfg'])
