@@ -6,6 +6,9 @@ PANDIR=${PANDIR:-/var/panoptes}
 
 cd "${PANDIR}"
 
+# TODO Detect and install docker if needed.
+# TODO Detect and install docker-compose if needed.
+
 CMD="docker-compose \
     --project-directory ${PANDIR} \
     -f panoptes-utils/docker/docker-compose-develop.yaml \
