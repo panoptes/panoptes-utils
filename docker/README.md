@@ -25,7 +25,7 @@ The `develop` image can be used by developers or anyone wishing to explore the c
 The `bin/panoptes-develop` script is a wrapper that will start up a docker container
 instance and launce jupyter-lab from `$PANDIR` automatically. 
 
-There are two ways to get the development version.
+There are a few ways to get the development version.
 
 > Note:  See also https://github.com/panoptes/panoptes-tutorials
 
@@ -42,6 +42,19 @@ cd panoptes-utils
 bin/panoptes-develop up
 ```
 
-2) If you are using a new system:
+2) If you would like to build your own local docker image:
+
+```bash
+cd $PANDIR/panoptes-utils
+# Build the image locally.
+docker build -t panoptes-utils:develop -f docker/develop.Dockerfile .
+
+# Wait for build to finish...
+
+# Run with new image.
+IMAGE=panoptes-utils bin/panoptes-develop up
+```
+
+3) If you are using a new system:
 
 > TODO: Document this section.
