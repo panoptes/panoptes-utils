@@ -42,9 +42,10 @@ RUN cd ${PANDIR}/panoptes-utils && \
         "/home/panoptes/.jupyter/jupyter_notebook_config.py" && \
     echo "FileContentsManager.root_dirUnicode = '${PANDIR}'" >> \
         "/home/panoptes/.jupyter/jupyter_notebook_config.py" && \
-    jupyter labextension install @pyviz/jupyterlab_pyviz && \
-    jupyter labextension install jupyterlab-drawio && \
-    jupyter labextension install @aquirdturtle/collapsible_headings
+    jupyter labextension install @pyviz/jupyterlab_pyviz \
+                                jupyterlab-drawio \
+                                @aquirdturtle/collapsible_headings \
+                                @telamonian/theme-darcula
 
 USER root
 
