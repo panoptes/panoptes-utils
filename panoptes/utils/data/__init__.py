@@ -148,11 +148,6 @@ def get_observation_metadata(sequence_ids, fields=None):
     for sequence_id in sequence_ids:
         logger.debug(f'Getting images metadata for observation={sequence_id}')
 
-        # Build query
-        obs_query = firestore_client.collection('images').where('sequence_id', '==', sequence_id)
-
-        # Fetch documents into a DataFrame.
-        df = pd.DataFrame([dict(image_id=doc.id, **doc.to_dict()) for doc in obs_query.stream()])
         observation_dfs.append(df.convert_dtypes())
 
     if len(observation_dfs) == 0:
@@ -262,6 +257,8 @@ def search_observations(
         f'dec >= {dec_min} and dec <= {dec_max}'
         ' and '
         f'ra >= {ra_min} and ra <= {ra_max}'
+        ' and '
+        f'num_images >= {min_num_images}'
         ,
         inplace=True
     )
