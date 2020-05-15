@@ -106,24 +106,29 @@ def search_observations(
         radius=10,  # degrees
         status=None,
         min_num_images=1,
-        url='https://storage.googleapis.com/panoptes-exp.appspot.com/observations.csv'
+        source_url='https://storage.googleapis.com/panoptes-exp.appspot.com/observations.csv',
+        source=None
 ):
     """Search PANOPTES observations.
 
     >>> from astropy.coordinates import SkyCoord
     >>> from panoptes.utils.data import search_observations
-    >>> m42_coords = SkyCoord.from_name('M42')
-    >>> search_results = search_observations(coords=m42_coords, radius=5, min_num_images=10, end_date='2020-04-27')
+    >>> m42 = SkyCoord.from_name('Andromeda Galaxy')
+    >>> start_date = '2019-01-01'
+    >>> end_date = '2019-12-31'
+    >>> search_results = search_observations(coords=m42, min_num_images=10, start_date=start_date, end_date=end_date)
     >>> # The result is a DataFrame you can further work with.
     >>> search_results.groupby(['unit_id', 'field_name']).num_images.sum()
     unit_id  field_name
-    PAN001   FlameNebula    754
-             M42           1075
-    PAN006   M42             58
-             Wasp 35        141
+    PAN001   Andromeda Galaxy     378
+             HAT-P-19             148
+             TESS_SEC17_CAM02    9949
+    PAN012   Andromeda Galaxy      40
+             HAT-P-16 b           268
+    PAN018   TESS_SEC17_CAM02     244
     Name: num_images, dtype: Int64
-    >>> search_results.total_minutes_exptime.sum()
-    3096.0
+    >>> print('Total minutes exposure:', search_results.total_minutes_exptime.sum())
+    Total minutes exposure: 16350.16
 
     Args:
         ra (float|None): The RA position in degrees of the center of search.
@@ -135,14 +140,14 @@ def search_observations(
             If `None` then the beginning of 2018 is used as a start date.
         end_date (str|`datetime.datetime`|None): A valid datetime instance or `None` (default).
             If `None` then today is used.
-        unit_ids (str|list|None): A str or list of strs of unit_ids to include.
+        unit_id (str|list|None): A str or list of strs of unit_ids to include.
             Default `None` will include all.
         status (str|list|None): A str or list of observation status to include.
             Default `None` will include all.
         min_num_images (int): Minimum number of images the observation should have, default 1.
-        fields (str|list|None): A list of fields (columns) to include.
-            Default `None` will include all.
-        limit (int): The maximum number of firestore records to return, default 5000.
+        source_url (str): The remote url where the static CSV file is located.
+        source (`pandas.DataFrame`|None): The dataframe to use or the search.
+            If `None` (default) then the `source_url` will be used to look up the file.
 
     Returns:
         `pandas.DataFrame`: A table with the matching observation results.
@@ -173,8 +178,10 @@ def search_observations(
     logger.debug(f'Getting list of observations')
 
     # Get the observation list
-    local_path = download_file(url, cache='update', show_progress=False, pkgname='panoptes')
-    obs_df = pd.read_csv(local_path).convert_dtypes()
+    obs_df = source
+    if obs_df is None:
+        local_path = download_file(source_url, cache='update', show_progress=False, pkgname='panoptes')
+        obs_df = pd.read_csv(local_path).convert_dtypes()
 
     logger.debug(f'Found {len(obs_df)} total observations')
 
@@ -184,6 +191,10 @@ def search_observations(
         f'dec >= {dec_min} and dec <= {dec_max}'
         ' and '
         f'ra >= {ra_min} and ra <= {ra_max}'
+        ' and '
+        f'time >= "{start_date}"'
+        ' and '
+        f'time <= "{end_date}"'
         ' and '
         f'num_images >= {min_num_images}'
         ,
