@@ -6,9 +6,14 @@ PANDIR=${PANDIR:-/var/panoptes}
 
 cd "${PANDIR}"
 
+# TODO Detect and install docker if needed.
+# TODO Detect and install docker-compose if needed.
+
+IMAGE="${IMAGE:-gcr.io/panoptes-exp/panoptes-utils}"
+TAG="${TAG:-develop}"
+
 CMD="docker-compose \
     --project-directory ${PANDIR} \
-    -f panoptes-utils/docker/docker-compose.yaml \
     -f panoptes-utils/docker/docker-compose-develop.yaml \
     -p panoptes"
 
@@ -18,7 +23,7 @@ if [[ "$PARAMS" == "up" ]]; then
 fi
 
 # Run the docker-compose command with user params.
-eval "${CMD} ${PARAMS}"
+eval "IMAGE=${IMAGE} TAG=${TAG} ${CMD} ${PARAMS}"
 
 if [[ "$PARAMS" == "up -d" ]]; then
     # Prompt for password

@@ -35,12 +35,17 @@ RUN cd ${PANDIR}/panoptes-utils && \
     pip install --no-cache-dir -e . && \
     # Set some jupyterlab defaults
     mkdir -p /home/panoptes/.jupyter && \
+    jupyter-lab --generate-config && \
     echo "c.JupyterApp.answer_yesBool = True" >> \
         "/home/panoptes/.jupyter/jupyter_notebook_config.py" && \
     echo "c.JupyterApp.open_browserBool = False" >> \
         "/home/panoptes/.jupyter/jupyter_notebook_config.py" && \
     echo "FileContentsManager.root_dirUnicode = '${PANDIR}'" >> \
-        "/home/panoptes/.jupyter/jupyter_notebook_config.py"
+        "/home/panoptes/.jupyter/jupyter_notebook_config.py" && \
+    jupyter labextension install @pyviz/jupyterlab_pyviz \
+                                jupyterlab-drawio \
+                                @aquirdturtle/collapsible_headings \
+                                @telamonian/theme-darcula
 
 USER root
 
