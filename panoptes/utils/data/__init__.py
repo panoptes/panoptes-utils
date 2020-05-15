@@ -12,8 +12,10 @@ import pendulum
 from .. import listify
 from ..logger import logger
 
+OBS_BASE_URL = 'https://storage.googleapis.com/panoptes-observations'
 
-def get_metadata(image_id=None, sequence_id=None, fields=None, firestore_client=None):
+
+def get_metadata(sequence_id=None, fields=None):
     """Access PANOPTES data from the network.
 
     This function is capable of searching one type of object at a time, which is
@@ -22,18 +24,6 @@ def get_metadata(image_id=None, sequence_id=None, fields=None, firestore_client=
     #TODO(wtgee): Setup firestore emulator for testing. #179
 
     >>> from panoptes.utils.data import get_metadata
-    >>> # Get image metadata as a DataFrame with one record.
-    >>> image_id = 'PAN001_14d3bd_20181204T134406'
-    >>> image_df = get_metadata(image_id=image_id)
-    >>> type(image_df)
-    <class 'pandas.core.frame.DataFrame'>
-    >>> # This can easily be saved to csv or cast to dict.
-    >>> image_metadata = image_df.to_dict(orient='record')[0]
-    >>> image_metadata['status']
-    'solved'
-    >>> image_metadata['received_time']
-    Timestamp('2020-04-17 09:16:20.371000+0000', tz='UTC')
-
     >>> # Get all image metadata for the observation.
     >>> sequence_id = 'PAN001_14d3bd_20181119T131353'
     >>> observation_df = get_metadata(sequence_id=sequence_id)
@@ -53,7 +43,6 @@ def get_metadata(image_id=None, sequence_id=None, fields=None, firestore_client=
     4  1.183283
 
     Args:
-        image_id (str|None): The id associated with an image.
         sequence_id (str|list|None): The list of sequence_ids associated with an observation.
         fields (list|None):  A list of fields to fetch from the database. If None,
             returns all fields.
@@ -61,74 +50,9 @@ def get_metadata(image_id=None, sequence_id=None, fields=None, firestore_client=
     Returns:
 
     """
-    # Get a FITS image from the bucket.
-    if image_id is not None:
-        return get_image_metadata(image_id=image_id, fields=fields)
-
     # Get observation metadata from firestore.
     if sequence_id is not None:
         return get_observation_metadata(listify(sequence_id), fields=fields)
-
-
-def get_image_metadata(image_id, fields=None):
-    """Downloads the image at the given path.
-
-    This function by default returns a `pandas.DataFrame` to be consistent with
-    the `get_observation_metadata` function however that DataFrame should only contain
-    a single row. Note that it will still be a DataFrame and not a `pandas.Series`.
-
-    >>> from panoptes.utils.data import get_image_metadata
-    >>> # Get image metadata as a DataFrame with one record.
-    >>> image_id = 'PAN001_14d3bd_20181204T134406'
-    >>> image_df = get_image_metadata(image_id=image_id, fields=['bucket_path'])
-    >>> # Always includes the image_id and timestamp.
-    >>> image_df.to_dict(orient='record')
-    [{'bucket_path': 'PAN001/14d3bd/20181204T133735/20181204T134406.fits.fz',
-      'image_id': 'PAN001_14d3bd_20181204T134406',
-      'time': Timestamp('2018-12-04 13:44:06+0000', tz='UTC')}]
-    >>> type(image_df)
-    <class 'pandas.core.frame.DataFrame'>
-
-    Args:
-        image_id (str): The id for the given image.
-        fields (list|None):  A list of fields to fetch from the database. If None,
-            returns all fields.
-
-    Returns:
-        `pandas.DataFrame`: DataFrame containing the image metadata.
-    """
-
-    logger.debug(f'Getting metadata for image={image_id}')
-
-    # Get document reference.
-    image_doc_ref = firestore_client.document(f'images/{image_id}')
-    image_doc_snapshot = image_doc_ref.get()
-
-    if image_doc_snapshot is None:
-        logger.debug(f'No document found for image_id={image_id}')
-        return
-
-    # Get the actual image metadata.
-    image_doc = image_doc_snapshot.to_dict()
-    image_doc['image_id'] = image_doc_snapshot.id
-
-    # Put document into dataframe.
-    df = pd.DataFrame(image_doc, index=[0]).convert_dtypes()
-    df = df.reindex(sorted(df.columns), axis=1)
-
-    # Remove metadata metadata.
-    # Remove fields if only certain fields requested.
-    # TODO(wtgee) implement this filtering at the firestore level.
-    if fields is not None:
-        remove_cols = set(df.columns).difference(fields)
-        # Don't remove the id or time.
-        remove_cols.remove('image_id')
-        remove_cols.remove('time')
-        df.drop(columns=remove_cols, inplace=True)
-
-    # TODO(wtgee) any data cleaning or preparation for images here.
-
-    return df
 
 
 def get_observation_metadata(sequence_ids, fields=None):
@@ -146,9 +70,14 @@ def get_observation_metadata(sequence_ids, fields=None):
 
     observation_dfs = list()
     for sequence_id in sequence_ids:
-        logger.debug(f'Getting images metadata for observation={sequence_id}')
-
-        observation_dfs.append(df.convert_dtypes())
+        df_file = f'{OBS_BASE_URL}/{sequence_id}-metadata.parquet'
+        logger.debug(f'Getting images metadata for {df_file}')
+        try:
+            df = pd.read_parquet(df_file)
+        except Exception as e:
+            logger.warning(f'Problem reading {df_file}: {e!r}')
+        else:
+            observation_dfs.append(df.convert_dtypes())
 
     if len(observation_dfs) == 0:
         logger.debug(f'No documents found for sequence_ids={sequence_ids}')
@@ -161,7 +90,7 @@ def get_observation_metadata(sequence_ids, fields=None):
     # TODO(wtgee) any data cleaning or preparation for observations here.
 
     # Remove fields if only certain fields requested.
-    # TODO(wtgee) implement this filtering at the firestore level.
+    # TODO(wtgee) implement this filtering at the parquet level.
     if fields is not None:
         remove_cols = set(df.columns).difference(fields)
         df.drop(columns=remove_cols, inplace=True)
