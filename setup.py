@@ -6,7 +6,6 @@ from setuptools import setup, find_namespace_packages
 
 import versioneer
 
-
 # Get some values from the setup.cfg
 conf = ConfigParser()
 conf.read(['setup.cfg'])
@@ -30,7 +29,6 @@ modules = {
         'Flask',
         'fastparquet',
         'google-cloud-bigquery[pandas]',
-        'google-cloud-firestore',
         'google-cloud-storage',
         'holoviews',
         'hvplot',
@@ -57,7 +55,6 @@ modules = {
         'versioneer',
     ],
 }
-
 
 setup(name=NAME,
       version=versioneer.get_version(),
