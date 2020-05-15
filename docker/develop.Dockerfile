@@ -23,7 +23,7 @@ RUN apt-get update && \
     curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
     apt-get install -y --no-install-recommends \
         wget curl bzip2 ca-certificates nano neovim \
-        gcc git pkg-config ncdu sudo nodejs
+        gcc git pkg-config ncdu sudo nodejs libsnappy-dev
 
 USER $PANUSER
 
