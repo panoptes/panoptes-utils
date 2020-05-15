@@ -45,6 +45,7 @@ packaging==20.3           # via bokeh, pytest
 pandas==1.0.3             # via fastparquet, google-cloud-bigquery, holoviews, hvplot, panoptes-utils (setup.py)
 panel==0.9.5              # via holoviews
 param==1.9.3              # via colorcet, holoviews, panel, pyct, pyviz-comms
+pendulum==2.1.0           # via panoptes-utils (setup.py)
 photutils==0.7.2          # via panoptes-utils (setup.py)
 pillow==7.0.0             # via bokeh, panoptes-utils (setup.py)
 pluggy==0.13.1            # via pytest
@@ -60,9 +61,10 @@ pysocks==1.7.1            # via tweepy
 pytest-cov==2.8.1         # via panoptes-utils (setup.py)
 pytest-remotedata==0.3.2  # via panoptes-utils (setup.py)
 pytest==5.3.5             # via panoptes-utils (setup.py), pytest-cov, pytest-remotedata
-python-dateutil==2.8.1    # via bokeh, matplotlib, pandas, panoptes-utils (setup.py)
+python-dateutil==2.8.1    # via bokeh, matplotlib, pandas, panoptes-utils (setup.py), pendulum
 python-magic==0.4.15      # via mocket
 pytz==2019.3              # via astroplan, google-api-core, pandas
+pytzdata==2019.3          # via pendulum
 pyviz-comms==0.7.4        # via holoviews, panel
 pyyaml==5.3               # via bokeh, panoptes-utils (setup.py)
 pyzmq==18.1.1             # via panoptes-utils (setup.py)

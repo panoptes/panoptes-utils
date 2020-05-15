@@ -37,6 +37,7 @@ modules = {
         'mocket',  # testing
         'numpy',
         'pandas',
+        'pendulum',
         'photutils',
         'Pillow',
         'pycodestyle',  # testing
