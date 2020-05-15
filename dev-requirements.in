@@ -1,8 +1,7 @@
 -r requirements.txt
 altair
 bokeh
-fastparquet
-google-cloud-bigquery[pandas]
+google-cloud-bigquery[pandas,pyarrow]
 google-cloud-firestore
 google-cloud-pubsub
 google-cloud-storage
@@ -10,4 +9,7 @@ holoviews
 hvplot
 jupyterlab
 pandas
+pendulum
+pyarrow
 seaborn
+tabulate
