@@ -218,4 +218,20 @@ def search_observations(
 
     # TODO(wtgee) any data cleaning or preparation for observations here.
 
-    return obs_df
+    columns = [
+        'sequence_id',
+        'unit_id',
+        'camera_id',
+        'ra',
+        'dec',
+        'exptime',
+        'field_name',
+        'iso',
+        'num_images',
+        'software_version',
+        'status',
+        'time',
+        'total_minutes_exptime',
+    ]
+
+    return obs_df.reindex(columns=columns)
