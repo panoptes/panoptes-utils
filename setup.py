@@ -27,8 +27,7 @@ modules = {
         'astropy>=4.0.0',
         'coverage',  # testing
         'Flask',
-        'fastparquet',
-        'google-cloud-bigquery[pandas]',
+        'google-cloud-bigquery[pandas,pyarrow]',
         'google-cloud-storage',
         'holoviews',
         'hvplot',
