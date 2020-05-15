@@ -27,11 +27,11 @@ def get_metadata(sequence_id=None, fields=None):
     >>> observation_df = get_metadata(sequence_id=sequence_id)
     >>> type(observation_df)
     <class 'pandas.core.frame.DataFrame'>
-    >>> print('Total exptime: ', obs_df.image_exptime.sum())
+    >>> print('Total exptime: ', observation_df.image_exptime.sum())
     Total exptime:  7200.0
 
     >>> # It's also possible to request certain fields
-    >>> airmass_df = get_metadata(sequence_id=sequence_id, fields=['airmass'])
+    >>> airmass_df = get_metadata(sequence_id=sequence_id, fields=['image_airmass'])
     >>> airmass_df.head()
         image_airmass
     0 	1.174331

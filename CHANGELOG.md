@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-* Add snappy decompression for parquet (#193)
+* Add snappy decompression for parquet; `pyarrow` instead of `fastparquet` (#193)
 * Password-less sudo for panoptes user on dev docker image (#193)
 
 ### Bug fixes
@@ -242,7 +242,7 @@ First big overhaul of the repository. Pulls in features that were duplicated or 
 
 ### Added
 * Config Server
-  * See the description in the [README](README.md#id11)
+  * See the description in the [README](README.md)
 * [Versioneer](https://github.com/warner/python-versioneer) for version strings (#123).
 * Read the docs config (#123).
 
