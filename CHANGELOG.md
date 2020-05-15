@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.2.13dev]
+## [0.2.13] - 2020-05-14
 
 ### Bug fixes
 
@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 * The `panoptes.utils.data` functions use static versions of the file rather than firestore. (#192)
+* Updated development environment (#191)
 
 ## [0.2.12] - 2020-04-29
 
