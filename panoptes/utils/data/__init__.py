@@ -118,7 +118,7 @@ def search_observations(
     >>> search_results.groupby(['unit_id', 'field_name']).num_images.sum()
     unit_id  field_name
     PAN001   FlameNebula    754
-             M42            923
+             M42           1075
     PAN006   M42             58
              Wasp 35        141
     Name: num_images, dtype: Int64
