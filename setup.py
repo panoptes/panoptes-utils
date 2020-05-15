@@ -29,7 +29,6 @@ modules = {
         'Flask',
         'fastparquet',
         'google-cloud-bigquery[pandas]',
-        'google-cloud-firestore',
         'google-cloud-storage',
         'holoviews',
         'hvplot',
@@ -38,6 +37,7 @@ modules = {
         'mocket',  # testing
         'numpy',
         'pandas',
+        'pendulum',
         'photutils',
         'Pillow',
         'pycodestyle',  # testing
@@ -56,7 +56,6 @@ modules = {
         'versioneer',
     ],
 }
-
 
 setup(name=NAME,
       version=versioneer.get_version(),
