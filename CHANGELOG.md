@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.dev14]
+
+### Added
+
+* Add snappy decompression for parquet (#193)
+* Password-less sudo for panoptes user on dev docker image (#193)
+
+### Bug fixes
+
+* Fix time-based search (#193)
+
 ## [0.2.13] - 2020-05-14
 
 ### Bug fixes
