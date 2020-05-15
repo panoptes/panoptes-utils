@@ -23,22 +23,22 @@ def get_metadata(sequence_id=None, fields=None):
 
     >>> from panoptes.utils.data import get_metadata
     >>> # Get all image metadata for the observation.
-    >>> sequence_id = 'PAN001_14d3bd_20181119T131353'
+    >>> sequence_id = 'PAN001_14d3bd_20170405T100854'
     >>> observation_df = get_metadata(sequence_id=sequence_id)
-    >>> type(observation_df)  # doctest: +SKIP
+    >>> type(observation_df)
     <class 'pandas.core.frame.DataFrame'>
-    >>> len(observation_df) # doctest: +SKIP
-    40
+    >>> print('Total exptime: ', obs_df.image_exptime.sum())
+    Total exptime:  7200.0
 
     >>> # It's also possible to request certain fields
     >>> airmass_df = get_metadata(sequence_id=sequence_id, fields=['airmass'])
-    >>> airmass_df.head() # doctest: +SKIP
-        airmass
-    0  1.161770
-    1  1.166703
-    2  1.172055
-    3  1.177555
-    4  1.183283
+    >>> airmass_df.head()
+        image_airmass
+    0 	1.174331
+    1 	1.182432
+    2 	1.190880
+    3 	1.199631
+    4 	1.208680
 
     Args:
         sequence_id (str|list|None): The list of sequence_ids associated with an observation.
@@ -90,7 +90,7 @@ def get_observation_metadata(sequence_ids, fields=None):
     # Remove fields if only certain fields requested.
     # TODO(wtgee) implement this filtering at the parquet level.
     if fields is not None:
-        remove_cols = set(df.columns).difference(fields)
+        remove_cols = set(df.columns).difference(listify(fields))
         df.drop(columns=remove_cols, inplace=True)
 
     return df
