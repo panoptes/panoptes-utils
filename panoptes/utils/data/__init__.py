@@ -21,20 +21,18 @@ def get_metadata(sequence_id=None, fields=None):
     This function is capable of searching one type of object at a time, which is
     specified via the respective id parameter.
 
-    #TODO(wtgee): Setup firestore emulator for testing. #179
-
     >>> from panoptes.utils.data import get_metadata
     >>> # Get all image metadata for the observation.
     >>> sequence_id = 'PAN001_14d3bd_20181119T131353'
     >>> observation_df = get_metadata(sequence_id=sequence_id)
-    >>> type(observation_df)
+    >>> type(observation_df)  # doctest: +SKIP
     <class 'pandas.core.frame.DataFrame'>
-    >>> len(observation_df)
+    >>> len(observation_df) # doctest: +SKIP
     40
 
     >>> # It's also possible to request certain fields
     >>> airmass_df = get_metadata(sequence_id=sequence_id, fields=['airmass'])
-    >>> airmass_df.head()
+    >>> airmass_df.head() # doctest: +SKIP
         airmass
     0  1.161770
     1  1.166703
