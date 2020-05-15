@@ -1,29 +1,16 @@
-from datetime import datetime as dt
-from datetime import timezone as tz
-
-from google.auth.credentials import AnonymousCredentials
-from google.cloud import firestore
+from contextlib import suppress
 
 from astropy.coordinates import SkyCoord
 from astropy import units as u
+from astropy.utils.data import download_file
 
 import pandas as pd
 import hvplot.pandas  # noqa
 
-from dateutil.parser import parse as date_parse
+import pendulum
 
 from .. import listify
 from ..logger import logger
-
-
-def _get_firestore_client(project_id='panoptes-exp', database='(default)', credentials=AnonymousCredentials()):
-    logger.debug(f'Getting new firestore client')
-    firestore_client = firestore.Client(
-        project=project_id,
-        database=database,
-        credentials=credentials
-    )
-    return firestore_client
 
 
 def get_metadata(image_id=None, sequence_id=None, fields=None, firestore_client=None):
@@ -70,26 +57,20 @@ def get_metadata(image_id=None, sequence_id=None, fields=None, firestore_client=
         sequence_id (str|list|None): The list of sequence_ids associated with an observation.
         fields (list|None):  A list of fields to fetch from the database. If None,
             returns all fields.
-        firestore_client (`google.cloud.firestore.Client`|None): The client instance
-            to use. If `None` is provided (the default), then client will attempt
-            to connect with default environmental credentials.
 
     Returns:
 
     """
-    if firestore_client is None:
-        firestore_client = _get_firestore_client()
-
     # Get a FITS image from the bucket.
     if image_id is not None:
-        return get_image_metadata(image_id=image_id, fields=fields, firestore_client=firestore_client)
+        return get_image_metadata(image_id=image_id, fields=fields)
 
     # Get observation metadata from firestore.
     if sequence_id is not None:
-        return get_observation_metadata(listify(sequence_id), fields=fields, firestore_client=firestore_client)
+        return get_observation_metadata(listify(sequence_id), fields=fields)
 
 
-def get_image_metadata(image_id, fields=None, firestore_client=None):
+def get_image_metadata(image_id, fields=None):
     """Downloads the image at the given path.
 
     This function by default returns a `pandas.DataFrame` to be consistent with
@@ -112,15 +93,10 @@ def get_image_metadata(image_id, fields=None, firestore_client=None):
         image_id (str): The id for the given image.
         fields (list|None):  A list of fields to fetch from the database. If None,
             returns all fields.
-        firestore_client (`google.cloud.firestore.Client`): An authenticated
-            client instance. If None is provided then an anonymous connection will
-            be made.
 
     Returns:
         `pandas.DataFrame`: DataFrame containing the image metadata.
     """
-    if firestore_client is None:
-        firestore_client = _get_firestore_client()
 
     logger.debug(f'Getting metadata for image={image_id}')
 
@@ -155,23 +131,17 @@ def get_image_metadata(image_id, fields=None, firestore_client=None):
     return df
 
 
-def get_observation_metadata(sequence_ids, firestore_client=None, fields=None):
+def get_observation_metadata(sequence_ids, fields=None):
     """Get the metadata for given sequence_ids.
 
     Args:
         sequence_ids (list): A list of sequence_ids as strings.
         fields (list|None):  A list of fields to fetch from the database. If None,
             returns all fields.
-        firestore_client (`google.cloud.firestore.Client`): An authenticated
-            client instance. If None is provided then an anonymous connection will
-            be made.
 
     Returns:
         `pandas.DataFrame`: DataFrame containing the observation metadata.
     """
-    if firestore_client is None:
-        firestore_client = _get_firestore_client()
-
     sequence_ids = listify(sequence_ids)
 
     observation_dfs = list()
@@ -205,18 +175,16 @@ def get_observation_metadata(sequence_ids, firestore_client=None, fields=None):
 
 
 def search_observations(
+        unit_id=None,
+        start_date=None,
+        end_date=None,
         ra=None,
         dec=None,
         coords=None,
         radius=10,  # degrees
-        start_date=None,
-        end_date=None,
-        unit_ids=None,
         status=None,
         min_num_images=1,
-        fields=None,
-        limit=5000,
-        firestore_client=None,
+        url='https://storage.googleapis.com/panoptes-exp.appspot.com/observations.csv'
 ):
     """Search PANOPTES observations.
 
@@ -253,14 +221,10 @@ def search_observations(
         fields (str|list|None): A list of fields (columns) to include.
             Default `None` will include all.
         limit (int): The maximum number of firestore records to return, default 5000.
-        firestore_client (`google.cloud.firestore.Client`|None): A firestore client instance.
-            If default `None`, then the function will attempt to make an anonymous connection.
 
     Returns:
         `pandas.DataFrame`: A table with the matching observation results.
     """
-    if firestore_client is None:
-        firestore_client = _get_firestore_client()
 
     logger.debug(f'Setting up search params')
 
@@ -269,65 +233,54 @@ def search_observations(
 
     # Setup defaults for search.
     if start_date is None:
-        start_date = dt.strptime('2018-01-01', '%Y-%m-%d')
-    elif isinstance(start_date, str):
-        start_date = date_parse(start_date)
+        start_date = '2018-01-01'
 
     if end_date is None:
-        end_date = dt.now()
-    elif isinstance(end_date, str):
-        end_date = date_parse(end_date)
+        end_date = pendulum.now()
+
+    with suppress(TypeError):
+        start_date = pendulum.parse(start_date).replace(tzinfo=None)
+    with suppress(TypeError):
+        end_date = pendulum.parse(end_date).replace(tzinfo=None)
 
     ra_max = (coords.ra + (radius * u.degree)).value
     ra_min = (coords.ra - (radius * u.degree)).value
     dec_max = (coords.dec + (radius * u.degree)).value
     dec_min = (coords.dec - (radius * u.degree)).value
 
-    logger.debug(f'Searching for observations')
-    obs_query = firestore_client.collection('observations') \
-        .where('dec', '>=', dec_min) \
-        .where('dec', '<=', dec_max) \
-        .limit(limit)
+    logger.debug(f'Getting list of observations')
 
-    # Fetch documents.
-    docs = [dict(sequence_id=doc.id, **doc.to_dict()) for doc in obs_query.stream()]
+    # Get the observation list
+    local_path = download_file(url, cache='update', show_progress=False, pkgname='panoptes')
+    obs_df = pd.read_csv(local_path).convert_dtypes()
 
-    if len(docs) == 0:
-        logger.debug(f'No documents found for collections query')
-        return
-
-    # Put documents into a DataFrame.
-    df = pd.DataFrame(docs).convert_dtypes()
-    logger.debug(f'Found {len(df)} observations')
+    logger.debug(f'Found {len(obs_df)} total observations')
 
     # Perform filtering on other fields here.
     logger.debug(f'Filtering observations')
-    df.query(
+    obs_df.query(
+        f'dec >= {dec_min} and dec <= {dec_max}'
+        ' and '
         f'ra >= {ra_min} and ra <= {ra_max}'
-        ' and '
-        f'time >= "{start_date.astimezone(tz.utc)}" and time <= "{end_date.astimezone(tz.utc)}"'
-        ' and '
-        f'num_images >= {min_num_images}'
         ,
         inplace=True
     )
-    if unit_ids is not None and unit_ids != 'The Whole World! 🌎':
-        df.query(f'unit_id in {listify(unit_ids)}', inplace=True)
+    logger.debug(f'Found {len(obs_df)} observations after initial filter')
+
+    unit_ids = listify(unit_id)
+    if len(unit_ids) > 0 and unit_ids != 'The Whole World! 🌎':
+        obs_df.query(f'unit_id in {listify(unit_ids)}', inplace=True)
+    logger.debug(f'Found {len(obs_df)} observations after unit filter')
 
     if status is not None:
-        df.query(f'status in {listify(status)}', inplace=True)
+        obs_df.query(f'status in {listify(status)}', inplace=True)
+    logger.debug(f'Found {len(obs_df)} observations after status filter')
 
-    logger.debug(f'Found {len(df)} observations after filtering')
+    logger.debug(f'Found {len(obs_df)} observations after filtering')
 
-    df = df.reindex(sorted(df.columns), axis=1)
-    df.sort_values(by=['time'], inplace=True)
+    obs_df = obs_df.reindex(sorted(obs_df.columns), axis=1)
+    obs_df.sort_values(by=['time'], inplace=True)
 
     # TODO(wtgee) any data cleaning or preparation for observations here.
 
-    # Remove fields if only certain fields requested.
-    # TODO(wtgee) implement this filtering at the firestore level.
-    if fields is not None:
-        remove_cols = set(df.columns).difference(listify(fields))
-        df.drop(columns=remove_cols, inplace=True)
-
-    return df
+    return obs_df
