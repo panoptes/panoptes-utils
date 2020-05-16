@@ -27,8 +27,7 @@ modules = {
         'astropy>=4.0.0',
         'coverage',  # testing
         'Flask',
-        'fastparquet',
-        'google-cloud-bigquery[pandas]',
+        'google-cloud-bigquery[pandas,pyarrow]',
         'google-cloud-storage',
         'holoviews',
         'hvplot',
@@ -67,7 +66,7 @@ setup(name=NAME,
       license=LICENSE,
       url=URL,
       keywords=KEYWORDS,
-      python_requires='>=3.6',
+      python_requires='>=3.7',
       setup_requires=['pytest-runner'],
       tests_require=modules['required'],
       scripts=[
