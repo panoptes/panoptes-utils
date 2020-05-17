@@ -120,10 +120,10 @@ def search_observations(
 
     >>> from astropy.coordinates import SkyCoord
     >>> from panoptes.utils.data import search_observations
-    >>> m42 = SkyCoord.from_name('Andromeda Galaxy')
+    >>> coords = SkyCoord.from_name('Andromeda Galaxy')
     >>> start_date = '2019-01-01'
     >>> end_date = '2019-12-31'
-    >>> search_results = search_observations(coords=m42, min_num_images=10, start_date=start_date, end_date=end_date)
+    >>> search_results = search_observations(coords=coords, min_num_images=10, start_date=start_date, end_date=end_date)
     >>> # The result is a DataFrame you can further work with.
     >>> search_results.groupby(['unit_id', 'field_name']).num_images.sum()
     unit_id  field_name
@@ -132,10 +132,11 @@ def search_observations(
              TESS_SEC17_CAM02    9949
     PAN012   Andromeda Galaxy      40
              HAT-P-16 b           268
+             TESS_SEC17_CAM02     247
     PAN018   TESS_SEC17_CAM02     244
     Name: num_images, dtype: Int64
     >>> print('Total minutes exposure:', search_results.total_minutes_exptime.sum())
-    Total minutes exposure: 16350.16
+    Total minutes exposure: 16844.16
 
     Args:
         ra (float|None): The RA position in degrees of the center of search.
