@@ -34,12 +34,12 @@ def get_metadata(sequence_id=None, fields=None, show_progress=False):
     >>> # It's also possible to request certain fields
     >>> airmass_df = get_metadata(sequence_id=sequence_id, fields=['image_airmass'])
     >>> airmass_df.head()
-        image_airmass
-    0 	1.174331
-    1 	1.182432
-    2 	1.190880
-    3 	1.199631
-    4 	1.208680
+       image_airmass                    sequence_id                      time
+    0       1.174331  PAN001_14d3bd_20170405T100854 2017-04-05 10:10:20+00:00
+    1       1.182432  PAN001_14d3bd_20170405T100854 2017-04-05 10:13:09+00:00
+    2       1.190880  PAN001_14d3bd_20170405T100854 2017-04-05 10:15:59+00:00
+    3       1.199631  PAN001_14d3bd_20170405T100854 2017-04-05 10:18:49+00:00
+    4       1.208680  PAN001_14d3bd_20170405T100854 2017-04-05 10:21:40+00:00
 
     Args:
         sequence_id (str|list|None): The list of sequence_ids associated with an observation.
