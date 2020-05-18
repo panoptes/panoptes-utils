@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 * Add snappy decompression for parquet; `pyarrow` instead of `fastparquet` (#193)
 * Password-less sudo for panoptes user on dev docker image (#193)
+* `get_metadata` has an optional progress bar. (#194)
 
 ### Bug fixes
 
@@ -23,6 +24,7 @@ All notable changes to this project will be documented in this file.
 
 * The `panoptes.utils.data` functions use static versions of the file rather than firestore. (#192)
 * Updated development environment (#191)
+* `get_metadata` filter the fields at the parquet level. (#194)
 
 ## [0.2.12] - 2020-04-29
 

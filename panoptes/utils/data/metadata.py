@@ -8,6 +8,7 @@ import pandas as pd
 import hvplot.pandas  # noqa
 
 import pendulum
+from tqdm import tqdm
 
 from .. import listify
 from ..logger import logger
@@ -15,7 +16,7 @@ from ..logger import logger
 OBS_BASE_URL = 'https://storage.googleapis.com/panoptes-observations'
 
 
-def get_metadata(sequence_id=None, fields=None):
+def get_metadata(sequence_id=None, fields=None, show_progress=False):
     """Access PANOPTES data from the network.
 
     This function is capable of searching one type of object at a time, which is
@@ -33,33 +34,35 @@ def get_metadata(sequence_id=None, fields=None):
     >>> # It's also possible to request certain fields
     >>> airmass_df = get_metadata(sequence_id=sequence_id, fields=['image_airmass'])
     >>> airmass_df.head()
-        image_airmass
-    0 	1.174331
-    1 	1.182432
-    2 	1.190880
-    3 	1.199631
-    4 	1.208680
+       image_airmass                    sequence_id                      time
+    0       1.174331  PAN001_14d3bd_20170405T100854 2017-04-05 10:10:20+00:00
+    1       1.182432  PAN001_14d3bd_20170405T100854 2017-04-05 10:13:09+00:00
+    2       1.190880  PAN001_14d3bd_20170405T100854 2017-04-05 10:15:59+00:00
+    3       1.199631  PAN001_14d3bd_20170405T100854 2017-04-05 10:18:49+00:00
+    4       1.208680  PAN001_14d3bd_20170405T100854 2017-04-05 10:21:40+00:00
 
     Args:
         sequence_id (str|list|None): The list of sequence_ids associated with an observation.
         fields (list|None):  A list of fields to fetch from the database. If None,
             returns all fields.
+        show_progress (bool): If True, show a progress bar, default False.
 
     Returns:
 
     """
     # Get observation metadata from firestore.
     if sequence_id is not None:
-        return get_observation_metadata(listify(sequence_id), fields=fields)
+        return get_observation_metadata(sequence_id, fields=fields, show_progress=show_progress)
 
 
-def get_observation_metadata(sequence_ids, fields=None):
+def get_observation_metadata(sequence_ids, fields=None, show_progress=False):
     """Get the metadata for given sequence_ids.
 
     Args:
         sequence_ids (list): A list of sequence_ids as strings.
-        fields (list|None):  A list of fields to fetch from the database. If None,
-            returns all fields.
+        fields (list|None):  A list of fields to fetch from the database in addition
+            to the 'time' and 'sequence_id' columns. If None, returns all fields.
+        show_progress (bool): If True, show a progress bar, default False.
 
     Returns:
         `pandas.DataFrame`: DataFrame containing the observation metadata.
@@ -67,15 +70,26 @@ def get_observation_metadata(sequence_ids, fields=None):
     sequence_ids = listify(sequence_ids)
 
     observation_dfs = list()
-    for sequence_id in sequence_ids:
+
+    if show_progress:
+        iterator = tqdm(sequence_ids)
+    else:
+        iterator = sequence_ids
+
+    logger.debug(f'Getting images metadata for {len(sequence_ids)} files')
+    for sequence_id in iterator:
         df_file = f'{OBS_BASE_URL}/{sequence_id}-metadata.parquet'
-        logger.debug(f'Getting images metadata for {df_file}')
+        if fields:
+            fields = listify(fields)
+            fields.insert(0, 'time')
+            fields.insert(1, 'sequence_id')
+            fields = list(set(fields))
         try:
-            df = pd.read_parquet(df_file)
+            df = pd.read_parquet(df_file, columns=fields)
         except Exception as e:
             logger.warning(f'Problem reading {df_file}: {e!r}')
         else:
-            observation_dfs.append(df.convert_dtypes())
+            observation_dfs.append(df)
 
     if len(observation_dfs) == 0:
         logger.debug(f'No documents found for sequence_ids={sequence_ids}')
@@ -83,17 +97,10 @@ def get_observation_metadata(sequence_ids, fields=None):
 
     df = pd.concat(observation_dfs)
     df = df.reindex(sorted(df.columns), axis=1)
-    df.sort_values(by=['time'], inplace=True)
 
     # TODO(wtgee) any data cleaning or preparation for observations here.
 
-    # Remove fields if only certain fields requested.
-    # TODO(wtgee) implement this filtering at the parquet level.
-    if fields is not None:
-        remove_cols = set(df.columns).difference(listify(fields))
-        df.drop(columns=remove_cols, inplace=True)
-
-    return df
+    return df.sort_values(by=['time'])
 
 
 def search_observations(
@@ -113,10 +120,10 @@ def search_observations(
 
     >>> from astropy.coordinates import SkyCoord
     >>> from panoptes.utils.data import search_observations
-    >>> m42 = SkyCoord.from_name('Andromeda Galaxy')
+    >>> coords = SkyCoord.from_name('Andromeda Galaxy')
     >>> start_date = '2019-01-01'
     >>> end_date = '2019-12-31'
-    >>> search_results = search_observations(coords=m42, min_num_images=10, start_date=start_date, end_date=end_date)
+    >>> search_results = search_observations(coords=coords, min_num_images=10, start_date=start_date, end_date=end_date)
     >>> # The result is a DataFrame you can further work with.
     >>> search_results.groupby(['unit_id', 'field_name']).num_images.sum()
     unit_id  field_name
@@ -125,10 +132,11 @@ def search_observations(
              TESS_SEC17_CAM02    9949
     PAN012   Andromeda Galaxy      40
              HAT-P-16 b           268
+             TESS_SEC17_CAM02     247
     PAN018   TESS_SEC17_CAM02     244
     Name: num_images, dtype: Int64
     >>> print('Total minutes exposure:', search_results.total_minutes_exptime.sum())
-    Total minutes exposure: 16350.16
+    Total minutes exposure: 16844.16
 
     Args:
         ra (float|None): The RA position in degrees of the center of search.
