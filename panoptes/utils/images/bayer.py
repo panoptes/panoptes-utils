@@ -9,6 +9,8 @@ from photutils import MedianBackground
 from photutils import SExtractorBackground
 from photutils import BkgZoomInterpolator
 
+from decimal import Decimal
+
 from ..logger import logger
 from . import fits as fits_utils
 
@@ -167,6 +169,79 @@ def get_pixel_color(x, y):
             return 'B'
         else:
             return 'G1'
+
+
+def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False):
+    """Get the slice around a given position with fixed Bayer pattern.
+
+    Given an x,y pixel position, get the slice object for a stamp of a given size
+    but make sure the first position corresponds to a red-pixel. This means that
+    x,y will not necessarily be at the center of the resulting stamp.
+
+    Args:
+        x (float): X pixel position.
+        y (float): Y pixel position.
+        stamp_size (tuple, optional): The size of the cutout, default (14, 14).
+        ignore_superpixel (bool): If superpixels should be ignored, default False.
+    Returns:
+        `slice`: A slice object for the data.
+    """
+    # Make sure requested size can have superpixels on each side.
+    if not ignore_superpixel:
+        for side_length in stamp_size:
+            side_length -= 2  # Subtract center superpixel
+            if int(side_length / 2) % 2 != 0:
+                logger.warning("Invalid slice size: ", side_length + 2,
+                               " Slice must have even number of pixels on each side of",
+                               " the center superpixel.",
+                               "i.e. 6, 10, 14, 18...")
+                return
+
+    # Pixels have nasty 0.5 rounding issues
+    x = Decimal(float(x)).to_integral()
+    y = Decimal(float(y)).to_integral()
+    color = get_pixel_color(x, y)
+    logger.debug(f'Found color={color} for x={x} y={y}')
+
+    x_half = int(stamp_size[0] / 2)
+    y_half = int(stamp_size[1] / 2)
+
+    x_min = int(x - x_half)
+    x_max = int(x + x_half)
+
+    y_min = int(y - y_half)
+    y_max = int(y + y_half)
+
+    # Alter the bounds depending on identified center pixel
+    if color == 'B':
+        x_min -= 1
+        x_max -= 1
+        y_min -= 0
+        y_max -= 0
+    # elif color == 'G1':
+    #     x_min -= 1
+    #     x_max -= 1
+    #     y_min -= 1
+    #     y_max -= 1
+    elif color == 'G2':
+        x_min -= 0
+        x_max -= 0
+        y_min -= 0
+        y_max -= 0
+    elif color == 'R':
+        x_min -= 0
+        x_max -= 0
+        y_min -= 1
+        y_max -= 1
+
+    # if stamp_size is odd add extra
+    if stamp_size[0] % 2 == 1:
+        x_max += 1
+        y_max += 1
+
+    logger.debug(f'x_min={x_min}, x_max={x_max}, y_min={y_min}, y_max={y_max}')
+
+    return (slice(y_min, y_max), slice(x_min, x_max))
 
 
 def get_rgb_background(fits_fn,
