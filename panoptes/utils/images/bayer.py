@@ -183,6 +183,7 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False):
         >>> from panoptes.utils.images import bayer
         >>> # Grab the lower-left superpixel
         >>> bayer.get_stamp_slice(2, 2, stamp_size=(4, 4), ignore_superpixel=True)
+        (slice(0, 4, None), slice(0, 4, None))
         >>> # If we don't ignore the superpixel than it will raise an exception
         >>> bayer.get_stamp_slice(2, 2, stamp_size=(4, 4), ignore_superpixel=False)
         ---------------------------------------------------------------------------
