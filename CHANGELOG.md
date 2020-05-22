@@ -11,6 +11,12 @@ All notable changes to this project will be documented in this file.
 * Password-less sudo for panoptes user on dev docker image (#193)
 * `get_metadata` has an optional progress bar. (#194)
 * Add `bayer.get_stamp_slice` for getting a stamp slice while respecting the superpixel. This was removed awhile ago and has been re-added and improved. (#196)
+  * Adjusting the offsets so the center pixel is always:
+    
+    ```
+       G2 B
+       R  G1
+    ```
 
 ### Bug fixes
 
