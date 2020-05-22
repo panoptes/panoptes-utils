@@ -9,6 +9,8 @@ from photutils import MedianBackground
 from photutils import SExtractorBackground
 from photutils import BkgZoomInterpolator
 
+from decimal import Decimal
+
 from ..logger import logger
 from . import fits as fits_utils
 
@@ -48,7 +50,7 @@ def get_rgb_data(data, separate_green=False):
          x | width  | i | columns |  5208
          y | height | j | rows    |  3476
 
-        Bayer Pattern (as seen in ds9):
+        Bayer pattern as seen in ds9:
 
                                       x / j
 
@@ -66,8 +68,29 @@ def get_rgb_data(data, separate_green=False):
                   1 |  R   G1    R    G1        R   G1    R   G1
                   0 | G2    B   G2     B       G2    B   G2    B
 
+        The RGGB super-pixels thus start in the upper-left.
 
-        Note: This therefore assumes the data is in the following format:
+        Bayer pattern as seen in a numpy array:
+
+                                      x / j
+
+                      0     1    2     3 ... 5204 5205 5206 5207
+                    --------------------------------------------
+                  0 | G2    B   G2     B       G2    B   G2    B
+                  1 |  R   G1    R    G1        R   G1    R   G1
+                  2 | G2    B   G2     B       G2    B   G2    B
+                  3 |  R   G1    R    G1        R   G1    R   G1
+                  . |
+         y / i    . |
+                  . |
+               3472 | G2    B   G2     B       G2    B   G2    B
+               3473 |  R   G1    R    G1        R   G1    R   G1
+               3474 | G2    B   G2     B       G2    B   G2    B
+               3475 |  R   G1    R    G1        R   G1    R   G1
+
+        Here the RGGB super-pixels are flipped upside down.
+
+        In both cases the data is in the following format:
 
                  | row (y) |  col (x)
              --------------| ------
@@ -75,8 +98,6 @@ def get_rgb_data(data, separate_green=False):
               G1 |  odd i, |   odd j
               G2 | even i, |  even j
               B  | even i, |   odd j
-
-        Or, in other words, the bottom-left (i.e. `(0,0)`) super-pixel is an RGGB pattern.
 
         And a mask can therefore be generated as:
 
@@ -148,7 +169,7 @@ def get_rgb_masks(data, separate_green=False):
 
 
 def get_pixel_color(x, y):
-    """ Given an x,y position, return the corresponding color.
+    """ Given a zero-indexed x,y position, return the corresponding color.
 
     > Note: See `get_rgb_data` for a description of the RGGB pattern.
 
@@ -167,6 +188,152 @@ def get_pixel_color(x, y):
             return 'B'
         else:
             return 'G1'
+
+
+def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False):
+    """Get the slice around a given position with fixed Bayer pattern.
+
+    Given an x,y pixel position, get the slice object for a stamp of a given size
+    but make sure the first position corresponds to a red-pixel. This means that
+    x,y will not necessarily be at the center of the resulting stamp.
+
+    >>> from panoptes.utils.images import bayer
+    >>> # Make a super-pixel as represented in numpy (see full stamp below).
+    >>> superpixel = np.array(['G2', 'B', 'R', 'G1']).reshape(2, 2)
+    >>> superpixel
+    array([['G2', 'B'],
+           ['R', 'G1']], dtype='<U2')
+    >>> # Tile it into a 5x5 grid of super-pixels, i.e. a 10x10 stamp.
+    >>> stamp0 = np.tile(superpixel, (5, 5))
+    >>> stamp0
+    array([['G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B'],
+           ['R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1'],
+           ['G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B'],
+           ['R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1'],
+           ['G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B'],
+           ['R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1'],
+           ['G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B'],
+           ['R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1'],
+           ['G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B'],
+           ['R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1']],
+          dtype='<U2')
+    >>> stamp1 = np.arange(100).reshape(10, 10)
+    >>> stamp1
+    array([[ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9],
+           [10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+           [20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
+           [30, 31, 32, 33, 34, 35, 36, 37, 38, 39],
+           [40, 41, 42, 43, 44, 45, 46, 47, 48, 49],
+           [50, 51, 52, 53, 54, 55, 56, 57, 58, 59],
+           [60, 61, 62, 63, 64, 65, 66, 67, 68, 69],
+           [70, 71, 72, 73, 74, 75, 76, 77, 78, 79],
+           [80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
+           [90, 91, 92, 93, 94, 95, 96, 97, 98, 99]])
+    >>> x = 7
+    >>> y = 5
+    >>> pixel_index = (y, x)  # y=rows, x=columns
+    >>> stamp0[pixel_index]
+    'G1'
+    >>> stamp1[pixel_index]
+    57
+    >>> slice0 = bayer.get_stamp_slice(x, y, stamp_size=(6, 6))
+    >>> slice0
+    (slice(2, 8, None), slice(4, 10, None))
+    >>> stamp0[slice0]
+    array([['G2', 'B', 'G2', 'B', 'G2', 'B'],
+           ['R', 'G1', 'R', 'G1', 'R', 'G1'],
+           ['G2', 'B', 'G2', 'B', 'G2', 'B'],
+           ['R', 'G1', 'R', 'G1', 'R', 'G1'],
+           ['G2', 'B', 'G2', 'B', 'G2', 'B'],
+           ['R', 'G1', 'R', 'G1', 'R', 'G1']], dtype='<U2')
+    >>> stamp1[slice0]
+    array([[24, 25, 26, 27, 28, 29],
+           [34, 35, 36, 37, 38, 39],
+           [44, 45, 46, 47, 48, 49],
+           [54, 55, 56, 57, 58, 59],
+           [64, 65, 66, 67, 68, 69],
+           [74, 75, 76, 77, 78, 79]])
+
+    The original index had a value of `57`, which is within the center superpixel.
+
+    Notice that the resulting stamp has a super-pixel in the center and is bordered on all sides by a complete
+    superpixel. This is required by default and an invalid size
+
+    We can use `ignore_superpixel=True` to get an odd-sized stamp.
+
+    >>> slice1 = bayer.get_stamp_slice(x, y, stamp_size=(5, 5), ignore_superpixel=True)
+    >>> slice1
+    (slice(3, 8, None), slice(5, 10, None))
+    >>> stamp0[slice1]
+    array([['G1', 'R', 'G1', 'R', 'G1'],
+           ['B', 'G2', 'B', 'G2', 'B'],
+           ['G1', 'R', 'G1', 'R', 'G1'],
+           ['B', 'G2', 'B', 'G2', 'B'],
+           ['G1', 'R', 'G1', 'R', 'G1']], dtype='<U2')
+    >>> stamp1[slice1]
+    array([[35, 36, 37, 38, 39],
+           [45, 46, 47, 48, 49],
+           [55, 56, 57, 58, 59],
+           [65, 66, 67, 68, 69],
+           [75, 76, 77, 78, 79]])
+
+    This puts the requested pixel in the center but does not offer any guarantees about the RGGB pattern.
+
+    Args:
+        x (float): X pixel position.
+        y (float): Y pixel position.
+        stamp_size (tuple, optional): The size of the cutout, default (14, 14).
+        ignore_superpixel (bool): If superpixels should be ignored, default False.
+    Returns:
+        `slice`: A slice object for the data.
+    """
+    # Make sure requested size can have superpixels on each side.
+    if not ignore_superpixel:
+        for side_length in stamp_size:
+            side_length -= 2  # Subtract center superpixel
+            if side_length / 2 % 2 != 0:
+                raise RuntimeError(f"Invalid slice size: {side_length + 2} "
+                                   f"Slice must have even number of pixels on each side"
+                                   f"of center superpixel. i.e. 6, 10, 14, 18...")
+
+    # Pixels have nasty 0.5 rounding issues
+    x = Decimal(float(x)).to_integral()
+    y = Decimal(float(y)).to_integral()
+    color = get_pixel_color(x, y)
+    logger.debug(f'Found color={color} for x={x} y={y}')
+
+    x_half = int(stamp_size[0] / 2)
+    y_half = int(stamp_size[1] / 2)
+
+    x_min = int(x - x_half)
+    x_max = int(x + x_half)
+
+    y_min = int(y - y_half)
+    y_max = int(y + y_half)
+
+    # Alter the bounds depending on identified center pixel so we always center superpixel have:
+    #   G2 B
+    #   R  G1
+    if color == 'R':
+        x_min += 1
+        x_max += 1
+    elif color == 'G2':
+        x_min += 1
+        x_max += 1
+        y_min += 1
+        y_max += 1
+    elif color == 'B':
+        y_min += 1
+        y_max += 1
+
+    # if stamp_size is odd add extra
+    if stamp_size[0] % 2 == 1:
+        x_max += 1
+        y_max += 1
+
+    logger.debug(f'x_min={x_min}, x_max={x_max}, y_min={y_min}, y_max={y_max}')
+
+    return (slice(y_min, y_max), slice(x_min, x_max))
 
 
 def get_rgb_background(fits_fn,

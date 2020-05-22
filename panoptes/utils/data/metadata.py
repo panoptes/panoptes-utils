@@ -130,13 +130,13 @@ def search_observations(
     PAN001   Andromeda Galaxy     378
              HAT-P-19             148
              TESS_SEC17_CAM02    9949
-    PAN012   Andromeda Galaxy      40
+    PAN012   Andromeda Galaxy      70
              HAT-P-16 b           268
-             TESS_SEC17_CAM02     247
+             TESS_SEC17_CAM02    1983
     PAN018   TESS_SEC17_CAM02     244
     Name: num_images, dtype: Int64
     >>> print('Total minutes exposure:', search_results.total_minutes_exptime.sum())
-    Total minutes exposure: 16844.16
+    Total minutes exposure: 20376.83
 
     Args:
         ra (float|None): The RA position in degrees of the center of search.
