@@ -236,7 +236,7 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False):
     'G1'
     >>> stamp1[pixel_index]
     57
-    >>> slice0 = bayer.get_stamp_slice(*pixel_index, stamp_size=(6, 6))
+    >>> slice0 = bayer.get_stamp_slice(x, y, stamp_size=(6, 6))
     >>> slice0
     (slice(2, 8, None), slice(4, 10, None))
     >>> stamp0[slice0]
