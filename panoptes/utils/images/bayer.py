@@ -178,6 +178,19 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False):
     but make sure the first position corresponds to a red-pixel. This means that
     x,y will not necessarily be at the center of the resulting stamp.
 
+    Example:
+
+        >>> # Grab the lower-left superpixel
+        >>> bayer.get_stamp_slice(2, 2, stamp_size=(4, 4), ignore_superpixel=True)
+        >>> # If we don't ignore the superpixel than it will raise an exception
+        >>> bayer.get_stamp_slice(2, 2, stamp_size=(4, 4), ignore_superpixel=False)
+        ---------------------------------------------------------------------------
+        RuntimeError                              Traceback (most recent call last)
+        ...
+        RuntimeError: Invalid slice size: 4 Slice must have even number of pixels on each sideof center superpixel...
+        >>> bayer.get_stamp_slice(310, 199)
+        (slice(191, 205, None), slice(303, 317, None))
+
     Args:
         x (float): X pixel position.
         y (float): Y pixel position.
@@ -191,11 +204,9 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False):
         for side_length in stamp_size:
             side_length -= 2  # Subtract center superpixel
             if int(side_length / 2) % 2 != 0:
-                logger.warning("Invalid slice size: ", side_length + 2,
-                               " Slice must have even number of pixels on each side of",
-                               " the center superpixel.",
-                               "i.e. 6, 10, 14, 18...")
-                return
+                raise RuntimeError(f"Invalid slice size: {side_length + 2} "
+                                   f"Slice must have even number of pixels on each side"
+                                   f"of center superpixel. i.e. 6, 10, 14, 18...")
 
     # Pixels have nasty 0.5 rounding issues
     x = Decimal(float(x)).to_integral()
