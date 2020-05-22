@@ -218,11 +218,11 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False):
         x_max -= 1
         y_min -= 0
         y_max -= 0
-    # elif color == 'G1':
-    #     x_min -= 1
-    #     x_max -= 1
-    #     y_min -= 1
-    #     y_max -= 1
+    elif color == 'G1':
+        x_min -= 0
+        x_max -= 0
+        y_min -= 0
+        y_max -= 0
     elif color == 'G2':
         x_min -= 0
         x_max -= 0
