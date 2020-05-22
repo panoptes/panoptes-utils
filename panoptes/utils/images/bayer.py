@@ -186,9 +186,8 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False):
         (slice(0, 4, None), slice(0, 4, None))
         >>> # If we don't ignore the superpixel than it will raise an exception
         >>> bayer.get_stamp_slice(2, 2, stamp_size=(4, 4), ignore_superpixel=False)
-        ---------------------------------------------------------------------------
-        RuntimeError                              Traceback (most recent call last)
-        ...
+        Traceback (most recent call last)
+         ...
         RuntimeError: Invalid slice size: 4 Slice must have even number of pixels on each sideof center superpixel...
         >>> bayer.get_stamp_slice(310, 199)
         (slice(191, 205, None), slice(303, 317, None))
