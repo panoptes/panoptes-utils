@@ -205,7 +205,7 @@ def lookup_point_sources(fits_file,
             point_sources = get_catalog_match(point_sources, wcs, **kwargs)
             logger.debug(f'Done with catalog match for {fits_file}')
         except Exception as e:
-Typ            logger.error(f'Error in catalog match, returning unmatched results: {e!r} {fits_file}')
+            logger.error(f'Error in catalog match, returning unmatched results: {e!r} {fits_file}')
 
     logger.debug(f'Point sources: {len(point_sources)} {fits_file}')
     return point_sources
