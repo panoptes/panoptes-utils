@@ -291,7 +291,7 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False):
     if not ignore_superpixel:
         for side_length in stamp_size:
             side_length -= 2  # Subtract center superpixel
-            if int(side_length / 2) % 2 != 0:
+            if side_length / 2 % 2 != 0:
                 raise RuntimeError(f"Invalid slice size: {side_length + 2} "
                                    f"Slice must have even number of pixels on each side"
                                    f"of center superpixel. i.e. 6, 10, 14, 18...")
