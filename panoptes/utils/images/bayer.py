@@ -203,44 +203,81 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False):
     >>> superpixel
     array([['G2', 'B'],
            ['R', 'G1']], dtype='<U2')
-    >>> # Tile it into a 3x3 grid of super-pixels, i.e. a 6x6 stamp.
-    >>> stamp0 = np.tile(superpixel, (3, 3))
+    >>> # Tile it into a 5x5 grid of super-pixels, i.e. a 10x10 stamp.
+    >>> stamp0 = np.tile(superpixel, (5, 5))
     >>> stamp0
+    array([['G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B'],
+           ['R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1'],
+           ['G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B'],
+           ['R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1'],
+           ['G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B'],
+           ['R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1'],
+           ['G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B'],
+           ['R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1'],
+           ['G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B', 'G2', 'B'],
+           ['R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1', 'R', 'G1']],
+          dtype='<U2')
+    >>> stamp1 = np.arange(100).reshape(5, 5)
+    >>> stamp1
+    array([[ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9],
+           [10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+           [20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
+           [30, 31, 32, 33, 34, 35, 36, 37, 38, 39],
+           [40, 41, 42, 43, 44, 45, 46, 47, 48, 49],
+           [50, 51, 52, 53, 54, 55, 56, 57, 58, 59],
+           [60, 61, 62, 63, 64, 65, 66, 67, 68, 69],
+           [70, 71, 72, 73, 74, 75, 76, 77, 78, 79],
+           [80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
+           [90, 91, 92, 93, 94, 95, 96, 97, 98, 99]])
+    >>> x = 7
+    >>> y = 5
+    >>> pixel_index = (y, x)  # y=rows, x=columns
+    >>> stamp0[pixel_index]
+    'G1'
+    >>> stamp1[pixel_index]
+    57
+    >>> slice0 = bayer.get_stamp_slice(*pixel_index, stamp_size=(6, 6))
+    >>> slice0
+    (slice(2, 8, None), slice(4, 10, None))
+    >>> stamp0[slice0]
     array([['G2', 'B', 'G2', 'B', 'G2', 'B'],
            ['R', 'G1', 'R', 'G1', 'R', 'G1'],
            ['G2', 'B', 'G2', 'B', 'G2', 'B'],
            ['R', 'G1', 'R', 'G1', 'R', 'G1'],
            ['G2', 'B', 'G2', 'B', 'G2', 'B'],
            ['R', 'G1', 'R', 'G1', 'R', 'G1']], dtype='<U2')
-    >>> stamp1 = np.arange(36).reshape(6, 6)
-    >>> stamp1
-    array([[ 0,  1,  2,  3,  4,  5],
-           [ 6,  7,  8,  9, 10, 11],
-           [12, 13, 14, 15, 16, 17],
-           [18, 19, 20, 21, 22, 23],
-           [24, 25, 26, 27, 28, 29],
-           [30, 31, 32, 33, 34, 35]])
-    >>> pixel_index = (3, 3)
-    >>> stamp0[pixel_index]
-    'G1'
-    >>> stamp1[pixel_index]
-    21
-    >>> slice0 = bayer.get_stamp_slice(*pixel_index, stamp_size=(4, 4), ignore_superpixel=True)
-    >>> slice0
-    (slice(1, 5, None), slice(1, 5, None))
-    >>> stamp0[slice0]
-    array([['G1', 'R', 'G1', 'R'],
-           ['B', 'G2', 'B', 'G2'],
-           ['G1', 'R', 'G1', 'R'],
-           ['B', 'G2', 'B', 'G2']], dtype='<U2')
     >>> stamp1[slice0]
-    array([[ 7,  8,  9, 10],
-           [13, 14, 15, 16],
-           [19, 20, 21, 22],
-           [25, 26, 27, 28]])
+    array([[24, 25, 26, 27, 28, 29],
+           [34, 35, 36, 37, 38, 39],
+           [44, 45, 46, 47, 48, 49],
+           [54, 55, 56, 57, 58, 59],
+           [64, 65, 66, 67, 68, 69],
+           [74, 75, 76, 77, 78, 79]])
 
-    Notice that the resulting stamp has a super-pixel in the center but is not bordered by a complete super-pixel.
-    Usually we would always want a full superpixel border, so `ignore_superpixel` defaults to `False`.
+    The original index had a value of `57`, which is within the center superpixel.
+
+    Notice that the resulting stamp has a super-pixel in the center and is bordered on all sides by a complete
+    superpixel. This is required by default and an invalid size
+
+    We can use `ignore_superpixel=True` to get an odd-sized stamp.
+
+    >>> slice1 = bayer.get_stamp_slice(x, y, stamp_size=(5, 5), ignore_superpixel=True)
+    >>> slice0
+    (slice(3, 8, None), slice(5, 10, None))
+    >>> stamp0[slice1]
+    array([['G1', 'R', 'G1', 'R', 'G1'],
+           ['B', 'G2', 'B', 'G2', 'B'],
+           ['G1', 'R', 'G1', 'R', 'G1'],
+           ['B', 'G2', 'B', 'G2', 'B'],
+           ['G1', 'R', 'G1', 'R', 'G1']], dtype='<U2')
+    >>> stamp1[slice1]
+    array([[35, 36, 37, 38, 39],
+           [45, 46, 47, 48, 49],
+           [55, 56, 57, 58, 59],
+           [65, 66, 67, 68, 69],
+           [75, 76, 77, 78, 79]])
+
+    This puts the requested pixel in the center but does not offer any guarantees about the RGGB pattern.
 
     Args:
         x (float): X pixel position.
