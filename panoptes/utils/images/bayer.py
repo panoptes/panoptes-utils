@@ -50,7 +50,7 @@ def get_rgb_data(data, separate_green=False):
          x | width  | i | columns |  5208
          y | height | j | rows    |  3476
 
-        Bayer Pattern (as seen in ds9):
+        Bayer pattern as seen in ds9:
 
                                       x / j
 
@@ -68,8 +68,29 @@ def get_rgb_data(data, separate_green=False):
                   1 |  R   G1    R    G1        R   G1    R   G1
                   0 | G2    B   G2     B       G2    B   G2    B
 
+        The RGGB super-pixels thus start in the upper-left.
 
-        Note: This therefore assumes the data is in the following format:
+        Bayer pattern as seen in a numpy array:
+
+                                      x / j
+
+                      0     1    2     3 ... 5204 5205 5206 5207
+                    --------------------------------------------
+                  0 | G2    B   G2     B       G2    B   G2    B
+                  1 |  R   G1    R    G1        R   G1    R   G1
+                  2 | G2    B   G2     B       G2    B   G2    B
+                  3 |  R   G1    R    G1        R   G1    R   G1
+                  . |
+         y / i    . |
+                  . |
+               3472 | G2    B   G2     B       G2    B   G2    B
+               3473 |  R   G1    R    G1        R   G1    R   G1
+               3474 | G2    B   G2     B       G2    B   G2    B
+               3475 |  R   G1    R    G1        R   G1    R   G1
+
+        Here the RGGB super-pixels are flipped upside down.
+
+        In both cases the data is in the following format:
 
                  | row (y) |  col (x)
              --------------| ------
@@ -77,8 +98,6 @@ def get_rgb_data(data, separate_green=False):
               G1 |  odd i, |   odd j
               G2 | even i, |  even j
               B  | even i, |   odd j
-
-        Or, in other words, the bottom-left (i.e. `(0,0)`) super-pixel is an RGGB pattern.
 
         And a mask can therefore be generated as:
 
@@ -150,7 +169,7 @@ def get_rgb_masks(data, separate_green=False):
 
 
 def get_pixel_color(x, y):
-    """ Given an x,y position, return the corresponding color.
+    """ Given a zero-indexed x,y position, return the corresponding color.
 
     > Note: See `get_rgb_data` for a description of the RGGB pattern.
 
@@ -178,19 +197,49 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False):
     but make sure the first position corresponds to a red-pixel. This means that
     x,y will not necessarily be at the center of the resulting stamp.
 
-    Example:
+    >>> from panoptes.utils.images import bayer
+    >>> # Make a super-pixel as represented in numpy (see full stamp below).
+    >>> superpixel = np.array(['G2', 'B', 'R', 'G1']).reshape(2, 2)
+    >>> superpixel
+    array([['G2', 'B'],
+           ['R', 'G1']], dtype='<U2')
+    >>> # Tile it into a 3x3 grid of super-pixels, i.e. a 6x6 stamp.
+    >>> stamp0 = np.tile(superpixel, (3, 3))
+    >>> stamp0
+    array([['G2', 'B', 'G2', 'B', 'G2', 'B'],
+           ['R', 'G1', 'R', 'G1', 'R', 'G1'],
+           ['G2', 'B', 'G2', 'B', 'G2', 'B'],
+           ['R', 'G1', 'R', 'G1', 'R', 'G1'],
+           ['G2', 'B', 'G2', 'B', 'G2', 'B'],
+           ['R', 'G1', 'R', 'G1', 'R', 'G1']], dtype='<U2')
+    >>> stamp1 = np.arange(36).reshape(6, 6)
+    array([[ 0,  1,  2,  3,  4,  5],
+           [ 6,  7,  8,  9, 10, 11],
+           [12, 13, 14, 15, 16, 17],
+           [18, 19, 20, 21, 22, 23],
+           [24, 25, 26, 27, 28, 29],
+           [30, 31, 32, 33, 34, 35]])
+    >>> pixel_index = (3, 3)
+    >>> stamp0[pixel_index]
+    'G1'
+    >>> stamp1[pixel_index]
+    21
+    >>> slice0 = bayer.get_stamp_slice(*pixel_index, stamp_size=(4, 4), ignore_superpixel=True)
+    >>> slice0
+    (slice(1, 5, None), slice(1, 5, None))
+    >>> stamp0[slice0]
+    array([['G1', 'R', 'G1', 'R'],
+           ['B', 'G2', 'B', 'G2'],
+           ['G1', 'R', 'G1', 'R'],
+           ['B', 'G2', 'B', 'G2']], dtype='<U2')
+    >>> stamp1[slice0]
+    array([[ 7,  8,  9, 10],
+           [13, 14, 15, 16],
+           [19, 20, 21, 22],
+           [25, 26, 27, 28]])
 
-        >>> from panoptes.utils.images import bayer
-        >>> # Grab the lower-left superpixel
-        >>> bayer.get_stamp_slice(2, 2, stamp_size=(4, 4), ignore_superpixel=True)
-        (slice(0, 4, None), slice(0, 4, None))
-        >>> # If we don't ignore the superpixel than it will raise an exception
-        >>> bayer.get_stamp_slice(2, 2, stamp_size=(4, 4), ignore_superpixel=False)
-        Traceback (most recent call last)
-         ...
-        RuntimeError: Invalid slice size: 4 Slice must have even number of pixels on each sideof center superpixel...
-        >>> bayer.get_stamp_slice(310, 199)
-        (slice(191, 205, None), slice(303, 317, None))
+    Notice that the resulting stamp has a super-pixel in the center but is not bordered by a complete super-pixel.
+    Usually we would always want a full superpixel border, so `ignore_superpixel` defaults to `False`.
 
     Args:
         x (float): X pixel position.
