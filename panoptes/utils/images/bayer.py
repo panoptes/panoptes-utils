@@ -262,7 +262,7 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False):
     We can use `ignore_superpixel=True` to get an odd-sized stamp.
 
     >>> slice1 = bayer.get_stamp_slice(x, y, stamp_size=(5, 5), ignore_superpixel=True)
-    >>> slice0
+    >>> slice1
     (slice(3, 8, None), slice(5, 10, None))
     >>> stamp0[slice1]
     array([['G1', 'R', 'G1', 'R', 'G1'],
