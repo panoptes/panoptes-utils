@@ -213,6 +213,7 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False):
            ['G2', 'B', 'G2', 'B', 'G2', 'B'],
            ['R', 'G1', 'R', 'G1', 'R', 'G1']], dtype='<U2')
     >>> stamp1 = np.arange(36).reshape(6, 6)
+    >>> stamp1
     array([[ 0,  1,  2,  3,  4,  5],
            [ 6,  7,  8,  9, 10, 11],
            [12, 13, 14, 15, 16, 17],
