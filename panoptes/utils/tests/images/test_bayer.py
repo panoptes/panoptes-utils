@@ -115,6 +115,10 @@ def test_get_stamp_slice_fail():
     with pytest.raises(RuntimeError):
         bayer.get_stamp_slice(512, 514, stamp_size=(15, 15))
 
+    # Unless we use `ignore_superpixel`
+    s0 = bayer.get_stamp_slice(512, 514, stamp_size=(15, 15), ignore_superpixel=True)
+    assert s0 == (slice(508, 523, None), slice(506, 521, None))
+
     # Nothing where (i-2) % 4 != 0
     with pytest.raises(RuntimeError):
         bayer.get_stamp_slice(512, 514, stamp_size=(12, 12))
