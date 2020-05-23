@@ -56,10 +56,7 @@ modules = {
 }
 
 setup(name=NAME,
-      use_scm_version={
-          'write_to': 'version.py',
-          'write_to_template': '__version__ = "{version}"',
-      },
+      use_scm_version=True,
       description=DESCRIPTION,
       long_description=LONG_DESCRIPTION,
       author=AUTHOR,

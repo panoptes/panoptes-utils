@@ -61,7 +61,7 @@ RUN apt-get update && \
 
 USER $PANUSER
 
-# Can't seem to get around the hard-coding
+# Can't seem to get around the hard-coding the owner:group
 COPY --chown=panoptes:panoptes . ${PANDIR}/panoptes-utils/
 
 RUN cd ${PANDIR}/panoptes-utils && \
