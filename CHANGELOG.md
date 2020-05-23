@@ -21,6 +21,10 @@ All notable changes to this project will be documented in this file.
 ### Bug fixes
 
 * Fix time-based search (#193)
+* Fix the build (#197)
+  * Removed `versioneer` in favor of `setuptools-scm` for workin version numbers.
+  * Removed the MANIFEST.in
+  * Added a simple `pyproject.toml`.
 
 ### Changed
 
@@ -32,6 +36,11 @@ All notable changes to this project will be documented in this file.
   * Allow for different RA/Dec column names.
   * Better catalog match function.
 * `sextractor` param changes. (#194)
+* **Breaking** `panoptes.utils.logger` -> `panoptes.utils.logger` so we can `from panoptes.utils.logging import logger` (#197)
+* **Breaking** The `panoptes.utils.data.assets` module was removed and the 
+    `Downloader` class is placed directly within the `scripts/download-data.py` file. (#197)
+* The `panopes-utils` module is not installed in editable mode in the `latest` docker image. (#197)
+  * Slight clean up of latest.Dockerfile
 
 ## [0.2.13] - 2020-05-14
 
