@@ -16,7 +16,7 @@ from astropy.visualization import (PercentileInterval, LogStretch, ImageNormaliz
 from dateutil import parser as date_parser
 
 from .. import error
-from ..logger import logger
+from ..logging import logger
 from ..time import current_time
 from ..images import fits as fits_utils
 from ..images.plot import add_colorbar

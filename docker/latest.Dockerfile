@@ -52,25 +52,25 @@ RUN apt-get update && \
     mkdir -p /home/$panuser/.key && \
     ssh-keygen -q -t rsa -N "" -f "/home/${panuser}/.key/id_rsa" && \
     # Update permissions for current user.
-    chown -R ${USERID}:${USERID} "/home/${panuser}" && \
-    chown -R ${USERID}:${USERID} ${PANDIR} && \
+    chown -R ${PANUSER}:${PANUSER} "/home/${panuser}" && \
+    chown -R ${PANUSER}:${PANUSER} ${PANDIR} && \
     # Astrometry folders
     mkdir -p "${astrometry_dir}" && \
-    chown -R ${USERID}:${USERID} ${astrometry_dir} && \
+    chown -R ${PANUSER}:${PANUSER} ${astrometry_dir} && \
     echo "add_path ${astrometry_dir}" >> /etc/astrometry.cfg
 
-USER $PANUSER
+USER ${PANUSER}
 
-# Can't seem to get around the hard-coding
+# Can't seem to get around the hard-coding the owner:group
+COPY --chown=panoptes:panoptes ./requirements.txt /tmp/requirements.txt
+# First deal with pip and PyYAML - see https://github.com/pypa/pip/issues/5247
+RUN pip install --no-cache-dir --no-deps --ignore-installed pip PyYAML && \
+    pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Install module
 COPY --chown=panoptes:panoptes . ${PANDIR}/panoptes-utils/
-
 RUN cd ${PANDIR}/panoptes-utils && \
-    # First deal with pip and PyYAML - see https://github.com/pypa/pip/issues/5247
-    pip install --no-cache-dir --no-deps --ignore-installed pip PyYAML && \
-    # Install requirements
-    pip install --no-cache-dir -r requirements.txt && \
-    # Install module
-    pip install --no-cache-dir -e . && \
+    pip install --user . && \
     # Download astrometry.net files
     python scripts/download-data.py \
         --wide-field --narrow-field \

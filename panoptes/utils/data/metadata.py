@@ -11,7 +11,7 @@ import pendulum
 from tqdm import tqdm
 
 from .. import listify
-from ..logger import logger
+from ..logging import logger
 
 OBS_BASE_URL = 'https://storage.googleapis.com/panoptes-observations'
 

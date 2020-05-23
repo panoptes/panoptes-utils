@@ -11,7 +11,7 @@ import numpy as np
 from astropy.io import fits
 
 from .. import error
-from ..logger import logger
+from ..logging import logger
 from ..images import fits as fits_utils
 
 

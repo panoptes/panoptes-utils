@@ -11,6 +11,7 @@ services:
 - docker
 before_install:
 - mkdir -p $HOME/data && wget -qO- ${TEST_CR2_FILE} > $TRAVIS_BUILD_DIR/panoptes/tests/data/canon.cr2
+- sed -i '/\.git/d' .dockerignore
 - docker build -t panoptes-utils:testing -f ${TRAVIS_BUILD_DIR}/docker/latest.Dockerfile ${TRAVIS_BUILD_DIR}
 install: true
 script:

@@ -33,6 +33,8 @@ jobs:
       run: git fetch --prune --unshallow
     - name: Build panoptes-utils image
       run: |
+        # Pass the git folder to the build context for testing purposes
+        sed -i '/\.git/d' .dockerignore
         docker build --build-arg "userid=$(id -u)" -t panoptes-utils:testing -f docker/latest.Dockerfile .
     - name: Test with pytest in panoptes-utils container
       run: |

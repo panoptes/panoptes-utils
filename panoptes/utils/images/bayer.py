@@ -11,7 +11,7 @@ from photutils import BkgZoomInterpolator
 
 from decimal import Decimal
 
-from ..logger import logger
+from ..logging import logger
 from . import fits as fits_utils
 
 
