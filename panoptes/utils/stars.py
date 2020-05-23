@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+from tempfile import TemporaryDirectory
 
 from google.cloud import bigquery
 from google.auth.credentials import AnonymousCredentials
@@ -21,41 +22,35 @@ def _get_bq_client(project_id='panoptes-exp', credentials=AnonymousCredentials()
     return bq_client
 
 
-def get_stars_from_footprint(wcs_or_footprint, **kwargs):
+def get_stars_from_wcs(wcs, origin=1, **kwargs):
     """Lookup star information from WCS footprint.
 
     Generates the correct layout for an SQL `POLYGON` that can be passed to
     `get_stars`.
 
     Args:
-        wcs_or_footprint (`astropy.wcs.WCS` or array): Either the WCS or the output from `calc_footprint`.
+        wcs (`astropy.wcs.WCS` or array): A valid (i.e. `wcs.is_celestial`) World Coordinate System object.
+        origin (int): The origin for the WCS. See `all_world2pix`. Default 1.
         **kwargs: Optional keywords to pass to `get_stars`.
 
     """
-    wcs = None
-    if isinstance(wcs_or_footprint, WCS):
-        wcs = wcs_or_footprint
-        wcs_footprint = wcs_or_footprint.calc_footprint()
-    else:
-        wcs_footprint = wcs_or_footprint
-
-    wcs_footprint = list(wcs_footprint)
-    logger.debug(f'Looking up catalog stars for WCS: {wcs_or_footprint}')
+    wcs_footprint = wcs.calc_footprint().tolist()
+    logger.debug(f'Looking up catalog stars for WCS: {wcs_footprint}')
     # Add the first entry to the end to complete polygon
     wcs_footprint.append(wcs_footprint[0])
 
     poly = ','.join([f'{c[0]:.05} {c[1]:.05f}' for c in wcs_footprint])
 
+    logger.debug(f'Using poly={poly} for get_stars')
     catalog_stars = get_stars(shape=poly, **kwargs)
 
-    # Get the XY positions via the WCS
-    if wcs is not None:
-        catalog_coords = catalog_stars[['catalog_ra', 'catalog_dec']]
-        catalog_xy = wcs.all_world2pix(catalog_coords, 1)
-        catalog_stars['x'] = catalog_xy.T[0]
-        catalog_stars['y'] = catalog_xy.T[1]
-        catalog_stars['x_int'] = catalog_stars.x.astype(int)
-        catalog_stars['y_int'] = catalog_stars.y.astype(int)
+    # Get the XY positions via the WCS if we have one.
+    catalog_coords = catalog_stars[['catalog_ra', 'catalog_dec']]
+    catalog_xy = wcs.all_world2pix(catalog_coords, origin, ra_dec_order=True)
+    catalog_stars['catalog_x'] = catalog_xy.T[0]
+    catalog_stars['catalog_y'] = catalog_xy.T[1]
+    catalog_stars['catalog_x_int'] = catalog_stars.catalog_x.astype(int)
+    catalog_stars['catalog_y_int'] = catalog_stars.catalog_y.astype(int)
 
     return catalog_stars
 
@@ -90,6 +85,7 @@ def get_stars(
         ra as catalog_ra,
         dec as catalog_dec,
         vmag as catalog_vmag,
+        vmag_partition as catalog_vmag_bin,
         e_vmag as catalog_vmag_err
     FROM catalog.pic
     WHERE
@@ -115,6 +111,7 @@ def lookup_point_sources(fits_file,
                          catalog_match=False,
                          method='sextractor',
                          force_new=False,
+                         wcs=None,
                          **kwargs
                          ):
     """Extract point sources from image.
@@ -171,6 +168,7 @@ def lookup_point_sources(fits_file,
         fits_file (str, optional): Path to FITS file to search for stars.
         catalog_match (bool, optional): If `get_catalog_match` should be called after looking up sources. Default False. If True, the `args` and `kwargs` will be passed to `get_catalog_match`.
         method (str, optional): Method for looking up sources, default (and currently only) is `sextractor`.
+        wcs (`astropy.wcs.WCS`|None): A WCS file to use. Default is `None`, in which the WCS comes from the `fits_file`
         force_new (bool, optional): Force a new catalog to be created,
             defaults to False.
         **kwargs: Passed to `get_catalog_match` when `catalog_match=True`.
@@ -183,7 +181,8 @@ def lookup_point_sources(fits_file,
 
     """
     if catalog_match:
-        wcs = fits_utils.getwcs(fits_file)
+        if wcs is None:
+            wcs = fits_utils.getwcs(fits_file)
         assert wcs is not None and wcs.is_celestial, logger.warning("Need a valid WCS")
 
     logger.debug(f"Looking up sources for {fits_file}")
@@ -206,7 +205,7 @@ def lookup_point_sources(fits_file,
             point_sources = get_catalog_match(point_sources, wcs, **kwargs)
             logger.debug(f'Done with catalog match for {fits_file}')
         except Exception as e:
-            logger.error(f'Error in catalog match, returning unmathed results: {e!r} {fits_file}')
+            logger.error(f'Error in catalog match, returning unmatched results: {e!r} {fits_file}')
 
     logger.debug(f'Point sources: {len(point_sources)} {fits_file}')
     return point_sources
@@ -214,11 +213,10 @@ def lookup_point_sources(fits_file,
 
 def get_catalog_match(point_sources,
                       wcs,
-                      vmag_min=4,
-                      vmag_max=17,
                       max_separation_arcsec=None,
                       return_unmatched=False,
-                      origin=1,
+                      ra_column='sextractor_ra',
+                      dec_column='sextractor_dec',
                       **kwargs):
     """Match the point source positions to the catalog.
 
@@ -249,6 +247,8 @@ def get_catalog_match(point_sources,
         * catalog_vmag_err
         * catalog_x
         * catalog_y
+        * catalog_x_int
+        * catalog_y_int
 
     Note:
 
@@ -283,28 +283,21 @@ def get_catalog_match(point_sources,
             to be matched. This usually comes from the output of `lookup_point_sources`
             but could be done manually.
         wcs (`astropy.wcs.WCS`): The WCS instance.
+        ra_column (str): The column name to use for the RA coordinates, default `sextractor_ra`.
+        dec_column (str): The column name to use for the Dec coordinates, default `sextractor_dec`.
         origin (int, optional): The origin for catalog matching, either 0 or 1 (default).
         max_separation_arcsec (float|None, optional): If not None, sources more
             than this many arcsecs from catalog will be filtered.
         return_unmatched (bool, optional): If all results from catalog should be
             returned, not just those with a positive match.
-        **kwargs: Unused.
+        **kwargs: Extra options are passed to `get_stars_from_wcs`, which passes them ultimately to `get_stars`.
 
     """
     assert point_sources is not None
-    logger.debug(f'Doing catalog match for wcs={wcs!r}')
-
-    # Get coords from detected point sources
-    stars_coords = SkyCoord(
-        ra=point_sources['sextractor_ra'].values * u.deg,
-        dec=point_sources['sextractor_dec'].values * u.deg
-    )
+    logger.debug(f'Doing catalog match for wcs={wcs.wcs.crval!r}')
 
     # Lookup stars in catalog
-    catalog_stars = get_stars_from_footprint(
-        wcs.calc_footprint(),
-        **kwargs
-    )
+    catalog_stars = get_stars_from_wcs(wcs, **kwargs)
     if catalog_stars is None:
         logger.debug('No catalog matches, returning table without ids')
         return point_sources
@@ -315,22 +308,19 @@ def get_catalog_match(point_sources,
         dec=catalog_stars['catalog_dec'] * u.deg
     )
 
-    # Do catalog matching
-    logger.debug(f'Matching catalog')
-    idx, d2d, d3d = match_coordinates_sky(stars_coords, catalog_coords)
-    logger.debug(f'Got {len(idx)} matched sources (includes duplicates)')
+    # Get coords from detected point sources
+    stars_coords = SkyCoord(
+        ra=point_sources[ra_column].values * u.deg,
+        dec=point_sources[dec_column].values * u.deg
+    )
 
-    # Get the xy pixel coordinates for all sources according to WCS.
-    xs, ys = wcs.all_world2pix(catalog_stars.catalog_ra,
-                               catalog_stars.catalog_dec,
-                               origin,
-                               ra_dec_order=True)
-    catalog_stars['catalog_x'] = xs
-    catalog_stars['catalog_y'] = ys
+    # Do catalog matching
+    logger.debug(f'Matching {len(catalog_coords)} catalog stars to {len(stars_coords)} detected stars {wcs.wcs.crval}')
+    idx, d2d, d3d = match_coordinates_sky(stars_coords, catalog_coords)
+    logger.debug(f'Got {len(idx)} matched sources (includes duplicates) for wcs={wcs.wcs.crval!r}')
 
     # Add the matches and their separation.
-    matches = catalog_stars.iloc[idx]
-    point_sources = point_sources.join(matches.reset_index(drop=True))
+    point_sources = point_sources.join(catalog_stars.iloc[idx].reset_index(drop=True))
     point_sources['catalog_sep_arcsec'] = d2d.to(u.arcsec).value
 
     # All point sources so far are matched.
@@ -346,6 +336,7 @@ def get_catalog_match(point_sources,
 
     # Sources that didn't match.
     if return_unmatched:
+        logger.debug(f'Adding unmatched sources to table for wcs={wcs.wcs.crval!r}')
         unmatched = catalog_stars.iloc[catalog_stars.index.difference(idx)].copy()
         unmatched['status'] = 'unmatched'
         point_sources = point_sources.append(unmatched)
@@ -353,17 +344,22 @@ def get_catalog_match(point_sources,
     # Correct some dtypes.
     point_sources.status = point_sources.status.astype('category')
 
+    logger.debug(f'Point sources: {len(point_sources)} for wcs={wcs.wcs.crval!r}')
+
     # Remove catalog matches that are too far away.
     if max_separation_arcsec is not None:
         logger.debug(f'Removing matches > {max_separation_arcsec} arcsec from catalog.')
         point_sources = point_sources.query('catalog_sep_arcsec <= @max_separation_arcsec')
 
+    logger.debug(f'Returning point sources: {len(point_sources)} for wcs={wcs.wcs.crval!r}')
     return point_sources
 
 
 def _lookup_via_sextractor(fits_file,
                            sextractor_params=None,
                            trim_size=10,
+                           force_new=False,
+                           img_dimensions=(3476, 5208),
                            *args, **kwargs):
     # Write the sextractor catalog to a file
     base_dir = os.path.dirname(fits_file)
@@ -380,7 +376,7 @@ def _lookup_via_sextractor(fits_file,
 
     logger.debug("Point source catalog: {}".format(source_file))
 
-    if not os.path.exists(source_file) or kwargs.get('force_new', False):
+    if not os.path.exists(source_file) or force_new:
         logger.debug("No catalog found, building from sextractor")
         # Build catalog of point sources
         sextractor = shutil.which('sextractor')
@@ -419,22 +415,24 @@ def _lookup_via_sextractor(fits_file,
 
     # Filter point sources near edge
     # w, h = data[0].shape
-    w, h = (3476, 5208)
-
     logger.debug('Trimming sources near edge')
+    w, h = img_dimensions
     top = point_sources['y'] > trim_size
     bottom = point_sources['y'] < w - trim_size
     left = point_sources['x'] > trim_size
     right = point_sources['x'] < h - trim_size
 
+    # Do the trim an convert to pandas.
     point_sources = point_sources[top & bottom & right & left].to_pandas()
+
+    # Add column names.
     point_sources.columns = [
         'sextractor_ra',
         'sextractor_dec',
+        'sextractor_x_int',
+        'sextractor_y_int',
         'sextractor_x',
         'sextractor_y',
-        'sextractor_x_image',
-        'sextractor_y_image',
         'sextractor_ellipticity',
         'sextractor_theta_image',
         'sextractor_flux_best',
@@ -449,4 +447,4 @@ def _lookup_via_sextractor(fits_file,
     ]
 
     logger.debug(f'Returning {len(point_sources)} sources from sextractor')
-    return point_sources
+    return point_sources.convert_dtypes()

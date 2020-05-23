@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   develop-env:
-    image: gcr.io/panoptes-exp/panoptes-utils:develop
+    image: ${IMAGE}:${TAG}
     init: true
     container_name: develop-env
     privileged: true
