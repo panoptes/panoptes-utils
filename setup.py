@@ -4,8 +4,6 @@
 from configparser import ConfigParser
 from setuptools import setup, find_namespace_packages
 
-import versioneer
-
 # Get some values from the setup.cfg
 conf = ConfigParser()
 conf.read(['setup.cfg'])
@@ -51,14 +49,14 @@ modules = {
         'ruamel.yaml>=0.15',
         'scalpl',
         'scipy',
+        'setuptools-scm',
         'tweepy',  # social
         'versioneer',
     ],
 }
 
 setup(name=NAME,
-      version=versioneer.get_version(),
-      cmdclass=versioneer.get_cmdclass(),
+      use_scm_version=True,
       description=DESCRIPTION,
       long_description=LONG_DESCRIPTION,
       author=AUTHOR,
