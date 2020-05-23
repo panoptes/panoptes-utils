@@ -8,7 +8,7 @@ from astropy.io import fits
 from astropy.wcs import WCS
 
 from .. import error
-from ..logger import logger
+from ..logging import logger
 
 
 def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):

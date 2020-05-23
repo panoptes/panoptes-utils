@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.14] - 2020-05-23
+
+### Added
+
+* Add snappy decompression for parquet; `pyarrow` instead of `fastparquet` (#193)
+* Password-less sudo for panoptes user on dev docker image (#193)
+* `get_metadata` has an optional progress bar. (#194)
+* Add `bayer.get_stamp_slice` for getting a stamp slice while respecting the superpixel. This was removed awhile ago and has been re-added and improved. (#196)
+  * Adjusting the offsets so the center pixel is always:
+    
+    ```
+       G2 B
+       R  G1
+    ```
+
+### Bug fixes
+
+* Fix time-based search (#193)
+* Fix the build (#197)
+  * Removed `versioneer` in favor of `setuptools-scm` for workin version numbers.
+  * Removed the MANIFEST.in
+  * Added a simple `pyproject.toml`.
+
+### Changed
+
+* **Breaking** Only support getting stars directly from the WCS, not the footprint. (#194)
+  * `get_stars_from_footprint` -> `get_stars_from_wcs`
+  * Better logging
+  * Consistent column names for dtypes
+  * Vmag bin comes from sql.
+  * Allow for different RA/Dec column names.
+  * Better catalog match function.
+* `sextractor` param changes. (#194)
+* **Breaking** `panoptes.utils.logger` -> `panoptes.utils.logger` so we can `from panoptes.utils.logging import logger` (#197)
+* **Breaking** The `panoptes.utils.data.assets` module was removed and the 
+    `Downloader` class is placed directly within the `scripts/download-data.py` file. (#197)
+* The `panopes-utils` module is not installed in editable mode in the `latest` docker image. (#197)
+  * Slight clean up of latest.Dockerfile
+
 ## [0.2.13] - 2020-05-14
 
 ### Bug fixes
@@ -12,6 +51,7 @@ All notable changes to this project will be documented in this file.
 
 * The `panoptes.utils.data` functions use static versions of the file rather than firestore. (#192)
 * Updated development environment (#191)
+* `get_metadata` filter the fields at the parquet level. (#194)
 
 ## [0.2.12] - 2020-04-29
 
@@ -224,7 +264,7 @@ First big overhaul of the repository. Pulls in features that were duplicated or 
 
 ### Added
 * Config Server
-  * See the description in the [README](README.md#id11)
+  * See the description in the [README](README.md)
 * [Versioneer](https://github.com/warner/python-versioneer) for version strings (#123).
 * Read the docs config (#123).
 

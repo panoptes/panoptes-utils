@@ -7,7 +7,7 @@ import time
 from contextlib import suppress
 
 from . import error
-from .logger import logger
+from .logging import logger
 from .serializers import from_json
 
 

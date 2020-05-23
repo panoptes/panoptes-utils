@@ -1,6 +1,6 @@
 import abc
 
-from ..logger import logger
+from ..logging import logger
 from .. import error
 from ..time import current_time
 from ..library import load_module

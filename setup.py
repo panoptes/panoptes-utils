@@ -4,8 +4,6 @@
 from configparser import ConfigParser
 from setuptools import setup, find_namespace_packages
 
-import versioneer
-
 # Get some values from the setup.cfg
 conf = ConfigParser()
 conf.read(['setup.cfg'])
@@ -27,8 +25,7 @@ modules = {
         'astropy>=4.0.0',
         'coverage',  # testing
         'Flask',
-        'fastparquet',
-        'google-cloud-bigquery[pandas]',
+        'google-cloud-bigquery[pandas,pyarrow]',
         'google-cloud-storage',
         'holoviews',
         'hvplot',
@@ -52,14 +49,14 @@ modules = {
         'ruamel.yaml>=0.15',
         'scalpl',
         'scipy',
+        'setuptools-scm',
         'tweepy',  # social
         'versioneer',
     ],
 }
 
 setup(name=NAME,
-      version=versioneer.get_version(),
-      cmdclass=versioneer.get_cmdclass(),
+      use_scm_version=True,
       description=DESCRIPTION,
       long_description=LONG_DESCRIPTION,
       author=AUTHOR,
@@ -67,8 +64,8 @@ setup(name=NAME,
       license=LICENSE,
       url=URL,
       keywords=KEYWORDS,
-      python_requires='>=3.6',
-      setup_requires=['pytest-runner'],
+      python_requires='>=3.7',
+      setup_requires=['pytest-runner', 'setuptools_scm'],
       tests_require=modules['required'],
       scripts=[
           'bin/cr2-to-jpg',

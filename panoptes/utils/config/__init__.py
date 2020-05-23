@@ -2,7 +2,7 @@ import os
 from contextlib import suppress
 from warnings import warn
 
-from ..logger import logger
+from ..logging import logger
 from ..utils import listify
 from ..serializers import from_yaml
 from ..serializers import to_yaml

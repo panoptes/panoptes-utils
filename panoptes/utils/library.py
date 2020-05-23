@@ -1,6 +1,6 @@
 import ctypes
 import ctypes.util
-from panoptes.utils.logger import logger
+from panoptes.utils.logging import logger
 
 from astropy.utils import resolve_name
 from . import error

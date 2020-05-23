@@ -1,5 +1,5 @@
 import tweepy
-from ..logger import logger
+from ..logging import logger
 
 
 class SocialTwitter(object):

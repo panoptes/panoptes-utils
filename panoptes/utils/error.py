@@ -1,5 +1,5 @@
 import sys
-from .logger import logger
+from .logging import logger
 
 
 class PanError(Exception):

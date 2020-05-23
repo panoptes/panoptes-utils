@@ -8,7 +8,7 @@ import time
 from astropy.utils import console
 from panoptes.utils.config.client import get_config
 from panoptes.utils.messaging import PanMessaging
-from panoptes.utils.logger import logger
+from panoptes.utils.logging import logger
 
 
 the_root_logger = None

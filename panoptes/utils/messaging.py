@@ -1,7 +1,7 @@
 import re
 import zmq
 
-from .logger import logger
+from .logging import logger
 from .time import current_time
 from .serializers import from_json
 from .serializers import to_json
