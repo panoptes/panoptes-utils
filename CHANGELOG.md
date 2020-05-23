@@ -2,8 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.2.dev14]
-
+## [0.2.14] - 2020-05-23
 
 ### Added
 
