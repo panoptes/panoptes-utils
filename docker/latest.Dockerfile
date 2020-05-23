@@ -72,7 +72,7 @@ COPY --chown=panoptes:panoptes . ${PANDIR}/panoptes-utils/
 RUN cd ${PANDIR}/panoptes-utils && \
     pip install --user . && \
     # Download astrometry.net files
-    python3 scripts/download-data.py \
+    python scripts/download-data.py \
         --wide-field --narrow-field \
         --folder "${astrometry_dir}" \
         --verbose
