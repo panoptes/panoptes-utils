@@ -8,7 +8,7 @@ from flask.json import JSONEncoder
 from multiprocessing import Process
 from scalpl import Cut
 
-from ..logger import logger
+from ..logging import logger
 from . import load_config
 from . import save_config
 from ..serializers import _serialize_object

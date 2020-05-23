@@ -65,7 +65,7 @@ setup(name=NAME,
       url=URL,
       keywords=KEYWORDS,
       python_requires='>=3.7',
-      setup_requires=['pytest-runner'],
+      setup_requires=['pytest-runner', 'setuptools_scm'],
       tests_require=modules['required'],
       scripts=[
           'bin/cr2-to-jpg',

@@ -12,7 +12,7 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord, match_coordinates_sky
 
 from .images import fits as fits_utils
-from .logger import logger
+from .logging import logger
 
 
 def _get_bq_client(project_id='panoptes-exp', credentials=AnonymousCredentials()):

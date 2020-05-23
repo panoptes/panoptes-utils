@@ -5,7 +5,7 @@ from datetime import timezone as tz
 from astropy import units as u
 from astropy.time import Time
 
-from .logger import logger
+from .logging import logger
 
 
 def current_time(flatten=False, datetime=False, pretty=False):

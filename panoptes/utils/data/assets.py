@@ -4,7 +4,7 @@ import shutil
 from astroplan import download_IERS_A
 from astropy.utils import data
 
-from ..logger import logger
+from ..logging import logger
 
 
 class Downloader(object):

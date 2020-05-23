@@ -1,6 +1,5 @@
 venv/
 docs/*
-.git
 .cache
 .eggs
 .vscode
