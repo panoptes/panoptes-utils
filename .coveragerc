@@ -1,6 +1,11 @@
 # .coveragerc to control coverage.py
 [run]
 branch = True
+concurrency =
+    multiprocessing
+    threading
+    subprocess
+parallel = True
 source = panoptes/utils
 # omit = bad_file.py
 

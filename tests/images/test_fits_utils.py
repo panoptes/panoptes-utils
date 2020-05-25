@@ -110,7 +110,7 @@ def test_get_solve_field_timeout(unsolved_fits_file):
 
 def test_solve_options(unsolved_fits_file):
     proc = fits_utils.solve_field(
-        unsolved_fits_file, solve_opts=['--guess-scale', '--cpulimit', '1'])
+        unsolved_fits_file, solve_opts=['--cpulimit', '1'])
     assert isinstance(proc, subprocess.Popen)
     try:
         outs, errs = proc.communicate(timeout=15)
