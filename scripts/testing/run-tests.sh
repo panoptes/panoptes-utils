@@ -7,8 +7,7 @@ export COVERAGE_PROCESS_START="${PANDIR}/panoptes-utils/setup.cfg"
 
 # Run coverage over the pytest suite
 echo "Starting tests"
-#python setup.py test
-PANDIR=${PANDIR} coverage run "$(command -v pytest)" -x -vv -rfes --test-databases all
+PANDIR=${PANDIR} coverage run "$(command -v pytest)" -x -vv -rfes --test-databases all --cov-report xml
 
 echo "Combining coverage"
 coverage combine
