@@ -26,7 +26,7 @@ ENV SOLVE_FIELD /usr/bin/solve-field
 COPY docker/zshrc /tmp
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+    apt-get install -y --no-install-recommends \ll
         gosu wget curl bzip2 ca-certificates zsh openssh-client nano \
         astrometry.net sextractor dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
         libzmq3-dev libfreetype6-dev libpng-dev libpq-dev fonts-lato libsnappy-dev \
