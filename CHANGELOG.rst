@@ -1,8 +1,15 @@
-# Changelog
+=========
+Changelog
+=========
 
 All notable changes to this project will be documented in this file.
 
-## [0.2.14] - 2020-05-23
+Version 0.1
+===========
+
+
+0.2.14 - 2020-05-23
+===================
 
 ### Added
 
@@ -10,12 +17,10 @@ All notable changes to this project will be documented in this file.
 * Password-less sudo for panoptes user on dev docker image (#193)
 * `get_metadata` has an optional progress bar. (#194)
 * Add `bayer.get_stamp_slice` for getting a stamp slice while respecting the superpixel. This was removed awhile ago and has been re-added and improved. (#196)
-  * Adjusting the offsets so the center pixel is always:
-    
-    ```
-       G2 B
-       R  G1
-    ```
+  * Adjusting the offsets so the center pixel is always::
+
+    G2 B
+    R  G1
 
 ### Bug fixes
 
@@ -36,12 +41,13 @@ All notable changes to this project will be documented in this file.
   * Better catalog match function.
 * `sextractor` param changes. (#194)
 * **Breaking** `panoptes.utils.logger` -> `panoptes.utils.logger` so we can `from panoptes.utils.logging import logger` (#197)
-* **Breaking** The `panoptes.utils.data.assets` module was removed and the 
+* **Breaking** The `panoptes.utils.data.assets` module was removed and the
     `Downloader` class is placed directly within the `scripts/download-data.py` file. (#197)
 * The `panopes-utils` module is not installed in editable mode in the `latest` docker image. (#197)
   * Slight clean up of latest.Dockerfile
 
-## [0.2.13] - 2020-05-14
+0.2.13 - 2020-05-14
+===================
 
 ### Bug fixes
 
@@ -53,7 +59,8 @@ All notable changes to this project will be documented in this file.
 * Updated development environment (#191)
 * `get_metadata` filter the fields at the parquet level. (#194)
 
-## [0.2.12] - 2020-04-29
+0.2.12 - 2020-04-29
+===================
 
 Quick release to get the `panoptes.utils.sources` into the package.
 
@@ -65,7 +72,8 @@ Quick release to get the `panoptes.utils.sources` into the package.
 
 * Ability to pass credentials to underlying google client functions. (#187)
 
-## [0.2.11] - 2020-04-29
+0.2.11 - 2020-04-29
+===================
 
 ### Added
 
@@ -75,15 +83,15 @@ Quick release to get the `panoptes.utils.sources` into the package.
         * Uses anonymous credentials to connect to firestore.
         * Added a basic notebook demonstrating features.
     * Adding `holoviews` and `hvplot` as required dependencies.
-    
+
 
 ### Bug fixes
 
 * FITS Utils fixes:
     * Fix docstring return types for some functions. (#173)
-    * `fpack`/`funpack` and `get_solve_field` were not properly overwriting FITS files under 
-    certain conditions when an uncompressed file of the same name was present alongside the 
-    compressed version. (#175)
+    * `fpack`/`funpack` and `get_solve_field` were not properly overwriting FITS files
+        under certain conditions when an uncompressed file of the same name was present alongside
+        the compressed version. (#175)
     * Properly pass `args` and `kwargs` to `astropy.io.fits.getdata`. (#180)
 
 ### Changed
@@ -99,7 +107,7 @@ Quick release to get the `panoptes.utils.sources` into the package.
     * Pass `kwargs` to underlying `writeto` method for `write_fits`. Needed for, e.g. `overwrite`.
     * Allow additional options to be passed to solve field functions without having to override all options. (#180)
     * Changed default options in `get_solve_field` to use `scale-low` and `scale-high` instead of `radius` (which
-    requires an `ra` and `dec`). (#180)
+        requires an `ra` and `dec`). (#180)
 * Changed `bin/panoptes-dev` -> `bin/panoptes-develop` for naming consistency. (#175)
 * Data
     * **BREAKING** The `panoptes.utils.data.py` has moved into the `panoptes.utils.data` namespace with the relevant existing `Downloader` class placed in the `assets.py` module. (#181)
@@ -109,9 +117,10 @@ Quick release to get the `panoptes.utils.sources` into the package.
 
 FITS Utils removals (#173):
     * Removing unused and confusing `improve_wcs`.
-PanLogger class moved to POCS. (#186)
+    * PanLogger class moved to POCS. (#186)
 
-## [0.2.10] - 2020-04-13
+0.2.10 - 2020-04-13
+===================
 
 ### Added
 
@@ -140,11 +149,13 @@ PanLogger class moved to POCS. (#186)
   * Removed `class_star` from sextractor results.
 
 
-## [0.2.9] - 2020-03-27
+0.2.9 - 2020-03-27
+==================
 
 Pointless version bump because of issue with [PyPi](https://github.com/pypa/packaging-problems/issues/74).
 
-## [0.2.8] - 2020-03-27
+0.2.8 - 2020-03-27
+==================
 
 Thanks first-time contributer @preethi524! :tada:
 
@@ -153,7 +164,8 @@ Thanks first-time contributer @preethi524! :tada:
 * Ability to return separate RGB backgrounds. (#162)
 * Increase coverage. (#161)
 
-## [0.2.7] - 2020-03-22 (hotfix)
+0.2.7 - 2020-03-22 (hotfix)
+===========================
 
 ### Added
 
@@ -163,7 +175,8 @@ Thanks first-time contributer @preethi524! :tada:
 
 * Add `args` and `kwargs` to `get_rgb_background`. (#160)
 
-## [0.2.6] - 2020-03-22
+0.2.6 - 2020-03-22
+==================
 
 ### Added
 
@@ -181,11 +194,11 @@ Thanks first-time contributer @preethi524! :tada:
   * Change to `python:3.8-slim-buster` for base image. Only `amd64` support for now. (#155)
   * Simplified docker files. (#155)
   * Switching from Travis to GHA: (#155)
-    * Travis builds docker image before testing.
-    * Travis doesn't upload coverage.
-    * Don't update module inside container during entrypoint.
+  * Travis builds docker image before testing.
+  * Travis doesn't upload coverage.
+  * Don't update module inside container during entrypoint.
   * Fixed user permissions for $HOME and $PANDIR. (#155)
-    * :warning: The docker container only really likes it when user id `1000` is running the system.
+  * The docker container only really likes it when user id `1000` is running the system.
   * Remove GCP Cloud SQL proxy support.
   * Installed `sextractor`. (#158)
   * Added `pandas`. (#158)
@@ -198,7 +211,8 @@ Thanks first-time contributer @preethi524! :tada:
 * Polar alignment utils (#156)
 
 
-## [0.2.5] - 2020-03-18
+0.2.5 - 2020-03-18
+==================
 
 ### Added
 
@@ -219,7 +233,8 @@ Thanks first-time contributer @preethi524! :tada:
 
 * The docker image no longer updates `panoptes-utils` when using `run-tests.sh`. (#145)
 
-## [0.2.4] - 2020-03-11
+0.2.4 - 2020-03-11
+==================
 
 ### Changed
 
@@ -229,7 +244,8 @@ Thanks first-time contributer @preethi524! :tada:
 
 * `photutils` dependency for recangular apertures in the `show_stamps` method.
 
-## [0.2.3] - 2020-03-08
+0.2.3 - 2020-03-08
+==================
 
 Small point release to correct namespace and remove some bloat.
 
@@ -241,13 +257,12 @@ Small point release to correct namespace and remove some bloat.
 
 * Dependencies that will be deprecated soon and are causing bloat: `photutils`, `scikit-image`. (#138)
 
-## [Unreleased]
-
 ### Changed
 
 * Fixed top-level namespace so we can have other `panoptes` repos (#137, #150).
 
-## [0.2.2] - 2020-03-05
+0.2.2 - 2020-03-05
+==================
 
 Mostly some cleanup from the `v0.2.0` release based on integrating all the changes into POCS.
 
@@ -265,13 +280,14 @@ Mostly some cleanup from the `v0.2.0` release based on integrating all the chang
 
 * The `get_root_logger` and associated tests (#134).
 
-## [0.2.0] - 2020-03-04
+0.2.0 - 2020-03-04
+==================
 
 First big overhaul of the repository. Pulls in features that were duplicated or scattered across [POCS](https://github.com/panoptes/POCS.git) and [PIAA](https://github.com/panoptes/PIAA.git). Removes a lot of code that wasn't being used or was otherwise clutter. Overhauls the logging system to use [`loguru`](https://github.com/Delgan/loguru) so things are simplified. Updates to documentation.
 
 ### Added
 * Config Server
-  * See the description in the [README](README.md)
+* See the description in the [README](README.md)
 * [Versioneer](https://github.com/warner/python-versioneer) for version strings (#123).
 * Read the docs config (#123).
 
@@ -280,20 +296,22 @@ First big overhaul of the repository. Pulls in features that were duplicated or 
 
 ### Changed
 * Docker updates
-  * See #68 and #75 for list.
+* See #68 and #75 for list.
 * Logging:
-  * Switch to [`loguru`](https://github.com/Delgan/loguru). This simplifies our logging system. Also gives us access to the `trace` (lower than `debug`, good for hardware and other debug we don't need to see during operation) and `success` (higher than `info`) levels, which would be nice to start implementing. (#123)
+* Switch to [`loguru`](https://github.com/Delgan/loguru). This simplifies our logging system. Also gives us access to the `trace` (lower than `debug`, good for hardware and other debug we don't need to see during operation) and `success` (higher than `info`) levels, which would be nice to start implementing. (#123)
 * Consistent use of relative imports. (#123)
 * Documentation updates. (#97, #119, #120, #123)
 * Repo cleanup. (#97, #123)
 * Using GitHub Actions for testing. (#100, #101)
 * Using [`pip-tools`](https://github.com/jazzband/pip-tools) for dependency management.
 
-## [0.1.0] - 2020-03-04
+0.1.0 - 2020-03-04
+==================
 
 Changes and cleanup on the way to a (more) stable release. See `0.2.0` for list of changes.
 
-## [0.0.8] - 2019-06-29
+0.0.8 - 2019-06-29
+===================
 
 Bringing things in line with updates to `POCS` for docker and `panoptes-utils` use.
 
@@ -326,7 +344,8 @@ Bringing things in line with updates to `POCS` for docker and `panoptes-utils` u
   * Silence some 3rd party logs.
 
 
-## [0.0.7] - 2019-05-26
+0.0.7 - 2019-05-26
+===================
 
 ### Added
 
@@ -342,7 +361,8 @@ Bringing things in line with updates to `POCS` for docker and `panoptes-utils` u
   * Entrypoint script properly authenticates to google cloud if possible.
   * Added amd64 only build scripts.
 
-## [0.0.6] - 2019-04-29
+0.0.6 - 2019-04-29
+===================
 
 ### Added
 
@@ -360,7 +380,8 @@ Bringing things in line with updates to `POCS` for docker and `panoptes-utils` u
 * Documentation updates.
 * Bux fixes and code improvements.
 
-## [0.0.5] - 2019-04-09
+0.0.5 - 2019-04-09
+===================
 
 ### Added
 
