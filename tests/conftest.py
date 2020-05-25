@@ -119,7 +119,6 @@ def images_dir(tmpdir_factory):
 def config_path():
     return os.path.join(os.getenv('PANDIR'),
                         'panoptes-utils',
-                        'panoptes',
                         'tests',
                         'panoptes_utils_testing.yaml'
                         )
@@ -373,7 +372,7 @@ def save_environ():
 
 @pytest.fixture(scope='session')
 def data_dir():
-    return os.path.expandvars('$PANDIR/panoptes-utils/panoptes/tests/data')
+    return os.path.expandvars('$PANDIR/panoptes-utils/tests/data')
 
 
 @pytest.fixture(scope='function')

@@ -13,7 +13,7 @@ usage() {
 
  Options:
   FILENAME          Name of CR2 file that holds jpeg.
-  TITLE             Optional tilte to be placed on jpeg.
+  TITLE             Optional title to be placed on jpeg.
 
  Example:
   cr2-to-jpg /var/panoptes/images/temp.cr2 \"M42 (Orion's Nebula)\"

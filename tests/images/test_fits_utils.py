@@ -20,7 +20,7 @@ def test_wcsinfo(solved_fits_file):
     wcsinfo = fits_utils.get_wcsinfo(solved_fits_file)
 
     assert 'wcs_file' in wcsinfo
-    assert wcsinfo['ra_center'].value == 303.206422334
+    assert wcsinfo['ra_center'].value == pytest.approx(303.20, rel=1e-2)
 
 
 def test_fpack(solved_fits_file):
@@ -115,9 +115,14 @@ def test_get_solve_field_timeout(unsolved_fits_file):
 
 def test_solve_options(unsolved_fits_file):
     proc = fits_utils.solve_field(
-        unsolved_fits_file, solve_opts=['--guess-scale'])
+        unsolved_fits_file, solve_opts=['--guess-scale', '--cpulimit', '1'])
     assert isinstance(proc, subprocess.Popen)
-    proc.wait()
+    try:
+        outs, errs = proc.communicate(timeout=15)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        outs, errs = proc.communicate()
+    # Timeout
     assert proc.returncode == 0
 
 

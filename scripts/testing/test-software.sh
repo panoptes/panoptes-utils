@@ -10,7 +10,7 @@ You can view the output for the tests in a separate terminal:
 
 grc tail -F ${PANDIR}/log/pytest-all.log
 
-The tests will start by updating: ${PANDIR}/panoptes-utils/requirements.txt
+The tests will start by updating: ${PANDIR}/panoptes-utils/requirements.txt inside the container.
 
 Tests will begin in 5 seconds. Press Ctrl-c to cancel.
 EOF
@@ -21,6 +21,6 @@ docker run --rm -it \
     -e LOCAL_USER_ID=$(id -u) \
     -v /var/panoptes/panoptes-utils:/var/panoptes/panoptes-utils \
     -v /var/panoptes/logs:/var/panoptes/logs \
-    gcr.io/panoptes-exp/panoptes-utils \
+    panoptes-utils:testing \
     "${PANDIR}/panoptes-utils/scripts/testing/run-tests.sh"
 

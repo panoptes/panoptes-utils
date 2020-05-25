@@ -15,9 +15,9 @@ import time
 import urllib
 
 from panoptes.utils.logging import logger
-from panoptes.utils.tests import serial_handlers
 from panoptes.utils.serializers import to_json
 from panoptes.utils.serializers import from_json
+from .. import serial_handlers
 
 
 def _drain_queue(q):
@@ -348,7 +348,7 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
 
         # All existing tests ensure the config is OK, so we never log here.
         if not v:  # pragma: no cover
-            self.logger.critical('Serial config is not OK: {!r}', (self.get_settings(), ))
+            self.logger.critical('Serial config is not OK: {!r}', (self.get_settings(),))
 
         return v
 
