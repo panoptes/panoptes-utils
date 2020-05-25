@@ -11,11 +11,6 @@ from panoptes.utils.images import fits as fits_utils
 from panoptes.utils import error
 
 
-@pytest.fixture
-def solved_fits_file(data_dir):
-    return os.path.join(data_dir, 'solved.fits.fz')
-
-
 def test_wcsinfo(solved_fits_file):
     wcsinfo = fits_utils.get_wcsinfo(solved_fits_file)
 

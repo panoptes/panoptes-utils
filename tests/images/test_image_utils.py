@@ -38,16 +38,11 @@ def test_crop_data():
 def test_make_pretty_image(solved_fits_file, tiny_fits_file, save_environ):
     # Make a dir and put test image files in it.
     with tempfile.TemporaryDirectory() as tmpdir:
-        fits_file = os.path.join(tmpdir, os.path.basename(tiny_fits_file))
         # TODO Add a small CR2 file to our sample image files.
 
         # Can't operate on a non-existent files.
         with pytest.warns(UserWarning, match="File doesn't exist"):
-            assert not img_utils.make_pretty_image(fits_file)
-
-        # Copy the files.
-        shutil.copy(solved_fits_file, tmpdir)
-        shutil.copy(tiny_fits_file, tmpdir)
+            assert not img_utils.make_pretty_image('Foobar')
 
         # Can handle the fits file, and creating the images dir for linking
         # the latest image.
@@ -57,7 +52,7 @@ def test_make_pretty_image(solved_fits_file, tiny_fits_file, save_environ):
         os.environ['PANDIR'] = tmpdir
 
         link_path = os.path.expandvars('$PANDIR/latest.jpg')
-        pretty = img_utils.make_pretty_image(fits_file, link_path=link_path)
+        pretty = img_utils.make_pretty_image(solved_fits_file, link_path=link_path)
         assert pretty
         assert os.path.isfile(pretty)
         assert os.path.isdir(imgdir)
@@ -66,7 +61,7 @@ def test_make_pretty_image(solved_fits_file, tiny_fits_file, save_environ):
         os.rmdir(imgdir)
 
         # Try again, but without link_path.
-        pretty = img_utils.make_pretty_image(fits_file, title='some text')
+        pretty = img_utils.make_pretty_image(tiny_fits_file, title='some text')
         assert pretty
         assert os.path.isfile(pretty)
         assert not os.path.isdir(imgdir)
