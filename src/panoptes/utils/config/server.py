@@ -96,19 +96,20 @@ def get_config_entry():
 
     For example, take the following configuration:
 
-    ```
-    { 
-        'location': {
-            'elevation': 3400.0,
+    ..code::
+
+        {
+            'location': {
+                'elevation': 3400.0,
+            }
         }
-    }
-    ```
 
     To get the corresponding value for the elevation, pass a JSON document similar to:
 
-    ```
-    '{"key": "location.elevation"}'
-    ```
+    ..code::
+
+        '{"key": "location.elevation"}'
+
     """
     req_json = request.get_json()
 

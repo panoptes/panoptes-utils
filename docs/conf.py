@@ -63,10 +63,21 @@ except Exception as e:
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.todo',
-              'sphinx.ext.autosummary', 'sphinx.ext.viewcode', 'sphinx.ext.coverage',
-              'sphinx.ext.doctest', 'sphinx.ext.ifconfig', 'sphinx.ext.mathjax',
-              'sphinx.ext.napoleon']
+extensions = [
+    'sphinx.ext.autosummary',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.doctest',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.coverage',
+    'sphinx.ext.ifconfig',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.napoleon',
+    'matplotlib.sphinxext.plot_directive',
+]
+
+napoleon_include_init_with_doc = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -82,7 +93,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'panoptes-utils'
-copyright = u'2020, Wilfred Tyler Gee'
+copyright = u'2020, Project PANOPTES'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -163,6 +174,7 @@ else:
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
 # html_logo = ""
+html_logo = '_static/pan-title-black-transparent.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -269,4 +281,9 @@ intersphinx_mapping = {
     'sklearn': ('http://scikit-learn.org/stable', None),
     'pandas': ('http://pandas.pydata.org/pandas-docs/stable', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
+    'astropy': ('http://docs.astropy.org/en/stable/', None),
+    'astroplan': ('https://astroplan.readthedocs.io/en/latest/', None),
 }
+
+# If true, `todo` and `todoList` produce output, else they produce nothing.
+todo_include_todos = True

@@ -66,8 +66,10 @@ class PanMessaging(object):
     ZeroMQ is used to provide the underlying pub-sub support. ZeroMQ
     supports only a very basic message format: an array of bytes.
     PanMessaging converts the provided message topic and value into
-    a byte array of this format:
+    a byte array of this format::
+
         <topic-name><space><serialized-value>
+
     """
     logger = logger
 

@@ -26,12 +26,12 @@ def get_stars_from_wcs(wcs, origin=1, **kwargs):
     """Lookup star information from WCS footprint.
 
     Generates the correct layout for an SQL `POLYGON` that can be passed to
-    `get_stars`.
+    :py:func:`get_stars`.
 
     Args:
         wcs (`astropy.wcs.WCS` or array): A valid (i.e. `wcs.is_celestial`) World Coordinate System object.
         origin (int): The origin for the WCS. See `all_world2pix`. Default 1.
-        **kwargs: Optional keywords to pass to `get_stars`.
+        **kwargs: Optional keywords to pass to :py:func:`get_stars`.
 
     """
     wcs_footprint = wcs.calc_footprint().tolist()

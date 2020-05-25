@@ -18,13 +18,13 @@ from . import fits as fits_utils
 def get_rgb_data(data, separate_green=False):
     """Get the data split into separate channels for RGB.
 
-    `data` can be a 2D (`W x H`) or 3D (`N x W x H`) array where `W`=width
-    and `H`=height of the data, with `N`=number of frames.
+    `data` can be a 2D (`W x H`) or 3D (`N x W x H`) array where W=width
+    and H=height of the data, with N=number of frames.
 
     The return array will be a `3 x W x H` or `3 x N x W x H` array.
 
     The Bayer array defines a superpixel as a collection of 4 pixels
-    set in a square grid:
+    set in a square grid::
 
                      R G
                      G B
@@ -37,20 +37,18 @@ def get_rgb_data(data, separate_green=False):
 
     When the data is loaded into a `numpy` array the data is flipped on the
     vertical axis in order to maintain the same indexing/slicing features.
-    This means the the `(0, 0)` coordinate position is in the upper-left
+    This means the the ``(0, 0)`` coordinate position is in the upper-left
     corner of the array when output. When plotting this array one can use
-    the `origin='lower'` option to view the array as would be expected in
+    the ``origin='lower'`` option to view the array as would be expected in
     a normal image although this does not change the actual index.
 
-    Note:
-
-        Image dimensions:
+    Image dimensions::
 
          ----------------------------
          x | width  | i | columns |  5208
          y | height | j | rows    |  3476
 
-        Bayer pattern as seen in ds9:
+    Bayer pattern as seen in ds9::
 
                                       x / j
 
@@ -68,9 +66,9 @@ def get_rgb_data(data, separate_green=False):
                   1 |  R   G1    R    G1        R   G1    R   G1
                   0 | G2    B   G2     B       G2    B   G2    B
 
-        The RGGB super-pixels thus start in the upper-left.
+    The RGGB super-pixels thus start in the upper-left.
 
-        Bayer pattern as seen in a numpy array:
+    Bayer pattern as seen in a numpy array::
 
                                       x / j
 
@@ -88,9 +86,9 @@ def get_rgb_data(data, separate_green=False):
                3474 | G2    B   G2     B       G2    B   G2    B
                3475 |  R   G1    R    G1        R   G1    R   G1
 
-        Here the RGGB super-pixels are flipped upside down.
+    Here the RGGB super-pixels are flipped upside down.
 
-        In both cases the data is in the following format:
+    In both cases the data is in the following format::
 
                  | row (y) |  col (x)
              --------------| ------
@@ -99,7 +97,7 @@ def get_rgb_data(data, separate_green=False):
               G2 | even i, |  even j
               B  | even i, |   odd j
 
-        And a mask can therefore be generated as:
+    And a mask can therefore be generated as::
 
             bayer[1::2, 0::2] = 1 # Red
             bayer[1::2, 1::2] = 1 # Green
@@ -129,10 +127,12 @@ def get_rgb_data(data, separate_green=False):
 def get_rgb_masks(data, separate_green=False):
     """Get the RGGB Bayer pattern for the given data.
 
-    > Note: See `get_rgb_data` for a description of the RGGB pattern.
+    .. note::
+
+        See :py:func:`get_rgb_data` for a description of the RGGB pattern.
 
     Args:
-        data (`numpy.array`): An array of data representing an image.
+        data (`np.array`): An array of data representing an image.
         separate_green (bool, optional): If the two green channels should be separated,
             default False.
 
@@ -171,7 +171,9 @@ def get_rgb_masks(data, separate_green=False):
 def get_pixel_color(x, y):
     """ Given a zero-indexed x,y position, return the corresponding color.
 
-    > Note: See `get_rgb_data` for a description of the RGGB pattern.
+    .. note::
+
+        See :py:func:`get_rgb_data` for a description of the RGGB pattern.
 
     Returns:
         str: one of 'R', 'G1', 'G2', 'B'
