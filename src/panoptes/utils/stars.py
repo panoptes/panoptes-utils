@@ -124,45 +124,45 @@ def lookup_point_sources(fits_file,
 
     Sextractor will return the following columns:
 
-        * ALPHA_J2000   ->  sextractor_ra
-        * DELTA_J2000   ->  sextractor_dec
-        * XPEAK_IMAGE   ->  sextractor_x
-        * YPEAK_IMAGE   ->  sextractor_y
-        * X_IMAGE       ->  sextractor_x_image
-        * Y_IMAGE       ->  sextractor_y_image
-        * ELLIPTICITY   ->  sextractor_ellipticity
-        * THETA_IMAGE   ->  sextractor_theta_image
-        * FLUX_BEST     ->  sextractor_flux_best
-        * FLUXERR_BEST  ->  sextractor_fluxerr_best
-        * FLUX_MAX      ->  sextractor_flux_max
-        * FLUX_GROWTH   ->  sextractor_flux_growth
-        * MAG_BEST      ->  sextractor_mag_best
-        * MAGERR_BEST   ->  sextractor_magerr_best
-        * FWHM_IMAGE    ->  sextractor_fwhm_image
-        * BACKGROUND    ->  sextractor_background
-        * FLAGS         ->  sextractor_flags
+    * ALPHA_J2000   ->  sextractor_ra
+    * DELTA_J2000   ->  sextractor_dec
+    * XPEAK_IMAGE   ->  sextractor_x
+    * YPEAK_IMAGE   ->  sextractor_y
+    * X_IMAGE       ->  sextractor_x_image
+    * Y_IMAGE       ->  sextractor_y_image
+    * ELLIPTICITY   ->  sextractor_ellipticity
+    * THETA_IMAGE   ->  sextractor_theta_image
+    * FLUX_BEST     ->  sextractor_flux_best
+    * FLUXERR_BEST  ->  sextractor_fluxerr_best
+    * FLUX_MAX      ->  sextractor_flux_max
+    * FLUX_GROWTH   ->  sextractor_flux_growth
+    * MAG_BEST      ->  sextractor_mag_best
+    * MAGERR_BEST   ->  sextractor_magerr_best
+    * FWHM_IMAGE    ->  sextractor_fwhm_image
+    * BACKGROUND    ->  sextractor_background
+    * FLAGS         ->  sextractor_flags
 
-    Notes:
-            * Sources within a certain `trim_size` (default 10) of the image edges will be
-            automatically pruned.
+    .. note::
 
-        >>> from panoptes.utils.stars import lookup_point_sources
-        >>> fits_fn = getfixture('solved_fits_file')
+        Sources within a certain `trim_size` (default 10) of the image edges will be automatically pruned.
 
-        >>> point_sources = lookup_point_sources(fits_fn)
-        >>> point_sources.describe()
-               sextractor_ra  sextractor_dec  ...  sextractor_background  sextractor_flags
-        count     473.000000      473.000000  ...             473.000000        473.000000
-        mean      303.284052       46.011116  ...            2218.525156          1.143763
-        std         0.810261        0.582264  ...               4.545206          3.130030
-        min       301.794797       45.038730  ...            2205.807000          0.000000
-        25%       302.598079       45.503276  ...            2215.862000          0.000000
-        50%       303.243873       46.021710  ...            2218.392000          0.000000
-        75%       303.982358       46.497813  ...            2221.577000          0.000000
-        max       304.637887       47.015707  ...            2229.050000         27.000000
-        ...
-        >>> type(point_sources)
-        <class 'pandas.core.frame.DataFrame'>
+    >>> from panoptes.utils.stars import lookup_point_sources
+    >>> fits_fn = getfixture('solved_fits_file')
+
+    >>> point_sources = lookup_point_sources(fits_fn)
+    >>> point_sources.describe()
+           sextractor_ra  sextractor_dec  ...  sextractor_background  sextractor_flags
+    count     473.000000      473.000000  ...             473.000000        473.000000
+    mean      303.284052       46.011116  ...            2218.525156          1.143763
+    std         0.810261        0.582264  ...               4.545206          3.130030
+    min       301.794797       45.038730  ...            2205.807000          0.000000
+    25%       302.598079       45.503276  ...            2215.862000          0.000000
+    50%       303.243873       46.021710  ...            2218.392000          0.000000
+    75%       303.982358       46.497813  ...            2221.577000          0.000000
+    max       304.637887       47.015707  ...            2229.050000         27.000000
+    ...
+    >>> type(point_sources)
+    <class 'pandas.core.frame.DataFrame'>
 
     Args:
         fits_file (str, optional): Path to FITS file to search for stars.
