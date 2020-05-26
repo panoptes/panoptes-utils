@@ -29,4 +29,8 @@ sftp-config.json
 *.a
 *.o
 *.so
-__pycache__
+**/__pycache__
+notebooks
+examples
+docs
+build
