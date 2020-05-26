@@ -68,7 +68,7 @@ RUN pip install --no-cache-dir --no-deps --ignore-installed pip PyYAML && \
 # Install module
 COPY . ${PANDIR}/panoptes-utils/
 RUN cd ${PANDIR}/panoptes-utils && \
-    python setup.py install && \
+    python setup.py develop && \
     # Download astrometry.net files
     python scripts/download-data.py \
         --wide-field --narrow-field \
