@@ -1,20 +1,22 @@
-# .coveragerc to control coverage.py
-[run]
+[coverage:run]
 branch = True
 concurrency =
     multiprocessing
     threading
-    subprocess
 parallel = True
 source = panoptes/utils
-# omit = bad_file.py
+dynamic_context = test_function
+debug =
+    config
+    multiproc
+    sys
 
-[paths]
+[coverage:paths]
 source =
     src/
     */site-packages/
 
-[report]
+[coverage:report]
 # Regexes for lines to exclude from consideration
 exclude_lines =
     # Have to re-enable the standard pragma
