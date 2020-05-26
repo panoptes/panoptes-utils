@@ -33,7 +33,7 @@ _all_databases = ['file', 'memory']
 logger.enable('panoptes')
 logger.level("testing", no=15, icon="🤖", color="<YELLOW><black>")
 log_file_path = os.path.join(
-    os.getenv('PANLOG', os.path.expandvars('$PANDIR/logs')),
+    os.getenv('PANLOG', '/var/panoptes/logs'),
     'panoptes-testing.log'
 )
 log_fmt = "<lvl>{level:.1s}</lvl> " \
@@ -73,7 +73,7 @@ def pytest_addoption(parser):
         action="store_true",
         default=False,
         dest="test_cloud_storage",
-        help="Tests cloud strorage functions." +
+        help="Tests cloud storage functions." +
              "Requires $PANOPTES_CLOUD_KEY to be set to path of valid json service key")
     group.addoption(
         "--test-databases",
@@ -119,7 +119,6 @@ def images_dir(tmpdir_factory):
 def config_path():
     return os.path.join(os.getenv('PANDIR'),
                         'panoptes-utils',
-                        'panoptes',
                         'tests',
                         'panoptes_utils_testing.yaml'
                         )
@@ -373,7 +372,7 @@ def save_environ():
 
 @pytest.fixture(scope='session')
 def data_dir():
-    return os.path.expandvars('$PANDIR/panoptes-utils/panoptes/tests/data')
+    return os.path.expandvars('/var/panoptes/panoptes-utils/tests/data')
 
 
 @pytest.fixture(scope='function')

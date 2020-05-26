@@ -2,11 +2,13 @@
 
 REPORT_FILE=${REPORT_FILE:-coverage.xml}
 
-export PYTHONPATH="$PYTHONPATH:$PANDIR/panoptes-utils/scripts/testing/coverage"
-export COVERAGE_PROCESS_START="${PANDIR}/panoptes-utils/setup.cfg"
+export PYTHONPATH="${PYTHONPATH}:/var/panoptes/panoptes-utils/scripts/testing/coverage"
+export COVERAGE_PROCESS_START="/var/panoptes/panoptes-utils/setup.cfg"
+
+coverage erase
 
 # Run coverage over the pytest suite
-echo "Staring tests"
+echo "Starting tests"
 coverage run "$(command -v pytest)" -x -vv -rfes --test-databases all
 
 echo "Combining coverage"

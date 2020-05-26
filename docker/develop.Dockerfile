@@ -29,11 +29,10 @@ RUN apt-get update && \
 USER $PANUSER
 
 # Can't seem to get around the hard-coding
-COPY --chown=panoptes:panoptes . ${PANDIR}/panoptes-utils/
+COPY --chown=panoptes:panoptes ./dev-requirements.txt ${PANDIR}/panoptes-utils/dev-requirements.txt
 
 RUN cd ${PANDIR}/panoptes-utils && \
     pip install --no-cache-dir -r dev-requirements.txt && \
-    pip install --no-cache-dir -e . && \
     # Set some jupyterlab defaults
     mkdir -p /home/panoptes/.jupyter && \
     jupyter-lab --generate-config && \
@@ -47,6 +46,12 @@ RUN cd ${PANDIR}/panoptes-utils && \
                                 jupyterlab-drawio \
                                 @aquirdturtle/collapsible_headings \
                                 @telamonian/theme-darcula
+
+# Can't seem to get around the hard-coding
+COPY --chown=panoptes:panoptes . ${PANDIR}/panoptes-utils/
+
+#RUN cd ${PANDIR}/panoptes-utils && \
+#    pip install --no-cache-dir -e .
 
 USER root
 

@@ -5,6 +5,29 @@ import os
 from panoptes.utils.config.server import config_server
 
 
+def main(host='127.0.0.1',
+         port=6563,
+         config_file=None,
+         ignore_local=False,
+         auto_save=True,
+         debug=False,
+         auto_start=False):
+    server_process = config_server(
+        host=host,
+        port=port,
+        config_file=config_file,
+        ignore_local=ignore_local,
+        auto_save=auto_save,
+        debug=debug,
+        auto_start=auto_start
+    )
+
+    try:
+        server_process.start()
+    except KeyboardInterrupt:
+        server_process.terminate()
+
+
 if __name__ == '__main__':
 
     import argparse
@@ -16,7 +39,7 @@ if __name__ == '__main__':
     parser.add_argument('--port', default=6563, type=int, help='Local port, default 6563')
     parser.add_argument('--public', default=False, action='store_true',
                         help='If server should be public, default False. '
-                        'Note: inside a docker container set this to True to expose to host.')
+                             'Note: inside a docker container set this to True to expose to host.')
     parser.add_argument('--config-file', dest='config_file', type=str,
                         default=os.path.join(os.environ['PANDIR'], 'conf_files', 'pocs.yaml'),
                         help="Config file, default $PANDIR/conf_files/pocs.yaml")
@@ -31,17 +54,4 @@ if __name__ == '__main__':
     if args.public and args.host == '127.0.0.1':
         args.host = '0.0.0.0'
 
-    server_process = config_server(
-        host=args.host,
-        port=args.port,
-        config_file=args.config_file,
-        ignore_local=args.ignore_local,
-        auto_save=not args.no_save,
-        debug=args.debug,
-        auto_start=False
-    )
-
-    try:
-        server_process.start()
-    except KeyboardInterrupt:
-        server_process.terminate()
+    main(**vars(args))
