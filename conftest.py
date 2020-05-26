@@ -20,7 +20,6 @@ from contextlib import suppress
 
 from panoptes.utils.logging import logger
 from panoptes.utils.database import PanDB
-from panoptes.utils.messaging import PanMessaging
 from panoptes.utils.config.client import set_config
 from panoptes.utils.config.server import config_server
 
@@ -273,94 +272,6 @@ def memory_db():
     PanDB.permanently_erase_database(
         'memory', 'panoptes_testing', really='Yes', dangerous='Totally')
     return PanDB(db_type='memory', db_name='panoptes_testing')
-
-
-# -----------------------------------------------------------------------
-# Messaging support fixtures. It is important that tests NOT use the same
-# ports that the real pocs_shell et al use; when they use the same ports,
-# then tests may cause errors in the real system (e.g. by sending a
-# shutdown command).
-
-
-@pytest.fixture(scope='module')
-def messaging_ports():
-    # Some code (e.g. POCS._setup_messaging) assumes that sub and pub ports
-    # are sequential so these need to match that assumption for now.
-    return dict(msg_ports=(43001, 43002), cmd_ports=(44001, 44002))
-
-
-@pytest.fixture(scope='function')
-def message_forwarder(messaging_ports):
-    cmd = shutil.which('panoptes-messaging-hub')
-    assert cmd is not None
-    args = [cmd]
-    # Note that the other programs using these port pairs consider
-    # them to be pub and sub, in that order, but the forwarder sees things
-    # in reverse: it subscribes to the port that others publish to,
-    # and it publishes to the port that others subscribe to.
-    for _, (sub, pub) in messaging_ports.items():
-        args.append('--pair')
-        args.append(str(sub))
-        args.append(str(pub))
-
-    print(f'message_forwarder fixture starting: {args!r}')
-    proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    # It takes a while for the forwarder to start, so allow for that.
-    # TODO(jamessynge): Come up with a way to speed up these fixtures.
-    time.sleep(3)
-    # If message forwarder doesn't start, tell us why.
-    if proc.poll() is not None:
-        outs, errs = proc.communicate(timeout=5)
-        print(f'outs: {outs!r}')
-        print(f'errs: {errs!r}')
-        assert False
-
-    yield messaging_ports
-    # Make sure messager forwarder is still running at end.
-    assert proc.poll() is None
-
-    # Try to terminate, then communicate, then kill.
-    try:
-        proc.terminate()
-        outs, errs = proc.communicate(timeout=0.5)
-    except subprocess.TimeoutExpired:
-        proc.kill()
-        outs, errs = proc.communicate()
-
-    # Make sure message forwarder was killed.
-    assert proc.poll() is not None
-
-
-@pytest.fixture(scope='function')
-def msg_publisher(message_forwarder):
-    port = message_forwarder['msg_ports'][0]
-    publisher = PanMessaging.create_publisher(port)
-    yield publisher
-    publisher.close()
-
-
-@pytest.fixture(scope='function')
-def msg_subscriber(message_forwarder):
-    port = message_forwarder['msg_ports'][1]
-    subscriber = PanMessaging.create_subscriber(port)
-    yield subscriber
-    subscriber.close()
-
-
-@pytest.fixture(scope='function')
-def cmd_publisher(message_forwarder):
-    port = message_forwarder['cmd_ports'][0]
-    publisher = PanMessaging.create_publisher(port)
-    yield publisher
-    publisher.close()
-
-
-@pytest.fixture(scope='function')
-def cmd_subscriber(message_forwarder):
-    port = message_forwarder['cmd_ports'][1]
-    subscriber = PanMessaging.create_subscriber(port)
-    yield subscriber
-    subscriber.close()
 
 
 @pytest.fixture(scope='function')

@@ -4,7 +4,6 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-
 0.2.15dev
 ---------
 
@@ -20,6 +19,10 @@ All notable changes to this project will be documented in this file.
   * Move all project config to `setup.cfg`.
   * Base Docker image is run by root only.
   * Added a `testing` Dockerfile and cleaned up `latest` and `develop`.
+
+**Removed**
+
+* **Breaking** Removing all zmq based messaging services. (#200)
 
 
 0.2.14 - 2020-05-23
