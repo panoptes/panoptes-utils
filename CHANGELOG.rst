@@ -16,6 +16,9 @@ All notable changes to this project will be documented in this file.
   * Move items to `src` folder.
   * Fix version number.
   * Fix build.
+  * Fix documentation #27.
+  * Move all project config to `setup.cfg`.
+  * Base Docker image is run by root only.
 
 
 0.2.14 - 2020-05-23
