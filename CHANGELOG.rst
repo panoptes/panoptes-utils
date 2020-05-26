@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file.
   * Fix documentation #27.
   * Move all project config to `setup.cfg`.
   * Base Docker image is run by root only.
+  * Added a `testing` Dockerfile and cleaned up `latest` and `develop`.
 
 
 0.2.14 - 2020-05-23

@@ -49,3 +49,4 @@ MANIFEST
 # Per-project virtualenvs
 .venv*/
 notebooks
+src/panoptes/utils/version.py
