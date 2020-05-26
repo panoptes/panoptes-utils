@@ -22,7 +22,7 @@ All notable changes to this project will be documented in this file.
 
 **Removed**
 
-* **Breaking** Removing all zmq based messaging services. (#199)
+* **Breaking** Removing all zmq based messaging services. (#200)
 
 
 0.2.14 - 2020-05-23
