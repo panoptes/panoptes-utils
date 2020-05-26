@@ -20,7 +20,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         wget curl bzip2 ca-certificates \
         astrometry.net sextractor dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
-        libzmq3-dev libfreetype6-dev libpng-dev fonts-lato libsnappy-dev \
+        libfreetype6-dev libpng-dev fonts-lato libsnappy-dev \
         gcc git pkg-config && \
     # Create directories
     mkdir -p ${POCS} && \
