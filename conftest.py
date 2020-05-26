@@ -20,7 +20,6 @@ from contextlib import suppress
 
 from panoptes.utils.logging import logger
 from panoptes.utils.database import PanDB
-from panoptes.utils.messaging import PanMessaging
 from panoptes.utils.config.client import set_config
 from panoptes.utils.config.server import config_server
 

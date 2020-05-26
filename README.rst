@@ -15,7 +15,6 @@ PANOPTES Utils
    -  `Services`_
 
       -  `Config Server`_
-      -  `Messaging Hub`_
 
 -  `Development`_
 
@@ -104,18 +103,6 @@ Or inside a python process:
 
 For more details and usage examples, see the `config server README`_.
 
-Messaging Hub
-^^^^^^^^^^^^^
-
-The messaging hub is responsible for relaying zeromq messages between
-the various components of a PANOPTES system. Running the Messaging Hub
-will set up a forwarding service that allows for an arbitrary number of
-publishers and subscribers.
-
-.. code:: bash
-
-   panoptes-messaging-hub --from-config
-
 Development
 -----------
 
@@ -184,7 +171,6 @@ This is a simple wrapper around ``luguru`` with no extra configuration:
 .. _Modules: #modules
 .. _Services: #services
 .. _Config Server: #config-server
-.. _Messaging Hub: #messaging-hub
 .. _Development: #development
 .. _Environment: #environment
 .. _Logging: #logging
