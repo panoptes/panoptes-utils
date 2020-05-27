@@ -125,7 +125,8 @@ def search_observations(
     >>> end_date = '2019-12-31'
     >>> search_results = search_observations(coords=coords, min_num_images=10, start_date=start_date, end_date=end_date)
     >>> # The result is a DataFrame you can further work with.
-    >>> search_results.groupby(['unit_id', 'field_name']).num_images.sum()
+    >>> image_count = search_results.groupby(['unit_id', 'field_name']).num_images.sum()
+    >>> image_count
     unit_id  field_name
     PAN001   Andromeda Galaxy     378
              HAT-P-19             148
