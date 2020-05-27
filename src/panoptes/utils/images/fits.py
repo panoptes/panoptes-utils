@@ -120,6 +120,9 @@ def get_solve_field(fname, replace=True, overwrite=True, timeout=30, **kwargs):
     >>> # Pass kwargs to `solve-field` program.
     >>> solve_kwargs = {'--pnm': './awesome.bmp', '--use-wget': True}
     >>> solve_info = fits_utils.get_solve_field(fits_fn, **solve_kwargs, skip_solved=False)
+    >>> assert os.path.exists('awesome.bmp')
+    >>> # Cleanup
+    >>> os.unlink('awesome.bmp')
 
     Args:
         fname ({str}): Name of FITS file to be solved.
