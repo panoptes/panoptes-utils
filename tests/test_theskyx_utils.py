@@ -22,6 +22,7 @@ def skyx(data_dir, request):
     theskyx = TheSkyX(connect=False)
 
     yield theskyx
+    Mocket.disable()
 
 
 def test_default_connect(data_dir, request):

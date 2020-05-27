@@ -6,10 +6,10 @@
 # In addition, there are fixtures defined here that are available to
 # all tests, not just those in pocs/tests.
 
-import copy
 import os
-import pytest
+import copy
 import subprocess
+import pytest
 import time
 import shutil
 import tempfile
@@ -38,7 +38,7 @@ log_file_path = os.path.join(
 log_fmt = "<lvl>{level:.1s}</lvl> " \
           "<light-blue>{time:MM-DD HH:mm:ss.ss!UTC}</>" \
           "<blue>({time:HH:mm:ss.ss})</> " \
-          "| <c>{name} {function}:{line}{extra[padding]}</c> | " \
+          "| <c>{name} {function}:{line}</c> | " \
           "<lvl>{message}</lvl>\n"
 logger.add(log_file_path,
            enqueue=True,  # multiprocessing
