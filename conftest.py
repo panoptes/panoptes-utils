@@ -6,20 +6,47 @@
 # In addition, there are fixtures defined here that are available to
 # all tests, not just those in pocs/tests.
 
-import copy
 import os
-import pytest
+import copy
 import subprocess
+import pytest
 import time
 import shutil
+import tempfile
 
+import logging
+from _pytest.logging import caplog as _caplog
+from contextlib import suppress
+
+from panoptes.utils.logging import logger
 from panoptes.utils.database import PanDB
-from panoptes.utils.logger import get_root_logger
-from panoptes.utils.messaging import PanMessaging
 from panoptes.utils.config.client import set_config
 from panoptes.utils.config.server import config_server
 
+# Doctest modules
+import numpy as np
+from matplotlib import pyplot as plt
+
 _all_databases = ['file', 'memory']
+
+logger.enable('panoptes')
+logger.level("testing", no=15, icon="🤖", color="<YELLOW><black>")
+log_file_path = os.path.join(
+    os.getenv('PANLOG', '/var/panoptes/logs'),
+    'panoptes-testing.log'
+)
+log_fmt = "<lvl>{level:.1s}</lvl> " \
+          "<light-blue>{time:MM-DD HH:mm:ss.ss!UTC}</>" \
+          "<blue>({time:HH:mm:ss.ss})</> " \
+          "| <c>{name} {function}:{line}</c> | " \
+          "<lvl>{message}</lvl>\n"
+logger.add(log_file_path,
+           enqueue=True,  # multiprocessing
+           format=log_fmt,
+           colorize=True,
+           backtrace=True,
+           diagnose=True,
+           level='TRACE')
 
 
 def pytest_addoption(parser):
@@ -45,72 +72,14 @@ def pytest_addoption(parser):
         action="store_true",
         default=False,
         dest="test_cloud_storage",
-        help="Tests cloud strorage functions." +
-        "Requires $PANOPTES_CLOUD_KEY to be set to path of valid json service key")
+        help="Tests cloud storage functions." +
+             "Requires $PANOPTES_CLOUD_KEY to be set to path of valid json service key")
     group.addoption(
         "--test-databases",
         nargs="+",
         default=['file'],
         help=("Test databases in the list. List items can include: " + db_names +
               ". Note that travis-ci will test all of them by default."))
-
-
-def pytest_runtest_logstart(nodeid, location):
-    """Signal the start of running a single test item.
-
-    This hook will be called before pytest_runtest_setup(),
-    pytest_runtest_call() and pytest_runtest_teardown() hooks.
-
-    Args:
-        nodeid (str) – full id of the item
-        location – a triple of (filename, linenum, testname)
-    """
-    try:
-        logger = get_root_logger()
-        logger.critical('')
-        logger.critical('##########' * 8)
-        logger.critical('     START TEST {}', nodeid)
-    except Exception:
-        pass
-
-
-def pytest_runtest_logfinish(nodeid, location):
-    """Signal the complete finish of running a single test item.
-
-    This hook will be called after pytest_runtest_setup(),
-    pytest_runtest_call() and pytest_runtest_teardown() hooks.
-
-    Args:
-        nodeid (str) – full id of the item
-        location – a triple of (filename, linenum, testname)
-    """
-    try:
-        logger = get_root_logger()
-        logger.critical('')
-        logger.critical('       END TEST {}', nodeid)
-        logger.critical('##########' * 8)
-    except Exception:
-        pass
-
-
-def pytest_runtest_logreport(report):
-    """Adds the failure info that pytest prints to stdout into the log."""
-    if report.skipped or report.outcome != 'failed':
-        return
-    try:
-        logger = get_root_logger()
-        logger.critical('')
-        logger.critical('  TEST {} FAILED during {}\n\n{}\n', report.nodeid, report.when,
-                        report.longreprtext)
-        cnt = 15
-        if report.capstdout:
-            logger.critical('{}Captured stdout during {}{}\n{}\n', '= ' * cnt, report.when,
-                            ' =' * cnt, report.capstdout)
-        if report.capstderr:
-            logger.critical('{}Captured stderr during {}{}\n{}\n', '* ' * cnt, report.when,
-                            ' *' * cnt, report.capstderr)
-    except Exception:
-        pass
 
 
 @pytest.fixture(scope='session')
@@ -149,7 +118,6 @@ def images_dir(tmpdir_factory):
 def config_path():
     return os.path.join(os.getenv('PANDIR'),
                         'panoptes-utils',
-                        'panoptes',
                         'tests',
                         'panoptes_utils_testing.yaml'
                         )
@@ -157,9 +125,7 @@ def config_path():
 
 @pytest.fixture(scope='session', autouse=True)
 def static_config_server(config_host, static_config_port, config_path, images_dir, db_name):
-
-    logger = get_root_logger()
-    logger.critical(f'Starting config_server for testing session')
+    print(f'Starting config_server for testing session')
 
     proc = config_server(
         host=config_host,
@@ -168,7 +134,7 @@ def static_config_server(config_host, static_config_port, config_path, images_di
         ignore_local=True,
     )
 
-    logger.info(f'config_server started with PID={proc.pid}')
+    print(f'config_server started with PID={proc.pid}')
 
     # Give server time to start
     time.sleep(1)
@@ -176,23 +142,23 @@ def static_config_server(config_host, static_config_port, config_path, images_di
     # Adjust various config items for testing
     unit_name = 'Generic PANOPTES Unit'
     unit_id = 'PAN000'
-    logger.info(f'Setting testing name and unit_id to {unit_id}')
+    print(f'Setting testing name and unit_id to {unit_id}')
     set_config('name', unit_name, port=static_config_port)
     set_config('pan_id', unit_id, port=static_config_port)
 
-    logger.info(f'Setting testing database to {db_name}')
+    print(f'Setting testing database to {db_name}')
     set_config('db.name', db_name, port=static_config_port)
 
     fields_file = 'simulator.yaml'
-    logger.info(f'Setting testing scheduler fields_file to {fields_file}')
+    print(f'Setting testing scheduler fields_file to {fields_file}')
     set_config('scheduler.fields_file', fields_file, port=static_config_port)
 
     # TODO(wtgee): determine if we need separate directories for each module.
-    logger.info(f'Setting temporary image directory for testing')
+    print(f'Setting temporary image directory for testing')
     set_config('directories.images', images_dir, port=static_config_port)
 
     yield
-    logger.critical(f'Killing config_server started with PID={proc.pid}')
+    print(f'Killing config_server started with PID={proc.pid}')
     proc.terminate()
 
 
@@ -205,8 +171,7 @@ def dynamic_config_server(config_host, config_port, config_path, images_dir, db_
     instances that are created (propogated through PanBase).
     """
 
-    logger = get_root_logger()
-    logger.critical(f'Starting config_server for testing function')
+    print(f'Starting config_server for testing function')
 
     proc = config_server(
         host=config_host,
@@ -215,7 +180,7 @@ def dynamic_config_server(config_host, config_port, config_path, images_dir, db_
         ignore_local=True,
     )
 
-    logger.info(f'config_server started with PID={proc.pid}')
+    print(f'config_server started with PID={proc.pid}')
 
     # Give server time to start
     time.sleep(1)
@@ -223,23 +188,23 @@ def dynamic_config_server(config_host, config_port, config_path, images_dir, db_
     # Adjust various config items for testing
     unit_name = 'Generic PANOPTES Unit'
     unit_id = 'PAN000'
-    logger.info(f'Setting testing name and unit_id to {unit_id}')
+    print(f'Setting testing name and unit_id to {unit_id}')
     set_config('name', unit_name, port=config_port)
     set_config('pan_id', unit_id, port=config_port)
 
-    logger.info(f'Setting testing database to {db_name}')
+    print(f'Setting testing database to {db_name}')
     set_config('db.name', db_name, port=config_port)
 
     fields_file = 'simulator.yaml'
-    logger.info(f'Setting testing scheduler fields_file to {fields_file}')
+    print(f'Setting testing scheduler fields_file to {fields_file}')
     set_config('scheduler.fields_file', fields_file, port=config_port)
 
     # TODO(wtgee): determine if we need separate directories for each module.
-    logger.info(f'Setting temporary image directory for testing')
+    print(f'Setting temporary image directory for testing')
     set_config('directories.images', images_dir, port=config_port)
 
     yield
-    logger.critical(f'Killing config_server started with PID={proc.pid}')
+    print(f'Killing config_server started with PID={proc.pid}')
     proc.terminate()
 
 
@@ -288,7 +253,6 @@ def fake_logger():
 
 @pytest.fixture(scope='function', params=_all_databases)
 def db_type(request):
-
     db_list = request.config.option.test_databases
     if request.param not in db_list and 'all' not in db_list:
         pytest.skip("Skipping {} DB, set --test-all-databases=True".format(request.param))
@@ -300,8 +264,7 @@ def db_type(request):
 
 @pytest.fixture(scope='function')
 def db(db_type):
-    return PanDB(
-        db_type=db_type, db_name='panoptes_testing', logger=get_root_logger(), connect=True)
+    return PanDB(db_type=db_type, db_name='panoptes_testing', connect=True)
 
 
 @pytest.fixture(scope='function')
@@ -309,95 +272,6 @@ def memory_db():
     PanDB.permanently_erase_database(
         'memory', 'panoptes_testing', really='Yes', dangerous='Totally')
     return PanDB(db_type='memory', db_name='panoptes_testing')
-
-
-# -----------------------------------------------------------------------
-# Messaging support fixtures. It is important that tests NOT use the same
-# ports that the real pocs_shell et al use; when they use the same ports,
-# then tests may cause errors in the real system (e.g. by sending a
-# shutdown command).
-
-
-@pytest.fixture(scope='module')
-def messaging_ports():
-    # Some code (e.g. POCS._setup_messaging) assumes that sub and pub ports
-    # are sequential so these need to match that assumption for now.
-    return dict(msg_ports=(43001, 43002), cmd_ports=(44001, 44002))
-
-
-@pytest.fixture(scope='function')
-def message_forwarder(messaging_ports):
-    cmd = shutil.which('panoptes-messaging-hub')
-    assert cmd is not None
-    args = [cmd]
-    # Note that the other programs using these port pairs consider
-    # them to be pub and sub, in that order, but the forwarder sees things
-    # in reverse: it subscribes to the port that others publish to,
-    # and it publishes to the port that others subscribe to.
-    for _, (sub, pub) in messaging_ports.items():
-        args.append('--pair')
-        args.append(str(sub))
-        args.append(str(pub))
-
-    logger = get_root_logger()
-    logger.info('message_forwarder fixture starting: {}', args)
-    proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    # It takes a while for the forwarder to start, so allow for that.
-    # TODO(jamessynge): Come up with a way to speed up these fixtures.
-    time.sleep(3)
-    # If message forwarder doesn't start, tell us why.
-    if proc.poll() is not None:
-        outs, errs = proc.communicate(timeout=5)
-        logger.info(f'outs: {outs!r}')
-        logger.info(f'errs: {errs!r}')
-        assert False
-
-    yield messaging_ports
-    # Make sure messager forwarder is still running at end.
-    assert proc.poll() is None
-
-    # Try to terminate, then communicate, then kill.
-    try:
-        proc.terminate()
-        outs, errs = proc.communicate(timeout=0.5)
-    except subprocess.TimeoutExpired:
-        proc.kill()
-        outs, errs = proc.communicate()
-
-    # Make sure message forwarder was killed.
-    assert proc.poll() is not None
-
-
-@pytest.fixture(scope='function')
-def msg_publisher(message_forwarder):
-    port = message_forwarder['msg_ports'][0]
-    publisher = PanMessaging.create_publisher(port)
-    yield publisher
-    publisher.close()
-
-
-@pytest.fixture(scope='function')
-def msg_subscriber(message_forwarder):
-    port = message_forwarder['msg_ports'][1]
-    subscriber = PanMessaging.create_subscriber(port)
-    yield subscriber
-    subscriber.close()
-
-
-@pytest.fixture(scope='function')
-def cmd_publisher(message_forwarder):
-    port = message_forwarder['cmd_ports'][0]
-    publisher = PanMessaging.create_publisher(port)
-    yield publisher
-    publisher.close()
-
-
-@pytest.fixture(scope='function')
-def cmd_subscriber(message_forwarder):
-    port = message_forwarder['cmd_ports'][1]
-    subscriber = PanMessaging.create_subscriber(port)
-    yield subscriber
-    subscriber.close()
 
 
 @pytest.fixture(scope='function')
@@ -409,24 +283,69 @@ def save_environ():
 
 @pytest.fixture(scope='session')
 def data_dir():
-    return os.path.join(os.getenv('PANDIR'), 'panoptes-utils', 'panoptes/utils', 'tests', 'data')
+    return os.path.expandvars('/var/panoptes/panoptes-utils/tests/data')
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def unsolved_fits_file(data_dir):
-    return os.path.join(data_dir, 'unsolved.fits')
+    orig_file = os.path.join(data_dir, 'unsolved.fits')
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        copy_file = shutil.copy2(orig_file, tmpdirname)
+        yield copy_file
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def solved_fits_file(data_dir):
-    return os.path.join(data_dir, 'solved.fits.fz')
+    orig_file = os.path.join(data_dir, 'solved.fits.fz')
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        copy_file = shutil.copy2(orig_file, tmpdirname)
+        yield copy_file
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def tiny_fits_file(data_dir):
-    return os.path.join(data_dir, 'tiny.fits')
+    orig_file = os.path.join(data_dir, 'tiny.fits')
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        copy_file = shutil.copy2(orig_file, tmpdirname)
+        yield copy_file
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def noheader_fits_file(data_dir):
-    return os.path.join(data_dir, 'noheader.fits')
+    orig_file = os.path.join(data_dir, 'noheader.fits')
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        copy_file = shutil.copy2(orig_file, tmpdirname)
+        yield copy_file
+
+
+@pytest.fixture(scope='function')
+def cr2_file(data_dir):
+    cr2_path = os.path.join(data_dir, 'canon.cr2')
+
+    if not os.path.exists(cr2_path):
+        pytest.skip("No CR2 file found, skipping test.")
+
+    return cr2_path
+
+
+@pytest.fixture(autouse=True)
+def add_doctest_dependencies(doctest_namespace):
+    doctest_namespace['np'] = np
+    doctest_namespace['plt'] = plt
+
+
+@pytest.fixture
+def caplog(_caplog):
+    class PropogateHandler(logging.Handler):
+        def emit(self, record):
+            logging.getLogger(record.name).handle(record)
+
+    logger.enable('panoptes')
+    handler_id = logger.add(PropogateHandler(), format="{message}")
+    yield _caplog
+    with suppress(ValueError):
+        logger.remove(handler_id)

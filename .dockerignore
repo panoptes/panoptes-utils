@@ -1,0 +1,37 @@
+venv/
+docs/*
+!.git  # For testing local install
+.cache
+.eggs
+.vscode
+__pycache__
+*.egg-info
+
+# Development support
+sftp-config.json
+
+# emacs backups
+*~
+\#*\#
+
+# ignore all markdown files (md) beside all README*.md
+*.md
+!README*.md
+
+# TeX products
+*.aux
+*.log
+*.pdf
+*.toc
+
+# Compiled files
+*.py[co]
+*.a
+*.o
+*.so
+**/__pycache__
+notebooks
+examples
+docs
+build
+coverage.xml

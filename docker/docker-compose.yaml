@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   config-server:
-    image: gcr.io/panoptes-survey/panoptes-utils:latest
+    image: gcr.io/panoptes-exp/panoptes-utils:latest
     init: true
     container_name: config-server
     privileged: true
@@ -10,25 +10,7 @@ services:
     restart: on-failure
     volumes:
       - pandir:/var/panoptes
-    command: ["$PANDIR/panoptes-utils/bin/panoptes-config-server", "--public"]
-  messaging-hub:
-    image: gcr.io/panoptes-survey/panoptes-utils:latest
-    init: true
-    container_name: messaging-hub
-    privileged: true
-    network_mode: host
-    env_file: $PANDIR/.env
-    depends_on:
-      - "config-server"
-    restart: on-failure
-    volumes:
-      - pandir:/var/panoptes
-    command:
-      - "$PANDIR/panoptes-utils/bin/wait-for-it.sh"
-      - "localhost:6563"
-      - "--"
-      - "$PANDIR/panoptes-utils/bin/panoptes-messaging-hub"
-      - "--from-config"
+    command: ["/var/panoptes/panoptes-utils/bin/panoptes-config-server", "--public"]
 volumes:
     pandir:
       driver: local
