@@ -23,8 +23,8 @@ def fix_image_size(max_width, max_height, image):
 
 
 def overlay_grid_display(
-    background_jpg,
-    overlay_png,
+    background_filename,
+    overlay_filename,
     width=4800,
     height=2400,
     alpha=0.2,
