@@ -22,7 +22,7 @@ def fix_image_size(max_width, max_height, image):
     return new_image
 
 
-def grid_display(
+def overlay_grid_display(
     background_jpg,
     overlay_png,
     width=4800,
