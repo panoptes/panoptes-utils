@@ -95,11 +95,11 @@ def test_wait_for_events():
     event1 = threading.Event()
 
     # Wait for 30 seconds but interrupt after 1 second by returning True.
-    def interrupt():
+    def interrupt_cb():
         time.sleep(1)
-        return True
+        return False
 
-    assert wait_for_events([event0, event1], timeout=30, interrupt_cb=interrupt) is False
+    assert wait_for_events([event0, event1], timeout=30, callback=interrupt_cb) is False
 
     # Timeout if event is never set.
     with pytest.raises(error.Timeout):
@@ -112,7 +112,7 @@ def test_wait_for_events():
         event1.set()
 
     threading.Thread(target=set_events).start()
-    assert wait_for_events([event0, event1], msg_interval=1, timeout=30)
+    assert wait_for_events([event0, event1], timeout=30)
 
     # If the events are set then the function will return immediately
     assert wait_for_events([event0, event1], timeout=30)
