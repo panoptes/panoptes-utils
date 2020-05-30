@@ -208,53 +208,10 @@ def dynamic_config_server(config_host, config_port, config_path, images_dir, db_
     proc.terminate()
 
 
-@pytest.fixture
-def temp_file():
-    temp_file = 'temp'
-    with open(temp_file, 'w') as f:
-        f.write('')
-
-    yield temp_file
-    os.unlink(temp_file)
-
-
-class FakeLogger:
-    def __init__(self):
-        self.messages = []
-        pass
-
-    def _add(self, name, *args):
-        msg = [name]
-        assert len(args) == 1
-        assert isinstance(args[0], tuple)
-        msg.append(args[0])
-        self.messages.append(msg)
-
-    def debug(self, *args):
-        self._add('debug', args)
-
-    def info(self, *args):
-        self._add('info', args)
-
-    def warning(self, *args):
-        self._add('warning', args)
-
-    def error(self, *args):
-        self._add('error', args)
-
-    def critical(self, *args):
-        self._add('critical', args)
-
-
-@pytest.fixture(scope='function')
-def fake_logger():
-    return FakeLogger()
-
-
 @pytest.fixture(scope='function', params=_all_databases)
 def db_type(request):
     db_list = request.config.option.test_databases
-    if request.param not in db_list and 'all' not in db_list:
+    if request.param not in db_list and 'all' not in db_list:  # pragma: no cover
         pytest.skip(f"Skipping {request.param} DB, set --test-all-databases=True")
 
     PanDB.permanently_erase_database(

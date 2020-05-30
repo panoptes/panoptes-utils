@@ -16,7 +16,7 @@ def get_db_class(module_name='file'):
     .. note::
 
         This is used by the `PanDB` constructor to determine the
-        correct database type. Normal DB instantion should be done
+        correct database type. Normal DB instantiation should be done
         via the `PanDB()` class with the desired `db_type` parameter
         set.  See example in `PanDB` below.
 
