@@ -1,15 +1,6 @@
 PANOPTES Utilities
 ==================
 
-.. raw:: html
-
-   <p align="center">
-   <a href="https://projectpanoptes.org">
-      <img src="https://github.com/panoptes/panoptes-utils/raw/develop/docs/_static/pan-title-black-transparent.png" alt="PANOPTES logo" target="_blank" />
-    </a>
-   </p>
-
-
 |PyPI version| |Build Status| |codecov| |Documentation Status|
    
 
