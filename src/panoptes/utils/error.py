@@ -3,7 +3,6 @@ from .logging import logger
 
 
 class PanError(Exception):
-
     """ Base class for Panoptes errors """
 
     def __init__(self, msg=None, exit=False):
@@ -34,7 +33,6 @@ class PanError(Exception):
 
 
 class InvalidSystemCommand(PanError):
-
     """ Error for a system level command malfunction """
 
     def __init__(self, msg='Problem running system command', **kwargs):
@@ -42,7 +40,6 @@ class InvalidSystemCommand(PanError):
 
 
 class InvalidDeserialization(PanError):
-
     """ Error for serialization errors """
 
     def __init__(self, msg='Problem deserializing', **kwargs):
@@ -50,7 +47,6 @@ class InvalidDeserialization(PanError):
 
 
 class InvalidSerialization(PanError):
-
     """ Error for serialization errors """
 
     def __init__(self, msg='Problem Serializing', **kwargs):
@@ -58,7 +54,6 @@ class InvalidSerialization(PanError):
 
 
 class Timeout(PanError):
-
     """ Error called when an event times out """
 
     def __init__(self, msg='Timeout waiting for event', **kwargs):
@@ -66,7 +61,6 @@ class Timeout(PanError):
 
 
 class NoObservation(PanError):
-
     """ Generic no Observation """
 
     def __init__(self, msg='No valid observations found.', **kwargs):
@@ -74,30 +68,21 @@ class NoObservation(PanError):
 
 
 class NotFound(PanError):
-
     """ Generic not found class """
     pass
 
 
-class InvalidCollection(NotFound):
-    """PanError raised if a collection name is invalid."""
-    pass
-
-
 class InvalidConfig(PanError):
-
     """ PanError raised if config file is invalid """
     pass
 
 
 class InvalidCommand(PanError):
-
     """ PanError raised if a system command does not run """
     pass
 
 
 class InvalidMountCommand(PanError):
-
     """ PanError raised if attempting to send command that doesn't exist """
     pass
 
@@ -108,13 +93,11 @@ class InvalidObservation(NotFound):
 
 
 class BadConnection(PanError):
-
     """ PanError raised when a connection is bad """
     pass
 
 
 class BadSerialConnection(PanError):
-
     """ PanError raised when serial command is bad """
     pass
 
@@ -125,7 +108,6 @@ class ArduinoDataError(PanError):
 
 
 class MountNotFound(NotFound):
-
     """ Mount cannot be import """
 
     def __init__(self, msg='Mount Not Found', **kwargs):
@@ -133,7 +115,6 @@ class MountNotFound(NotFound):
 
 
 class CameraNotFound(NotFound):
-
     """ Camera cannot be imported """
     pass
 
@@ -144,7 +125,6 @@ class DomeNotFound(NotFound):
 
 
 class SolveError(NotFound):
-
     """ Camera cannot be imported """
     pass
 

@@ -61,15 +61,6 @@ def test_bad_insert(db):
         assert rec is None
 
 
-@pytest.mark.filterwarnings('ignore')
-def test_bad_collection(db):
-    with pytest.raises(error.InvalidCollection):
-        db.insert_current('foobar', {'test': 'insert'})
-
-    with pytest.raises(error.InvalidCollection):
-        db.insert('foobar', {'test': 'insert'})
-
-
 def test_warn_bad_object(db):
     with pytest.raises(error.InvalidSerialization):
         db.insert_current('observations', {'junk': db})
