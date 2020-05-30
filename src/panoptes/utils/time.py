@@ -5,6 +5,7 @@ from datetime import timezone as tz
 from astropy import units as u
 from astropy.time import Time
 
+from . import error
 from .logging import logger
 
 
@@ -186,3 +187,75 @@ class CountdownTimer(object):
 
         return sleep_time < remaining
 
+
+def wait_for_events(events,
+                    timeout,
+                    sleep_delay=1 * u.second,
+                    msg_interval=30 * u.second,
+                    event_type='generic',
+                    interrupt_cb=None
+                    ):
+    """Wait for event(s) to be set.
+
+    This method will wait for a maximum of `timeout` seconds for all of the
+    `events` to complete.
+
+    Will check at least every `sleep_delay` seconds for the events to be done,
+    and also for interrupts and bad weather. Will log debug messages approximately
+    every `msg_interval` seconds.
+
+    .. doctest::
+
+        >>> import time
+        >>> import threading
+        >>> from panoptes.utils.time import wait_for_events
+        >>> from panoptes.utils.time import current_time
+        >>> # Create some events, normally something like taking an image.
+        >>> event0 = threading.Event()
+        >>> event1 = threading.Event()
+        >>> # Wait for 30 seconds but interrupt after 1.
+        >>> def interrupt(): time.sleep(1); return True
+        >>> start_time = current_time()
+        >>> wait_for_events([event0, event1], timeout=30, interrupt_cb=interrupt)
+        >>> assert (current_time() - start_time).sec < 2
+
+        >>> # If the events are
+
+    Args:
+        events (list(`threading.Event`)): An Event or list of Events to wait on.
+        timeout (float|`astropy.units.Quantity`): Timeout in seconds to wait for events.
+        sleep_delay (float, optional): Time in seconds between event checks.
+        msg_interval (float, optional): Time in seconds between sending of log messages.
+        event_type (str, optional): The type of event, used for outputting in log messages,
+            default 'generic'.
+        interrupt_cb (callable): A callback for interrupting that can stop the wait if it
+            returns True, default None.
+
+    Raises:
+        error.Timeout: Raised if events have not all been set before `timeout` seconds.
+    """
+    if isinstance(sleep_delay, u.Quantity):
+        sleep_delay = sleep_delay.to(u.second).value
+
+    timer = CountdownTimer(timeout)
+    msg_timer = CountdownTimer(msg_interval)
+
+    if not isinstance(events, list):
+        events = list(events)
+
+    start_time = current_time()
+    while not all([event.is_set() for event in events]):
+        if callable(interrupt_cb) and interrupt_cb():
+            logger.info("Waiting for events has been interrupted")
+            break
+
+        if msg_timer.expired():
+            elapsed_secs = (current_time() - start_time).to(u.second).value
+            logger.debug(f'Waiting for {event_type} events: {round(elapsed_secs)} seconds elapsed')
+            msg_timer.restart()
+
+        if timer.expired():
+            raise error.Timeout(f"Timeout waiting for {event_type} event")
+
+        # Sleep for a little bit.
+        timer.sleep(max_sleep=sleep_delay)
