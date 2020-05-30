@@ -1,6 +1,10 @@
 PANOPTES Utilities
 ==================
 
+
+|PyPI version| |Build Status| |codecov| |Documentation Status|
+
+
 .. raw:: html
 
    <p align="center">
@@ -9,8 +13,6 @@ PANOPTES Utilities
     </a>
    </p>
    
-
-|PyPI version| |Build Status| |codecov| |Documentation Status|
 
 -  `PANOPTES Utils`_
 -  `Getting`_
