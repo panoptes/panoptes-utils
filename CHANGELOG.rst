@@ -4,6 +4,14 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+0.2.16dev
+---------
+
+**Changed**
+
+* Remove the `validate_collection` requirement from the database types.
+    Essentially any collection is now valid. (#202)
+
 0.2.15 - 2020-05-26
 -------------------
 
