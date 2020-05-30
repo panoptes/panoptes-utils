@@ -70,4 +70,11 @@ def test_warn_bad_object(db):
 
 
 def test_delete_file_db():
-    PanDB.permanently_erase_database('file', 'panoptes_testing', really='Yes', dangerous='Totally')
+    with pytest.raises(Exception):
+        PanDB.permanently_erase_database('memory', 'panoptes_testing', really='Nope', dangerous='Hopefully not')
+
+    with pytest.raises(ValueError):
+        PanDB.permanently_erase_database('memory', 'do_not_delete_me', really='Nope', dangerous='Again, we hope not')
+
+    PanDB.permanently_erase_database('file', 'panoptes_testing', really='Yes')
+    PanDB.permanently_erase_database('memory', 'panoptes_testing', dangerous='Totally')

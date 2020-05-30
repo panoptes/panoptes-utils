@@ -181,8 +181,7 @@ class PanDB(object):
         """Permanently delete the contents of the identified database."""
 
         if not isinstance(db_name, str) or 'test' not in db_name:
-            raise ValueError(
-                'permanently_erase_database() called for non-test database {!r}'.format(db_name))
+            raise ValueError(f'permanently_erase_database() called for non-test database {db_name!r}')
 
         if really != 'Yes' or dangerous != 'Totally':
             raise Exception('PanDB.permanently_erase_database called with invalid args!')
