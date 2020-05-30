@@ -1,10 +1,12 @@
 import os
 import time
+from contextlib import suppress
 from datetime import timezone as tz
 
 from astropy import units as u
 from astropy.time import Time
 
+from . import error
 from .logging import logger
 
 
@@ -119,6 +121,7 @@ class CountdownTimer(object):
         assert duration >= 0, "Duration must be non-negative."
         self.is_non_blocking = (duration == 0)
 
+        self.target_time = None
         self.duration = float(duration)
         self.restart()
 
@@ -184,3 +187,86 @@ class CountdownTimer(object):
         time.sleep(sleep_time)
 
         return sleep_time < remaining
+
+
+def wait_for_events(events,
+                    timeout=600,
+                    sleep_delay=5 * u.second,
+                    callback=None,
+                    ):
+    """Wait for event(s) to be set.
+
+    This method will wait for a maximum of `timeout` seconds for all of the `events`
+    to complete.
+
+    Checks every `sleep_delay` seconds for the events to be set.
+
+    If provided, the `callback` will be called every `sleep_delay` seconds.
+    The callback should return `True` to continue waiting otherwise `False`
+    to interrupt the loop and return from the function.
+
+    .. doctest::
+
+        >>> import time
+        >>> import threading
+        >>> from panoptes.utils.time import wait_for_events
+        >>> # Create some events, normally something like taking an image.
+        >>> event0 = threading.Event()
+        >>> event1 = threading.Event()
+
+        >>> # Wait for 30 seconds but interrupt after 1 second by returning False from callback.
+        >>> def interrupt_cb(): time.sleep(1); return False
+        >>> # The function will return False if events are not set.
+        >>> wait_for_events([event0, event1], timeout=30, callback=interrupt_cb)
+        False
+
+        >>> # Timeout will raise an exception.
+        >>> wait_for_events([event0, event1], timeout=1)
+        Traceback (most recent call last):
+          File "<input>", line 1, in <module>
+          File ".../panoptes-utils/src/panoptes/utils/time.py", line 254, in wait_for_events
+        panoptes.utils.error.Timeout: Timeout: Timeout waiting for generic event
+
+        >>> # Set the events in another thread for normal usage.
+        >>> def set_events(): time.sleep(1); event0.set(); event1.set()
+        >>> threading.Thread(target=set_events).start()
+        >>> wait_for_events([event0, event1], timeout=30)
+        True
+
+    Args:
+        events (list(`threading.Event`)): An Event or list of Events to wait on.
+        timeout (float|`astropy.units.Quantity`): Timeout in seconds to wait for events,
+            default 600 seconds.
+        sleep_delay (float, optional): Time in seconds between event checks.
+        callback (callable): A periodic callback that should return `True` to continue
+            waiting or `False` to interrupt the loop. Can also be used for e.g. custom logging.
+
+    Returns:
+        bool: True if events were set, False otherwise.
+
+    Raises:
+        error.Timeout: Raised if events have not all been set before `timeout` seconds.
+    """
+    with suppress(AttributeError):
+        sleep_delay = sleep_delay.to_value('second')
+
+    event_timer = CountdownTimer(timeout)
+
+    if not isinstance(events, list):
+        events = [events]
+
+    start_time = current_time()
+    while not all([event.is_set() for event in events]):
+        elapsed_secs = round((current_time() - start_time).to_value('second'), 2)
+
+        if event_timer.expired():
+            raise error.Timeout(f"Timeout waiting for {len(events)} events after {elapsed_secs} seconds")
+
+        if callable(callback) and callback() is False:
+            logger.warning(f"Waiting for {len(events)} events has been interrupted after {elapsed_secs} seconds")
+            break
+
+        # Sleep for a little bit.
+        event_timer.sleep(max_sleep=sleep_delay)
+
+    return all([event.is_set() for event in events])

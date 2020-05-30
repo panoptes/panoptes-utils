@@ -6,6 +6,7 @@ MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
 ARG pan_dir=/var/panoptes
 ARG pocs_dir="${pan_dir}/POCS"
 ARG astrometry_dir="/astrometry/data"
+ARG cr2_url="https://storage.googleapis.com/panoptes-resources/test-data/canon.cr2"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
@@ -40,6 +41,8 @@ RUN pip install --no-cache-dir --no-deps --ignore-installed pip PyYAML && \
 COPY . ${PANDIR}/panoptes-utils/
 RUN cd ${PANDIR}/panoptes-utils && \
     python setup.py develop && \
+    # Get the CR2 testing file.
+    wget -qO- $cr2_url > "${PANDIR}/panoptes-utils/tests/data/canon.cr2" && \
     # Download astrometry.net files
     python scripts/download-data.py \
         --wide-field --narrow-field \

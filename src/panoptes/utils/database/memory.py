@@ -7,7 +7,7 @@ from .. import error
 from ..serializers import to_json
 from ..serializers import from_json
 from ..database import AbstractPanDB
-from ..database import create_storage_obj
+from ..database.base import create_storage_obj
 
 
 class PanMemoryDB(AbstractPanDB):
@@ -44,9 +44,8 @@ class PanMemoryDB(AbstractPanDB):
         return str(uuid4())
 
     def insert_current(self, collection, obj, store_permanently=True):
-        self.validate_collection(collection)
         obj_id = self._make_id()
-        obj = create_storage_obj(collection, obj, obj_id=obj_id)
+        obj = create_storage_obj(collection, obj, obj_id)
         try:
             obj = to_json(obj)
         except Exception as e:
@@ -59,9 +58,8 @@ class PanMemoryDB(AbstractPanDB):
         return obj_id
 
     def insert(self, collection, obj):
-        self.validate_collection(collection)
         obj_id = self._make_id()
-        obj = create_storage_obj(collection, obj, obj_id=obj_id)
+        obj = create_storage_obj(collection, obj, obj_id)
         try:
             obj = to_json(obj)
         except Exception as e:
@@ -90,7 +88,7 @@ class PanMemoryDB(AbstractPanDB):
             del self.current[entry_type]
 
     @classmethod
-    def permanently_erase_database(self, db_name):
+    def permanently_erase_database(cls, db_name):
         # For some reason we're not seeing all the references disappear
         # after tests. Perhaps there is some global variable pointing at
         # the db or one of its referrers, or perhaps a pytest fixture
