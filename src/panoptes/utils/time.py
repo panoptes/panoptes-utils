@@ -193,20 +193,23 @@ def wait_for_events(events,
                     timeout=600,
                     sleep_delay=1 * u.second,
                     msg_interval=30 * u.second,
+                    interrupt_cb=None,
                     event_type='generic',
-                    interrupt_cb=None
                     ):
     """Wait for event(s) to be set.
 
-    This method will wait for a maximum of `timeout` seconds for all of the
-    `events` to complete.
+    This method will wait for a maximum of `timeout` seconds for all of the `events`
+    to complete.
 
-    Will check at least every `sleep_delay` seconds for the events to be done,
-    and also for interrupts and bad weather. Will log debug messages approximately
-    every `msg_interval` seconds.
+    Checks every `sleep_delay` seconds for the events to be set.
 
-    The interrupt is provided via the `interrupt_cb`, which must be a `callable` that
-    returns `True` to interrupt the wait loop, `False` otherwise.
+    Will log debug messages approximately every `msg_interval` seconds.
+
+    The wait loop can be interrupted via `interrupt_cb`, which must be a `callable`
+    that returns `True` to interrupt the wait loop, `False` otherwise. The call will
+    happen approximately every `sleep_delay` seconds.
+
+    The `event_type` parameter is merely for logging purposes.
 
     .. doctest::
 
@@ -242,10 +245,10 @@ def wait_for_events(events,
             default 600 seconds.
         sleep_delay (float, optional): Time in seconds between event checks.
         msg_interval (float, optional): Time in seconds between sending of log messages.
-        event_type (str, optional): The type of event, used for outputting in log messages,
-            default 'generic'.
         interrupt_cb (callable): A callback for interrupting that can stop the wait if it
             returns True, default None (no callback).
+        event_type (str, optional): The type of event, used for outputting in log messages,
+            default 'generic'.
 
     Returns:
         bool: True if events were set, False otherwise.
