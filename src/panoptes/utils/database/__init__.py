@@ -1,1 +1,1 @@
-from .base import AbstractPanDB, PanDB, get_db_class
+from .base import AbstractPanDB, PanDB

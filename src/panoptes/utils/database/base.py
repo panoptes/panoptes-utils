@@ -2,8 +2,6 @@ import abc
 
 from ..time import current_time
 from ..library import load_module
-from .. import listify
-from .. import error
 from ..logging import logger
 
 
@@ -18,19 +16,12 @@ def create_storage_obj(collection, data, obj_id=None):
 def get_db_class(module_name='file'):
     """Load the main DB class for the module of the given name.
 
-    .. doctest:
+    .. note::
 
-        >>> from panoptes.utils.database import get_db_class
-        >>> get_db_class()
-        <class 'panoptes.utils.database.file.PanFileDB'>
-        >>> get_db_class('memory')
-        <class 'panoptes.utils.database.memory.PanMemoryDB'>
-        >>> # Make a new instance of the db.
-        >>> memory_db = get_db_class('memory')()
-        >>> insert_id = memory_db.insert_current('safety', True)
-        >>> record = memory_db.get_current('safety')
-        >>> record['data']
-        True
+        This is used by the `PanDB` constructor to determine the
+        correct database type. Normal DB instantion should be done
+        via the `PanDB()` class with the desired `db_type` parameter
+        set.  See example in `PanDB` below.
 
     Args:
         module_name (str): Name of module, one of: `file` (default), 'memory'.
@@ -146,6 +137,24 @@ class PanDB(object):
 
     We don't actually create instances of this class, but instead create
     an instance of the 'correct' type of db.
+
+    .. doctest:
+
+        >>> from panoptes.utils.database import PanDB
+        >>> type(PanDB(db_type='file'))
+        <class 'panoptes.utils.database.file.PanFileDB'>
+        >>> type(PanDB('memory'))
+        <class 'panoptes.utils.database.memory.PanMemoryDB'>
+
+        >>> # Make a new instance of the db.
+        >>> memory_db = PanDB(db_type='memory')
+        >>> # Returns None if noe record.
+        >>> memory_db.get_current('safety')
+
+        >>> insert_id = memory_db.insert_current('safety', True)
+        >>> record = memory_db.get_current('safety')
+        >>> record['data']
+        True
     """
 
     def __new__(cls, db_type='memory', db_name=None, *args, **kwargs):
