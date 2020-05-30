@@ -42,7 +42,7 @@ COPY . ${PANDIR}/panoptes-utils/
 RUN cd ${PANDIR}/panoptes-utils && \
     python setup.py develop && \
     # Get the CR2 testing file.
-    wget -qO- $cr2_url > "${PANDIR}/tests/data/canon.cr2" && \
+    wget -qO- $cr2_url > "${PANDIR}/panoptes-utils/tests/data/canon.cr2" && \
     # Download astrometry.net files
     python scripts/download-data.py \
         --wide-field --narrow-field \
