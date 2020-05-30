@@ -213,20 +213,28 @@ def wait_for_events(events,
         >>> import time
         >>> import threading
         >>> from panoptes.utils.time import wait_for_events
-        >>> from panoptes.utils.time import current_time
         >>> # Create some events, normally something like taking an image.
         >>> event0 = threading.Event()
         >>> event1 = threading.Event()
 
-        >>> # Wait for 30 seconds but interrupt after 1 second by returning True.
+        >>> # Wait for 30 seconds but interrupt after 1 second by returning True from interrupt.
         >>> def interrupt(): time.sleep(1); return True
-        >>> start_time = current_time()
+        >>> # The function will return False if events are not set.
         >>> wait_for_events([event0, event1], timeout=30, interrupt_cb=interrupt)
+        False
+
+        >>> # Timeout will raise an exception.
+        >>> wait_for_events([event0, event1], timeout=1)
+        Traceback (most recent call last):
+          File "<input>", line 1, in <module>
+          File ".../panoptes-utils/src/panoptes/utils/time.py", line 254, in wait_for_events
+        panoptes.utils.error.Timeout: Timeout: Timeout waiting for generic event
 
         >>> # Set the events in another thread for normal usage.
         >>> def set_events(): time.sleep(1); event0.set(); event1.set()
         >>> threading.Thread(target=set_events).start()
         >>> wait_for_events([event0, event1], timeout=30)
+        True
 
     Args:
         events (list(`threading.Event`)): An Event or list of Events to wait on.
@@ -238,6 +246,9 @@ def wait_for_events(events,
             default 'generic'.
         interrupt_cb (callable): A callback for interrupting that can stop the wait if it
             returns True, default None (no callback).
+
+    Returns:
+        bool: True if events were set, False otherwise.
 
     Raises:
         error.Timeout: Raised if events have not all been set before `timeout` seconds.
@@ -268,3 +279,5 @@ def wait_for_events(events,
 
         # Sleep for a little bit.
         event_timer.sleep(max_sleep=sleep_delay)
+
+    return all([event.is_set() for event in events])
