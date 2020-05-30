@@ -12,6 +12,7 @@ Added
 
 * Added CR2 file testing to GitHub Actions. (#125, #205)
 * A `wait_for_events` generic utility, mostly pulled from POCS. (#92, #206)
+  * Supports single `callback` that can be used for interrupting, custom logging, etc. (#208)
 
 Changed
 ^^^^^^^
