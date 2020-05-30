@@ -76,5 +76,5 @@ def test_delete_file_db():
     with pytest.raises(ValueError):
         PanDB.permanently_erase_database('memory', 'do_not_delete_me', really='Nope', dangerous='Again, we hope not')
 
-    PanDB.permanently_erase_database('file', 'panoptes_testing', really='Yes')
-    PanDB.permanently_erase_database('memory', 'panoptes_testing', dangerous='Totally')
+    PanDB.permanently_erase_database('file', 'panoptes_testing', really='Yes', dangerous='Totally')
+    PanDB.permanently_erase_database('memory', 'panoptes_testing', dangerous='Totally', really='Yes')
