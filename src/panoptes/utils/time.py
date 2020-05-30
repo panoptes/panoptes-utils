@@ -119,6 +119,7 @@ class CountdownTimer(object):
         assert duration >= 0, "Duration must be non-negative."
         self.is_non_blocking = (duration == 0)
 
+        self.target_time = None
         self.duration = float(duration)
         self.restart()
 
@@ -184,3 +185,4 @@ class CountdownTimer(object):
         time.sleep(sleep_time)
 
         return sleep_time < remaining
+

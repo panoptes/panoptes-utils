@@ -2,6 +2,8 @@
 panoptes-utils
 ==============
 
+.. include:: ../README.rst
+
 Contents
 ========
 

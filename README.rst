@@ -1,7 +1,7 @@
-|PyPI version| |Build Status| |codecov| |Documentation Status|
+PANOPTES Utilities
+==================
 
-PANOPTES Utils
---------------
+|PyPI version| |Build Status| |codecov| |Documentation Status|
 
 -  `PANOPTES Utils`_
 -  `Getting`_
@@ -78,9 +78,10 @@ JSON documents in response to requests for config key items.
 Can be run from the installed script (defaults to
 ``http://localhost:6563/get-config``):
 
-.. code:: bash
+.. code::
+    bash
 
-   $ bin/panoptes-config-server
+    $ bin/panoptes-config-server
     * Serving Flask app "panoptes.utils.config.server" (lazy loading)
     * Environment: production
       WARNING: This is a development server. Do not use it in a production deployment.
@@ -89,17 +90,18 @@ Can be run from the installed script (defaults to
 
 Or inside a python process:
 
-.. code:: python
+.. code::
+    python
 
-   >>> from panoptes.utils.config.server import config_server
-   >>> from panoptes.utils.config import client
+    >>> from panoptes.utils.config.server import config_server
+    >>> from panoptes.utils.config import client
 
-   >>> server_process=config_server()
+    >>> server_process=config_server()
 
-   >>> client.get_config('location.horizon')
-   30.0
+    >>> client.get_config('location.horizon')
+    30.0
 
-   >>> server_process.terminate()  # Or just exit notebook/console
+    >>> server_process.terminate()  # Or just exit notebook/console
 
 For more details and usage examples, see the `config server README`_.
 
@@ -144,7 +146,8 @@ To access the logs for the module, you can import directly from the
 ``logger`` module, i.e., ``from panoptes.utils.logger import logger``.
 This is a simple wrapper around ``luguru`` with no extra configuration:
 
-::
+.. code-block::
+    python
 
    >>> from panoptes.utils import CountdownTimer
    >>> # No logs by default
