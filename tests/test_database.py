@@ -67,3 +67,7 @@ def test_warn_bad_object(db):
 
     with pytest.raises(error.InvalidSerialization):
         db.insert('observations', {'junk': db})
+
+
+def test_delete_file_db():
+    PanDB.permanently_erase_database('file', 'panoptes_testing', really='Yes', dangerous='Totally')
