@@ -7,17 +7,20 @@ All notable changes to this project will be documented in this file.
 0.2.16dev
 ---------
 
-**Added**
+Added
+^^^^^
 
 * Added CR2 file testing to GitHub Actions. (#125, #205)
 * A `wait_for_events` generic utility, mostly pulled from POCS. (#92, #206)
 
-**Changed**
+Changed
+^^^^^^^
 
 * Remove the `validate_collection` requirement from the database types, making any collection is now valid. (#204)
 * Rearrange some of the `panoptes.utils.database` modules. (#204)
 
-**Removed**
+Removed
+^^^^^^^
 
 * Remove `error.InvalidCollection`. (#204)
 * Unused items in `conftest.py`. (#204)
@@ -25,9 +28,10 @@ All notable changes to this project will be documented in this file.
 0.2.15 - 2020-05-26
 -------------------
 
-**Changed**
+Changed
+^^^^^^^
 
-* Convert to [pyscaffold](https://pyscaffold.org/en/latest/index.html). (#198)
+* Convert to `pyscaffold`_. (#198)
 
   * Proper namespace package `panoptes`.
   * Move items to `src` folder.
@@ -38,7 +42,8 @@ All notable changes to this project will be documented in this file.
   * Base Docker image is run by root only.
   * Added a `testing` Dockerfile and cleaned up `latest` and `develop`.
 
-**Removed**
+Removed
+^^^^^^^
 
 * **Breaking** Removing all zmq based messaging services. (#200)
 
@@ -46,7 +51,8 @@ All notable changes to this project will be documented in this file.
 0.2.14 - 2020-05-23
 -------------------
 
-**Added**
+Added
+^^^^^
 
 * Add snappy decompression for parquet; `pyarrow` instead of `fastparquet` (#193)
 * Password-less sudo for panoptes user on dev docker image (#193)
@@ -57,7 +63,8 @@ All notable changes to this project will be documented in this file.
     G2 B
     R  G1
 
-**Bug fixes**
+Bug fixes
+^^^^^^^^^
 
 * Fix time-based search (#193)
 * Fix the build (#197)
@@ -65,7 +72,8 @@ All notable changes to this project will be documented in this file.
   * Removed the MANIFEST.in
   * Added a simple `pyproject.toml`.
 
-**Changed**
+Changed
+^^^^^^^
 
 * **Breaking** Only support getting stars directly from the WCS, not the footprint. (#194)
   * `get_stars_from_footprint` -> `get_stars_from_wcs`
@@ -84,11 +92,13 @@ All notable changes to this project will be documented in this file.
 0.2.13 - 2020-05-14
 -------------------
 
-**Bug fixes**
+Bug fixes
+^^^^^^^^^
 
 * Fix some passing of options between `get_solve_field` and `solve_field` that was leading to double parameter issues. (#189)
 
-**Changed**
+Changed
+^^^^^^^
 
 * The `panoptes.utils.data` functions use static versions of the file rather than firestore. (#192)
 * Updated development environment (#191)
@@ -99,18 +109,21 @@ All notable changes to this project will be documented in this file.
 
 Quick release to get the `panoptes.utils.sources` into the package.
 
-**Bug fixes**
+Bug fixes
+^^^^^^^^^
 
 * `panoptes.utils.sources` not included in package. (#187, #188)
 
-**Changed**
+Changed
+^^^^^^^
 
 * Ability to pass credentials to underlying google client functions. (#187)
 
 0.2.11 - 2020-04-29
 -------------------
 
-**Added**
+Added
+^^^^^
 
 * Data
     * Added basic data access components for getting observation and image metadata. (#178, #181)
@@ -120,7 +133,8 @@ Quick release to get the `panoptes.utils.sources` into the package.
     * Adding `holoviews` and `hvplot` as required dependencies.
 
 
-**Bug fixes**
+Bug fixes
+^^^^^^^^^
 
 * FITS Utils fixes:
     * Fix docstring return types for some functions. (#173)
@@ -129,7 +143,8 @@ Quick release to get the `panoptes.utils.sources` into the package.
         the compressed version. (#175)
     * Properly pass `args` and `kwargs` to `astropy.io.fits.getdata`. (#180)
 
-**Changed**
+Changed
+^^^^^^^
 
 * Docker
     * Changed developer tag from `dev` to `develop`. (#174)
@@ -148,7 +163,8 @@ Quick release to get the `panoptes.utils.sources` into the package.
     * **BREAKING** The `panoptes.utils.data.py` has moved into the `panoptes.utils.data` namespace with the relevant existing `Downloader` class placed in the `assets.py` module. (#181)
     * Changed the `get_data` (and images and observations equivalent) to `get_metadata`. (#181)
 
-**Removed**
+Removed
+^^^^^^^
 
 FITS Utils removals (#173):
     * Removing unused and confusing `improve_wcs`.
@@ -157,7 +173,8 @@ FITS Utils removals (#173):
 0.2.10 - 2020-04-13
 -------------------
 
-**Added**
+Added
+^^^^^
 
 * `get_stars_from_footpr  int` can accept a `WCS` directly instead of just the output from `calc_footprint()`. (#164)
 * Ability to create different tags for the docker image. The `develop` directory is now used to create a `develop` image and is provided along with `latest`. (#165)
@@ -165,21 +182,23 @@ FITS Utils removals (#173):
 * Added BigQuery pandas dependencies. (#168)
 * Added a developer image at `panoptes-utils:dev`, which is also auto-built along with the `latest` in the cloudbuild. Offers a `jupyter-lab` instance along with a number of plotting modules. Can be easily started via `panoptes-dev`. (#170, #171)
 
-**Bug fixes**
+Bug fixes
+^^^^^^^^^
 
 * `image_id_from_path` and `sequence_id_from_path` can recognize a zero in the `camera_id` and `None` when no match. (#163)
 * Fixed the bigquery client param for star lookup. (#164)
 * Unquote paths before id matching. (#169)
 * Do WCS match for all unmatched sources, not just matched sources. (#172)
 
-**Changed**
+Changed
+^^^^^^^
 
 * Docker entrypoint no longer tries to activate service account if `$GOOGLE_APPLICATION_CREDENTIALS` is found. The python client libraries will recognize the env var so this means we can avoid installing `gcloud` utilities just to activate. (#165)
 * The `sources` module does not require a BigQuery client to be passed but can start it's own. A warning is given if `$GOOGLE_APPLICATION_CREDENTIALS` is not found. (#167)
 * `lookup_point_sources` updates: default vmag range expanded so less false positive matches [4,18). (#168)
 * Removed TOC from changelog. (#170)
 * Sextractor param changes: (#171)
-  * Threshold for detecton changed from 3 pixels to 10 pixels.
+  * Threshold for detection changed from 3 pixels to 10 pixels.
   * Seeing changed from 0.7 arcsec to 15.3 arcsec. (Isn't used.)
   * Removed `class_star` from sextractor results.
 
@@ -194,7 +213,8 @@ Pointless version bump because of issue with [PyPi](https://github.com/pypa/pack
 
 Thanks first-time contributer @preethi524! :tada:
 
-**Changed**
+Changed
+^^^^^^^
 
 * Ability to return separate RGB backgrounds. (#162)
 * Increase coverage. (#161)
@@ -202,28 +222,33 @@ Thanks first-time contributer @preethi524! :tada:
 0.2.7 - 2020-03-22 (hotfix)
 ---------------------------
 
-**Added**
+Added
+^^^^^
 
 * Basic serialization of `Exception`. (#160)
 
-**Bug fixes**
+Bug fixes
+^^^^^^^^^
 
 * Add `args` and `kwargs` to `get_rgb_background`. (#160)
 
 0.2.6 - 2020-03-22
 ------------------
 
-**Added**
+Added
+^^^^^
 
 * `get_rgb_background` added to the `bayer` module. (#158)
 * `getwcs` thin-wrapper added to `fits` module. (#158)
 * Added `sources` utils. (#158)
 
-**Bug fixes**
+Bug fixes
+^^^^^^^^^
 
 * Changed scope of test data files to `function`. (#158)
 
-**Changed**
+Changed
+^^^^^^^
 
 * Docker
   * Change to `python:3.8-slim-buster` for base image. Only `amd64` support for now. (#155)
@@ -239,7 +264,8 @@ Thanks first-time contributer @preethi524! :tada:
   * Added `pandas`. (#158)
   * Default `panoptes` user has password `panoptes`. (#158)
 
-**Removed**
+Removed
+^^^^^^^
 
 * Docker (#155)
   * Remove anaconda
@@ -249,50 +275,59 @@ Thanks first-time contributer @preethi524! :tada:
 0.2.5 - 2020-03-18
 ------------------
 
-**Added**
+Added
+^^^^^
 
 * Github Actions testing and coverage upload. (#145)
   * Log files for testing are created as an artifact.
 * `PanLogger` helper class added. Mostly handles formatting but can also track handlers. (#145)
 
-**Bug fixes**
+Bug fixes
+^^^^^^^^^
 
 * Fixed top-level namespace so we can have other `panoptes` repos. (#150, fixes #137)
 
-**Changed**
+Changed
+^^^^^^^
 
 * Data files for testing are copied before tests. Allows for reuse of unsolved fits file. (#144)
 * Fix astrometry data file directories in Docker images. (#144)
 
-**Removed**
+Removed
+^^^^^^^
 
 * The docker image no longer updates `panoptes-utils` when using `run-tests.sh`. (#145)
 
 0.2.4 - 2020-03-11
 ------------------
 
-**Changed**
+Changed
+^^^^^^^
 
 * Disallow zipped packages, which also interfere with namespace (#142)
 
-**Removed**
+Removed
+^^^^^^^
 
-* `photutils` dependency for recangular apertures in the `show_stamps` method.
+* `photutils` dependency for rectangular apertures in the `show_stamps` method.
 
 0.2.3 - 2020-03-08
 ------------------
 
 Small point release to correct namespace and remove some bloat.
 
-**Changed**
+Changed
+^^^^^^^
 
 * Fixed top-level namespace so we can have other `panoptes` repos. (#137)
 
-**Removed**
+Removed
+^^^^^^^
 
 * Dependencies that will be deprecated soon and are causing bloat: `photutils`, `scikit-image`. (#138)
 
-**Changed**
+Changed
+^^^^^^^
 
 * Fixed top-level namespace so we can have other `panoptes` repos (#137, #150).
 
@@ -301,17 +336,20 @@ Small point release to correct namespace and remove some bloat.
 
 Mostly some cleanup from the `v0.2.0` release based on integrating all the changes into POCS.
 
-**Bug fixes**
+Bug fixes
+^^^^^^^^^
 
 * Misc bugs introduced as part of last release, including to `download-data.py` script.
 * Custom exceptions now properly pass `kwargs` through to parent (#135).
 
-**Changed**
+Changed
+^^^^^^^
 
 * New script for downloading data, `scripts/download-data.py`. This helped resolve some issues with the relative imports introduced in `v0.2.0` and is cleaner. (#129)
 * All dependencies are smashed into one "feature" in `setup.py` to make `pip-tools` work well. This will fix the docker image problems introduced in `v0.2.1`. (#136)
 
-**Removed**
+Removed
+^^^^^^^
 
 * The `get_root_logger` and associated tests (#134).
 
@@ -320,16 +358,19 @@ Mostly some cleanup from the `v0.2.0` release based on integrating all the chang
 
 First big overhaul of the repository. Pulls in features that were duplicated or scattered across [POCS](https://github.com/panoptes/POCS.git) and [PIAA](https://github.com/panoptes/PIAA.git). Removes a lot of code that wasn't being used or was otherwise clutter. Overhauls the logging system to use [`loguru`](https://github.com/Delgan/loguru) so things are simplified. Updates to documentation.
 
-**Added**
+Added
+^^^^^
 * Config Server
 * See the description in the [README](README.md)
 * [Versioneer](https://github.com/warner/python-versioneer) for version strings (#123).
 * Read the docs config (#123).
 
-**Bug fixes**
+Bug fixes
+^^^^^^^^^
 * IERS Mirror (#65, #67)
 
-**Changed**
+Changed
+^^^^^^^
 * Docker updates
 * See #68 and #75 for list.
 * Logging:
@@ -350,21 +391,24 @@ Changes and cleanup on the way to a (more) stable release. See `0.2.0` for list 
 
 Bringing things in line with updates to `POCS` for docker and `panoptes-utils` use.
 
-**Added**
+Added
+^^^^^
 
 * Serial handlers move to panoptes-utils from POCS.
 * Tests and coverage.
 * `improve_wcs` (moved from PIAA).
 * `~utils.fits.getdata` to match other fits convenience functions, allowing for fpack files.
 
-**Bug fixes**
+Bug fixes
+^^^^^^^^^
 
 * Serialization fixes.
   * Use our serialization everywhere (e.g. messaging)
   * Closes #panoptes/POCS/issues/818
   * Closes #panoptes/POCS/issues/103
 
-**Changed**
+Changed
+^^^^^^^
 
 * Setup/Install:
   * Scripts are renamed to have `panoptes` prefix.
@@ -382,12 +426,14 @@ Bringing things in line with updates to `POCS` for docker and `panoptes-utils` u
 0.0.7 - 2019-05-26
 -------------------
 
-**Added**
+Added
+^^^^^
 
 * Added bayer utilities. :camera:
 * Added Cloud SQL utilities. :cloud:
 
-**Changed**
+Changed
+^^^^^^^
 
 * **Breaking** Changed namespace so no underscores, i.e. `from panoptes.utils import time`.
 * Docker updates:
@@ -399,7 +445,8 @@ Bringing things in line with updates to `POCS` for docker and `panoptes-utils` u
 0.0.6 - 2019-04-29
 -------------------
 
-**Added**
+Added
+^^^^^
 
 * Docker containers created:
   * `panoptes-base` for base OS and system packages, including astrometry.net and friends.
@@ -408,7 +455,8 @@ Bringing things in line with updates to `POCS` for docker and `panoptes-utils` u
 * Consistent JSON and YAML serializers.
 * Configuration Server (Flask/JSON microservice).
 
-**Changed**
+Changed
+^^^^^^^
 
 * **Minimum Python version is 3.6**
 * Default PanDB type is changed to `memory`.
@@ -418,14 +466,18 @@ Bringing things in line with updates to `POCS` for docker and `panoptes-utils` u
 0.0.5 - 2019-04-09
 -------------------
 
-**Added**
+Added
+^^^^^
 
-* Added a change log :tada:
+* Added a change log. Yay.
 
-**Changed**
+Changed
+^^^^^^^
 
 * Drop `orjson` and revert to `json` for the JSON serializers.
 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+.. _pyscaffold: https://pyscaffold.org/en/latest/index.html
