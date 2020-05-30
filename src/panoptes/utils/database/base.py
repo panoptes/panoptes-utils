@@ -5,12 +5,9 @@ from ..library import load_module
 from ..logging import logger
 
 
-def create_storage_obj(collection, data, obj_id=None):
-    """Returns the object to be stored in the database"""
-    obj = dict(data=data, type=collection, date=current_time(datetime=True))
-    if obj_id:
-        obj['_id'] = obj_id
-    return obj
+def create_storage_obj(collection, data, obj_id):
+    """Wrap the data in a dict along with the id and a timestamp."""
+    return dict(_id=obj_id, data=data, type=collection, date=current_time(datetime=True))
 
 
 def get_db_class(module_name='file'):

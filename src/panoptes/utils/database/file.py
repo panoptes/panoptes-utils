@@ -33,7 +33,7 @@ class PanFileDB(AbstractPanDB):
 
     def insert_current(self, collection, obj, store_permanently=True):
         obj_id = self._make_id()
-        obj = create_storage_obj(collection, obj, obj_id=obj_id)
+        obj = create_storage_obj(collection, obj, obj_id)
         current_fn = self._get_file(collection, permanent=False)
         result = obj_id
 
@@ -50,7 +50,7 @@ class PanFileDB(AbstractPanDB):
 
     def insert(self, collection, obj):
         obj_id = self._make_id()
-        obj = create_storage_obj(collection, obj, obj_id=obj_id)
+        obj = create_storage_obj(collection, obj, obj_id)
         collection_fn = self._get_file(collection)
         try:
             # Insert record into file

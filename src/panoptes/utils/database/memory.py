@@ -45,7 +45,7 @@ class PanMemoryDB(AbstractPanDB):
 
     def insert_current(self, collection, obj, store_permanently=True):
         obj_id = self._make_id()
-        obj = create_storage_obj(collection, obj, obj_id=obj_id)
+        obj = create_storage_obj(collection, obj, obj_id)
         try:
             obj = to_json(obj)
         except Exception as e:
@@ -59,7 +59,7 @@ class PanMemoryDB(AbstractPanDB):
 
     def insert(self, collection, obj):
         obj_id = self._make_id()
-        obj = create_storage_obj(collection, obj, obj_id=obj_id)
+        obj = create_storage_obj(collection, obj, obj_id)
         try:
             obj = to_json(obj)
         except Exception as e:
