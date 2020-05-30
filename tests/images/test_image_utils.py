@@ -82,7 +82,6 @@ def test_make_pretty_image_cr2_fail():
             img_utils.make_pretty_image(tmpfile)
 
 
-@pytest.mark.skipif("TRAVIS" not in os.environ, reason="Skipping this test if not on Travis CI.")
 def test_make_pretty_image_cr2(cr2_file):
     link_path = os.path.expandvars('$PANDIR/images/latest.jpg')
     pretty_path = img_utils.make_pretty_image(cr2_file,

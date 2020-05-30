@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 0.2.16dev
 ---------
 
+**Added**
+
+* Added CR2 file testing to GitHub Actions. (#125, #205)
+
 **Changed**
 
 * Remove the `validate_collection` requirement from the database types, making any collection is now valid. (#204)
@@ -15,6 +19,7 @@ All notable changes to this project will be documented in this file.
 **Removed**
 
 * Remove `error.InvalidCollection`. (#204)
+* Unused items in `conftest.py`. (#204)
 
 0.2.15 - 2020-05-26
 -------------------
