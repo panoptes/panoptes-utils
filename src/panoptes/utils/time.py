@@ -260,7 +260,7 @@ def wait_for_events(events,
     msg_timer = CountdownTimer(msg_interval)
 
     if not isinstance(events, list):
-        events = list(events)
+        events = [events]
 
     start_time = current_time()
     while not all([event.is_set() for event in events]):
