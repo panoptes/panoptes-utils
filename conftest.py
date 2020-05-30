@@ -255,7 +255,7 @@ def fake_logger():
 def db_type(request):
     db_list = request.config.option.test_databases
     if request.param not in db_list and 'all' not in db_list:
-        pytest.skip("Skipping {} DB, set --test-all-databases=True".format(request.param))
+        pytest.skip(f"Skipping {request.param} DB, set --test-all-databases=True")
 
     PanDB.permanently_erase_database(
         request.param, 'panoptes_testing', really='Yes', dangerous='Totally')
@@ -265,13 +265,6 @@ def db_type(request):
 @pytest.fixture(scope='function')
 def db(db_type):
     return PanDB(db_type=db_type, db_name='panoptes_testing', connect=True)
-
-
-@pytest.fixture(scope='function')
-def memory_db():
-    PanDB.permanently_erase_database(
-        'memory', 'panoptes_testing', really='Yes', dangerous='Totally')
-    return PanDB(db_type='memory', db_name='panoptes_testing')
 
 
 @pytest.fixture(scope='function')

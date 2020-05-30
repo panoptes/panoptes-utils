@@ -1,5 +1,4 @@
 import os
-from warnings import warn
 from contextlib import suppress
 from uuid import uuid4
 from glob import glob
@@ -8,7 +7,8 @@ from .. import error
 from ..serializers import to_json
 from ..serializers import from_json
 from ..database import AbstractPanDB
-from ..database import create_storage_obj
+from ..database.base import create_storage_obj
+from ..logging import logger
 
 
 class PanFileDB(AbstractPanDB):
@@ -32,9 +32,8 @@ class PanFileDB(AbstractPanDB):
         os.makedirs(self._storage_dir, exist_ok=True)
 
     def insert_current(self, collection, obj, store_permanently=True):
-        self.validate_collection(collection)
         obj_id = self._make_id()
-        obj = create_storage_obj(collection, obj, obj_id=obj_id)
+        obj = create_storage_obj(collection, obj, obj_id)
         current_fn = self._get_file(collection, permanent=False)
         result = obj_id
 
@@ -50,9 +49,8 @@ class PanFileDB(AbstractPanDB):
             return self.insert(collection, obj)
 
     def insert(self, collection, obj):
-        self.validate_collection(collection)
         obj_id = self._make_id()
-        obj = create_storage_obj(collection, obj, obj_id=obj_id)
+        obj = create_storage_obj(collection, obj, obj_id)
         collection_fn = self._get_file(collection)
         try:
             # Insert record into file
@@ -70,7 +68,7 @@ class PanFileDB(AbstractPanDB):
 
             return msg
         except FileNotFoundError:
-            self.logger.warning("No record found for {}".format(collection))
+            logger.warning(f"No record found for {collection}")
             return None
 
     def find(self, collection, obj_id):
@@ -97,9 +95,9 @@ class PanFileDB(AbstractPanDB):
 
     def _get_file(self, collection, permanent=True):
         if permanent:
-            name = '{}.json'.format(collection)
+            name = f'{collection}.json'
         else:
-            name = 'current_{}.json'.format(collection)
+            name = f'current_{collection}.json'
         return os.path.join(self._storage_dir, name)
 
     def _make_id(self):

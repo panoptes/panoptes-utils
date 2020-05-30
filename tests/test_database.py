@@ -61,18 +61,20 @@ def test_bad_insert(db):
         assert rec is None
 
 
-@pytest.mark.filterwarnings('ignore')
-def test_bad_collection(db):
-    with pytest.raises(error.InvalidCollection):
-        db.insert_current('foobar', {'test': 'insert'})
-
-    with pytest.raises(error.InvalidCollection):
-        db.insert('foobar', {'test': 'insert'})
-
-
 def test_warn_bad_object(db):
     with pytest.raises(error.InvalidSerialization):
         db.insert_current('observations', {'junk': db})
 
     with pytest.raises(error.InvalidSerialization):
         db.insert('observations', {'junk': db})
+
+
+def test_delete_file_db():
+    with pytest.raises(Exception):
+        PanDB.permanently_erase_database('memory', 'panoptes_testing', really='Nope', dangerous='Hopefully not')
+
+    with pytest.raises(ValueError):
+        PanDB.permanently_erase_database('memory', 'do_not_delete_me', really='Nope', dangerous='Again, we hope not')
+
+    PanDB.permanently_erase_database('file', 'panoptes_testing', really='Yes', dangerous='Totally')
+    PanDB.permanently_erase_database('memory', 'panoptes_testing', dangerous='Totally', really='Yes')
