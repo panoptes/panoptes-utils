@@ -9,8 +9,12 @@ All notable changes to this project will be documented in this file.
 
 **Changed**
 
-* Remove the `validate_collection` requirement from the database types.
-    Essentially any collection is now valid. (#202)
+* Remove the `validate_collection` requirement from the database types, making any collection is now valid. (#204)
+* Rearrange some of the `panoptes.utils.database` modules. (#204)
+
+**Removed**
+
+* Remove `error.InvalidCollection`. (#204)
 
 0.2.15 - 2020-05-26
 -------------------
