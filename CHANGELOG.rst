@@ -4,8 +4,10 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-0.2.16 - 2020-05-30
+0.2.17 - 2020-05-30
 -------------------
+
+`0.2.16` was released with an error and this is a hotfix.
 
 Added
 ^^^^^
