@@ -267,14 +267,14 @@ def wait_for_events(events,
 
     start_time = current_time()
     while not all([event.is_set() for event in events]):
-        elapsed_secs = (current_time() - start_time).to_value('second')
+        elapsed_secs = round((current_time() - start_time).to_value('second'), 2)
 
         if callable(interrupt_cb) and interrupt_cb():
             logger.info(f"Waiting for events has been interrupted after {elapsed_secs} seconds")
             break
 
         if msg_timer.expired():
-            logger.debug(f'Waiting for {event_type} events: {round(elapsed_secs)} seconds elapsed')
+            logger.debug(f'Waiting for {event_type} events: {elapsed_secs} seconds elapsed')
             msg_timer.restart()
 
         if event_timer.expired():
