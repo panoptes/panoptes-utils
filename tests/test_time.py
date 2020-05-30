@@ -2,12 +2,15 @@ import os
 import pytest
 
 import time
+import threading
 from datetime import timezone as tz
 from datetime import datetime as dt
 from astropy import units as u
 
+from panoptes.utils import error
 from panoptes.utils import current_time
 from panoptes.utils import CountdownTimer
+from panoptes.utils.time import wait_for_events
 
 
 def test_pretty_time():
@@ -84,3 +87,32 @@ def test_countdown_timer_sleep():
     assert timer.time_left() == 0
     assert timer.expired() is True
     assert timer.sleep() is False
+
+
+def test_wait_for_events():
+    # Create some events, normally something like taking an image.
+    event0 = threading.Event()
+    event1 = threading.Event()
+
+    # Wait for 30 seconds but interrupt after 1 second by returning True.
+    def interrupt():
+        time.sleep(1)
+        return True
+
+    assert wait_for_events([event0, event1], timeout=30, interrupt_cb=interrupt) is False
+
+    # Timeout if event is never set.
+    with pytest.raises(error.Timeout):
+        wait_for_events(event0, timeout=1)
+
+    # Setting events causes timer to exit.
+    def set_events():
+        time.sleep(3)
+        event0.set()
+        event1.set()
+
+    threading.Thread(target=set_events).start()
+    assert wait_for_events([event0, event1], msg_interval=1, timeout=30)
+
+    # If the events are set then the function will return immediately
+    assert wait_for_events([event0, event1], timeout=30)
