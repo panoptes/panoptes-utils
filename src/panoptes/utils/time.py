@@ -205,6 +205,9 @@ def wait_for_events(events,
     and also for interrupts and bad weather. Will log debug messages approximately
     every `msg_interval` seconds.
 
+    The interrupt is provided via the `interrupt_cb`, which must be a `callable` that
+    returns `True` to interrupt the wait loop, `False` otherwise.
+
     .. doctest::
 
         >>> import time
@@ -234,7 +237,7 @@ def wait_for_events(events,
         event_type (str, optional): The type of event, used for outputting in log messages,
             default 'generic'.
         interrupt_cb (callable): A callback for interrupting that can stop the wait if it
-            returns True, default None.
+            returns True, default None (no callback).
 
     Raises:
         error.Timeout: Raised if events have not all been set before `timeout` seconds.
@@ -250,17 +253,18 @@ def wait_for_events(events,
 
     start_time = current_time()
     while not all([event.is_set() for event in events]):
+        elapsed_secs = (current_time() - start_time).to_value('second')
+
         if callable(interrupt_cb) and interrupt_cb():
-            logger.info("Waiting for events has been interrupted")
+            logger.info(f"Waiting for events has been interrupted after {elapsed_secs} seconds")
             break
 
         if msg_timer.expired():
-            elapsed_secs = (current_time() - start_time).to(u.second).value
             logger.debug(f'Waiting for {event_type} events: {round(elapsed_secs)} seconds elapsed')
             msg_timer.restart()
 
         if event_timer.expired():
-            raise error.Timeout(f"Timeout waiting for {event_type} event")
+            raise error.Timeout(f"Timeout waiting for {event_type} event after {elapsed_secs} seconds")
 
         # Sleep for a little bit.
         event_timer.sleep(max_sleep=sleep_delay)
