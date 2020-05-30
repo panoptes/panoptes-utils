@@ -28,7 +28,8 @@ def get_db_class(module_name='file'):
         >>> # Make a new instance of the db.
         >>> memory_db = get_db_class('memory')()
         >>> insert_id = memory_db.insert_current('safety', True)
-        >>> memory_db.get_current('safety')
+        >>> record = memory_db.get_current('safety')
+        >>> record['data']
         True
 
     Args:
