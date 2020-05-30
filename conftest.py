@@ -279,7 +279,9 @@ def cr2_file(data_dir):
     if not os.path.exists(cr2_path):
         pytest.skip("No CR2 file found, skipping test.")
 
-    return cr2_path
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        copy_file = shutil.copy2(cr2_path, tmpdirname)
+        yield copy_file
 
 
 @pytest.fixture(autouse=True)
