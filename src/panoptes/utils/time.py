@@ -1,5 +1,6 @@
 import os
 import time
+from contextlib import suppress
 from datetime import timezone as tz
 
 from astropy import units as u
@@ -189,7 +190,7 @@ class CountdownTimer(object):
 
 
 def wait_for_events(events,
-                    timeout,
+                    timeout=600,
                     sleep_delay=1 * u.second,
                     msg_interval=30 * u.second,
                     event_type='generic',
@@ -213,22 +214,21 @@ def wait_for_events(events,
         >>> # Create some events, normally something like taking an image.
         >>> event0 = threading.Event()
         >>> event1 = threading.Event()
+
         >>> # Wait for 30 seconds but interrupt after 1 second by returning True.
         >>> def interrupt(): time.sleep(1); return True
         >>> start_time = current_time()
         >>> wait_for_events([event0, event1], timeout=30, interrupt_cb=interrupt)
-        >>> assert (current_time() - start_time).sec < 2
 
-        >>> # If the events are set then the function will return immediately
-        >>> event0.set()
-        >>> event1.set()
-        >>> start_time = current_time()
-        >>> wait_for_events([event0, event1], timeout=30, interrupt_cb=interrupt)
-        >>> assert (current_time() - start_time).sec < 1
+        >>> # Set the events in another thread for normal usage.
+        >>> def set_events(): time.sleep(1); event0.set(); event1.set()
+        >>> threading.Thread(target=set_events).start()
+        >>> wait_for_events([event0, event1], timeout=30)
 
     Args:
         events (list(`threading.Event`)): An Event or list of Events to wait on.
-        timeout (float|`astropy.units.Quantity`): Timeout in seconds to wait for events.
+        timeout (float|`astropy.units.Quantity`): Timeout in seconds to wait for events,
+            default 600 seconds.
         sleep_delay (float, optional): Time in seconds between event checks.
         msg_interval (float, optional): Time in seconds between sending of log messages.
         event_type (str, optional): The type of event, used for outputting in log messages,
@@ -239,10 +239,10 @@ def wait_for_events(events,
     Raises:
         error.Timeout: Raised if events have not all been set before `timeout` seconds.
     """
-    if isinstance(sleep_delay, u.Quantity):
-        sleep_delay = sleep_delay.to(u.second).value
+    with suppress(AttributeError):
+        sleep_delay = sleep_delay.to_value('second')
 
-    timer = CountdownTimer(timeout)
+    event_timer = CountdownTimer(timeout)
     msg_timer = CountdownTimer(msg_interval)
 
     if not isinstance(events, list):
@@ -259,8 +259,8 @@ def wait_for_events(events,
             logger.debug(f'Waiting for {event_type} events: {round(elapsed_secs)} seconds elapsed')
             msg_timer.restart()
 
-        if timer.expired():
+        if event_timer.expired():
             raise error.Timeout(f"Timeout waiting for {event_type} event")
 
         # Sleep for a little bit.
-        timer.sleep(max_sleep=sleep_delay)
+        event_timer.sleep(max_sleep=sleep_delay)
