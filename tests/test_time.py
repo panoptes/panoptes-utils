@@ -115,6 +115,4 @@ def test_wait_for_events():
     assert wait_for_events([event0, event1], msg_interval=1, timeout=30)
 
     # If the events are set then the function will return immediately
-    start_time = current_time()
-    wait_for_events([event0, event1], timeout=30)
-    assert (current_time() - start_time).sec < 1
+    assert wait_for_events([event0, event1], timeout=30)
