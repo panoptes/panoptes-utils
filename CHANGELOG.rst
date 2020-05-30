@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 **Added**
 
 * Added CR2 file testing to GitHub Actions. (#125, #205)
+* A `wait_for_events` generic utility, mostly pulled from POCS. (#206)
 
 **Changed**
 

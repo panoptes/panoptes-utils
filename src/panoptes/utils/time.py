@@ -213,13 +213,18 @@ def wait_for_events(events,
         >>> # Create some events, normally something like taking an image.
         >>> event0 = threading.Event()
         >>> event1 = threading.Event()
-        >>> # Wait for 30 seconds but interrupt after 1.
+        >>> # Wait for 30 seconds but interrupt after 1 second by returning True.
         >>> def interrupt(): time.sleep(1); return True
         >>> start_time = current_time()
         >>> wait_for_events([event0, event1], timeout=30, interrupt_cb=interrupt)
         >>> assert (current_time() - start_time).sec < 2
 
-        >>> # If the events are
+        >>> # If the events are set then the function will return immediately
+        >>> event0.set()
+        >>> event1.set()
+        >>> start_time = current_time()
+        >>> wait_for_events([event0, event1], timeout=30, interrupt_cb=interrupt)
+        >>> assert (current_time() - start_time).sec < 1
 
     Args:
         events (list(`threading.Event`)): An Event or list of Events to wait on.
