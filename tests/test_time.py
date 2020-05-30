@@ -99,9 +99,7 @@ def test_wait_for_events():
         time.sleep(1)
         return True
 
-    start_time = current_time()
-    wait_for_events([event0, event1], timeout=30, interrupt_cb=interrupt)
-    assert (current_time() - start_time).sec == pytest.approx(3, rel=1e-2)
+    assert wait_for_events([event0, event1], timeout=30, interrupt_cb=interrupt) is False
 
     # Timeout if event is never set.
     with pytest.raises(error.Timeout):
@@ -113,10 +111,8 @@ def test_wait_for_events():
         event0.set()
         event1.set()
 
-    start_time = current_time()
     threading.Thread(target=set_events).start()
-    wait_for_events([event0, event1], msg_interval=1, timeout=30)
-    assert (current_time() - start_time).sec > 3
+    assert wait_for_events([event0, event1], msg_interval=1, timeout=30)
 
     # If the events are set then the function will return immediately
     start_time = current_time()
