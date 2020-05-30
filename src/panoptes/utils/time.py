@@ -5,6 +5,8 @@ from datetime import timezone as tz
 from astropy import units as u
 from astropy.time import Time
 
+from . import listify
+from . import error
 from .logging import logger
 
 
@@ -119,6 +121,7 @@ class CountdownTimer(object):
         assert duration >= 0, "Duration must be non-negative."
         self.is_non_blocking = (duration == 0)
 
+        self.target_time = None
         self.duration = float(duration)
         self.restart()
 
@@ -184,3 +187,51 @@ class CountdownTimer(object):
         time.sleep(sleep_time)
 
         return sleep_time < remaining
+
+    def wait_for_events(events,
+                        timeout,
+                        sleep_delay=1 * u.second,
+                        msg_interval=30 * u.second,
+                        event_type='generic'):
+        """Wait for event(s) to be set.
+
+        This method will wait for a maximum of `timeout` seconds for all of the
+        `events` to complete.
+
+        Will check at least every `sleep_delay` seconds for the events to be done,
+        and also for interrupts and bad weather. Will log debug messages approximately
+        every `msg_interval` seconds.
+
+        Args:
+            events (list(`threading.Event`)): An Event or list of Events to wait on.
+            timeout (float|`astropy.units.Quantity`): Timeout in seconds to wait for events.
+            sleep_delay (float, optional): Time in seconds between event checks.
+            msg_interval (float, optional): Time in seconds between sending of log messages.
+            event_type (str, optional): The type of event, used for outputting in log messages,
+                default 'generic'.
+
+        Raises:
+            error.Timeout: Raised if events have not all been set before `timeout` seconds.
+        """
+        if isinstance(sleep_delay, u.Quantity):
+            sleep_delay = sleep_delay.to(u.second).value
+
+        timer = CountdownTimer(timeout)
+        msg_timer = CountdownTimer(msg_interval)
+
+        start_time = current_time()
+        while not all([event.is_set() for event in listify(events)]):
+            if self.interrupted:
+                logger.info("Waiting for events has been interrupted")
+                break
+
+            if msg_timer.expired():
+                elapsed_secs = (current_time() - start_time).to(u.second).value
+                logger.debug(f'Waiting for {event_type} events: {round(elapsed_secs)} seconds elapsed')
+                msg_timer.restart()
+
+            if timer.expired():
+                raise error.Timeout(f"Timeout waiting for {event_type} event")
+
+            # Sleep for a little bit.
+            timer.sleep(max_sleep=sleep_delay)
