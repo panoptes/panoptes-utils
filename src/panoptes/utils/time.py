@@ -191,10 +191,8 @@ class CountdownTimer(object):
 
 def wait_for_events(events,
                     timeout=600,
-                    sleep_delay=1 * u.second,
-                    msg_interval=30 * u.second,
-                    interrupt_cb=None,
-                    event_type='generic',
+                    sleep_delay=5 * u.second,
+                    callback=None,
                     ):
     """Wait for event(s) to be set.
 
@@ -203,13 +201,9 @@ def wait_for_events(events,
 
     Checks every `sleep_delay` seconds for the events to be set.
 
-    Will log debug messages approximately every `msg_interval` seconds.
-
-    The wait loop can be interrupted via `interrupt_cb`, which must be a `callable`
-    that returns `True` to interrupt the wait loop, `False` otherwise. The call will
-    happen approximately every `sleep_delay` seconds.
-
-    The `event_type` parameter is merely for logging purposes.
+    If provided, the `callback` will be called every `sleep_delay` seconds.
+    The callback should return `True` to continue waiting otherwise `False`
+    to interrupt the loop and return from the function.
 
     .. doctest::
 
@@ -220,10 +214,10 @@ def wait_for_events(events,
         >>> event0 = threading.Event()
         >>> event1 = threading.Event()
 
-        >>> # Wait for 30 seconds but interrupt after 1 second by returning True from interrupt.
-        >>> def interrupt(): time.sleep(1); return True
+        >>> # Wait for 30 seconds but interrupt after 1 second by returning False from callback.
+        >>> def interrupt_cb(): time.sleep(1); return False
         >>> # The function will return False if events are not set.
-        >>> wait_for_events([event0, event1], timeout=30, interrupt_cb=interrupt)
+        >>> wait_for_events([event0, event1], timeout=30, callback=interrupt_cb)
         False
 
         >>> # Timeout will raise an exception.
@@ -244,11 +238,8 @@ def wait_for_events(events,
         timeout (float|`astropy.units.Quantity`): Timeout in seconds to wait for events,
             default 600 seconds.
         sleep_delay (float, optional): Time in seconds between event checks.
-        msg_interval (float, optional): Time in seconds between sending of log messages.
-        interrupt_cb (callable): A callback for interrupting that can stop the wait if it
-            returns True, default None (no callback).
-        event_type (str, optional): The type of event, used for outputting in log messages,
-            default 'generic'.
+        callback (callable): A periodic callback that should return `True` to continue
+            waiting or `False` to interrupt the loop. Can also be used for e.g. custom logging.
 
     Returns:
         bool: True if events were set, False otherwise.
@@ -260,7 +251,6 @@ def wait_for_events(events,
         sleep_delay = sleep_delay.to_value('second')
 
     event_timer = CountdownTimer(timeout)
-    msg_timer = CountdownTimer(msg_interval)
 
     if not isinstance(events, list):
         events = [events]
@@ -269,16 +259,12 @@ def wait_for_events(events,
     while not all([event.is_set() for event in events]):
         elapsed_secs = round((current_time() - start_time).to_value('second'), 2)
 
-        if callable(interrupt_cb) and interrupt_cb():
-            logger.info(f"Waiting for events has been interrupted after {elapsed_secs} seconds")
-            break
-
-        if msg_timer.expired():
-            logger.debug(f'Waiting for {event_type} events: {elapsed_secs} seconds elapsed')
-            msg_timer.restart()
-
         if event_timer.expired():
-            raise error.Timeout(f"Timeout waiting for {event_type} event after {elapsed_secs} seconds")
+            raise error.Timeout(f"Timeout waiting for {len(events)} events after {elapsed_secs} seconds")
+
+        if callable(callback) and callback() is False:
+            logger.warning(f"Waiting for {len(events)} events has been interrupted after {elapsed_secs} seconds")
+            break
 
         # Sleep for a little bit.
         event_timer.sleep(max_sleep=sleep_delay)
