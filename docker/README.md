@@ -5,7 +5,7 @@ The PANOPTES utilities are available as a docker image hosted on Google Cloud Re
 
 Image name: `gcr.io/panoptes-exp/panoptes-utils`
 
-Tags: `latest`, `develop`
+Tags: `latest`, `develop`, and `testing`.
 
 ### Tags
 
@@ -46,8 +46,14 @@ bin/panoptes-develop up
 
 ```bash
 cd $PANDIR/panoptes-utils
-# Build the image locally.
-docker build -t panoptes-utils:develop -f docker/develop.Dockerfile .
+# First build the 'latest' image locally.
+docker build -t panoptes-utils:latest -f docker/latest.Dockerfile .
+
+# Then build the develop image locally.
+docker build \
+  --build-arg base_image=panoptes-utils:latest \
+  -t panoptes-utils:develop \
+  -f docker/develop.Dockerfile .
 
 # Wait for build to finish...
 
@@ -58,3 +64,21 @@ IMAGE=panoptes-utils bin/panoptes-develop up
 3) If you are using a new system:
 
 > TODO: Document this section.
+
+#### testing
+
+The `testing` image is used for running the automated tests. These are run automatically
+on both GitHub and Travis for all code pushes but can also be run locally while doing 
+development.
+
+To build the test image:
+
+```bash
+docker build -t panoptes-utils:testing -f docker/testing.Dockerfile .
+```
+
+To run the test suite locally:
+
+```bash
+scripts/testing/test-software.sh
+```

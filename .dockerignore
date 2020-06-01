@@ -1,6 +1,6 @@
 venv/
 docs/*
-.git
+!.git  # For testing local install
 .cache
 .eggs
 .vscode
@@ -29,4 +29,9 @@ sftp-config.json
 *.a
 *.o
 *.so
-__pycache__
+**/__pycache__
+notebooks
+examples
+docs
+build
+coverage.xml
