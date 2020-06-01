@@ -11,9 +11,11 @@ from matplotlib.figure import Figure
 
 from astropy.wcs import WCS
 from astropy.nddata import Cutout2D
-from astropy.visualization import (PercentileInterval, LogStretch, ImageNormalize)
+from astropy.visualization import PercentileInterval, LogStretch, ImageNormalize
 
 from dateutil import parser as date_parser
+
+from PIL import ImageOps
 
 from .. import error
 from ..logging import logger
@@ -43,7 +45,8 @@ def crop_data(data, box_width=200, center=None, data_only=True, wcs=None, **kwar
 
     """
     assert data.shape[0] >= box_width, "Can't clip data, it's smaller than {} ({})".format(
-        box_width, data.shape)
+        box_width, data.shape
+    )
     # Get the center
     if center is None:
         x_len, y_len = data.shape
@@ -64,15 +67,10 @@ def crop_data(data, box_width=200, center=None, data_only=True, wcs=None, **kwar
     return cutout
 
 
-def make_pretty_image(fname,
-                      title=None,
-                      timeout=15,
-                      img_type=None,
-                      link_path=None,
-                      **kwargs):
+def make_pretty_image(fname, title=None, timeout=15, img_type=None, link_path=None, **kwargs):
     """Make a pretty image.
 
-    This will create a jpg file from either a CR2 (Canon) or FITS file.
+    This will create a jpg file from either a CR2 (Canon) or FITS file. It will also create a png file showing an RA/DEC grid overlay.
 
     Notes:
         See `/scripts/cr2_to_jpg.sh` for CR2 process.
@@ -100,16 +98,19 @@ def make_pretty_image(fname,
     if not os.path.exists(fname):
         warn("File doesn't exist, can't make pretty: {}".format(fname))
         return None
-    elif img_type == '.cr2':
+    elif img_type == ".cr2":
         pretty_path = _make_pretty_from_cr2(fname, title=title, timeout=timeout, **kwargs)
-    elif img_type in ['.fits', '.fz']:
+    elif img_type in [".fits", ".fz"]:
         pretty_path = _make_pretty_from_fits(fname, title=title, **kwargs)
+        overlay_path = _overlay_grid_image(
+            fname, pretty_path, timeout=timeout, **kwargs
+        )
     else:
         warn("File must be a Canon CR2 or FITS file.")
         return None
 
     if link_path is None or not os.path.exists(os.path.dirname(link_path)):
-        return pretty_path
+        return pretty_path, overlay_path
 
     # Remove existing symlink
     with suppress(FileNotFoundError):
@@ -123,26 +124,28 @@ def make_pretty_image(fname,
     return link_path
 
 
-def _make_pretty_from_fits(fname=None,
-                           title=None,
-                           figsize=(10, 10 / 1.325),
-                           dpi=150,
-                           alpha=0.2,
-                           number_ticks=7,
-                           clip_percent=99.9,
-                           **kwargs):
+def _make_pretty_from_fits(
+    fname=None,
+    title=None,
+    figsize=(10, 10 / 1.325),
+    dpi=150,
+    alpha=0.2,
+    number_ticks=7,
+    clip_percent=99.9,
+    **kwargs,
+):
 
     data = mask_saturated(fits_utils.getdata(fname))
     header = fits_utils.getheader(fname)
     wcs = WCS(header)
 
     if not title:
-        field = header.get('FIELD', 'Unknown field')
-        exptime = header.get('EXPTIME', 'Unknown exptime')
-        filter_type = header.get('FILTER', 'Unknown filter')
+        field = header.get("FIELD", "Unknown field")
+        exptime = header.get("EXPTIME", "Unknown exptime")
+        filter_type = header.get("FILTER", "Unknown filter")
 
         try:
-            date_time = header['DATE-OBS']
+            date_time = header["DATE-OBS"]
         except KeyError:
             # If we don't have DATE-OBS, check filename for date
             try:
@@ -152,9 +155,9 @@ def _make_pretty_from_fits(fname=None,
                 # Otherwise use now
                 date_time = current_time(pretty=True)
 
-        date_time = date_time.replace('T', ' ', 1)
+        date_time = date_time.replace("T", " ", 1)
 
-        title = '{} ({}s {}) {}'.format(field, exptime, filter_type, date_time)
+        title = "{} ({}s {}) {}".format(field, exptime, filter_type, date_time)
 
     norm = ImageNormalize(interval=PercentileInterval(clip_percent), stretch=LogStretch())
 
@@ -165,38 +168,30 @@ def _make_pretty_from_fits(fname=None,
 
     if wcs.is_celestial:
         ax = fig.add_subplot(1, 1, 1, projection=wcs)
-        ax.coords.grid(True, color='white', ls='-', alpha=alpha)
+        ax.coords.grid(True, color="white", ls="-", alpha=alpha)
 
-        ra_axis = ax.coords['ra']
-        ra_axis.set_axislabel('Right Ascension')
-        ra_axis.set_major_formatter('hh:mm')
-        ra_axis.set_ticks(
-            number=number_ticks,
-            color='white',
-            exclude_overlapping=True
-        )
+        ra_axis = ax.coords["ra"]
+        ra_axis.set_axislabel("Right Ascension")
+        ra_axis.set_major_formatter("hh:mm")
+        ra_axis.set_ticks(number=number_ticks, color="white", exclude_overlapping=True)
 
-        dec_axis = ax.coords['dec']
-        dec_axis.set_axislabel('Declination')
-        dec_axis.set_major_formatter('dd:mm')
-        dec_axis.set_ticks(
-            number=number_ticks,
-            color='white',
-            exclude_overlapping=True
-        )
+        dec_axis = ax.coords["dec"]
+        dec_axis.set_axislabel("Declination")
+        dec_axis.set_major_formatter("dd:mm")
+        dec_axis.set_ticks(number=number_ticks, color="white", exclude_overlapping=True)
     else:
         ax = fig.add_subplot(111)
-        ax.grid(True, color='white', ls='-', alpha=alpha)
+        ax.grid(True, color="white", ls="-", alpha=alpha)
 
-        ax.set_xlabel('X / pixels')
-        ax.set_ylabel('Y / pixels')
+        ax.set_xlabel("X / pixels")
+        ax.set_ylabel("Y / pixels")
 
-    im = ax.imshow(data, norm=norm, cmap=get_palette(), origin='lower')
+    im = ax.imshow(data, norm=norm, cmap=get_palette(), origin="lower")
     add_colorbar(im)
     fig.suptitle(title)
 
-    new_filename = re.sub('.fits(.fz)?', '.jpg', fname)
-    fig.savefig(new_filename, bbox_inches='tight')
+    new_filename = re.sub(".fits(.fz)?", ".jpg", fname)
+    fig.savefig(new_filename, bbox_inches="tight")
 
     # explicitly close and delete figure
     fig.clf()
@@ -206,7 +201,7 @@ def _make_pretty_from_fits(fname=None,
 
 
 def _make_pretty_from_cr2(fname, title=None, timeout=15, **kwargs):
-    script_name = shutil.which('cr2-to-jpg')
+    script_name = shutil.which("cr2-to-jpg")
     cmd = [script_name, fname]
 
     if title:
@@ -220,7 +215,25 @@ def _make_pretty_from_cr2(fname, title=None, timeout=15, **kwargs):
     except Exception as e:
         raise error.InvalidCommand(f"Error executing {script_name}: {e.output!r}\nCommand: {cmd}")
 
-    return fname.replace('cr2', 'jpg')
+    return fname.replace("cr2", "jpg")
+
+
+def _overlay_grid_image(fname_fits, fname_jpg, timeout=15, output_filename=None, **kwargs):
+    script_name = shutil.which("plot-constellations.sh")
+    cmd = [script_name, fname_fits, fname_jpg]
+
+    logger.debug(cmd)
+
+    try:
+        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        logger.debug(output)
+    except Exception as e:
+        raise error.InvalidCommand(f"Error executing {script_name}: {e.output!r}\nCommand: {cmd}"
+
+    if output_filename is None: 
+        output_filename = fname_fits.replace(".fits", " -output.png")
+
+    return output_filename
 
 
 def mask_saturated(data, saturation_level=None, threshold=0.9, dtype=np.float64):
@@ -242,7 +255,7 @@ def mask_saturated(data, saturation_level=None, threshold=0.9, dtype=np.float64)
             dtype_info = np.iinfo(data.dtype)
         except ValueError:
             # Not an integer type. Assume for now we have 16 bit data
-            saturation_level = threshold * (2**16 - 1)
+            saturation_level = threshold * (2 ** 16 - 1)
         else:
             # Data is an integer type, set saturation level at specified fraction of
             # max value for the type
@@ -253,12 +266,13 @@ def mask_saturated(data, saturation_level=None, threshold=0.9, dtype=np.float64)
 
 
 def make_timelapse(
-        directory,
-        fn_out=None,
-        glob_pattern='20[1-9][0-9]*T[0-9]*.jpg',
-        overwrite=False,
-        timeout=60,
-        **kwargs):
+    directory,
+    fn_out=None,
+    glob_pattern="20[1-9][0-9]*T[0-9]*.jpg",
+    overwrite=False,
+    timeout=60,
+    **kwargs,
+):
     """Create a timelapse.
 
     A timelapse is created from all the images in a given `directory`
@@ -284,18 +298,18 @@ def make_timelapse(
     """
     if fn_out is None:
         head, tail = os.path.split(directory)
-        if tail == '':
+        if tail == "":
             head, tail = os.path.split(head)
 
-        field_name = head.split('/')[-2]
-        cam_name = head.split('/')[-1]
-        fname = '{}_{}_{}.mp4'.format(field_name, cam_name, tail)
+        field_name = head.split("/")[-2]
+        cam_name = head.split("/")[-1]
+        fname = "{}_{}_{}.mp4".format(field_name, cam_name, tail)
         fn_out = os.path.normpath(os.path.join(directory, fname))
 
     if os.path.exists(fn_out) and not overwrite:
         raise FileExistsError("Timelapse exists. Set overwrite=True if needed")
 
-    ffmpeg = shutil.which('ffmpeg')
+    ffmpeg = shutil.which("ffmpeg")
     if ffmpeg is None:
         raise error.InvalidSystemCommand("ffmpeg not found, can't make timelapse")
 
@@ -304,22 +318,28 @@ def make_timelapse(
     try:
         ffmpeg_cmd = [
             ffmpeg,
-            '-r', '3',
-            '-pattern_type', 'glob',
-            '-i', inputs_glob,
-            '-s', 'hd1080',
-            '-vcodec', 'libx264',
+            "-r",
+            "3",
+            "-pattern_type",
+            "glob",
+            "-i",
+            inputs_glob,
+            "-s",
+            "hd1080",
+            "-vcodec",
+            "libx264",
         ]
 
         if overwrite:
-            ffmpeg_cmd.append('-y')
+            ffmpeg_cmd.append("-y")
 
         ffmpeg_cmd.append(fn_out)
 
         logger.debug(ffmpeg_cmd)
 
-        proc = subprocess.Popen(ffmpeg_cmd, universal_newlines=True,
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen(
+            ffmpeg_cmd, universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
         try:
             # Don't wait forever
             outs, errs = proc.communicate(timeout=timeout)
