@@ -71,7 +71,7 @@ def make_pretty_image(fname,
                       **kwargs):
     """Make a pretty image.
 
-    This will create a jpg file from either a CR2 (Canon) or FITS file.
+    This will create a jpg file from either a CR2 (Canon) or FITS file. It will also create a png file showing an RA/DEC grid overlay.
 
     Notes:
         See `/scripts/cr2_to_jpg.sh` for CR2 process.
@@ -103,12 +103,15 @@ def make_pretty_image(fname,
         pretty_path = _make_pretty_from_cr2(fname, title=title, timeout=timeout, **kwargs)
     elif img_type in ['.fits', '.fz']:
         pretty_path = _make_pretty_from_fits(fname, title=title, **kwargs)
+        overlay_path = _overlay_grid_image(
+            fname, pretty_path, timeout=timeout, **kwargs
+        )
     else:
         warn("File must be a Canon CR2 or FITS file.")
         return None
 
     if link_path is None or not os.path.exists(os.path.dirname(link_path)):
-        return pretty_path
+        return pretty_path, overlay_path
 
     # Remove existing symlink
     with suppress(FileNotFoundError):
@@ -221,6 +224,35 @@ def _make_pretty_from_cr2(fname, title=None, timeout=15, **kwargs):
 
     return fname.replace('cr2', 'jpg')
 
+def _overlay_grid_image(fname_fits, fname_jpg, timeout=15, output_filename=None, **kwargs):
+    """Overlays an RA/DEC grid with relevant star labels onto an image. 
+    Args:
+        fname_fits (str): The path to a fits image.
+        fname_jpg (str): The path to a jpeg image.
+        timeout (int, optional): Timeout for making overlay. Defaults to 15.
+        output_filename (str, optional): Sets the name of the output image. Defaults to None.
+
+    Raises:
+        error.InvalidCommand: Raised if 'plot-constellations' cannot be executed.
+
+    Returns:
+        [str]: The path to the png output image.
+    """
+    script_name = shutil.which("plot-constellations.sh")
+    cmd = [script_name, fname_fits, fname_jpg]
+
+    logger.debug(cmd)
+
+    try:
+        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        logger.debug(output)
+    except Exception as e:
+        raise error.InvalidCommand(f"Error executing {script_name}: {e.output!r}\nCommand: {cmd}"
+
+    if output_filename is None: 
+        output_filename = fname_fits.replace(".fits", " -output.png")
+
+    return output_filename
 
 def mask_saturated(data, saturation_level=None, threshold=0.9, dtype=np.float64):
     """Convert data to masked array of requested dtype with saturated values masked.
