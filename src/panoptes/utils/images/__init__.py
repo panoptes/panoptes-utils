@@ -74,7 +74,8 @@ def make_pretty_image(fname,
     This will create a jpg file from either a CR2 (Canon) or FITS file. It will also create a png file showing an RA/DEC grid overlay.
 
     Notes:
-        See `/scripts/cr2_to_jpg.sh` for CR2 process.
+        See `/bin/cr2-to-jpg.sh` for CR2 process.
+        See '/bin/plot-constellations.sh' for overlay process.
 
     Arguments:
         fname (str): The path to the raw image.
@@ -103,7 +104,7 @@ def make_pretty_image(fname,
         pretty_path = _make_pretty_from_cr2(fname, title=title, timeout=timeout, **kwargs)
     elif img_type in ['.fits', '.fz']:
         pretty_path = _make_pretty_from_fits(fname, title=title, **kwargs)
-        overlay_path = _overlay_grid_image(
+        overlay_path = overlay_grid_image(
             fname, pretty_path, timeout=timeout, **kwargs
         )
     else:
@@ -224,7 +225,7 @@ def _make_pretty_from_cr2(fname, title=None, timeout=15, **kwargs):
 
     return fname.replace('cr2', 'jpg')
 
-def _overlay_grid_image(fname_fits, fname_jpg, timeout=15, output_filename=None, **kwargs):
+def overlay_grid_image(fname_fits, fname_jpg, timeout=15, output_filename=None, **kwargs):
     """Overlays an RA/DEC grid with relevant star labels onto an image. 
     Args:
         fname_fits (str): The path to a fits image.
@@ -238,6 +239,9 @@ def _overlay_grid_image(fname_fits, fname_jpg, timeout=15, output_filename=None,
     Returns:
         [str]: The path to the png output image.
     """
+    if output_filename is None: 
+        output_filename = fname_fits.replace(".fits", " -output.png")
+
     script_name = shutil.which("plot-constellations.sh")
     cmd = [script_name, fname_fits, fname_jpg]
 
@@ -248,10 +252,7 @@ def _overlay_grid_image(fname_fits, fname_jpg, timeout=15, output_filename=None,
         logger.debug(output)
     except Exception as e:
         raise error.InvalidCommand(f"Error executing {script_name}: {e.output!r}\nCommand: {cmd}"
-
-    if output_filename is None: 
-        output_filename = fname_fits.replace(".fits", " -output.png")
-
+    
     return output_filename
 
 def mask_saturated(data, saturation_level=None, threshold=0.9, dtype=np.float64):
