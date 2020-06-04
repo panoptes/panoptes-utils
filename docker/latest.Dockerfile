@@ -58,7 +58,7 @@ RUN apt-get update && \
     chown -R ${PANUSER}:${PANUSER} "/home/${panuser}" && \
     chown -R ${PANUSER}:${PANUSER} ${PANDIR} && \
     # Install module
-    pip install "panoptes-utils[testing,tweepy]" && \
+    pip install "panoptes-utils[testing,social]" && \
     # astrometry.net folders
     mkdir -p "${astrometry_dir}" && \
     echo "add_path ${astrometry_dir}" >> /etc/astrometry.cfg && \
