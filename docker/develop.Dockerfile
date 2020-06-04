@@ -25,7 +25,7 @@ ENV SOLVE_FIELD /usr/bin/solve-field
 
 # Install module
 USER "${PANUSER}"
-COPY --chown="${USERID}":"${USERID}" . ${PANDIR}/panoptes-utils/
+COPY --chown=panoptes:panoptes . ${PANDIR}/panoptes-utils/
 RUN cd ${PANDIR}/panoptes-utils && \
     pip install --no-cache-dir -e ".[testing]" && \
     # Get the CR2 testing file.
@@ -36,7 +36,8 @@ USER root
 RUN apt-get autoremove --purge -y gcc pkg-config && \
     apt-get autoremove --purge -y && \
     apt-get -y clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    chown -R "${PANUSER}:${PANUSER}" "${PANDIR}"
 
 WORKDIR ${PANDIR}/panoptes-utils
 
