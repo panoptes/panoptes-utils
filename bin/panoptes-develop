@@ -6,9 +6,6 @@ PANDIR=${PANDIR:-/var/panoptes}
 
 cd "${PANDIR}"
 
-# TODO Detect and install docker if needed.
-# TODO Detect and install docker-compose if needed.
-
 IMAGE="${IMAGE:-gcr.io/panoptes-exp/panoptes-utils}"
 TAG="${TAG:-develop}"
 
