@@ -25,8 +25,8 @@ ENV POCS $pocs_dir
 ENV PATH "/home/${PANUSER}/.local/bin:$PATH"
 ENV SOLVE_FIELD /usr/bin/solve-field
 
-# For now we copy from local - can have bad effects if in wrong branch
 COPY docker/zshrc /tmp
+COPY ./scripts/download-data.py /tmp/download-data.py
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -57,27 +57,29 @@ RUN apt-get update && \
     # Update permissions for current user.
     chown -R ${PANUSER}:${PANUSER} "/home/${panuser}" && \
     chown -R ${PANUSER}:${PANUSER} ${PANDIR} && \
-    # Astrometry folders
+    # astrometry.net folders
     mkdir -p "${astrometry_dir}" && \
-    chown -R ${PANUSER}:${PANUSER} ${astrometry_dir} && \
-    echo "add_path ${astrometry_dir}" >> /etc/astrometry.cfg
-
-# Can't seem to get around the hard-coding the owner:group
-COPY ./requirements.txt /tmp/requirements.txt
-COPY ./scripts/download-data.py /tmp/download-data.py
-# First deal with pip and PyYAML - see https://github.com/pypa/pip/issues/5247
-RUN pip install --no-cache-dir --no-deps --ignore-installed pip PyYAML && \
-    pip install --no-cache-dir -r /tmp/requirements.txt && \
+    echo "add_path ${astrometry_dir}" >> /etc/astrometry.cfg && \
+    # astrometry.net index files
     python /tmp/download-data.py \
         --wide-field --narrow-field \
         --folder "${astrometry_dir}" \
-        --verbose
-
-# Install module
-RUN pip install panoptes-utils
+        --verbose && \
+    chown -R ${PANUSER}:${PANUSER} ${astrometry_dir} && \
+    chmod -R 777 ${astrometry_dir} && \
+    # Install module
+    pip install "panoptes-utils[testing]"
 
 # Cleanup apt.
-RUN apt-get autoremove --purge -y gcc pkg-config && \
+RUN apt-get autoremove --purge -y \
+        autoconf \
+        automake \
+        autopoint \
+        build-essential \
+        gcc \
+        gettext \
+        libtool \
+        pkg-config && \
     apt-get autoremove --purge -y && \
     apt-get -y clean && \
     rm -rf /var/lib/apt/lists/*

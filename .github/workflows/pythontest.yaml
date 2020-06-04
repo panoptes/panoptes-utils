@@ -1,4 +1,4 @@
-name: Test Python Package
+name: Test Python
 
 on: [push, pull_request]
 jobs:
@@ -29,11 +29,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Fetch all history for all tags and branches for versioneer
-        run: git fetch --prune --unshallow
       - name: Build panoptes-utils image
         run: |
-          PANOPTES_UTILS=$(pwd) docker/setup-local-environment.sh
+          # Make sure git goes to the build context.
+          sed -i s'/^\.git$/\!\.git/' .dockerignore
+          docker build -t panoptes-utils:develop -f docker/develop.Dockerfile .
       - name: Test with pytest in panoptes-utils container
         run: |
           mkdir -p coverage_dir && chmod 777 coverage_dir
@@ -42,7 +42,7 @@ jobs:
             $ci_env \
             -e REPORT_FILE="/tmp/coverage/coverage.xml" \
             --network "host" \
-            -v $PWD:/var/panoptes/logs \
+            -v $PWD/coverage_dir:/var/panoptes/logs \
             -v $PWD/coverage_dir:/tmp/coverage \
             panoptes-utils:develop \
             scripts/testing/run-tests.sh
@@ -58,4 +58,4 @@ jobs:
         if: always()
         with:
           name: log-files
-          path: panoptes-testing.log
+          path: coverage_dir/panoptes-testing.log

@@ -24,20 +24,19 @@ ENV POCS $pocs_dir
 ENV SOLVE_FIELD /usr/bin/solve-field
 
 # Install module
-USER "${PANUSER}"
-COPY --chown=panoptes:panoptes . ${PANDIR}/panoptes-utils/
-RUN cd ${PANDIR}/panoptes-utils && \
-    pip install --no-cache-dir -e ".[testing]" && \
-    # Get the CR2 testing file.
-    wget -qO- $cr2_url > "${PANDIR}/panoptes-utils/tests/data/canon.cr2"
+USER ${PANUSER}
+COPY --chown=panoptes:panoptes . "${PANDIR}/panoptes-utils/"
+RUN wget -qO- $cr2_url > "${PANDIR}/panoptes-utils/tests/data/canon.cr2" && \
+    cd "${PANDIR}/panoptes-utils" && \
+    pip install -e ".[testing]"
 
 # Cleanup apt.
 USER root
-RUN apt-get autoremove --purge -y gcc pkg-config && \
-    apt-get autoremove --purge -y && \
+RUN apt-get autoremove --purge -y && \
     apt-get -y clean && \
     rm -rf /var/lib/apt/lists/* && \
-    chown -R "${PANUSER}:${PANUSER}" "${PANDIR}"
+    chown -R "${PANUSER}:${PANUSER}" "${PANDIR}" && \
+    chmod -R 777 /astrometry
 
 WORKDIR ${PANDIR}/panoptes-utils
 
