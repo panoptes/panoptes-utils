@@ -1,3 +1,4 @@
+import os
 import logging
 from warnings import warn
 from flask import Flask
@@ -8,9 +9,9 @@ from flask.json import JSONEncoder
 from multiprocessing import Process
 from scalpl import Cut
 
-from ..logging import logger
 from . import load_config
 from . import save_config
+from ..logging import logger
 from ..serializers import _serialize_object
 
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
@@ -25,6 +26,34 @@ class CustomJSONEncoder(JSONEncoder):
 
 
 app.json_encoder = CustomJSONEncoder
+
+
+def run():
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Start the config server for PANOPTES')
+    parser.add_argument('--host', default='127.0.0.1', type=str,
+                        help='Host name, defaults to local interface. Set to 0.0.0.0 for public.')
+    parser.add_argument('--port', default=6563, type=int, help='Local port, default 6563')
+    parser.add_argument('--config-file', dest='config_file', type=str,
+                        default=None,
+                        help="Config file, default $PANDIR/conf_files/pocs.yaml")
+    parser.add_argument('--no-save', default=False, action='store_true',
+                        help='Prevent auto saving of any new values.')
+    parser.add_argument('--ignore-local', default=False, action='store_true',
+                        help='Ignore the local config files, default False. Mostly for testing.')
+    parser.add_argument('--debug', default=False, action='store_true', help='Debug')
+    args = parser.parse_args()
+
+    if args.config_file is None:
+        args.config_file = os.path.join(os.environ['PANDIR'], 'conf_files', 'pocs.yaml')
+
+    server_process = config_server(**vars(args))
+
+    try:
+        server_process.start()
+    except KeyboardInterrupt:
+        server_process.terminate()
 
 
 def config_server(host='localhost',
