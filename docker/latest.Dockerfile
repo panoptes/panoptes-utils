@@ -1,7 +1,10 @@
-ARG base_image=python:3.8-slim-buster
+ARG IMAGE_URL=python:3.8-slim-buster
 
-FROM $base_image AS base-image
-MAINTAINER Developers for PANOPTES project<https://github.com/panoptes/POCS>
+FROM ${IMAGE_URL} AS base-image
+LABEL description="Installs the panoptes-utils module from pip. \
+Used as a production image, e.g. for running panoptes-network items."
+LABEL maintainers="developers@projectpanoptes.org"
+LABEL repo="github.com/panoptes/panoptes-utils"
 
 ARG panuser=panoptes
 ARG userid=1000
@@ -61,19 +64,17 @@ RUN apt-get update && \
 
 # Can't seem to get around the hard-coding the owner:group
 COPY ./requirements.txt /tmp/requirements.txt
+COPY ./scripts/download-data.py /tmp/download-data.py
 # First deal with pip and PyYAML - see https://github.com/pypa/pip/issues/5247
 RUN pip install --no-cache-dir --no-deps --ignore-installed pip PyYAML && \
-    pip install --no-cache-dir -r /tmp/requirements.txt
-
-# Install module
-COPY . ${PANDIR}/panoptes-utils/
-RUN cd ${PANDIR}/panoptes-utils && \
-    python setup.py develop && \
-    # Download astrometry.net files
-    python scripts/download-data.py \
+    pip install --no-cache-dir -r /tmp/requirements.txt && \
+    python /tmp/download-data.py \
         --wide-field --narrow-field \
         --folder "${astrometry_dir}" \
         --verbose
+
+# Install module
+RUN pip install panoptes-utils
 
 # Cleanup apt.
 RUN apt-get autoremove --purge -y gcc pkg-config && \

@@ -1,6 +1,6 @@
 venv/
 docs/*
-!.git  # For testing local install
+.git
 .cache
 .eggs
 .vscode
