@@ -28,7 +28,7 @@ USER ${PANUSER}
 COPY --chown=panoptes:panoptes . "${PANDIR}/panoptes-utils/"
 RUN wget -qO- $cr2_url > "${PANDIR}/panoptes-utils/tests/data/canon.cr2" && \
     cd "${PANDIR}/panoptes-utils" && \
-    pip install -e ".[testing]"
+    pip install -e ".[testing,tweepy]"
 
 # Cleanup apt.
 USER root
