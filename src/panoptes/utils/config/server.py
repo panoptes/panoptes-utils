@@ -28,7 +28,12 @@ class CustomJSONEncoder(JSONEncoder):
 app.json_encoder = CustomJSONEncoder
 
 
-def run():
+def run():  # pragma: no cover
+    """Runs the config server with command line options.
+
+    This function is install as an entry_point for the module, accessible
+    at `panoptes-config-server`.
+    """
     import argparse
 
     parser = argparse.ArgumentParser(description='Start the config server for PANOPTES')
