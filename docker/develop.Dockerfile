@@ -27,7 +27,7 @@ ENV SOLVE_FIELD /usr/bin/solve-field
 USER "${PANUSER}"
 COPY --chown="${USERID}":"${USERID}" . ${PANDIR}/panoptes-utils/
 RUN cd ${PANDIR}/panoptes-utils && \
-    pip install --no-cache-dir --user -e ".[testing,google]" && \
+    pip install --no-cache-dir -e ".[testing]" && \
     # Get the CR2 testing file.
     wget -qO- $cr2_url > "${PANDIR}/panoptes-utils/tests/data/canon.cr2"
 
