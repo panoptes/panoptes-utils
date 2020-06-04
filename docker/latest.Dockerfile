@@ -57,6 +57,8 @@ RUN apt-get update && \
     # Update permissions for current user.
     chown -R ${PANUSER}:${PANUSER} "/home/${panuser}" && \
     chown -R ${PANUSER}:${PANUSER} ${PANDIR} && \
+    # Install module
+    pip install "panoptes-utils[testing]" && \
     # astrometry.net folders
     mkdir -p "${astrometry_dir}" && \
     echo "add_path ${astrometry_dir}" >> /etc/astrometry.cfg && \
@@ -67,11 +69,8 @@ RUN apt-get update && \
         --verbose && \
     chown -R ${PANUSER}:${PANUSER} ${astrometry_dir} && \
     chmod -R 777 ${astrometry_dir} && \
-    # Install module
-    pip install "panoptes-utils[testing]"
-
-# Cleanup apt.
-RUN apt-get autoremove --purge -y \
+    # Cleanup
+    apt-get autoremove --purge -y \
         autoconf \
         automake \
         autopoint \

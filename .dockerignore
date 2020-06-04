@@ -1,34 +1,22 @@
-venv/
 docs/*
+.idea
+.venv
+venv
+
 .git
-.cache
-.eggs
-.vscode
-__pycache__
-*.egg-info
+.github
 
-# Development support
-sftp-config.json
-
-# emacs backups
-*~
-\#*\#
-
-# ignore all markdown files (md) beside all README*.md
 *.md
 !README*.md
 
-# TeX products
-*.aux
-*.log
-*.pdf
-*.toc
-
-# Compiled files
-*.py[co]
-*.a
-*.o
-*.so
+logs/
+**/.ipynb_checkpoints
+**/.pytest_cache
+**/.eggs
+**/*.pdf
+**/*.log
+**/*.egg-info
+**/*.pyc
 **/__pycache__
 notebooks
 examples
