@@ -12,7 +12,7 @@ To start the service from the command-line, use
 
 .. code:: bash
 
-    ➜ panoptes-config-server -h
+    $ panoptes-config-server -h
     usage: panoptes-config-server [-h] [--host HOST] [--port PORT] [--public] [--config-file CONFIG_FILE] [--no-save] [--ignore-local] [--debug]
 
     Start the config server for PANOPTES

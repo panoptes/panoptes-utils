@@ -14,7 +14,6 @@ Changed
 * Removed old developer items in favor of those in ``panoptes-pocs``. (#212)
 * Consolidate docker files, consistent naming with other repos. (#210, #212)
 
-
 0.2.17 - 2020-05-30
 -------------------
 
