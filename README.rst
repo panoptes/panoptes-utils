@@ -76,18 +76,27 @@ Config Server
 A simple config param server. Runs as a Flask microservice that delivers
 JSON documents in response to requests for config key items.
 
-Can be run from the installed script (defaults to
-``http://localhost:6563/get-config``):
+Can be run from the installed script (defaults to ``http://localhost:6563/get-config``):
 
 .. code::
     bash
 
-    $ bin/panoptes-config-server
-    * Serving Flask app "panoptes.utils.config.server" (lazy loading)
-    * Environment: production
-      WARNING: This is a development server. Do not use it in a production deployment.
-      Use a production WSGI server instead.
-    * Debug mode: off
+    $ panoptes-config-server -h
+    usage: panoptes-config-server [-h] [--host HOST] [--port PORT] [--public] [--config-file CONFIG_FILE] [--no-save] [--ignore-local] [--debug]
+
+    Start the config server for PANOPTES
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --host HOST           Host name, defaults to local interface.
+      --port PORT           Local port, default 6563
+      --public              If server should be public, default False. Note: inside a docker container set this to True to expose to host.
+      --config-file CONFIG_FILE
+                            Config file, default $PANDIR/conf_files/pocs.yaml
+      --no-save             Prevent auto saving of any new values.
+      --ignore-local        Ignore the local config files, default False. Mostly for testing.
+      --debug               Debug
+
 
 Or inside a python process:
 
@@ -104,7 +113,7 @@ Or inside a python process:
 
     >>> server_process.terminate()  # Or just exit notebook/console
 
-For more details and usage examples, see the `config server README`_.
+For more details and usage examples, see the :ref:`config-server`.
 
 Development
 -----------
@@ -181,7 +190,6 @@ This is a simple wrapper around ``luguru`` with no extra configuration:
 .. _services: #services
 .. _Docker documentation: https://panoptes-utils.readthedocs.io/en/latest/docker.html
 .. _docker: #docker
-.. _config server README: panoptes/utils/config/README.md
 .. _loguru: https://github.com/Delgan/loguru
 .. _Logger: #logger
 

@@ -10,7 +10,7 @@ services:
     restart: on-failure
     volumes:
       - pandir:/var/panoptes
-    command: ["/var/panoptes/panoptes-utils/bin/panoptes-config-server", "--public"]
+    command: ["/var/panoptes/panoptes-utils/bin/panoptes-config-server"]
 volumes:
     pandir:
       driver: local
