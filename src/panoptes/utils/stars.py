@@ -1,13 +1,11 @@
 import os
 import shutil
 import subprocess
-from tempfile import TemporaryDirectory
 
 from google.cloud import bigquery
 from google.auth.credentials import AnonymousCredentials
 
 from astropy.table import Table
-from astropy.wcs import WCS
 from astropy import units as u
 from astropy.coordinates import SkyCoord, match_coordinates_sky
 
@@ -22,7 +20,7 @@ def _get_bq_client(project_id='panoptes-exp', credentials=AnonymousCredentials()
     return bq_client
 
 
-def get_stars_from_wcs(wcs, origin=1, **kwargs):
+def get_stars_from_wcs(wcs, **kwargs):
     """Lookup star information from WCS footprint.
 
     Generates the correct layout for an SQL `POLYGON` that can be passed to
@@ -30,7 +28,6 @@ def get_stars_from_wcs(wcs, origin=1, **kwargs):
 
     Args:
         wcs (`astropy.wcs.WCS` or array): A valid (i.e. `wcs.is_celestial`) World Coordinate System object.
-        origin (int): The origin for the WCS. See `all_world2pix`. Default 1.
         **kwargs: Optional keywords to pass to :py:func:`get_stars`.
 
     """
@@ -43,14 +40,6 @@ def get_stars_from_wcs(wcs, origin=1, **kwargs):
 
     logger.debug(f'Using poly={poly} for get_stars')
     catalog_stars = get_stars(shape=poly, **kwargs)
-
-    # Get the XY positions via the WCS if we have one.
-    catalog_coords = catalog_stars[['catalog_ra', 'catalog_dec']]
-    catalog_xy = wcs.all_world2pix(catalog_coords, origin, ra_dec_order=True)
-    catalog_stars['catalog_x'] = catalog_xy.T[0]
-    catalog_stars['catalog_y'] = catalog_xy.T[1]
-    catalog_stars['catalog_x_int'] = catalog_stars.catalog_x.astype(int)
-    catalog_stars['catalog_y_int'] = catalog_stars.catalog_y.astype(int)
 
     return catalog_stars
 
@@ -166,9 +155,13 @@ def lookup_point_sources(fits_file,
 
     Args:
         fits_file (str, optional): Path to FITS file to search for stars.
-        catalog_match (bool, optional): If `get_catalog_match` should be called after looking up sources. Default False. If True, the `args` and `kwargs` will be passed to `get_catalog_match`.
-        method (str, optional): Method for looking up sources, default (and currently only) is `sextractor`.
-        wcs (`astropy.wcs.WCS`|None): A WCS file to use. Default is `None`, in which the WCS comes from the `fits_file`
+        catalog_match (bool, optional): If `get_catalog_match` should be called after
+            looking up sources. Default False. If True, the `args` and `kwargs` will
+            be passed to `get_catalog_match`.
+        method (str, optional): Method for looking up sources, default (and currently
+            only) is `sextractor`.
+        wcs (`astropy.wcs.WCS`|None): A WCS file to use. Default is `None`, in which
+            the WCS comes from the `fits_file`.
         force_new (bool, optional): Force a new catalog to be created,
             defaults to False.
         **kwargs: Passed to `get_catalog_match` when `catalog_match=True`.
@@ -202,9 +195,9 @@ def lookup_point_sources(fits_file,
     if catalog_match:
         logger.debug(f'Doing catalog match against stars {fits_file}')
         try:
-            point_sources = get_catalog_match(point_sources, wcs, **kwargs)
+            point_sources = get_catalog_match(point_sources, wcs=wcs, **kwargs)
             logger.debug(f'Done with catalog match for {fits_file}')
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             logger.error(f'Error in catalog match, returning unmatched results: {e!r} {fits_file}')
 
     logger.debug(f'Point sources: {len(point_sources)} {fits_file}')
@@ -212,11 +205,13 @@ def lookup_point_sources(fits_file,
 
 
 def get_catalog_match(point_sources,
-                      wcs,
+                      wcs=None,
+                      catalog_stars=None,
                       max_separation_arcsec=None,
                       return_unmatched=False,
                       ra_column='sextractor_ra',
                       dec_column='sextractor_dec',
+                      origin=1,
                       **kwargs):
     """Match the point source positions to the catalog.
 
@@ -282,7 +277,10 @@ def get_catalog_match(point_sources,
         point_sources (`pandas.DataFrame`): The DataFrame containted point sources
             to be matched. This usually comes from the output of `lookup_point_sources`
             but could be done manually.
-        wcs (`astropy.wcs.WCS`): The WCS instance.
+        wcs (`astropy.wcs.WCS`, optional): The WCS instance to use for the catalog lookup.
+            Either the `wcs` or the `catalog_stars` must be supplied.
+        catalog_stars (`pandas.DataFrame`, optional): If provided, the catalog match
+            will be performed against this set of stars rather than performing a lookup.
         ra_column (str): The column name to use for the RA coordinates, default `sextractor_ra`.
         dec_column (str): The column name to use for the Dec coordinates, default `sextractor_dec`.
         origin (int, optional): The origin for catalog matching, either 0 or 1 (default).
@@ -290,17 +288,27 @@ def get_catalog_match(point_sources,
             than this many arcsecs from catalog will be filtered.
         return_unmatched (bool, optional): If all results from catalog should be
             returned, not just those with a positive match.
-        **kwargs: Extra options are passed to `get_stars_from_wcs`, which passes them ultimately to `get_stars`.
+        origin (int): The origin for the WCS. See `all_world2pix`. Default 1.
+        **kwargs: Extra options are passed to `get_stars_from_wcs`, which passes them to `get_stars`.
 
     """
     assert point_sources is not None
-    logger.debug(f'Doing catalog match for wcs={wcs.wcs.crval!r}')
 
-    # Lookup stars in catalog
-    catalog_stars = get_stars_from_wcs(wcs, **kwargs)
+    if catalog_stars is None:
+        logger.debug(f'Looking up stars for wcs={wcs.wcs.crval}')
+        # Lookup stars in catalog
+        catalog_stars = get_stars_from_wcs(wcs, **kwargs)
+
     if catalog_stars is None:
         logger.debug('No catalog matches, returning table without ids')
         return point_sources
+
+    # Get the XY positions
+    catalog_xy = wcs.all_world2pix(catalog_stars[['catalog_ra', 'catalog_dec']], origin, ra_dec_order=True)
+    catalog_stars['catalog_x'] = catalog_xy.T[0]
+    catalog_stars['catalog_y'] = catalog_xy.T[1]
+    catalog_stars['catalog_x_int'] = catalog_stars.catalog_x.astype(int)
+    catalog_stars['catalog_y_int'] = catalog_stars.catalog_y.astype(int)
 
     # Get coords for catalog stars
     catalog_coords = SkyCoord(
@@ -315,9 +323,9 @@ def get_catalog_match(point_sources,
     )
 
     # Do catalog matching
-    logger.debug(f'Matching {len(catalog_coords)} catalog stars to {len(stars_coords)} detected stars {wcs.wcs.crval}')
+    logger.debug(f'Matching {len(catalog_coords)} catalog stars to {len(stars_coords)} detected stars')
     idx, d2d, d3d = match_coordinates_sky(stars_coords, catalog_coords)
-    logger.debug(f'Got {len(idx)} matched sources (includes duplicates) for wcs={wcs.wcs.crval!r}')
+    logger.debug(f'Got {len(idx)} matched sources (includes duplicates) for wcs={wcs.wcs.crval}')
 
     # Add the matches and their separation.
     point_sources = point_sources.join(catalog_stars.iloc[idx].reset_index(drop=True))
@@ -374,16 +382,14 @@ def _lookup_via_sextractor(fits_file,
     if fits_file.endswith('.fz'):
         fits_file = fits_utils.funpack(fits_file)
 
-    logger.debug("Point source catalog: {}".format(source_file))
+    logger.debug(f"Point source catalog: {source_file}")
 
     if not os.path.exists(source_file) or force_new:
         logger.debug("No catalog found, building from sextractor")
         # Build catalog of point sources
         sextractor = shutil.which('sextractor')
-        if sextractor is None:
-            sextractor = shutil.which('sex')
-            if sextractor is None:
-                raise Exception('sextractor not found')
+
+        assert sextractor is not None, 'sextractor not found'
 
         if sextractor_params is None:
             resources_dir = os.path.expandvars('$PANDIR/panoptes-utils/resources/sextractor')

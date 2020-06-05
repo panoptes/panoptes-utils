@@ -21,9 +21,8 @@ EOF
 sleep 5;
 
 docker run --rm -it \
-    -e LOCAL_USER_ID=$(id -u) \
     -v /var/panoptes/panoptes-utils:/var/panoptes/panoptes-utils \
     -v /var/panoptes/logs:/var/panoptes/logs \
-    panoptes-utils:testing \
+    panoptes-utils:develop \
     "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh"
 
