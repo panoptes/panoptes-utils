@@ -4,8 +4,11 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-0.2.18 - 2020-06-04
+0.2.19 - 2020-06-04
 -------------------
+
+Straight past ``0.2.19``.
+
 
 Changed
 ^^^^^^^
