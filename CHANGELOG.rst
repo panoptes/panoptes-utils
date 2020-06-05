@@ -4,8 +4,8 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-0.2.18dev
----------
+0.2.18 - 2020-06-04
+-------------------
 
 Changed
 ^^^^^^^
