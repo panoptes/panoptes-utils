@@ -12,4 +12,13 @@ Utility functions for use within the PANOPTES ecosystem and for general astronom
 
 This library defines a number of modules that contain useful functions as well as a few services.
 
+Install
+-------
+
+To install type:
+
+```bash
+pip install panoptes-utils
+```
+   
 See the full documentation at: https://panoptes-utils.readthedocs.io
