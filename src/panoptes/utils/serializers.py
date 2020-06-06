@@ -270,10 +270,14 @@ def parse_all_objects(obj):
 
     This will currently attempt to parse and return, in the following order:
 
-    * If ``obj`` is a dict with exactly two keys named ``unit`` and ``value``, then attempt to parse into a valid ``astropy.unit.Quantity``.
-    * A boolean.
-    * A `datetime.datetime` object as parsed by `pendulum.parse`.
-    * If a string ending with any of ``['m', 'deg', 's']``, an ``astropy.unit.Quantity``
+    If ``obj`` is a dict with exactly two keys named ``unit`` and ``value``,
+    then attempt to parse into a valid ``astropy.unit.Quantity``.
+
+    A boolean.
+
+    A `datetime.datetime` object as parsed by `pendulum.parse`.
+
+    If a string ending with any of ``['m', 'deg', 's']``, an ``astropy.unit.Quantity``
 
     .. note::
 
@@ -318,10 +322,23 @@ def parse_all_objects(obj):
     return obj
 
 
-def serialize_object(obj, default_type=None):
+def serialize_object(obj):
     """Serialize the given object.
 
     This is a custom serializer function.
+
+    >>> from panoptes.utils.serializers import serialize_object
+    >>> import pendulum
+    >>> from astropy import units as u
+
+    >>> serialize_object(42 * u.meter)
+    '42.0 m'
+
+    >>> dt0 = pendulum.parse('1999-12-31')
+    >>> type(dt0)
+    pendulum.datetime.DateTime
+    >>> serialize_object(dt0)
+    '1999-12-31T00:00:00.000'
 
     .. note::
 
@@ -329,8 +346,6 @@ def serialize_object(obj, default_type=None):
 
     Args:
         obj (any): The object to be serialized.
-        default_type: The object to return as the default if no other
-            serialization was performed.
 
     Returns:
 
@@ -347,10 +362,6 @@ def serialize_object(obj, default_type=None):
     # Numpy array.
     if isinstance(obj, np.ndarray):
         return obj.tolist()
-
-    # If we are given a default object type, e.g. str
-    if default_type is not None:
-        return default_type(obj)
 
     # Exceptions - if not a class object, then `issubclass` raises a `TypeError`,
     # so we ignore those and let the object pass through.
@@ -379,6 +390,6 @@ def serialize_all_objects(obj):
         if isinstance(v, dict):
             obj[k] = serialize_all_objects(v)
         else:
-            obj[k] = serialize_object(v, default_type=None)
+            obj[k] = serialize_object(v)
 
     return obj

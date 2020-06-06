@@ -8,6 +8,7 @@ Changelog
 Changed
 ^^^^^^^
 
+* Python minimum version changed to ``3.8``. (#217)
 * Cleaning up the config_server. (#217)
     * Better logging.
     * Cleaning up doctests.
