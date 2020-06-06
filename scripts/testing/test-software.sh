@@ -14,6 +14,8 @@ You can view the output for the tests in a separate terminal:
 tail -F ${PANDIR}/logs/panoptes-testing.log
 
 Tests will begin in 5 seconds. Press Ctrl-c to cancel.
+
+The coverage report will open in your browser when the tests are complete.
 EOF
 
 sleep 5;
@@ -24,3 +26,5 @@ docker run --rm -it \
     panoptes-utils:develop \
     "${PANDIR}/panoptes-utils/scripts/testing/run-tests.sh"
 
+# Open the report.
+xdg-open build/htmlcov/index.html
