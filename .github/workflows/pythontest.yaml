@@ -40,10 +40,8 @@ jobs:
           ci_env=`bash <(curl -s https://codecov.io/env)`
           docker run -i \
             $ci_env \
-            -e REPORT_FILE="/tmp/coverage/coverage.xml" \
             --network "host" \
-            -v $PWD/build:/var/panoptes/logs \
-            -v $PWD/build:/tmp/coverage \
+            -v $PWD/build:build \
             panoptes-utils:develop \
             scripts/testing/run-tests.sh
       - name: Upload coverage report to codecov.io
