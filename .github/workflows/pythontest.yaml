@@ -43,7 +43,7 @@ jobs:
             $ci_env \
             --network "host" \
             -v $PWD/output_dir:/var/panoptes/logs \
-            -v $PWD/output_dir:/tmp/coverage \
+            -v $PWD/output_dir:/var/panoptes/panoptes-utils/build \
             panoptes-utils:develop \
             scripts/testing/run-tests.sh
       - name: Upload coverage report to codecov.io
