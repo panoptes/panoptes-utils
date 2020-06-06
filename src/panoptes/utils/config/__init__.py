@@ -22,22 +22,30 @@ def load_config(config_files=None, parse=True, ignore_local=False):
     ``config_files`` is a list and loaded in order, so the second entry will overwrite
     any values specified by similarly named keys in the first entry.
 
-    Entries can be placed in the ``$PANDIR/conf_files`` folder and should be passed as
-    just the file name, e.g. ``['weather.yaml', 'email']`` for loading ``$PANDIR/conf_files/weather.yaml``
-    and ``$PANDIR/conf_files/email.yaml``.
-
-    The ``.yaml`` extension will be added if not present, so list can be written
-    as just ``['weather', 'email']``.
-
-    ``config_files`` can also be specified by an absolute path, which can exist anywhere
+    ``config_files`` should be specified by an absolute path, which can exist anywhere
     on the filesystem.
 
     Local versions of files can override built-in versions and are automatically loaded if
-    placed in the ``$PANDIR/conf_files`` folder. The files have a ``<>_local.yaml`` name, where
-    ``<>`` is the built-in file. So a ``$PANDIR/conf_files/pocs_local.yaml`` will override any
-    setting in the default ``pocs.yaml`` file.
+    they exist alongside the specified config path. Local files have a ``<>_local.yaml`` name, where
+    ``<>`` is the built-in file.
 
-    Local files can be ignored (mostly for testing purposes) with the ``ignore_local`` parameter.
+    Given the following path:
+
+    ::
+
+        /path/to/dir
+        |- my_conf.yaml
+        |- my_conf_local.yaml
+
+    You can do a ``load_config('/path/to/dir/my_conf.yaml')`` and both versions of the file will
+    be loaded, with the values in the local file overriding the non-local. Typically the local
+    file would also be ignored by ``git``, etc.
+
+    For example, the ``panoptes.utils.config.server.config_server`` will always save values to
+    a local version of the file so the default settings can always be recovered if necessary.
+
+    Local files can be ignored (mostly for testing purposes or for recovering default values)
+    with the ``ignore_local`` parameter.
 
     Args:
         config_files (list, optional): A list of files to load as config,
@@ -48,37 +56,22 @@ def load_config(config_files=None, parse=True, ignore_local=False):
             Notes for details.
 
     Returns:
-        dict: A dictionary of config items
+        dict: A dictionary of config items.
     """
-
-    # Default to the pocs.yaml file
-    if config_files is None:
-        config_files = ['pocs']
-    config_files = listify(config_files)
-    logger.debug(f'Loading config files: {config_files=}')
-
     config = dict()
 
-    config_dir = os.path.join(os.getenv('PANDIR', '/var/panoptes'), 'conf_files')
-
+    config_files = listify(config_files)
+    logger.debug(f'Loading config files: {config_files=}')
     for config_file in config_files:
-        if not config_file.endswith('.yaml'):
-            config_file = f'{config_file}.yaml'
-
-        if not config_file.startswith('/'):
-            path = os.path.join(config_dir, config_file)
-        else:
-            path = config_file
-
         try:
-            logger.debug(f'Adding {path=} to config dict')
-            _add_to_conf(config, path, parse=parse)
+            logger.debug(f'Adding {config_file=} to config dict')
+            _add_to_conf(config, config_file, parse=parse)
         except Exception as e:  # pragma: no cover
-            logger.warning(f"Problem with config file {path=}, skipping. {e!r}")
+            logger.warning(f"Problem with {config_file=}, skipping. {e!r}")
 
         # Load local version of config
         if ignore_local is False:
-            local_version = os.path.join(config_dir, config_file.replace('.', '_local.'))
+            local_version = config_file.replace('.', '_local.')
             if os.path.exists(local_version):
                 try:
                     _add_to_conf(config, local_version, parse=parse)
@@ -105,6 +98,12 @@ def save_config(path, config, overwrite=True):
         overwrite (bool, optional): True if file should be updated, False
             to generate a warning for existing config. Defaults to True
             for updates.
+
+    Returns:
+        bool: If the save was successful.
+
+    Raises:
+         FileExistsError: If the local path already exists and ``overwrite=False``.
     """
     # Make sure ends with '_local.yaml'
     base, ext = os.path.splitext(path)
@@ -123,15 +122,16 @@ def save_config(path, config, overwrite=True):
     full_path = f'{base}{ext}'
 
     if os.path.exists(full_path) and overwrite is False:
-        logger.warning(f"Path exists and overwrite=False: {full_path}")
+        raise FileExistsError(f"Path exists and overwrite=False: {full_path}")
     else:
         # Create directory if does not exist
         os.makedirs(os.path.dirname(full_path), exist_ok=True)
         logger.info(f'Saving config to {full_path}')
         with open(full_path, 'w') as f:
             to_yaml(config, stream=f)
+        logger.success(f'Config info saved to {full_path}')
 
-    logger.info(f'Config saved.')
+    return True
 
 
 def parse_config(config):
@@ -146,12 +146,9 @@ def parse_config(config):
     Returns:
         dict: Config items but with objects.
     """
-    base_dir = os.getenv('PANDIR', '/var/panoptes')
     with suppress(KeyError):
         for dir_name, rel_dir in config['directories'].items():
-            abs_dir = os.path.normpath(os.path.join(base_dir, rel_dir))
-            if abs_dir != rel_dir:
-                config['directories'][dir_name] = abs_dir
+            config['directories'][dir_name] = os.path.expandvars(f'$PANDIR/{rel_dir}')
 
     return config
 
@@ -159,4 +156,4 @@ def parse_config(config):
 def _add_to_conf(config, conf_fn, parse=False):
     with suppress(IOError, TypeError):
         with open(conf_fn, 'r') as fn:
-            config.update(from_yaml(fn, parse=parse))
+            config.update(from_yaml(fn.read(), parse=parse))
