@@ -1,14 +1,5 @@
-# This is in the root PANDIR directory so that pytest will recognize the
-# options added below without having to also specify pocs/test, or a
-# one of the tests in that directory, on the command line; i.e. pytest
-# doesn't load pocs/tests/conftest.py until after it has searched for
-# tests.
-# In addition, there are fixtures defined here that are available to
-# all tests, not just those in pocs/tests.
-
 import os
 import copy
-import subprocess
 import pytest
 import time
 import shutil
@@ -20,6 +11,7 @@ from contextlib import suppress
 
 from panoptes.utils.logging import logger
 from panoptes.utils.database import PanDB
+from panoptes.utils.config.client import get_config
 from panoptes.utils.config.client import set_config
 from panoptes.utils.config.server import config_server
 
@@ -47,6 +39,7 @@ logger.add(log_file_path,
            backtrace=True,
            diagnose=True,
            level='TRACE')
+logger.log('testing', '*' * 25 + ' STARTING NEW PYTEST RUN ' + '*' * 25)
 
 
 def pytest_addoption(parser):
@@ -56,12 +49,12 @@ def pytest_addoption(parser):
         "--with-hardware",
         nargs='+',
         default=[],
-        help=("A comma separated list of hardware to test."))
+        help="A comma separated list of hardware to test.")
     group.addoption(
         "--without-hardware",
         nargs='+',
         default=[],
-        help=("A comma separated list of hardware to NOT test. "))
+        help="A comma separated list of hardware to NOT test. ")
     group.addoption(
         "--solve",
         action="store_true",
@@ -83,27 +76,6 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope='session')
-def config_host():
-    return 'localhost'
-
-
-@pytest.fixture(scope='session')
-def static_config_port():
-    """Used for the session-scoped config_server where no config values
-    are expected to change during testing.
-    """
-    return '6563'
-
-
-@pytest.fixture(scope='module')
-def config_port():
-    """Used for the function-scoped config_server when it is required to change
-    config values during testing. See `dynamic_config_server` docs below.
-    """
-    return '4861'
-
-
-@pytest.fixture(scope='session')
 def db_name():
     return 'panoptes_testing'
 
@@ -116,95 +88,45 @@ def images_dir(tmpdir_factory):
 
 @pytest.fixture(scope='session')
 def config_path():
-    return os.path.join(os.getenv('PANDIR'),
-                        'panoptes-utils',
-                        'tests',
-                        'panoptes_utils_testing.yaml'
-                        )
+    return os.path.expandvars('${PANDIR}/panoptes-utils/tests/panoptes_utils_testing.yaml')
 
 
 @pytest.fixture(scope='session', autouse=True)
-def static_config_server(config_host, static_config_port, config_path, images_dir, db_name):
-    print(f'Starting config_server for testing session')
+def static_config_server(config_path, images_dir, db_name):
+    logger.log('testing', f'Starting static_config_server for testing session')
 
     proc = config_server(
-        host=config_host,
-        port=static_config_port,
         config_file=config_path,
         ignore_local=True,
+        auto_save=False
     )
 
-    print(f'config_server started with PID={proc.pid}')
+    logger.log('testing', f'static_config_server started with {proc.pid=}')
 
     # Give server time to start
-    time.sleep(1)
+    while get_config('name') is None:
+        logger.log('testing', f'Waiting for static_config_server {proc.pid=}, sleeping 1 second.')
+        time.sleep(1)
+
+    logger.log('testing', f'Startup config_server name=[{get_config("name")}]')
 
     # Adjust various config items for testing
-    unit_name = 'Generic PANOPTES Unit'
     unit_id = 'PAN000'
-    print(f'Setting testing name and unit_id to {unit_id}')
-    set_config('name', unit_name, port=static_config_port)
-    set_config('pan_id', unit_id, port=static_config_port)
+    logger.log('testing', f'Setting testing name and unit_id to {unit_id}')
+    set_config('pan_id', unit_id)
 
-    print(f'Setting testing database to {db_name}')
-    set_config('db.name', db_name, port=static_config_port)
+    logger.log('testing', f'Setting testing database to {db_name}')
+    set_config('db.name', db_name)
 
     fields_file = 'simulator.yaml'
-    print(f'Setting testing scheduler fields_file to {fields_file}')
-    set_config('scheduler.fields_file', fields_file, port=static_config_port)
+    logger.log('testing', f'Setting testing scheduler fields_file to {fields_file}')
+    set_config('scheduler.fields_file', fields_file)
 
-    # TODO(wtgee): determine if we need separate directories for each module.
-    print(f'Setting temporary image directory for testing')
-    set_config('directories.images', images_dir, port=static_config_port)
-
-    yield
-    print(f'Killing config_server started with PID={proc.pid}')
-    proc.terminate()
-
-
-@pytest.fixture(scope='function')
-def dynamic_config_server(config_host, config_port, config_path, images_dir, db_name):
-    """If a test requires changing the configuration we use a function-scoped testing
-    server. We only do this on tests that require it so we are not constantly starting and stopping
-    the config server unless necessary.  To use this, each test that requires it must use the
-    `dynamic_config_server` and `config_port` fixtures and must pass the `config_port` to all
-    instances that are created (propogated through PanBase).
-    """
-
-    print(f'Starting config_server for testing function')
-
-    proc = config_server(
-        host=config_host,
-        port=config_port,
-        config_file=config_path,
-        ignore_local=True,
-    )
-
-    print(f'config_server started with PID={proc.pid}')
-
-    # Give server time to start
-    time.sleep(1)
-
-    # Adjust various config items for testing
-    unit_name = 'Generic PANOPTES Unit'
-    unit_id = 'PAN000'
-    print(f'Setting testing name and unit_id to {unit_id}')
-    set_config('name', unit_name, port=config_port)
-    set_config('pan_id', unit_id, port=config_port)
-
-    print(f'Setting testing database to {db_name}')
-    set_config('db.name', db_name, port=config_port)
-
-    fields_file = 'simulator.yaml'
-    print(f'Setting testing scheduler fields_file to {fields_file}')
-    set_config('scheduler.fields_file', fields_file, port=config_port)
-
-    # TODO(wtgee): determine if we need separate directories for each module.
-    print(f'Setting temporary image directory for testing')
-    set_config('directories.images', images_dir, port=config_port)
+    logger.log('testing', f'Setting temporary image directory for testing')
+    set_config('directories.images', images_dir)
 
     yield
-    print(f'Killing config_server started with PID={proc.pid}')
+    logger.log('testing', f'Killing static_config_server started with PID={proc.pid}')
     proc.terminate()
 
 

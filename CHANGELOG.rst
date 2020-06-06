@@ -2,7 +2,24 @@
 Changelog
 =========
 
-All notable changes to this project will be documented in this file.
+0.2.20dev
+---------
+
+Changed
+^^^^^^^
+
+* Python minimum version changed to ``3.8``. (#217)
+* Cleaning up the config_server. (#217)
+    * Better logging.
+    * Cleaning up doctests.
+    * Removing all dynamic server items from this repo as they are not needed.
+    * Wait for config_server to start.
+    * Fixing starting within fixture.
+
+* Serializers update. (#217)
+    * Make the parsing and serializing functions public.
+    * Use pendulum for parsing times instead of astropy Time.
+
 
 0.2.19 - 2020-06-04
 -------------------

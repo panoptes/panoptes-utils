@@ -10,7 +10,7 @@ from panoptes.utils import error
 @pytest.fixture(scope='function')
 def obj():
     return {
-        "name": "Generic PANOPTES Unit",
+        "name": "Testing PANOPTES Unit",
         "pan_id": "PAN000",
         "location": {
             "name": "Mauna Loa Observatory",
