@@ -55,6 +55,11 @@ def pytest_addoption(parser):
         default=False,
         help="If tests that require solving should be run")
     group.addoption(
+        "--theskyx",
+        action="store_true",
+        default=False,
+        help="If running tests alongside a running TheSkyX program.")
+    group.addoption(
         "--test-databases",
         nargs="+",
         default=['file'],

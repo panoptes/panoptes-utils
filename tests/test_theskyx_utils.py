@@ -14,9 +14,9 @@ def skyx(data_dir, request):
     be disabled here.
     """
 
-    # Use `--with-hardware thesky` on cli to run without mock
+    # Use `--theskyx thesky` on cli to run without mock
     Mocket.enable('theskyx', data_dir)
-    if 'theskyx' in request.config.getoption('--with-hardware'):
+    if request.config.getoption('--theskyx'):
         Mocket.disable()
 
     theskyx = TheSkyX(connect=False)
@@ -30,8 +30,8 @@ def test_default_connect(data_dir, request):
 
     If not running with a real connection then use Mocket
     """
-    # Use `--with-hardware thesky` on cli to run without mock
-    if 'theskyx' not in request.config.getoption('--with-hardware'):
+    # Use `--theskyx thesky` on cli to run without mock
+    if not request.config.getoption('--theskyx'):
         Mocket.enable('theskyx', data_dir)
 
     skyx = TheSkyX()
