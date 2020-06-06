@@ -336,7 +336,7 @@ def serialize_object(obj):
 
     >>> dt0 = pendulum.parse('1999-12-31')
     >>> type(dt0)
-    pendulum.datetime.DateTime
+     <class 'pendulum.datetime.DateTime'>
     >>> serialize_object(dt0)
     '1999-12-31T00:00:00.000'
 
