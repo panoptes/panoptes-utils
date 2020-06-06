@@ -152,7 +152,7 @@ def from_json(msg):
         `dict`: The loaded object.
     """
     try:
-        new_obj = parse_all_objects(json.loads(msg))
+        new_obj = deserialize_all_objects(json.loads(msg))
     except json.decoder.JSONDecodeError as e:
         raise error.InvalidDeserialization(f'Error: {e!r} Message: {msg!r}')
 
@@ -260,12 +260,12 @@ def from_yaml(msg, parse=True):
     obj = YAML().load(msg)
 
     if parse:
-        obj = parse_all_objects(obj)
+        obj = deserialize_all_objects(obj)
 
     return obj
 
 
-def parse_all_objects(obj):
+def deserialize_all_objects(obj):
     """Recursively parse the incoming object for various data types.
 
     This will currently attempt to parse and return, in the following order:
@@ -295,7 +295,7 @@ def parse_all_objects(obj):
                 return obj['value'] * u.Unit(obj['unit'])
 
         for k, v in obj.items():
-            obj[k] = parse_all_objects(v)
+            obj[k] = deserialize_all_objects(v)
 
     if isinstance(obj, bool):
         return bool(obj)
@@ -325,7 +325,8 @@ def parse_all_objects(obj):
 def serialize_object(obj):
     """Serialize the given object.
 
-    This is a custom serializer function.
+    This is a custom serializer function used by ``to_json`` to serialize
+    individual objects.  Also called in a loop by ``serialize_all_objects``.
 
     >>> from panoptes.utils.serializers import serialize_object
     >>> import pendulum
@@ -334,11 +335,11 @@ def serialize_object(obj):
     >>> serialize_object(42 * u.meter)
     '42.0 m'
 
-    >>> dt0 = pendulum.parse('1999-12-31')
-    >>> type(dt0)
+    >>> party_time = pendulum.parse('1999-12-31 11:59:59')
+    >>> type(party_time)
      <class 'pendulum.datetime.DateTime'>
-    >>> serialize_object(dt0)
-    '1999-12-31T00:00:00.000'
+    >>> serialize_object(party_time)
+    '1999-12-31T11:59:59.000'
 
     .. note::
 
@@ -386,7 +387,6 @@ def serialize_all_objects(obj):
         dict: The same as ``obj`` but with the values serialized.
     """
     for k, v in obj.items():
-        # If it is a dict, send parse all its elements
         if isinstance(v, dict):
             obj[k] = serialize_all_objects(v)
         else:

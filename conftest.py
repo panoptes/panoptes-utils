@@ -32,41 +32,33 @@ log_fmt = "<lvl>{level:.1s}</lvl> " \
           "<blue>({time:HH:mm:ss.ss})</> " \
           "| <c>{name} {function}:{line}</c> | " \
           "<lvl>{message}</lvl>\n"
+
+startup_message = ' STARTING NEW PYTEST RUN '
 logger.add(log_file_path,
            enqueue=True,  # multiprocessing
            format=log_fmt,
            colorize=True,
            backtrace=True,
            diagnose=True,
+           # Start new log file for each testing run.
+           rotation=lambda msg, _: startup_message in msg,
            level='TRACE')
-logger.log('testing', '*' * 25 + ' STARTING NEW PYTEST RUN ' + '*' * 25)
+logger.log('testing', '*' * 25 + startup_message + '*' * 25)
 
 
 def pytest_addoption(parser):
     db_names = ",".join(_all_databases) + ' (or all for all databases)'
     group = parser.getgroup("PANOPTES pytest options")
     group.addoption(
-        "--with-hardware",
-        nargs='+',
-        default=[],
-        help="A comma separated list of hardware to test.")
-    group.addoption(
-        "--without-hardware",
-        nargs='+',
-        default=[],
-        help="A comma separated list of hardware to NOT test. ")
-    group.addoption(
-        "--solve",
+        "--astrometry",
         action="store_true",
         default=False,
         help="If tests that require solving should be run")
     group.addoption(
-        "--test-cloud-storage",
+        "--theskyx",
         action="store_true",
         default=False,
-        dest="test_cloud_storage",
-        help="Tests cloud storage functions." +
-             "Requires $PANOPTES_CLOUD_KEY to be set to path of valid json service key")
+        help="If running tests alongside a running TheSkyX program.")
     group.addoption(
         "--test-databases",
         nargs="+",

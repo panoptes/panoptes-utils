@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -36,14 +36,13 @@ jobs:
           docker build -t panoptes-utils:develop -f docker/develop.Dockerfile .
       - name: Test with pytest in panoptes-utils container
         run: |
-          mkdir -p coverage_dir && chmod 777 coverage_dir
+          mkdir -p build && chmod 777 build
           ci_env=`bash <(curl -s https://codecov.io/env)`
           docker run -i \
             $ci_env \
-            -e REPORT_FILE="/tmp/coverage/coverage.xml" \
             --network "host" \
-            -v $PWD/coverage_dir:/var/panoptes/logs \
-            -v $PWD/coverage_dir:/tmp/coverage \
+            -v $PWD/build:/var/panoptes/logs \
+            -v $PWD/build:/var/panoptes/panoptes-utils/build/ \
             panoptes-utils:develop \
             scripts/testing/run-tests.sh
       - name: Upload coverage report to codecov.io
@@ -51,11 +50,11 @@ jobs:
         if: success()
         with:
           name: codecov-upload
-          file: coverage_dir/coverage.xml
+          file: build/coverage.xml
           fail_ci_if_error: true
       - name: Create log file artifact
         uses: actions/upload-artifact@v1
         if: always()
         with:
           name: log-files
-          path: coverage_dir/panoptes-testing.log
+          path: build/panoptes-testing.log

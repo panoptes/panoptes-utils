@@ -89,6 +89,7 @@ def test_countdown_timer_sleep():
     assert timer.sleep() is False
 
 
+@pytest.mark.slow
 def test_wait_for_events():
     # Create some events, normally something like taking an image.
     event0 = threading.Event()
