@@ -32,14 +32,18 @@ log_fmt = "<lvl>{level:.1s}</lvl> " \
           "<blue>({time:HH:mm:ss.ss})</> " \
           "| <c>{name} {function}:{line}</c> | " \
           "<lvl>{message}</lvl>\n"
+
+startup_message = ' STARTING NEW PYTEST RUN '
 logger.add(log_file_path,
            enqueue=True,  # multiprocessing
            format=log_fmt,
            colorize=True,
            backtrace=True,
            diagnose=True,
+           # Start new log file for each testing run.
+           rotation=lambda msg, _: startup_message in msg,
            level='TRACE')
-logger.log('testing', '*' * 25 + ' STARTING NEW PYTEST RUN ' + '*' * 25)
+logger.log('testing', '*' * 25 + startup_message + '*' * 25)
 
 
 def pytest_addoption(parser):

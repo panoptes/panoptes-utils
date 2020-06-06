@@ -2,10 +2,10 @@ from panoptes.utils.serializers import to_yaml
 from panoptes.utils import config
 
 
-def test_load_config():
+def test_load_config(config_path):
     """Test basic loading"""
-    conf = config.load_config()
-    assert conf['name'] == 'Generic PANOPTES unit'
+    conf = config.load_config(config_files=config_path)
+    assert conf['name'] == 'Testing PANOPTES Unit'
 
 
 def test_load_config_custom_file(tmp_path):
