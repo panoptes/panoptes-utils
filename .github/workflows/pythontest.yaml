@@ -36,7 +36,6 @@ jobs:
           docker build -t panoptes-utils:develop -f docker/develop.Dockerfile .
       - name: Test with pytest in panoptes-utils container
         run: |
-          mkdir -p build && chmod 777 build
           ci_env=`bash <(curl -s https://codecov.io/env)`
           docker run -i \
             $ci_env \
