@@ -1,11 +1,3 @@
-# This is in the root PANDIR directory so that pytest will recognize the
-# options added below without having to also specify pocs/test, or a
-# one of the tests in that directory, on the command line; i.e. pytest
-# doesn't load pocs/tests/conftest.py until after it has searched for
-# tests.
-# In addition, there are fixtures defined here that are available to
-# all tests, not just those in pocs/tests.
-
 import os
 import copy
 import pytest
