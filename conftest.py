@@ -49,12 +49,12 @@ def pytest_addoption(parser):
         "--with-hardware",
         nargs='+',
         default=[],
-        help=("A comma separated list of hardware to test."))
+        help="A comma separated list of hardware to test.")
     group.addoption(
         "--without-hardware",
         nargs='+',
         default=[],
-        help=("A comma separated list of hardware to NOT test. "))
+        help="A comma separated list of hardware to NOT test. ")
     group.addoption(
         "--solve",
         action="store_true",
@@ -122,7 +122,6 @@ def static_config_server(config_path, images_dir, db_name):
     logger.log('testing', f'Setting testing scheduler fields_file to {fields_file}')
     set_config('scheduler.fields_file', fields_file)
 
-    # TODO(wtgee): determine if we need separate directories for each module.
     logger.log('testing', f'Setting temporary image directory for testing')
     set_config('directories.images', images_dir)
 
