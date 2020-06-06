@@ -1,2 +1,3 @@
-ignore:
-  - "tests"
+codecov:
+  ignore:
+    - "tests/**/*.py"
