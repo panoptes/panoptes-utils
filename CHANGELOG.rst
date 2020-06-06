@@ -9,16 +9,25 @@ Changed
 ^^^^^^^
 
 * Python minimum version changed to ``3.8``. (#217)
+* Running pytest locally will generate coverage report in terminal. (#218)
+* Lots of documentation. (#218)
+* Removing the environment section from the readme. (#218)
 * Cleaning up the config_server. (#217)
     * Better logging.
     * Cleaning up doctests.
     * Removing all dynamic server items from this repo as they are not needed.
     * Wait for config_server to start.
     * Fixing starting within fixture.
+    * Config items no longer assume any defaults for either directories or files. A config file name is always required and it should always be an absolute path. (#218)
+    * Adding test file for config items. (#218)
 
+* Testing
+    * Log files are rotated for each testing run. (#218)
+    * Fix env vars (mostly need to make sure the `export` option exists in the `env` file. (#218)
 * Serializers update. (#217)
     * Make the parsing and serializing functions public.
     * Use pendulum for parsing times instead of astropy Time.
+    * Better naming of public functions. (#218)
 
 
 0.2.19 - 2020-06-04
