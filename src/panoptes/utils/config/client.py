@@ -54,17 +54,16 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
 
     try:
         response = requests.post(url, json={'key': key})
+        if not response.ok:  # pragma: no cover
+            logger.warning(f'Problem with get_config: {response.content!r}')
     except Exception as e:
-        logger.info(f'Problem with get_config: {e!r}')
+        logger.warning(f'Problem with get_config: {e!r}')
     else:
-        if not response.ok:
-            logger.info(f'Problem with get_config: {response.content!r}')
-        else:
-            if response.text != 'null\n':
-                if parse:
-                    config_entry = from_json(response.content.decode('utf8'))
-                else:
-                    config_entry = response.json()
+        if response.text != 'null\n':
+            if parse:
+                config_entry = from_json(response.content.decode('utf8'))
+            else:
+                config_entry = response.json()
 
     if config_entry is None:
         config_entry = default
@@ -113,10 +112,10 @@ def set_config(key, new_value, host='localhost', port='6563', parse=True):
                                  data=json_str,
                                  headers={'Content-Type': 'application/json'}
                                  )
-        if not response.ok:
+        if not response.ok:  # pragma: no cover
             raise Exception(f'Cannot access config server: {response.text}')
     except Exception as e:
-        logger.info(f'Problem with set_config: {e!r}')
+        logger.warning(f'Problem with set_config: {e!r}')
     else:
         if parse:
             config_entry = from_json(response.content.decode('utf8'))

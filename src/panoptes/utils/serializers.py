@@ -6,6 +6,8 @@ from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
 
 import numpy as np
+import pendulum
+from pendulum.parsing.exceptions import ParserError
 from astropy.time import Time
 from astropy import units as u
 
@@ -78,7 +80,7 @@ def to_json(obj, filename=None, append=True, **kwargs):
     Returns:
         `str`: The JSON string representation of the object.
     """
-    json_str = json.dumps(obj, default=_serialize_object, **kwargs)
+    json_str = json.dumps(obj, default=serialize_object, **kwargs)
 
     if filename is not None:
         mode = 'w'
@@ -149,7 +151,7 @@ def from_json(msg):
         `dict`: The loaded object.
     """
     try:
-        new_obj = _parse_all_objects(json.loads(msg))
+        new_obj = parse_all_objects(json.loads(msg))
     except json.decoder.JSONDecodeError as e:
         raise error.InvalidDeserialization(f'Error: {e!r} Message: {msg!r}')
 
@@ -198,7 +200,7 @@ def to_yaml(obj, **kwargs):
     """
     yaml = StringYAML()
 
-    obj = _serialize_all_objects(deepcopy(obj))
+    obj = serialize_all_objects(deepcopy(obj))
 
     return yaml.dump(obj, **kwargs)
 
@@ -217,36 +219,37 @@ def from_yaml(msg, parse=True):
     Examples:
         Note how comments in the YAML are preserved.
 
-        .. doctest::
+    .. doctest::
 
-            >>> config_str = '''name: Generic PANOPTES Unit
-            ... pan_id: PAN000
-            ...
-            ... location:
-            ...   latitude: 19.54 deg
-            ...   longitude: -155.58 deg
-            ...   name: Mauna Loa Observatory  # Can be anything
-            ... '''
+        >>> config_str = '''name: Generic PANOPTES Unit
+        ... pan_id: PAN000
+        ...
+        ... location:
+        ...   latitude: 19.54 deg
+        ...   longitude: -155.58 deg
+        ...   name: Mauna Loa Observatory  # Can be anything
+        ... '''
 
-            >>> config = from_yaml(config_str)
-            >>> config['location']['latitude']
-            <Quantity 19.54 deg>
+        >>> config = from_yaml(config_str)
+        >>> config['location']['latitude']
+        <Quantity 19.54 deg>
 
-            >>> yaml_config = to_yaml(config)
-            >>> yaml_config                  # doctest: +SKIP
-            ''' name: Generic PANOPTES Unit
-            ... pan_id: PAN000  # CHANGE NAME
-            ...
-            ... location:
-            ...   latitude: 19.54 deg
-            ...   longitude: value: -155.58 deg
-            ...   name: Mauna Loa Observatory  # Can be anything
-            ... '''
-            >>> yaml_config == config_str
-            True
+        >>> yaml_config = to_yaml(config)
+        >>> yaml_config                  # doctest: +SKIP
+        ''' name: Generic PANOPTES Unit
+        ... pan_id: PAN000  # CHANGE NAME
+        ...
+        ... location:
+        ...   latitude: 19.54 deg
+        ...   longitude: value: -155.58 deg
+        ...   name: Mauna Loa Observatory  # Can be anything
+        ... '''
+        >>> yaml_config == config_str
+        True
 
     Args:
         msg (`str`): The YAML string representation of the object.
+        parse (`bool`): If objects should be parsed via `_parse_all_objects`, default True.
 
     Returns:
         `collections.OrderedDict`: The ordered dict representing the YAML string, with appropriate
@@ -256,17 +259,24 @@ def from_yaml(msg, parse=True):
     obj = YAML().load(msg)
 
     if parse:
-        obj = _parse_all_objects(obj)
+        obj = parse_all_objects(obj)
 
     return obj
 
 
-def _parse_all_objects(obj):
-    """Recursively parse the incoming object for astropy quantities.
+def parse_all_objects(obj):
+    """Recursively parse the incoming object for various data types.
 
-    If `obj` is a dict with exactly two keys named `unit` and `value, then attempt
-    to parse into a valid `astropy.unit.Quantity`. If fail, simply return object
-    as is.
+    This will currently attempt to parse and return, in the following order:
+
+    * If ``obj`` is a dict with exactly two keys named ``unit`` and ``value``, then attempt to parse into a valid ``astropy.unit.Quantity``.
+    * A boolean.
+    * A `datetime.datetime` object as parsed by `pendulum.parse`.
+    * If a string ending with any of ``['m', 'deg', 's']``, an ``astropy.unit.Quantity``
+
+    .. note::
+
+        See the `to/from_json/yaml` methods, which use this function.
 
     Args:
         obj (`dict`): Object to check for quantities.
@@ -280,15 +290,14 @@ def _parse_all_objects(obj):
                 return obj['value'] * u.Unit(obj['unit'])
 
         for k, v in obj.items():
-            obj[k] = _parse_all_objects(v)
+            obj[k] = parse_all_objects(v)
 
     if isinstance(obj, bool):
         return bool(obj)
 
     # Try to turn into a time
-    with suppress(KeyError, ValueError):
-        if isinstance(Time(obj), Time):
-            return Time(obj).datetime
+    with suppress(ParserError, TypeError):
+        return pendulum.parse(obj)
 
     # Try to parse as quantity if certain type
     if isinstance(obj, str) and obj > '':
@@ -308,18 +317,23 @@ def _parse_all_objects(obj):
     return obj
 
 
-def _serialize_all_objects(obj):
-    for k, v in obj.items():
-        # If it is a dict, send parse all its elements
-        if isinstance(v, dict):
-            obj[k] = _serialize_all_objects(v)
-        else:
-            obj[k] = _serialize_object(v, default=None)
+def serialize_object(obj, default_type=None):
+    """Serialize the given object.
 
-    return obj
+    This is a custom serializer function.
 
+    .. note::
 
-def _serialize_object(obj, default=None):
+        See the `to/from_json/yaml` methods, which use this function.
+
+    Args:
+        obj (any): The object to be serialized.
+        default_type: The object to return as the default if no other
+            serialization was performed.
+
+    Returns:
+
+    """
     # Astropy Quantity.
     if isinstance(obj, u.Quantity):
         return str(obj)
@@ -334,13 +348,36 @@ def _serialize_object(obj, default=None):
         return obj.tolist()
 
     # If we are given a default object type, e.g. str
-    if default is not None:
-        return default(obj)
+    if default_type is not None:
+        return default_type(obj)
 
     # Exceptions - if not a class object, then `issubclass` raises a `TypeError`,
     # so we ignore those and let the object pass through.
     with suppress(TypeError):
         if issubclass(obj, Exception):
             return str(obj)
+
+    return obj
+
+
+def serialize_all_objects(obj):
+    """Iterate the ``obj`` items and serialize each value.
+
+    .. note::
+
+        See the `to/from_json/yaml` methods, which use this function.
+
+    Args:
+        obj (dict): The dictionary object to be iterated.
+
+    Returns:
+        dict: The same as ``obj`` but with the values serialized.
+    """
+    for k, v in obj.items():
+        # If it is a dict, send parse all its elements
+        if isinstance(v, dict):
+            obj[k] = serialize_all_objects(v)
+        else:
+            obj[k] = serialize_object(v, default_type=None)
 
     return obj

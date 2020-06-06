@@ -1,6 +1,5 @@
 import os
 import logging
-from warnings import warn
 from flask import Flask
 from flask import request
 from flask import jsonify
@@ -12,7 +11,7 @@ from scalpl import Cut
 from . import load_config
 from . import save_config
 from ..logging import logger
-from ..serializers import _serialize_object
+from ..serializers import serialize_object
 
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
@@ -22,7 +21,7 @@ app = Flask(__name__)
 class CustomJSONEncoder(JSONEncoder):
 
     def default(self, obj):
-        return _serialize_object(obj)
+        return serialize_object(obj)
 
 
 app.json_encoder = CustomJSONEncoder
@@ -51,7 +50,7 @@ def run():  # pragma: no cover
     args = parser.parse_args()
 
     if args.config_file is None:
-        args.config_file = os.path.join(os.environ['PANDIR'], 'conf_files', 'pocs.yaml')
+        args.config_file = os.path.expandvars('${PANDIR}/conf_files/pocs.yaml')
 
     server_process = config_server(**vars(args))
 
@@ -76,7 +75,7 @@ def config_server(host='localhost',
         host (str, optional): Name of host, default 'localhost'.
         port (int, optional): Port for server, default 6563.
         config_file (str|None, optional): The config file to load, defaults to
-            `$PANDIR/conf_files/pocs.yaml`.
+            ``$PANDIR/conf_files/pocs.yaml``.
         ignore_local (bool, optional): If local config files should be ignored,
             default False.
         auto_save (bool, optional): If setting new values should auto-save to
@@ -98,18 +97,15 @@ def config_server(host='localhost',
         try:
             app.run(**kwargs)
         except OSError:
-            warn(f'Problem starting config server, is another config server already running?')
+            logger.warning(f'Problem starting config server, is another config server already running?')
             return None
 
     server_process = Process(target=start_server,
                              kwargs=dict(host=host, port=port, debug=debug),
                              name='panoptes-config-server')
 
-    if server_process is not None and auto_start:
-        try:
-            server_process.start()
-        except KeyboardInterrupt:
-            server_process.terminate()
+    if auto_start:
+        server_process.start()
 
     return server_process
 
@@ -184,7 +180,9 @@ def set_config_entry():
                 app.config['POCS_cut'].setdefault(k, v)
 
         # Config has been modified so save to file
-        if app.config['auto_save'] and app.config['config_file'] is not None:
+        auto_save = app.config['auto_save']
+        logger.info(f'Setting config {auto_save=}')
+        if auto_save and app.config['config_file'] is not None:
             save_config(app.config['config_file'], app.config['POCS_cut'].copy())
 
         return jsonify(req_data)
