@@ -14,21 +14,29 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
     Nested keys can be specified as a string, as per [scalpl](https://pypi.org/project/scalpl/).
 
     Examples:
+
+    .. doctest::
+
         >>> get_config(key='name')
-        'Generic PANOPTES Unit'
+        'Testing PANOPTES Unit'
+
         >>> get_config(key='location.horizon')
         <Quantity 30. deg>
+
         >>> get_config(key='location.horizon', parse=False)
         '30.0 deg'
         >>> get_config(key='cameras.devices[1].model')
         'canon_gphoto2'
+
         >>> # Returns `None` if key is not found.
         >>> foobar = get_config(key='foobar')
         >>> foobar is None
         True
+
         >>> # But you can supply a default.
         >>> get_config(key='foobar', default='baz')
         'baz'
+
         >>> # Can use Quantities as well
         >>> from astropy import units as u
         >>> get_config(key='foobar', default=42 * u.meter)
@@ -79,11 +87,16 @@ def set_config(key, new_value, host='localhost', port='6563', parse=True):
     for details.
 
     Examples:
+
+    .. doctest::
+
         >>> from astropy import units as u
         >>> set_config('location.horizon', 35 * u.degree)
         {'location.horizon': <Quantity 35. deg>}
+
         >>> get_config(key='location.horizon')
         <Quantity 35. deg>
+
         >>> set_config('location.horizon', 30 * u.degree)
         {'location.horizon': <Quantity 30. deg>}
 

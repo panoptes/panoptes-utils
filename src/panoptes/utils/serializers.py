@@ -55,25 +55,26 @@ def to_json(obj, filename=None, append=True, **kwargs):
     Astropy quantities will be converted to a dict: `{"value": val, "unit": unit}`.
 
     Examples:
-        .. doctest::
 
-            >>> from panoptes.utils.serializers import to_json
-            >>> from astropy import units as u
-            >>> config = { "name": "Mauna Loa", "elevation": 3397 * u.meter }
-            >>> to_json(config)
-            '{"name": "Mauna Loa", "elevation": "3397.0 m"}'
+    .. doctest::
 
-            >>> to_json({"numpy_array": np.arange(10)})
-            '{"numpy_array": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}'
+        >>> from panoptes.utils.serializers import to_json
+        >>> from astropy import units as u
+        >>> config = { "name": "Mauna Loa", "elevation": 3397 * u.meter }
+        >>> to_json(config)
+        '{"name": "Mauna Loa", "elevation": "3397.0 m"}'
 
-            >>> from panoptes.utils import current_time
-            >>> to_json({"current_time": current_time()})       # doctest: +SKIP
-            '{"current_time": "2019-04-08 22:19:28.402198"}'
+        >>> to_json({"numpy_array": np.arange(10)})
+        '{"numpy_array": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}'
+
+        >>> from panoptes.utils import current_time
+        >>> to_json({"current_time": current_time()})       # doctest: +SKIP
+        '{"current_time": "2019-04-08 22:19:28.402198"}'
 
     Args:
         obj (`object`): The object to be converted to JSON, usually a dict.
-        filename (str, optional): Path to file for saving.
-        append (bool, optional): Append to `filename`, default True. Setting
+        filename (`str`, optional): Path to file for saving.
+        append (`bool`, optional): Append to `filename`, default True. Setting
             False will clobber the file.
         **kwargs: Keyword arguments passed to `json.dumps`.
 
@@ -107,42 +108,42 @@ def from_json(msg):
 
     Examples:
 
-        .. doctest::
+    .. doctest::
 
-            >>> from panoptes.utils.serializers import from_json
-            >>> config_str = '{"name":"Mauna Loa","elevation":{"value":3397.0,"unit":"m"}}'
-            >>> from_json(config_str)
-            {'name': 'Mauna Loa', 'elevation': <Quantity 3397. m>}
+        >>> from panoptes.utils.serializers import from_json
+        >>> config_str = '{"name":"Mauna Loa","elevation":{"value":3397.0,"unit":"m"}}'
+        >>> from_json(config_str)
+        {'name': 'Mauna Loa', 'elevation': <Quantity 3397. m>}
 
-            # Invalid values will be returned as is.
-            >>> from_json('{"horizon":{"value":42.0,"unit":"degr"}}')
-            {'horizon': {'value': 42.0, 'unit': 'degr'}}
+        # Invalid values will be returned as is.
+        >>> from_json('{"horizon":{"value":42.0,"unit":"degr"}}')
+        {'horizon': {'value': 42.0, 'unit': 'degr'}}
 
-            # The following will convert if final string:
-            >>> from_json('{"horizon": "42.0 deg"}')
-            {'horizon': <Quantity 42. deg>}
+        # The following will convert if final string:
+        >>> from_json('{"horizon": "42.0 deg"}')
+        {'horizon': <Quantity 42. deg>}
 
-            >>> from_json('{"elevation": "1000 m"}')
-            {'elevation': <Quantity 1000. m>}
+        >>> from_json('{"elevation": "1000 m"}')
+        {'elevation': <Quantity 1000. m>}
 
-            >>> from_json('{"readout_time": "10 s"}')
-            {'readout_time': <Quantity 10. s>}
+        >>> from_json('{"readout_time": "10 s"}')
+        {'readout_time': <Quantity 10. s>}
 
-            # Be careful with short unit names in extended format!
-            >>> horizon = from_json('{"horizon":{"value":42.0,"unit":"d"}}')
-            >>> horizon['horizon']
-            <Quantity 42. d>
-            >>> horizon['horizon'].decompose()
-            <Quantity 3628800. s>
+        # Be careful with short unit names in extended format!
+        >>> horizon = from_json('{"horizon":{"value":42.0,"unit":"d"}}')
+        >>> horizon['horizon']
+        <Quantity 42. d>
+        >>> horizon['horizon'].decompose()
+        <Quantity 3628800. s>
 
-            >>> from panoptes.utils import current_time
-            >>> time_str = to_json({"current_time": current_time().datetime})
-            >>> from_json(time_str)['current_time']         # doctest: +SKIP
-            2019-04-08T06:43:28.232406
+        >>> from panoptes.utils import current_time
+        >>> time_str = to_json({"current_time": current_time().datetime})
+        >>> from_json(time_str)['current_time']         # doctest: +SKIP
+        2019-04-08T06:43:28.232406
 
-            >>> from astropy.time import Time
-            >>> Time(from_json(time_str)['current_time'])   # doctest: +SKIP
-            <Time object: scale='utc' format='isot' value=2019-04-08T06:43:28.232>
+        >>> from astropy.time import Time
+        >>> Time(from_json(time_str)['current_time'])   # doctest: +SKIP
+        <Time object: scale='utc' format='isot' value=2019-04-08T06:43:28.232>
 
     Args:
         msg (`str`): The JSON string representation of the object.
@@ -170,28 +171,28 @@ def to_yaml(obj, **kwargs):
     Examples:
         Also see the examples `from_yaml`.
 
-        .. doctest::
+    .. doctest::
 
-            >>> import os
-            >>> os.environ['POCSTIME'] = '1999-12-31 23:49:49'
-            >>> from panoptes.utils import current_time
-            >>> t0 = current_time()
-            >>> t0
-            <Time object: scale='utc' format='iso' value=1999-12-31 23:49:49.000>
+        >>> import os
+        >>> os.environ['POCSTIME'] = '1999-12-31 23:49:49'
+        >>> from panoptes.utils import current_time
+        >>> t0 = current_time()
+        >>> t0
+        <Time object: scale='utc' format='iso' value=1999-12-31 23:49:49.000>
 
-            >>> to_yaml({'astropy time -> astropy time': t0})
-            "astropy time -> astropy time: '1999-12-31T23:49:49.000'\\n"
+        >>> to_yaml({'astropy time -> astropy time': t0})
+        "astropy time -> astropy time: '1999-12-31T23:49:49.000'\\n"
 
-            >>> to_yaml({'datetime -> astropy time': t0.datetime})
-            "datetime -> astropy time: '1999-12-31T23:49:49.000'\\n"
+        >>> to_yaml({'datetime -> astropy time': t0.datetime})
+        "datetime -> astropy time: '1999-12-31T23:49:49.000'\\n"
 
-            >>> # Can pass a `stream` parameter to save to file
-            >>> with open('temp.yaml', 'w') as f:           # doctest: +SKIP
-            ...     to_yaml({'my_object': 42}, stream=f)
+        >>> # Can pass a `stream` parameter to save to file
+        >>> with open('temp.yaml', 'w') as f:           # doctest: +SKIP
+        ...     to_yaml({'my_object': 42}, stream=f)
 
 
     Args:
-        obj (`object`): The object to be converted to be serialized.
+        obj (`dict`): The object to be converted to be serialized.
         **kwargs: Arguments passed to `ruamel.yaml.dump`. See Examples.
 
 
@@ -221,7 +222,7 @@ def from_yaml(msg, parse=True):
 
     .. doctest::
 
-        >>> config_str = '''name: Generic PANOPTES Unit
+        >>> config_str = '''name: Testing PANOPTES Unit
         ... pan_id: PAN000
         ...
         ... location:
@@ -236,7 +237,7 @@ def from_yaml(msg, parse=True):
 
         >>> yaml_config = to_yaml(config)
         >>> yaml_config                  # doctest: +SKIP
-        ''' name: Generic PANOPTES Unit
+        ''' name: Testing PANOPTES Unit
         ... pan_id: PAN000  # CHANGE NAME
         ...
         ... location:
@@ -279,7 +280,7 @@ def parse_all_objects(obj):
         See the `to/from_json/yaml` methods, which use this function.
 
     Args:
-        obj (`dict`): Object to check for quantities.
+        obj (`dict` or `str` or `object`): Object to check for quantities.
 
     Returns:
         `dict`: Same as `obj` but with objects converted to quantities.
