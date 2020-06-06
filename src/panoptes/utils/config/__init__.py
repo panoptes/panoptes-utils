@@ -8,20 +8,36 @@ from ..serializers import to_yaml
 
 
 def load_config(config_files=None, parse=True, ignore_local=False):
-    """Load configuration information
+    """Load configuration information.
+
+    .. note::
+
+        This function is used by the config server and normal config usage should
+        be via a running config server.
 
     This function supports loading of a number of different files. If no options
     are passed to ``config_files`` then the default ``$PANDIR/conf_files/pocs.yaml``
-    will be loaded. See Notes for additional information.
+    will be loaded.
 
-    The ``config_files`` parameter supports a number of options:
+    ``config_files`` is a list and loaded in order, so the second entry will overwrite
+    any values specified by similarly named keys in the first entry.
 
-        * ``config_files`` is a list and loaded in order, so the second entry will overwrite any values specified by similarly named keys in the first entry.
-        * Entries can be placed in the ``$PANDIR/conf_files`` folder and should be passed as just the file name, e.g. ``['weather.yaml', 'email']`` for loading ``$PANDIR/conf_files/weather.yaml`` and ``$PANDIR/conf_files/email.yaml``.
-        * The ``.yaml`` extension will be added if not present, so list can be written as just ``['weather', 'email']``.
-        * ``config_files`` can also be specified by an absolute path, which can exist anywhere on the filesystem.
-        * Local versions of files can override built-in versions and are automatically loaded if placed in the ``$PANDIR/conf_files`` folder. The files have a ``<>_local.yaml`` name, where ``<>`` is the built-in file. So a ``$PANDIR/conf_files/pocs_local.yaml`` will override any setting in the default ``pocs.yaml`` file.
-        * Local files can be ignored (mostly for testing purposes) with the ``ignore_local`` parameter.
+    Entries can be placed in the ``$PANDIR/conf_files`` folder and should be passed as
+    just the file name, e.g. ``['weather.yaml', 'email']`` for loading ``$PANDIR/conf_files/weather.yaml``
+    and ``$PANDIR/conf_files/email.yaml``.
+
+    The ``.yaml`` extension will be added if not present, so list can be written
+    as just ``['weather', 'email']``.
+
+    ``config_files`` can also be specified by an absolute path, which can exist anywhere
+    on the filesystem.
+
+    Local versions of files can override built-in versions and are automatically loaded if
+    placed in the ``$PANDIR/conf_files`` folder. The files have a ``<>_local.yaml`` name, where
+    ``<>`` is the built-in file. So a ``$PANDIR/conf_files/pocs_local.yaml`` will override any
+    setting in the default ``pocs.yaml`` file.
+
+    Local files can be ignored (mostly for testing purposes) with the ``ignore_local`` parameter.
 
     Args:
         config_files (list, optional): A list of files to load as config,
@@ -39,10 +55,11 @@ def load_config(config_files=None, parse=True, ignore_local=False):
     if config_files is None:
         config_files = ['pocs']
     config_files = listify(config_files)
+    logger.debug(f'Loading config files: {config_files=}')
 
     config = dict()
 
-    config_dir = os.path.expandvars('{$PANDIR}/conf_files')
+    config_dir = os.path.join(os.getenv('PANDIR', '/var/panoptes'), 'conf_files')
 
     for config_file in config_files:
         if not config_file.endswith('.yaml'):
@@ -54,9 +71,10 @@ def load_config(config_files=None, parse=True, ignore_local=False):
             path = config_file
 
         try:
+            logger.debug(f'Adding {path=} to config dict')
             _add_to_conf(config, path, parse=parse)
         except Exception as e:  # pragma: no cover
-            logger.warning(f"Problem with config file {path}, skipping. {e!r}")
+            logger.warning(f"Problem with config file {path=}, skipping. {e!r}")
 
         # Load local version of config
         if ignore_local is False:
@@ -69,6 +87,7 @@ def load_config(config_files=None, parse=True, ignore_local=False):
 
     # parse_config currently only corrects directory names.
     if parse:
+        logger.debug(f'Parsing config')
         config = parse_config(config)
 
     return config
@@ -127,7 +146,7 @@ def parse_config(config):
     Returns:
         dict: Config items but with objects.
     """
-    base_dir = os.getenv('PANDIR')
+    base_dir = os.getenv('PANDIR', '/var/panoptes')
     with suppress(KeyError):
         for dir_name, rel_dir in config['directories'].items():
             abs_dir = os.path.normpath(os.path.join(base_dir, rel_dir))
