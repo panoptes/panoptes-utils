@@ -13,21 +13,31 @@ Changed
 * Lots of documentation. (#218)
 * Removing the environment section from the readme. (#218)
 * Cleaning up the config_server. (#217)
-    * Better logging.
-    * Cleaning up doctests.
-    * Removing all dynamic server items from this repo as they are not needed.
-    * Wait for config_server to start.
-    * Fixing starting within fixture.
-    * Config items no longer assume any defaults for either directories or files. A config file name is always required and it should always be an absolute path. (#218)
-    * Adding test file for config items. (#218)
 
-* Testing
-    * Log files are rotated for each testing run. (#218)
-    * Fix env vars (mostly need to make sure the `export` option exists in the `env` file. (#218)
+  * Better logging.
+  * Cleaning up doctests.
+  * Removing all dynamic server items from this repo as they are not needed.
+  * Wait for config_server to start.
+  * Fixing starting within fixture.
+  * Config items no longer assume any defaults for either directories or files. A config file name is always required and it should always be an absolute path. (#218)
+  * Adding test file for config items. (#218)
+
+* Testing (#218)
+
+  * Log files are rotated for each testing run.
+  * Fix env vars (mostly need to make sure the `export` option exists in the `env` file.
+  * Pytest commands moved to `setup.cfg` instead of `run-tests.sh`
+  * Remove old markers
+  * Setting `--strict-markers` options.
+  * Add `astrometry` marker for tests requiring solve and `theskyx` marker for running alongside TheSkyX.
+  * Coverage reports generated in xml and html.
+  * Coverage output goes to `build` dir.
+
 * Serializers update. (#217)
-    * Make the parsing and serializing functions public.
-    * Use pendulum for parsing times instead of astropy Time.
-    * Better naming of public functions. (#218)
+
+  * Make the parsing and serializing functions public.
+  * Use pendulum for parsing times instead of astropy Time.
+  * Better naming of public functions. (#218)
 
 
 0.2.19 - 2020-06-04
