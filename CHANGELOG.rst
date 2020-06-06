@@ -8,7 +8,7 @@ Changelog
 Changed
 ^^^^^^^
 
-* Python minimum version changed to ``3.8``. (#217)
+* **Breaking** Python minimum version changed to ``3.8``. (#217)
 * Running pytest locally will generate coverage report in terminal. (#218)
 * Lots of documentation. (#218)
 * Removing the environment section from the readme. (#218)
