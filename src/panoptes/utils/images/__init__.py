@@ -130,7 +130,6 @@ def _make_pretty_from_fits(fname=None,
                            number_ticks=7,
                            clip_percent=99.9,
                            **kwargs):
-
     data = mask_saturated(fits_utils.getdata(fname))
     header = fits_utils.getheader(fname)
     wcs = WCS(header)
@@ -211,12 +210,13 @@ def _make_pretty_from_cr2(fname, title=None, timeout=15, **kwargs):
     if title:
         cmd.append(title)
 
-    logger.debug(cmd)
+    logger.debug(f'Pretty cr2 command: {cmd!r}')
 
     try:
-        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        logger.debug(output)
-    except Exception as e:
+        subprocess.run(cmd, stderr=subprocess.STDOUT, shell=True, check=True)
+        if not os.path.exists(fname.replace('.cr2', '.jpg')):
+            raise FileNotFoundError()
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
         raise error.InvalidCommand(f"Error executing {script_name}: {e.output!r}\nCommand: {cmd}")
 
     return fname.replace('cr2', 'jpg')
@@ -241,7 +241,7 @@ def mask_saturated(data, saturation_level=None, threshold=0.9, dtype=np.float64)
             dtype_info = np.iinfo(data.dtype)
         except ValueError:
             # Not an integer type. Assume for now we have 16 bit data
-            saturation_level = threshold * (2**16 - 1)
+            saturation_level = threshold * (2 ** 16 - 1)
         else:
             # Data is an integer type, set saturation level at specified fraction of
             # max value for the type
