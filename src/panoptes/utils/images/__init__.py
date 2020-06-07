@@ -52,8 +52,8 @@ def crop_data(data, box_width=200, center=None, data_only=True, wcs=None, **kwar
         y_center = int(center[0])
         x_center = int(center[1])
 
-    logger.debug("Using center: {} {}".format(x_center, y_center))
-    logger.debug("Box width: {}".format(box_width))
+    logger.debug(f"Using center: {x_center} {y_center}")
+    logger.debug(f"Box width: {box_width}")
 
     cutout = Cutout2D(data, (y_center, x_center), box_width, wcs=wcs)
 
@@ -74,7 +74,7 @@ def make_pretty_image(fname,
     This will create a jpg file from either a CR2 (Canon) or FITS file.
 
     Notes:
-        See `/scripts/cr2_to_jpg.sh` for CR2 process.
+        See ``scripts/cr2_to_jpg.sh`` for CR2 process.
 
     Arguments:
         fname (str): The path to the raw image.
@@ -91,13 +91,13 @@ def make_pretty_image(fname,
 
     Deleted Parameters:
         link_latest (bool, optional): If the pretty picture should be linked to
-            `/images/latest.jpg`, default False.
+            ``link_path``, default False.
     """
     if img_type is None:
         img_type = os.path.splitext(fname)[-1]
 
     if not os.path.exists(fname):
-        warn("File doesn't exist, can't make pretty: {}".format(fname))
+        warn(f"File doesn't exist, can't make pretty: {fname}")
         return None
     elif img_type == '.cr2':
         pretty_path = _make_pretty_from_cr2(fname, title=title, timeout=timeout, **kwargs)
@@ -117,7 +117,7 @@ def make_pretty_image(fname,
     try:
         os.symlink(pretty_path, link_path)
     except Exception as e:
-        warn("Can't link latest image: {}".format(e))
+        warn(f"Can't link latest image: {e!r}")
 
     return link_path
 
@@ -193,7 +193,7 @@ def _make_pretty_from_fits(fname=None,
     add_colorbar(im)
     fig.suptitle(title)
 
-    new_filename = re.sub('.fits(.fz)?', '.jpg', fname)
+    new_filename = re.sub(r'.fits(.fz)?', '.jpg', fname)
     fig.savefig(new_filename, bbox_inches='tight')
 
     # explicitly close and delete figure
