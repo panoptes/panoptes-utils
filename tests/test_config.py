@@ -66,3 +66,17 @@ def test_save_config_custom_file(tmp_path):
     config.save_config(str(temp_conf_file), dict(foo=2, bar=2), overwrite=True)
     temp_config = config.load_config(str(temp_conf_file))
     assert temp_config['foo'] == 2
+
+
+def test_save_config_custom_local_file(tmp_path):
+    """Test saving with a custom file"""
+    temp_conf_file = tmp_path / 'temp_conf_local.yaml'
+
+    config.save_config(str(temp_conf_file), dict(foo=1, bar=2), overwrite=False)
+    assert os.path.exists(temp_conf_file)
+
+    temp_config = config.load_config(str(temp_conf_file), ignore_local=True)
+    assert temp_config == dict()
+
+    temp_config = config.load_config(str(temp_conf_file))
+    assert temp_config['foo'] == 1
