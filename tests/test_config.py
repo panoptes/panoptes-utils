@@ -1,3 +1,4 @@
+import pytest
 import os
 from panoptes.utils.serializers import to_yaml
 from panoptes.utils import config
@@ -46,3 +47,11 @@ def test_save_config_custom_file(tmp_path):
 
     temp_config = config.load_config(str(temp_conf_file), ignore_local=False)
     assert temp_config['foo'] == 1
+
+    with pytest.raises(FileExistsError):
+        config.save_config(str(temp_conf_file), dict(foo=2, bar=2), overwrite=False)
+
+    config.save_config(str(temp_conf_file), dict(foo=2, bar=2), overwrite=True)
+    temp_config = config.load_config(str(temp_conf_file))
+    assert temp_config['foo'] == 2
+
