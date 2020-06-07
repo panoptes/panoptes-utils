@@ -96,7 +96,7 @@ def static_config_server(config_path, images_dir, db_name):
     logger.log('testing', f'static_config_server started with {proc.pid=}')
 
     # Give server time to start
-    while get_config('name') is None:
+    while get_config('name') is None:  # pragma: no cover
         logger.log('testing', f'Waiting for static_config_server {proc.pid=}, sleeping 1 second.')
         time.sleep(1)
 
