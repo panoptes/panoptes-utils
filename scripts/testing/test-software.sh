@@ -25,6 +25,3 @@ docker run --rm -it \
     -v "${PANDIR}/logs":/var/panoptes/logs \
     panoptes-utils:develop \
     "${PANDIR}/panoptes-utils/scripts/testing/run-tests.sh"
-
-# Open the report.
-xdg-open build/htmlcov/index.html
