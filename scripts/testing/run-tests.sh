@@ -17,4 +17,6 @@ coverage combine
 echo "Making XML coverage report at ${REPORT_FILE}"
 coverage xml -o "${REPORT_FILE}"
 
+coverage report --show-missing
+
 exit 0
