@@ -1,5 +1,6 @@
 import pytest
 import os
+from astropy import units as u
 from panoptes.utils.serializers import to_yaml
 from panoptes.utils import config
 
@@ -12,7 +13,7 @@ def test_load_config(config_path):
 
 def test_load_config_custom_file(tmp_path):
     """Test with a custom file"""
-    temp_conf_text = dict(name='Temporary Name', location=dict(elevation=1234.56))
+    temp_conf_text = dict(name='Temporary Name', location=dict(elevation='1234.56 m'))
 
     temp_conf_file = tmp_path / 'temp_conf.yaml'
     temp_conf_local_file = tmp_path / 'temp_conf_local.yaml'
@@ -22,14 +23,25 @@ def test_load_config_custom_file(tmp_path):
     temp_conf_text['name'] = 'Local Name'
     temp_conf_local_file.write_text(to_yaml(temp_conf_text))
 
+    # Ignore the local name
     temp_config = config.load_config(str(temp_conf_file.absolute()), ignore_local=True)
     assert len(temp_config) == 2
     assert temp_config['name'] == 'Temporary Name'
+    assert temp_config['location']['elevation'] == 1234.56 * u.m
     assert isinstance(temp_config['location'], dict)
 
+    # Don't load the local
     temp_config = config.load_config(str(temp_conf_local_file.absolute()), ignore_local=False)
     assert len(temp_config) == 2
     assert temp_config['name'] == 'Local Name'
+    assert temp_config['location']['elevation'] == 1234.56 * u.m
+    assert isinstance(temp_config['location'], dict)
+
+    # Reload the local but don't parse
+    temp_config = config.load_config(str(temp_conf_file.absolute()), parse=False)
+    assert len(temp_config) == 2
+    assert temp_config['name'] == 'Local Name'
+    assert temp_config['location']['elevation'] == '1234.56 m'
     assert isinstance(temp_config['location'], dict)
 
 
@@ -54,4 +66,3 @@ def test_save_config_custom_file(tmp_path):
     config.save_config(str(temp_conf_file), dict(foo=2, bar=2), overwrite=True)
     temp_config = config.load_config(str(temp_conf_file))
     assert temp_config['foo'] == 2
-
