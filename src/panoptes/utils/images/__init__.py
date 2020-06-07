@@ -6,6 +6,7 @@ from contextlib import suppress
 from warnings import warn
 
 import pendulum
+import pendulum.exceptions
 import numpy as np
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -41,8 +42,7 @@ def crop_data(data, box_width=200, center=None, data_only=True, wcs=None, **kwar
             a `astropy.nddata.Cutout2D` object.
 
     """
-    assert data.shape[0] >= box_width, "Can't clip data, it's smaller than {} ({})".format(
-        box_width, data.shape)
+    assert data.shape[0] >= box_width, f"Can't clip data, it's smaller than {box_width} ({data.shape})"
     # Get the center
     if center is None:
         x_len, y_len = data.shape
@@ -146,13 +146,13 @@ def _make_pretty_from_fits(fname=None,
             try:
                 basename = os.path.splitext(os.path.basename(fname))[0]
                 date_time = pendulum.parse(basename).isoformat()
-            except Exception:
+            except pendulum.exceptions.ParserError:
                 # Otherwise use now
                 date_time = current_time(pretty=True)
 
         date_time = date_time.replace('T', ' ', 1)
 
-        title = '{} ({}s {}) {}'.format(field, exptime, filter_type, date_time)
+        title = f'{field} ({exptime}s {filter_type}) {date_time}'
 
     norm = ImageNormalize(interval=PercentileInterval(clip_percent), stretch=LogStretch())
 
@@ -203,7 +203,7 @@ def _make_pretty_from_fits(fname=None,
     return new_filename
 
 
-def _make_pretty_from_cr2(fname, title=None, timeout=15, **kwargs):
+def _make_pretty_from_cr2(fname, title=None, **kwargs):
     script_name = shutil.which('cr2-to-jpg')
     cmd = [script_name, fname]
 
@@ -214,9 +214,7 @@ def _make_pretty_from_cr2(fname, title=None, timeout=15, **kwargs):
 
     try:
         subprocess.run(cmd, stderr=subprocess.STDOUT, shell=True, check=True)
-        if not os.path.exists(fname.replace('.cr2', '.jpg')):
-            raise FileNotFoundError()
-    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+    except subprocess.CalledProcessError as e:
         raise error.InvalidCommand(f"Error executing {script_name}: {e.output!r}\nCommand: {cmd}")
 
     return fname.replace('cr2', 'jpg')
@@ -227,7 +225,7 @@ def mask_saturated(data, saturation_level=None, threshold=0.9, dtype=np.float64)
 
     Args:
         data (array_like): The numpy data array.
-        saturation_level (float|None, optional): The saturation level. If None,
+        saturation_level (float, optional): The saturation level. If None,
             the level will be set to the threshold times the max value for the dtype.
         threshold (float, optional): The percentage of the max value to use.
         dtype (`numpy.dtype`, optional): The requested dtype for the new array.
@@ -260,10 +258,10 @@ def make_timelapse(
         **kwargs):
     """Create a timelapse.
 
-    A timelapse is created from all the images in a given `directory`
+    A timelapse is created from all the images in given ``directory``
 
     Args:
-        directory (str): Directory containing image files
+        directory (str): Directory containing image files.
         fn_out (str, optional): Full path to output file name, if not provided,
             defaults to `directory` basename.
         glob_pattern (str, optional): A glob file pattern of images to include,
@@ -288,7 +286,7 @@ def make_timelapse(
 
         field_name = head.split('/')[-2]
         cam_name = head.split('/')[-1]
-        fname = '{}_{}_{}.mp4'.format(field_name, cam_name, tail)
+        fname = f'{field_name}_{cam_name}_{tail}.mp4'
         fn_out = os.path.normpath(os.path.join(directory, fname))
 
     if os.path.exists(fn_out) and not overwrite:
