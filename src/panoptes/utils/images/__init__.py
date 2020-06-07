@@ -116,7 +116,7 @@ def make_pretty_image(fname,
 
     try:
         os.symlink(pretty_path, link_path)
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
         warn(f"Can't link latest image: {e!r}")
 
     return link_path
@@ -146,7 +146,7 @@ def _make_pretty_from_fits(fname=None,
             try:
                 basename = os.path.splitext(os.path.basename(fname))[0]
                 date_time = pendulum.parse(basename).isoformat()
-            except pendulum.exceptions.ParserError:
+            except pendulum.exceptions.ParserError:  # pragma: no cover
                 # Otherwise use now
                 date_time = current_time(pretty=True)
 
@@ -229,24 +229,24 @@ def mask_saturated(data, saturation_level=None, threshold=0.9, dtype=np.float64)
         saturation_level (float, optional): The saturation level. If None,
             the level will be set to the threshold times the max value for the dtype.
         threshold (float, optional): The percentage of the max value to use.
-        dtype (`numpy.dtype`, optional): The requested dtype for the new array.
+        dtype (numpy.dtype, optional): The requested dtype for the new array.
 
     Returns:
-        `numpy.ma.array`: The masked numpy array.
+        numpy.ma.array: The masked numpy array.
     """
     if not saturation_level:
         try:
-            # If data is an integer type use iinfo to compute machine limits
+            # If data is an integer type use iinfo to compute machine limits.
             dtype_info = np.iinfo(data.dtype)
         except ValueError:
-            # Not an integer type. Assume for now we have 16 bit data
+            # Not an integer type. Assume for now we have 16 bit data.
             saturation_level = threshold * (2 ** 16 - 1)
         else:
             # Data is an integer type, set saturation level at specified fraction of
-            # max value for the type
+            # max value for the type.
             saturation_level = threshold * dtype_info.max
 
-    # Convert data to masked array of requested dtype, mask values above saturation level
+    # Convert data to masked array of requested dtype, mask values above saturation level.
     return np.ma.array(data, mask=(data > saturation_level), dtype=dtype)
 
 
