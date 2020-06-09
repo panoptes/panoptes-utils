@@ -59,5 +59,7 @@ def test_config_reset():
     # Check we have changed.
     assert get_config('location.horizon') == 3 * u.degree
 
+    reset_conf()
+
     # Check we are at default again.
     assert get_config('location.horizon') == 30 * u.degree
