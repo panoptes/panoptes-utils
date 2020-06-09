@@ -89,9 +89,6 @@ def load_config(config_files=None, parse=True, ignore_local=False):
 def save_config(path, config, overwrite=True):
     """Save config to local yaml file.
 
-    This will save any entries into the ``$PANDIR/conf_files/<path>_local.yaml`` file to avoid
-    clobbering what comes from the version control.
-
     Args:
         path (str): Path to save, can be relative or absolute. See Notes in ``load_config``.
         config (dict): Config to save.
@@ -114,10 +111,6 @@ def save_config(path, config, overwrite=True):
     # Check for _local name.
     if not base.endswith('_local'):
         base = f'{base}_local'
-
-    # Check full path location
-    if not base.startswith('/'):
-        base = os.path.join(os.environ['PANDIR'], 'conf_files', base)
 
     full_path = f'{base}{ext}'
 

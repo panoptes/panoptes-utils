@@ -30,8 +30,7 @@ Changed
   * Remove old markers
   * Setting `--strict-markers` options.
   * Add `astrometry` marker for tests requiring solve and `theskyx` marker for running alongside TheSkyX.
-  * Coverage reports generated in xml and html.
-  * Coverage output goes to `build` dir.
+  * Coverage reports generated in xml and output in terminal.
 
 * Serializers update. (#217)
 

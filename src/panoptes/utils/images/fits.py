@@ -24,11 +24,10 @@ def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
                                     defaults to 60 seconds.
         solve_opts(list, optional): List of options for solve-field.
     """
-    solve_field_script = shutil.which('panoptes-solve-field')
+    solve_field_script = shutil.which('solve-field')
 
     if solve_field_script is None:  # pragma: no cover
-        raise error.InvalidSystemCommand(
-            "Can't find panoptes-solve-field: {}".format(solve_field_script))
+        raise error.InvalidSystemCommand(f"Can't find solve-field, is astrometry.net installed?")
 
     # Add the options for solving the field
     if solve_opts is not None:
@@ -62,11 +61,12 @@ def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
 
     # Gather all the kwargs that start with `--` and are not already present.
     logger.debug(f'Adding kwargs: {kwargs!r}')
+
     def _modify_opt(opt, val):
         if isinstance(val, bool):
-          opt_string = str(opt)
+            opt_string = str(opt)
         else:
-          opt_string = f'{opt}={val}'
+            opt_string = f'{opt}={val}'
 
         return opt_string
 
@@ -84,7 +84,7 @@ def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
     except Exception as e:
-        raise error.PanError("Problem plate-solving in solve_field: {}".format(e))
+        raise error.PanError(f"Problem plate-solving in solve_field: {e!r}")
 
     return proc
 
