@@ -1,10 +1,10 @@
 from panoptes.utils.serializers import to_yaml
-from panoptes.utils import config
+from panoptes.utils.config.helpers import load_config
 
 
 def test_load_config(config_path):
     """Test basic loading"""
-    conf = config.load_config(config_files=config_path)
+    conf = load_config(config_files=config_path)
     assert conf['name'] == 'Testing PANOPTES Unit'
 
 
@@ -15,7 +15,7 @@ def test_load_config_custom_file(tmp_path):
     temp_conf_file = tmp_path / 'temp_conf.yaml'
     temp_conf_file.write_text(temp_conf_text)
 
-    temp_config = config.load_config(str(temp_conf_file.absolute()))
+    temp_config = load_config(str(temp_conf_file.absolute()))
     assert len(temp_config) == 2
     assert temp_config['name'] == 'Temporary Name'
     assert isinstance(temp_config['location'], dict)
