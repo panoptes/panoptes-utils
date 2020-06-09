@@ -19,7 +19,7 @@ def test_config_client():
     # Without parsing
     assert get_config('location.horizon', parse=False) == '47.0 deg'
 
-    assert set_config('location.horizon', 42 * u.degree) == {'location.horizon': '42.0 deg'}
+    assert set_config('location.horizon', 42 * u.degree, parse=False) == {'location.horizon': '42.0 deg'}
 
 
 def test_config_client_bad(caplog):
