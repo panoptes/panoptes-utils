@@ -39,9 +39,12 @@ def run(config_file, host='localhost', port='6563', save=True, ignore_local=Fals
     try:
         print(f'Starting config server. Ctrl-c to stop')
         server_process.start()
+        server_process.join()
     except KeyboardInterrupt:
         logger.info(f'Config server interrupted, shutting down {server_process.pid}')
         server_process.terminate()
+    except Exception as e:  # pragma: no cover
+        logger.error(f'Unable to start config server {e=}')
 
 
 @click.command('get')

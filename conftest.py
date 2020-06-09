@@ -40,6 +40,7 @@ logger.add(log_file_path,
            colorize=True,
            backtrace=True,
            diagnose=True,
+           catch=True,
            # Start new log file for each testing run.
            rotation=lambda msg, _: startup_message in msg,
            level='TRACE')
@@ -65,6 +66,12 @@ def pytest_addoption(parser):
         default=['file'],
         help=("Test databases in the list. List items can include: " + db_names +
               ". Note that travis-ci will test all of them by default."))
+
+
+@pytest.fixture(scope='session')
+def testing_logger():
+    yield logger
+    logger.complete()
 
 
 @pytest.fixture(scope='session')

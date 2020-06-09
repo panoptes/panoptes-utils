@@ -80,8 +80,13 @@ def load_config(config_files=None, parse=True, ignore_local=False):
 
     # parse_config currently only corrects directory names.
     if parse:
-        logger.debug(f'Parsing config')
-        config = parse_config(config)
+        logger.trace(f'Parsing {config=}')
+        try:
+            config = parse_config(config)
+        except Exception as e:
+            logger.warning(f'Unable to parse config: {e=}')
+        else:
+            logger.trace(f'Config parsed: {config=}')
 
     return config
 

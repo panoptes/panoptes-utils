@@ -62,18 +62,24 @@ def config_server(config_file,
     app.config['config_file'] = config_file
     app.config['ignore_local'] = ignore_local
     app.config['POCS'] = load_config(config_files=config_file, ignore_local=ignore_local)
+    logger.trace(f'Cutting the config with scalpl')
     app.config['POCS_cut'] = Cut(app.config['POCS'])
+    logger.trace(f'Config cut and POCS_cut item saved')
 
     def start_server(**kwargs):
         try:
+            logger.info(f'Starting flask config server with {kwargs=}')
             app.run(**kwargs)
         except OSError:
             logger.warning(f'Problem starting config server, is another config server already running?')
             return None
+        finally:
+            logger.complete()
 
+    cmd_kwargs = dict(host=host, port=port, debug=debug)
+    logger.debug(f'Setting up config server process with {cmd_kwargs=}')
     server_process = Process(target=start_server,
-                             kwargs=dict(host=host, port=port, debug=debug),
-                             name='panoptes-config-server')
+                             kwargs=cmd_kwargs)
 
     if auto_start:
         server_process.start()

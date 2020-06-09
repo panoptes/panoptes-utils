@@ -79,7 +79,7 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
         logger.debug(f'No config entry found, returning {default=}')
         config_entry = default
 
-    logger.info(f'Config {key=}: {config_entry=!r}')
+    logger.info(f'Config {key=}: {config_entry=}')
     return config_entry
 
 
