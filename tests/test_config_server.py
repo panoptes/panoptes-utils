@@ -28,8 +28,8 @@ def test_config_client_bad(caplog):
 
     # Bad host will return `None` but also throw error
     assert get_config('foo', host='foobaz') is None
-    assert caplog.records[-1].levelname == "WARNING"
-    assert caplog.records[-1].message.startswith("Problem with get_config")
+    assert any(rec.levelname == 'WARNING' for rec in caplog.records[-5:])
+    assert any(rec.message.startswith('Problem with get_config') for rec in caplog.records[-5:])
 
 
 def test_config_reset():
