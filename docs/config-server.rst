@@ -4,34 +4,75 @@
 Config Server
 =============
 
+The config server is a simple web service that runs either on a local machine or a
+remote server.
+
+The configuration is a key/value system where the keys and values must be serializable as
+valid yaml (or json). Configuration can be initially defined in an external yaml file and
+any values saved to the active server will by default be saved back to a copy of the yaml
+file.
+
+The module will install the ``panoptes-config-server`` for command line usage, which defines
+a number of subcommands for interacting with (and starting) the server.
+
+.. code-block::
+    bash
+
+    $ panoptes-config-server --help                                                                                                                                                                                                    ─╯
+    Usage: panoptes-config-server [OPTIONS] COMMAND [ARGS]...
+
+    Options:
+      --verbose / --no-verbose  Turn on panoptes logger for utils, default False
+      --help                    Show this message and exit.
+
+    Commands:
+      get
+      run  Runs the config server with command line options.
+      set
+
+
+Each subcommand has its own ``--help`` command. See below for specific usage.
+
+
 Starting the config server
 --------------------------
 
-To start the service from the command-line, use
-``bin/panoptes-config-server``:
+Command line
+~~~~~~~~~~~~
 
-.. code:: bash
+To start the service from the command-line, use ``panoptes-config-server run``:
 
-    $ panoptes-config-server -h
-    usage: panoptes-config-server [-h] [--host HOST] [--port PORT] [--public] [--config-file CONFIG_FILE] [--no-save] [--ignore-local] [--debug]
+.. code-block::
+    bash
 
-    Start the config server for PANOPTES
+    $ panoptes-config-server run --help                                                                                                                                                                                                ─╯
+    Usage: panoptes-config-server run [OPTIONS] CONFIG_FILE
 
-    optional arguments:
-      -h, --help            show this help message and exit
-      --host HOST           Host name, defaults to local interface.
-      --port PORT           Local port, default 6563
-      --public              If server should be public, default False. Note: inside a docker container set this to True to expose to host.
-      --config-file CONFIG_FILE
-                            Config file, default $PANDIR/conf_files/pocs.yaml
-      --no-save             Prevent auto saving of any new values.
-      --ignore-local        Ignore the local config files, default False. Mostly for testing.
-      --debug               Debug
+      Runs the config server with command line options.
+
+      This function is installed as an entry_point for the module, accessible at
+      `panoptes-config-server`.
+
+    Options:
+      --host TEXT                     The config server IP address or host name,
+                                      default 0.0.0.0
+      --port TEXT                     The config server port, default 6563
+      --save / --no-save              If the set values should be saved
+                                      permanently, default True
+      --ignore-local / --no-ignore-local
+                                      Ignore the local config files, default
+                                      False. Mostly for testing.
+      --debug / --no-debug
+      --help                          Show this message and exit.
+
+Python
+~~~~~~
 
 From python, for instance when running in a jupyter notebook, you can
 use:
 
-.. code:: python
+.. code-block::
+    python
 
     >>> from panoptes.utils.config.server import config_server
 
@@ -61,29 +102,6 @@ This option can be disabled with the ``ignore_local`` setting.
     local config files unless they are being run with the ``--hardware``
     options.
 
-auto\_save
-~~~~~~~~~~
-
-By default, changes to the config values (via ``set_config``, set below)
-are not preserved across restarts. Use the ``auto_save`` option to
-enable saving. When enabled, this will write to the "local" version of
-the file (i.e. ``pocs_local.yaml`` for the ``pocs.yaml`` config file).
-
-The following are options are available for the server:
-
-.. code-block::
-
-      host (str, optional): Name of host, default 'localhost'.
-      port (int, optional): Port for server, default 6563.
-      config_file (str|None, optional): The config file to load, defaults to
-          `$PANDIR/conf_files/pocs.yaml`.
-      ignore_local (bool, optional): If local config files should be ignored,
-          default False.
-      auto_save (bool, optional): If setting new values should auto-save to
-          local file, default False.
-      auto_start (bool, optional): If server process should be started
-          automatically, default True.
-      debug (bool, optional): Flask server debug mode, default False.
 
 Using the config server
 -----------------------
@@ -93,7 +111,8 @@ Python
 
 The server can be queried/set in python:
 
-.. code:: python
+.. code-block::
+    python
 
     >>> from panoptes.utils.config import client
 
@@ -149,16 +168,14 @@ The server can be queried/set in python:
 Command-line
 ~~~~~~~~~~~~
 
-Since the Flask microservice just deals with JSON documents, you can
-also use `httpie <https://httpie.org/>`__ and
-`jq <https://stedolan.github.io/jq/>`__ from the command line to view or
-manipulate the configuration:
+The ``panoptes-config-server get`` command will fetch the requested key (or the entire
+config if no is provided) and print it out to the console as JSON string.
 
-Get entire config, pipe through jq and select just location.
+The ``panoptes-config-server set`` command will set the value for the given key.
 
-.. code:: bash
+.. code-block:: bash
 
-    http :6563/get-config | jq '.location'
+    $ panoptes-config-server get --key location
     {
       "elevation": 3400,
       "flat_horizon": -6,
@@ -172,18 +189,9 @@ Get entire config, pipe through jq and select just location.
       "timezone": "US/Hawaii"
     }
 
-``jq`` can easily manipulate the json documents. Here we pipe the
-original output into ``jq``, change two of the values, then pipe the
-output back into the ``set-config`` endpoint provided by our Flask
-microservice. This will update the configuration on the server and
-return the updated configuration back to the user. We simply pipe this
-through ``jq`` yet again for an easy display of the new values. (Note
-the ``jq`` pipe ``|`` inside the single quotes see
-`jq <https://stedolan.github.io/jg/>`__ for details.)
+.. code-block:: bash
 
-.. code:: bash
-
-    http :6563/get-config | jq '.location.horizon="37 deg" | .location.name="New Location"' | http :6563/set-config | jq '.location'
+    $ panoptes-config-server set 'location.horizon' '37 deg'
     {
       "elevation": 3400,
       "flat_horizon": -6,
@@ -197,3 +205,4 @@ the ``jq`` pipe ``|`` inside the single quotes see
       "timezone": "US/Hawaii"
     }
 
+See ``panoptes-config-server get --help`` and ``panoptes-config-server set --help`` for more details.
