@@ -35,8 +35,22 @@ def test_config_client_bad(caplog):
 
 
 def test_config_reset():
-    # Check we are at value from above.
-    assert get_config('location.horizon') == 47 * u.degree
+    # Reset config
+    config_host = 'localhost'
+    config_port = 6563
+    url = f'http://{config_host}:{config_port}/reset-config'
+
+    def reset_conf():
+        response = requests.post(url,
+                                 data=serializers.to_json({'reset': True}),
+                                 headers={'Content-Type': 'application/json'}
+                                 )
+        assert response.ok
+
+    reset_conf()
+
+    # Check we are at default value.
+    assert get_config('location.horizon') == 30 * u.degree
 
     # Set to new value.
     set_config_return = set_config('location.horizon', 3 * u.degree)
@@ -44,16 +58,6 @@ def test_config_reset():
 
     # Check we have changed.
     assert get_config('location.horizon') == 3 * u.degree
-
-    # Reset config
-    config_host = 'localhost'
-    config_port = 6563
-    url = f'http://{config_host}:{config_port}/reset-config'
-    response = requests.post(url,
-                             data=serializers.to_json({'reset': True}),
-                             headers={'Content-Type': 'application/json'}
-                             )
-    assert response.ok
 
     # Check we are at default again.
     assert get_config('location.horizon') == 30 * u.degree
