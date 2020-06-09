@@ -34,7 +34,6 @@ def test_config_client_bad(caplog):
     for rec in caplog.records[-5:]:
         if rec.levelname == 'WARNING' and rec.message.startswith('Problem with get_config'):
             found_log = True
-            break
 
     assert found_log
 
