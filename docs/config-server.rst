@@ -26,9 +26,10 @@ a number of subcommands for interacting with (and starting) the server.
       --help                    Show this message and exit.
 
     Commands:
-      get
+      get  Get an item from the config server.
       run  Runs the config server with command line options.
-      set
+      set  Set an item in the config server.
+
 
 
 Each subcommand has its own ``--help`` command. See below for specific usage.

@@ -24,7 +24,7 @@ def run(config_file, host='localhost', port='6563', save=True, ignore_local=Fals
     """Runs the config server with command line options.
 
     This function is installed as an entry_point for the module, accessible
-    at `panoptes-config-server`.
+     at `panoptes-config-server`.
     """
     server_process = config_server(
         config_file,
@@ -51,6 +51,17 @@ def run(config_file, host='localhost', port='6563', save=True, ignore_local=Fals
 @click.option('--parse/--no-parse', default=True, help='If results should be parsed into object')
 @click.option('--default', help='The default to return if not key is found, default None')
 def config_getter(key=None, host='localhost', port='6563', parse=True, default=None):
+    """Get an item from the config server.
+
+    Args:
+        key (str): The config item to get. Can be a dotted notation.
+        host (str, optional): The config server host, default localhost.
+        port (str, optional): The config server port, default 6563.
+        parse (bool, optional): If the results should be parsed as object
+            before returning, default True.
+        default (object or None, optional): The value to return if the key
+            does not exist, default None.
+    """
     logger.debug(f'Getting config {key=}')
     config_entry = get_config(key=key, host=host, port=port, parse=parse, default=default)
     click.echo(config_entry)
@@ -63,6 +74,17 @@ def config_getter(key=None, host='localhost', port='6563', parse=True, default=N
 @click.option('--port', default='6563', help='The config server port, default 6563')
 @click.option('--parse/--no-parse', default=True, help='If results should be parsed into object.')
 def config_setter(key, new_value, host='localhost', port='6563', parse=True):
+    """Set an item in the config server.
+
+    Args:
+        key (str): The config item to get. Can be a dotted notation.
+        new_value (object): The value to set. Must be serializable by
+            :func:`panoptes.utils.serializers.to_yaml`.
+        host (str, optional): The config server host, default localhost.
+        port (str, optional): The config server port, default 6563.
+        parse (bool, optional): If the results should be parsed as object
+            before returning, default True.
+    """
     logger.debug(f'Setting config {key=} {new_value=}')
     config_entry = set_config(key, new_value, host=host, port=port, parse=parse)
     click.echo(config_entry)
