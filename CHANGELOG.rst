@@ -12,7 +12,7 @@ Changed
 * Running pytest locally will generate coverage report in terminal. (#218)
 * Lots of documentation. (#218)
 * Removing the environment section from the readme. (#218)
-* Cleaning up the config_server. (#217)
+* Config Server (#217)
 
   * Better logging.
   * Cleaning up doctests.
@@ -21,6 +21,7 @@ Changed
   * Fixing starting within fixture.
   * Config items no longer assume any defaults for either directories or files. A config file name is always required and it should always be an absolute path. (#218)
   * Adding test file for config items. (#218)
+  * ``panoptes-config-server`` re-worked and now includes ``run``, ``get``, and ``set`` subcomamnds. (#221)
 
 * Testing (#218)
 
