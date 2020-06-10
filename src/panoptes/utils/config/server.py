@@ -73,8 +73,6 @@ def config_server(config_file,
         except OSError:
             logger.warning(f'Problem starting config server, is another config server already running?')
             return None
-        finally:
-            logger.complete()
 
     cmd_kwargs = dict(host=host, port=port, debug=debug)
     logger.debug(f'Setting up config server process with {cmd_kwargs=}')
