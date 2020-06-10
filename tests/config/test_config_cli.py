@@ -1,4 +1,5 @@
 import pytest
+import coverage
 import time
 from multiprocessing import Process
 from click.testing import CliRunner
@@ -20,6 +21,7 @@ def runner():
 @pytest.fixture(scope='module')
 def server(runner, port, config_path):
     def start_server():
+        coverage.process_startup()
         result = runner.invoke(config_server_cli,
                                ['run', config_path, '--port', f'{port}', '--no-save', '--ignore-local'])
         assert result.exit_code == 0

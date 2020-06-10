@@ -1,4 +1,5 @@
 import logging
+import coverage
 from flask import Flask
 from flask import request
 from flask import jsonify
@@ -67,6 +68,7 @@ def config_server(config_file,
     logger.trace(f'Config cut and POCS_cut item saved')
 
     def start_server(**kwargs):
+        coverage.process_startup()
         try:
             logger.info(f'Starting flask config server with {kwargs=}')
             app.run(**kwargs)
