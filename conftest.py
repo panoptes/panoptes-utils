@@ -69,12 +69,6 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope='session')
-def testing_logger():
-    yield logger
-    logger.complete()
-
-
-@pytest.fixture(scope='session')
 def db_name():
     return 'panoptes_testing'
 
