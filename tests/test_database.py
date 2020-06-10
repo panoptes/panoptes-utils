@@ -53,12 +53,10 @@ def test_simple_insert(db):
 def test_bad_insert(db):
     """Can't serialize `db` properly so gives warning and returns nothing."""
     with pytest.raises(error.InvalidSerialization):
-        rec = db.insert_current('config', db, store_permanently=False)
-        assert rec is None
+        _ = db.insert_current('config', db, store_permanently=False)
 
     with pytest.raises(error.InvalidSerialization):
-        rec = db.insert('config', db)
-        assert rec is None
+        _ = db.insert('config', db)
 
 
 def test_warn_bad_object(db):

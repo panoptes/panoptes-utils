@@ -6,6 +6,7 @@ from contextlib import suppress
 from warnings import warn
 
 import pendulum
+import pendulum.exceptions
 import numpy as np
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -41,8 +42,7 @@ def crop_data(data, box_width=200, center=None, data_only=True, wcs=None, **kwar
             a `astropy.nddata.Cutout2D` object.
 
     """
-    assert data.shape[0] >= box_width, "Can't clip data, it's smaller than {} ({})".format(
-        box_width, data.shape)
+    assert data.shape[0] >= box_width, f"Can't clip data, it's smaller than {box_width} ({data.shape})"
     # Get the center
     if center is None:
         x_len, y_len = data.shape
@@ -52,8 +52,8 @@ def crop_data(data, box_width=200, center=None, data_only=True, wcs=None, **kwar
         y_center = int(center[0])
         x_center = int(center[1])
 
-    logger.debug("Using center: {} {}".format(x_center, y_center))
-    logger.debug("Box width: {}".format(box_width))
+    logger.debug(f"Using center: {x_center} {y_center}")
+    logger.debug(f"Box width: {box_width}")
 
     cutout = Cutout2D(data, (y_center, x_center), box_width, wcs=wcs)
 
@@ -74,7 +74,7 @@ def make_pretty_image(fname,
     This will create a jpg file from either a CR2 (Canon) or FITS file.
 
     Notes:
-        See `/scripts/cr2_to_jpg.sh` for CR2 process.
+        See ``scripts/cr2_to_jpg.sh`` for CR2 process.
 
     Arguments:
         fname (str): The path to the raw image.
@@ -91,13 +91,13 @@ def make_pretty_image(fname,
 
     Deleted Parameters:
         link_latest (bool, optional): If the pretty picture should be linked to
-            `/images/latest.jpg`, default False.
+            ``link_path``, default False.
     """
     if img_type is None:
         img_type = os.path.splitext(fname)[-1]
 
     if not os.path.exists(fname):
-        warn("File doesn't exist, can't make pretty: {}".format(fname))
+        warn(f"File doesn't exist, can't make pretty: {fname}")
         return None
     elif img_type == '.cr2':
         pretty_path = _make_pretty_from_cr2(fname, title=title, timeout=timeout, **kwargs)
@@ -116,8 +116,8 @@ def make_pretty_image(fname,
 
     try:
         os.symlink(pretty_path, link_path)
-    except Exception as e:
-        warn("Can't link latest image: {}".format(e))
+    except Exception as e:  # pragma: no cover
+        warn(f"Can't link latest image: {e!r}")
 
     return link_path
 
@@ -130,7 +130,6 @@ def _make_pretty_from_fits(fname=None,
                            number_ticks=7,
                            clip_percent=99.9,
                            **kwargs):
-
     data = mask_saturated(fits_utils.getdata(fname))
     header = fits_utils.getheader(fname)
     wcs = WCS(header)
@@ -147,13 +146,13 @@ def _make_pretty_from_fits(fname=None,
             try:
                 basename = os.path.splitext(os.path.basename(fname))[0]
                 date_time = pendulum.parse(basename).isoformat()
-            except Exception:
+            except pendulum.exceptions.ParserError:  # pragma: no cover
                 # Otherwise use now
                 date_time = current_time(pretty=True)
 
         date_time = date_time.replace('T', ' ', 1)
 
-        title = '{} ({}s {}) {}'.format(field, exptime, filter_type, date_time)
+        title = f'{field} ({exptime}s {filter_type}) {date_time}'
 
     norm = ImageNormalize(interval=PercentileInterval(clip_percent), stretch=LogStretch())
 
@@ -194,7 +193,7 @@ def _make_pretty_from_fits(fname=None,
     add_colorbar(im)
     fig.suptitle(title)
 
-    new_filename = re.sub('.fits(.fz)?', '.jpg', fname)
+    new_filename = re.sub(r'.fits(.fz)?', '.jpg', fname)
     fig.savefig(new_filename, bbox_inches='tight')
 
     # explicitly close and delete figure
@@ -204,19 +203,19 @@ def _make_pretty_from_fits(fname=None,
     return new_filename
 
 
-def _make_pretty_from_cr2(fname, title=None, timeout=15, **kwargs):
+def _make_pretty_from_cr2(fname, title=None, **kwargs):
     script_name = shutil.which('cr2-to-jpg')
     cmd = [script_name, fname]
 
     if title:
         cmd.append(title)
 
-    logger.debug(cmd)
+    logger.debug(f'Pretty cr2 command: {cmd!r}')
 
     try:
         output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        logger.debug(output)
-    except Exception as e:
+        logger.debug(f'Pretty CR2 {output=}')
+    except subprocess.CalledProcessError as e:
         raise error.InvalidCommand(f"Error executing {script_name}: {e.output!r}\nCommand: {cmd}")
 
     return fname.replace('cr2', 'jpg')
@@ -227,27 +226,27 @@ def mask_saturated(data, saturation_level=None, threshold=0.9, dtype=np.float64)
 
     Args:
         data (array_like): The numpy data array.
-        saturation_level (float|None, optional): The saturation level. If None,
+        saturation_level (float, optional): The saturation level. If None,
             the level will be set to the threshold times the max value for the dtype.
         threshold (float, optional): The percentage of the max value to use.
-        dtype (`numpy.dtype`, optional): The requested dtype for the new array.
+        dtype (numpy.dtype, optional): The requested dtype for the new array.
 
     Returns:
-        `numpy.ma.array`: The masked numpy array.
+        numpy.ma.array: The masked numpy array.
     """
     if not saturation_level:
         try:
-            # If data is an integer type use iinfo to compute machine limits
+            # If data is an integer type use iinfo to compute machine limits.
             dtype_info = np.iinfo(data.dtype)
         except ValueError:
-            # Not an integer type. Assume for now we have 16 bit data
-            saturation_level = threshold * (2**16 - 1)
+            # Not an integer type. Assume for now we have 16 bit data.
+            saturation_level = threshold * (2 ** 16 - 1)
         else:
             # Data is an integer type, set saturation level at specified fraction of
-            # max value for the type
+            # max value for the type.
             saturation_level = threshold * dtype_info.max
 
-    # Convert data to masked array of requested dtype, mask values above saturation level
+    # Convert data to masked array of requested dtype, mask values above saturation level.
     return np.ma.array(data, mask=(data > saturation_level), dtype=dtype)
 
 
@@ -260,10 +259,10 @@ def make_timelapse(
         **kwargs):
     """Create a timelapse.
 
-    A timelapse is created from all the images in a given `directory`
+    A timelapse is created from all the images in given ``directory``
 
     Args:
-        directory (str): Directory containing image files
+        directory (str): Directory containing image files.
         fn_out (str, optional): Full path to output file name, if not provided,
             defaults to `directory` basename.
         glob_pattern (str, optional): A glob file pattern of images to include,
@@ -288,7 +287,7 @@ def make_timelapse(
 
         field_name = head.split('/')[-2]
         cam_name = head.split('/')[-1]
-        fname = '{}_{}_{}.mp4'.format(field_name, cam_name, tail)
+        fname = f'{field_name}_{cam_name}_{tail}.mp4'
         fn_out = os.path.normpath(os.path.join(directory, fname))
 
     if os.path.exists(fn_out) and not overwrite:

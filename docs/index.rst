@@ -88,7 +88,7 @@ Or inside a python process:
 
     >>> server_process.terminate()  # Or just exit notebook/console
 
-For more details and usage examples, see the Config Server.
+For more details and usage examples, see the :ref:`config-server`.
 
 Development
 ===========
@@ -96,30 +96,8 @@ Development
 Environment
 -----------
 
-There is a docker development environment that has a number of support
-modules installed. This also defaults to running a ``jupyter-lab``
-instance with the ``$PANDIR`` folder as the root.
-
-You should have all ``panoptes`` repositories for development (maybe
-``POCS``, ``panoptes-utils``, ``panoptes-tutorials``) inside the
-``$PANDIR`` folder (default ``/var/panoptes``). Ideally you have just
-run the install script at **TODO: reference install script here.**.
-
-You can then start the development environment by:
-
-.. code:: sh
-
-   bin/panoptes-develop up
-
-You can then connect to the provided url in your browser. The default
-password is ``panoptes``, which is not supplied for security purposes
-but just to allow access.
-
-The environment can be stopped with:
-
-.. code:: sh
-
-   bin/panoptes-develop down
+Most users of ``panoptes-utils`` who need the full environment will also
+want the fulle `POCS Environment`_.
 
 Logging
 -------
@@ -198,6 +176,7 @@ Indices and tables
 .. _services: #services
 .. _loguru: https://github.com/Delgan/loguru
 .. _Logger: #logger
+.. _POCS Environment: https://pocs.readthedocs.io/en/latest/#pocs-environment
 
 .. |PyPI version| image:: https://badge.fury.io/py/panoptes-utils.svg
    :target: https://badge.fury.io/py/panoptes-utils

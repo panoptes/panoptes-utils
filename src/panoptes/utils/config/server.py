@@ -1,6 +1,4 @@
-import os
 import logging
-from warnings import warn
 from flask import Flask
 from flask import request
 from flask import jsonify
@@ -9,10 +7,10 @@ from flask.json import JSONEncoder
 from multiprocessing import Process
 from scalpl import Cut
 
-from . import load_config
-from . import save_config
+from .helpers import load_config
+from .helpers import save_config
 from ..logging import logger
-from ..serializers import _serialize_object
+from ..serializers import serialize_object
 
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
@@ -22,48 +20,24 @@ app = Flask(__name__)
 class CustomJSONEncoder(JSONEncoder):
 
     def default(self, obj):
-        return _serialize_object(obj)
+        """Custom serialization of each object.
+
+        This method will call :func:`panoptes.utils.serializers.serialize_object` for
+        each object.
+
+        Args:
+            obj (`any`): The object to serialize.
+
+        """
+        return serialize_object(obj)
 
 
 app.json_encoder = CustomJSONEncoder
 
 
-def run():  # pragma: no cover
-    """Runs the config server with command line options.
-
-    This function is install as an entry_point for the module, accessible
-    at `panoptes-config-server`.
-    """
-    import argparse
-
-    parser = argparse.ArgumentParser(description='Start the config server for PANOPTES')
-    parser.add_argument('--host', default='127.0.0.1', type=str,
-                        help='Host name, defaults to local interface. Set to 0.0.0.0 for public.')
-    parser.add_argument('--port', default=6563, type=int, help='Local port, default 6563')
-    parser.add_argument('--config-file', dest='config_file', type=str,
-                        default=None,
-                        help="Config file, default $PANDIR/conf_files/pocs.yaml")
-    parser.add_argument('--no-save', default=False, action='store_true',
-                        help='Prevent auto saving of any new values.')
-    parser.add_argument('--ignore-local', default=False, action='store_true',
-                        help='Ignore the local config files, default False. Mostly for testing.')
-    parser.add_argument('--debug', default=False, action='store_true', help='Debug')
-    args = parser.parse_args()
-
-    if args.config_file is None:
-        args.config_file = os.path.join(os.environ['PANDIR'], 'conf_files', 'pocs.yaml')
-
-    server_process = config_server(**vars(args))
-
-    try:
-        server_process.start()
-    except KeyboardInterrupt:
-        server_process.terminate()
-
-
-def config_server(host='localhost',
+def config_server(config_file,
+                  host='localhost',
                   port=6563,
-                  config_file=None,
                   ignore_local=False,
                   auto_save=False,
                   auto_start=True,
@@ -73,43 +47,40 @@ def config_server(host='localhost',
     A convenience function to start the config server.
 
     Args:
+        config_file (str): The absolute path to the config file to load.
         host (str, optional): Name of host, default 'localhost'.
         port (int, optional): Port for server, default 6563.
-        config_file (str|None, optional): The config file to load, defaults to
-            `$PANDIR/conf_files/pocs.yaml`.
-        ignore_local (bool, optional): If local config files should be ignored,
-            default False.
-        auto_save (bool, optional): If setting new values should auto-save to
-            local file, default False.
-        auto_start (bool, optional): If server process should be started
-            automatically, default True.
+        ignore_local (bool, optional): If local config files should be ignored, default False.
+        auto_save (bool, optional): If setting new values should auto-save to local file, default False.
+        auto_start (bool, optional): If server process should be started automatically, default True.
         debug (bool, optional): Flask server debug mode, default False.
 
     Returns:
-        `multiprocessing.Process`: The process running the config server.
+        multiprocessing.Process: The process running the config server.
     """
     app.config['auto_save'] = auto_save
     app.config['config_file'] = config_file
     app.config['ignore_local'] = ignore_local
     app.config['POCS'] = load_config(config_files=config_file, ignore_local=ignore_local)
+    logger.trace(f'Cutting the config with scalpl')
     app.config['POCS_cut'] = Cut(app.config['POCS'])
+    logger.trace(f'Config cut and POCS_cut item saved')
 
     def start_server(**kwargs):
         try:
+            logger.info(f'Starting flask config server with {kwargs=}')
             app.run(**kwargs)
         except OSError:
-            warn(f'Problem starting config server, is another config server already running?')
+            logger.warning(f'Problem starting config server, is another config server already running?')
             return None
 
+    cmd_kwargs = dict(host=host, port=port, debug=debug)
+    logger.debug(f'Setting up config server process with {cmd_kwargs=}')
     server_process = Process(target=start_server,
-                             kwargs=dict(host=host, port=port, debug=debug),
-                             name='panoptes-config-server')
+                             kwargs=cmd_kwargs)
 
-    if server_process is not None and auto_start:
-        try:
-            server_process.start()
-        except KeyboardInterrupt:
-            server_process.terminate()
+    if auto_start:
+        server_process.start()
 
     return server_process
 
@@ -122,28 +93,33 @@ def get_config_entry():
     configuration item corresponding to provided key or entire
     configuration. The key entries should be specified in dot-notation,
     with the names corresponding to the entries stored in the configuration
-    file. See the [scalpl](https://pypi.org/project/scalpl/) documentation
+    file. See the `scalpl <https://pypi.org/project/scalpl/>`_ documentation
     for details on the dot-notation.
 
-    The endpoint should received a JSON document with a single key named "key"
+    The endpoint should receive a JSON document with a single key named ``"key"``
     and a value that corresponds to the desired key within the configuration.
 
     For example, take the following configuration:
 
-    ..code::
+    .. code:: javascript
 
         {
             'location': {
                 'elevation': 3400.0,
+                'latitude': 19.55,
+                'longitude': 155.12,
             }
         }
 
     To get the corresponding value for the elevation, pass a JSON document similar to:
 
-    ..code::
+    .. code:: javascript
 
         '{"key": "location.elevation"}'
 
+    Returns:
+        str: The json string for the requested object if object is found in config.
+        Otherwise a json string with ``status`` and ``msg`` keys will be returned.
     """
     req_json = request.get_json()
 
@@ -174,6 +150,42 @@ def get_config_entry():
 
 @app.route('/set-config', methods=['GET', 'POST'])
 def set_config_entry():
+    """Sets an item in the config.
+
+    Endpoint that responds to GET and POST requests and sets a
+    configuration item corresponding to the provided key.
+
+    The key entries should be specified in dot-notation, with the names
+    corresponding to the entries stored in the configuration file. See
+    the `scalpl <https://pypi.org/project/scalpl/>`_ documentation for details
+    on the dot-notation.
+
+    The endpoint should receive a JSON document with a single key named ``"key"``
+    and a value that corresponds to the desired key within the configuration.
+
+    For example, take the following configuration:
+
+    .. code:: javascript
+
+        {
+            'location': {
+                'elevation': 3400.0,
+                'latitude': 19.55,
+                'longitude': 155.12,
+            }
+        }
+
+    To set the corresponding value for the elevation, pass a JSON document similar to:
+
+    .. code:: javascript
+
+        '{"location.elevation": "1000 m"}'
+
+
+    Returns:
+        str: If method is successful, returned json string will be a copy of the set values.
+        On failure, a json string with ``status`` and ``msg`` keys will be returned.
+    """
     if request.is_json:
         req_data = request.get_json()
 
@@ -184,7 +196,9 @@ def set_config_entry():
                 app.config['POCS_cut'].setdefault(k, v)
 
         # Config has been modified so save to file
-        if app.config['auto_save'] and app.config['config_file'] is not None:
+        auto_save = app.config['auto_save']
+        logger.info(f'Setting config {auto_save=}')
+        if auto_save and app.config['config_file'] is not None:
             save_config(app.config['config_file'], app.config['POCS_cut'].copy())
 
         return jsonify(req_data)
@@ -197,6 +211,24 @@ def set_config_entry():
 
 @app.route('/reset-config', methods=['POST'])
 def reset_config():
+    """Reset the configuration.
+
+    An endpoint that accepts a POST method. The json request object
+    must contain the key ``reset`` (with any value).
+
+    The method will reset the configuration to the original configuration files that were
+    used, skipping the local (and saved file).
+
+    .. note::
+
+        If the server was originally started with a local version of the file, those will
+        be skipped upon reload. This is not ideal but hopefully this method is not used too
+        much.
+
+    Returns:
+        str: A json string object containing the keys ``success`` and ``msg`` that indicate
+        success or failure.
+    """
     if request.is_json:
         logger.warning(f'Resetting config server')
         req_data = request.get_json()
@@ -207,7 +239,10 @@ def reset_config():
                                              ignore_local=app.config['ignore_local'])
             app.config['POCS_cut'] = Cut(app.config['POCS'])
 
-        return jsonify(req_data)
+        return jsonify({
+            'success': True,
+            'msg': f'Configuration reset'
+        })
 
     return jsonify({
         'success': False,

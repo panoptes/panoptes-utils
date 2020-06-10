@@ -148,8 +148,8 @@ def test_delay_of_sigterm_with_raised_exception():
             # Should not reach this point because signal_handler() should
             # be called because we called:
             #     signal.signal(other-handler, signal_handler)
-            after_signal = True
-            assert False, "Should not get here!"
+            after_signal = True  # pragma: no cover
+            assert False, "Should not get here!"  # pragma: no cover
     except UserWarning:
         assert before_signal
         assert signal_handled

@@ -6,7 +6,7 @@ cd "${PANOPTES_UTILS}"
 
 echo "Building local panoptes-utils:latest"
 docker build \
-    --quiet \
+    --quiet --force-rm \
     -t "panoptes-utils:latest" \
     -f "${PANOPTES_UTILS}/docker/latest.Dockerfile" \
     "${PANOPTES_UTILS}"
@@ -16,7 +16,7 @@ sed -i s'/^\.git$/\!\.git/' .dockerignore
 
 echo "Building local panoptes-utils:develop"
 docker build \
-    --quiet \
+    --quiet --force-rm \
     --build-arg IMAGE_URL="panoptes-utils:latest" \
     -t "panoptes-utils:develop" \
     -f "${PANOPTES_UTILS}/docker/develop.Dockerfile" \

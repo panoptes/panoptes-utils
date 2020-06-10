@@ -228,6 +228,7 @@ class DelaySigTerm(contextlib.ContextDecorator):
             db.WriteCurrentRecord(record)
 
     """
+
     # TODO(jamessynge): Consider generalizing as DelaySignal(signum).
 
     def __enter__(self, callback=None):
