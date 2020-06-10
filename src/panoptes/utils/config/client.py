@@ -68,14 +68,18 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
         logger.warning(f'Problem with get_config: {e!r}')
     else:
         if response.text != 'null\n':
+            logger.debug(f'Received config {response.text}')
             if parse:
+                logger.debug(f'Parsing config results')
                 config_entry = from_json(response.content.decode('utf8'))
             else:
                 config_entry = response.json()
 
     if config_entry is None:
+        logger.debug(f'No config entry found, returning {default=}')
         config_entry = default
 
+    logger.info(f'Config {key=}: {config_entry=}')
     return config_entry
 
 

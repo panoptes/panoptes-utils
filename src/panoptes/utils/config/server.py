@@ -1,4 +1,3 @@
-import os
 import logging
 from flask import Flask
 from flask import request
@@ -8,8 +7,8 @@ from flask.json import JSONEncoder
 from multiprocessing import Process
 from scalpl import Cut
 
-from . import load_config
-from . import save_config
+from .helpers import load_config
+from .helpers import save_config
 from ..logging import logger
 from ..serializers import serialize_object
 
@@ -34,39 +33,6 @@ class CustomJSONEncoder(JSONEncoder):
 
 
 app.json_encoder = CustomJSONEncoder
-
-
-def run():  # pragma: no cover
-    """Runs the config server with command line options.
-
-    This function is install as an entry_point for the module, accessible
-    at `panoptes-config-server`.
-    """
-    import argparse
-
-    parser = argparse.ArgumentParser(description='Start the config server for PANOPTES')
-    parser.add_argument('--host', default='127.0.0.1', type=str,
-                        help='Host name, defaults to local interface. Set to 0.0.0.0 for public.')
-    parser.add_argument('--port', default=6563, type=int, help='Local port, default 6563')
-    parser.add_argument('--config-file', dest='config_file', type=str,
-                        default=None,
-                        help="Config file, default $PANDIR/conf_files/pocs.yaml")
-    parser.add_argument('--no-save', default=False, action='store_true',
-                        help='Prevent auto saving of any new values.')
-    parser.add_argument('--ignore-local', default=False, action='store_true',
-                        help='Ignore the local config files, default False. Mostly for testing.')
-    parser.add_argument('--debug', default=False, action='store_true', help='Debug')
-    args = parser.parse_args()
-
-    if args.config_file is None:
-        args.config_file = os.path.expandvars('${PANDIR}/conf_files/pocs.yaml')
-
-    server_process = config_server(**vars(args))
-
-    try:
-        server_process.start()
-    except KeyboardInterrupt:
-        server_process.terminate()
 
 
 def config_server(config_file,
@@ -96,18 +62,22 @@ def config_server(config_file,
     app.config['config_file'] = config_file
     app.config['ignore_local'] = ignore_local
     app.config['POCS'] = load_config(config_files=config_file, ignore_local=ignore_local)
+    logger.trace(f'Cutting the config with scalpl')
     app.config['POCS_cut'] = Cut(app.config['POCS'])
+    logger.trace(f'Config cut and POCS_cut item saved')
 
     def start_server(**kwargs):
         try:
+            logger.info(f'Starting flask config server with {kwargs=}')
             app.run(**kwargs)
         except OSError:
             logger.warning(f'Problem starting config server, is another config server already running?')
             return None
 
+    cmd_kwargs = dict(host=host, port=port, debug=debug)
+    logger.debug(f'Setting up config server process with {cmd_kwargs=}')
     server_process = Process(target=start_server,
-                             kwargs=dict(host=host, port=port, debug=debug),
-                             name='panoptes-config-server')
+                             kwargs=cmd_kwargs)
 
     if auto_start:
         server_process.start()

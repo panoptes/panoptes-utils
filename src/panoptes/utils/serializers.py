@@ -81,7 +81,10 @@ def to_json(obj, filename=None, append=True, **kwargs):
     Returns:
         `str`: The JSON string representation of the object.
     """
-    json_str = json.dumps(obj, default=serialize_object, **kwargs)
+    try:
+        json_str = json.dumps(obj, default=serialize_object, **kwargs)
+    except Exception as e:
+        raise error.InvalidSerialization(e)
 
     if filename is not None:
         mode = 'w'
@@ -309,15 +312,8 @@ def deserialize_all_objects(obj):
         with suppress(IndexError):
             units_string = obj.rsplit()[-1]  # Get the final word
             if units_string in ['m', 'deg', 's']:
-                try:
-                    quantity = u.Quantity(obj)
-                    # If it ends up dimensionless just return obj.
-                    if str(quantity.unit) == '':
-                        return obj
-                    else:
-                        return quantity
-                except Exception:
-                    return obj
+                with suppress(Exception):
+                    return u.Quantity(obj)
 
     return obj
 

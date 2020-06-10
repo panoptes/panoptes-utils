@@ -19,6 +19,8 @@ def test_config_client():
     # Without parsing
     assert get_config('location.horizon', parse=False) == '47.0 deg'
 
+    assert set_config('location.horizon', 42 * u.degree, parse=False) == {'location.horizon': '42.0 deg'}
+
 
 def test_config_client_bad(caplog):
     # Bad host will return `None` but also throw error
@@ -28,13 +30,31 @@ def test_config_client_bad(caplog):
 
     # Bad host will return `None` but also throw error
     assert get_config('foo', host='foobaz') is None
-    assert caplog.records[-1].levelname == "WARNING"
-    assert caplog.records[-1].message.startswith("Problem with get_config")
+    found_log = False
+    for rec in caplog.records[-5:]:
+        if rec.levelname == 'WARNING' and rec.message.startswith('Problem with get_config'):
+            found_log = True
+
+    assert found_log
 
 
 def test_config_reset():
-    # Check we are at value from above.
-    assert get_config('location.horizon') == 47 * u.degree
+    # Reset config
+    config_host = 'localhost'
+    config_port = 6563
+    url = f'http://{config_host}:{config_port}/reset-config'
+
+    def reset_conf():
+        response = requests.post(url,
+                                 data=serializers.to_json({'reset': True}),
+                                 headers={'Content-Type': 'application/json'}
+                                 )
+        assert response.ok
+
+    reset_conf()
+
+    # Check we are at default value.
+    assert get_config('location.horizon') == 30 * u.degree
 
     # Set to new value.
     set_config_return = set_config('location.horizon', 3 * u.degree)
@@ -43,15 +63,7 @@ def test_config_reset():
     # Check we have changed.
     assert get_config('location.horizon') == 3 * u.degree
 
-    # Reset config
-    config_host = 'localhost'
-    config_port = 6563
-    url = f'http://{config_host}:{config_port}/reset-config'
-    response = requests.post(url,
-                             data=serializers.to_json({'reset': True}),
-                             headers={'Content-Type': 'application/json'}
-                             )
-    assert response.ok
+    reset_conf()
 
     # Check we are at default again.
     assert get_config('location.horizon') == 30 * u.degree
