@@ -1,4 +1,5 @@
 import pytest
+import time
 from multiprocessing import Process
 from click.testing import CliRunner
 
@@ -30,6 +31,8 @@ def server(runner, port, config_path):
 
 
 def test_config_server_cli(server, runner, port):
+    # Let the server start.
+    time.sleep(2)
     assert server.is_alive()
 
     result = runner.invoke(config_server_cli, ['get', '--key', f'name', '--port', f'{port}'])
