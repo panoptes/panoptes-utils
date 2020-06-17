@@ -176,11 +176,12 @@ def parse_config_directories(directories, must_exist=False):
         for dir_name, rel_dir in filter(lambda d: d[1].startswith('/') is False,
                                         directories.items()):
             abs_dir = os.path.join(base_dir, rel_dir)
-            logger.debug(f'{base_dir=} {rel_dir=} {abs_dir=}')
+            logger.debug(f'{base_dir=} {rel_dir=} {abs_dir=} {must_exist=}')
 
             if must_exist and not os.path.exists(abs_dir):
                 logger.warning(f'{must_exist=} but {abs_dir=} does not exist, skipping')
             else:
+                logger.debug(f'Setting {dir_name} to {abs_dir}')
                 directories[dir_name] = abs_dir
 
     return directories
