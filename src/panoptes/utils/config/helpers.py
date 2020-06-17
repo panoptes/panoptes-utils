@@ -144,18 +144,18 @@ def parse_config_directories(directories, must_exist=False):
 
     .. doctest::
 
-        >>> dirs_config = dict(base='/tmp', foo='bar', baz='bam')
+        >>> dirs_config = dict(base='/var/panoptes', foo='bar', baz='bam')
         >>> parse_config_directories(dirs_config)
-        {'base': '/tmp', 'foo': '/tmp/bar', 'baz': '/tmp/bam'}
+        {'base': '/var/panoptes', 'foo': '/var/panoptes/bar', 'baz': '/var/panoptes/bam'}
 
         >>> # If the relative dir doesn't exist but is required, return as is.
         >>> parse_config_directories(dirs_config, must_exist=True)
-        {'base': '/tmp', 'foo': 'bar', 'baz': 'bam'}
+        {'base': '/var/panoptes', 'foo': 'bar', 'baz': 'bam'}
 
         >>> # If 'base' is not a valid absolute directory, return all as is.
-        >>> dirs_config = dict(base='tmp', foo='bar', baz='bam')
+        >>> dirs_config = dict(base='panoptes', foo='bar', baz='bam')
         >>> parse_config_directories(dirs_config, must_exist=False)
-        {'base': 'tmp', 'foo': 'bar', 'baz': 'bam'}
+        {'base': 'panoptes', 'foo': 'bar', 'baz': 'bam'}
 
     Args:
         directories (dict): The dictionary of directory information. Usually comes
