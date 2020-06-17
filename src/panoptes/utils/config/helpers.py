@@ -76,13 +76,14 @@ def load_config(config_files=None, parse=True, ignore_local=False):
                 try:
                     _add_to_conf(config, local_version, parse=parse)
                 except Exception as e:  # pragma: no cover
-                    logger.warning(f"Problem with local config file {local_version}, skipping: {e!r}")
+                    logger.warning(
+                        f"Problem with local config file {local_version}, skipping: {e!r}")
 
-    # parse_config currently only corrects directory names.
+    # parse_config_directories currently only corrects directory names.
     if parse:
         logger.trace(f'Parsing {config=}')
         try:
-            config = parse_config(config)
+            config = parse_config_directories(config['directories'])
         except Exception as e:
             logger.warning(f'Unable to parse config: {e=}')
         else:
@@ -132,23 +133,56 @@ def save_config(path, config, overwrite=True):
     return True
 
 
-def parse_config(config):
+def parse_config_directories(directories, must_exist=False):
     """Parse the config dictionary for common objects.
 
-    Currently only parses the following:
-        * `directories` for relative path names.
+    Given a `base` entry that corresponds to the absolute path of a directory,
+    prepend the `base` to all other relative directory entries.
+
+    If `must_exist=True`, then only update entry if the corresponding
+    directory exists on the filesystem.
+
+    .. doctest::
+
+        >>> dirs_config = dict(base='/tmp', foo='bar', baz='bam')
+        >>> parse_config_directories(dirs_config)
+        {'base': '/tmp', 'foo': '/tmp/bar', 'baz': '/tmp/bam'}
+
+        >>> # If the relative dir doesn't exist but is required, return as is.
+        >>> parse_config_directories(dirs_config, must_exist=True)
+        {'base': '/tmp', 'foo': 'bar', 'baz': 'bam'}
+
+        >>> # If 'base' is not a valid absolute directory, return all as is.
+        >>> dirs_config = dict(base='tmp', foo='bar', baz='bam')
+        >>> parse_config_directories(dirs_config, must_exist=False)
+        {'base': 'tmp', 'foo': 'bar', 'baz': 'bam'}
 
     Args:
-        config (dict): Config items.
+        directories (dict): The dictionary of directory information. Usually comes
+            from the "directories" entry in the config.
+        must_exist (bool): Only parse directory if it exists on the filesystem,
+            default False.
 
     Returns:
-        dict: Config items but with objects.
+        dict: The same directory but with relative directories resolved.
     """
-    with suppress(KeyError):
-        for dir_name, rel_dir in config['directories'].items():
-            config['directories'][dir_name] = os.path.expandvars(f'$PANDIR/{rel_dir}')
 
-    return config
+    # Try to get the base directory first.
+    base_dir = directories.get('base', os.environ['PANDIR'])
+    if os.path.isdir(base_dir):
+        logger.debug(f'Using {base_dir=} for setting config directories')
+
+        # Add the base directory to any relative dir.
+        for dir_name, rel_dir in filter(lambda d: d[1].startswith('/') is False,
+                                        directories.items()):
+            abs_dir = os.path.join(base_dir, rel_dir)
+
+            if must_exist and not os.path.exists(abs_dir):
+                logger.warning(f'{must_exist=} but {abs_dir=} does not exist, skipping')
+            else:
+                directories[dir_name] = os.path.join(base_dir, rel_dir)
+
+    return directories
 
 
 def _add_to_conf(config, conf_fn, parse=False):
