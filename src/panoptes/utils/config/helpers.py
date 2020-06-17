@@ -171,19 +171,20 @@ def parse_config_directories(directories, must_exist=False):
     # Try to get the base directory first.
     base_dir = directories.get('base', os.environ['PANDIR'])
     if os.path.isdir(base_dir):
-        logger.debug(f'Using {base_dir=} for setting config directories')
+        logger.trace(f'Using {base_dir=} for setting config directories')
 
         # Add the base directory to any relative dir.
-        for dir_name, rel_dir in filter(lambda d: d[1].startswith('/') is False,
-                                        directories.items()):
-            abs_dir = os.path.join(base_dir, rel_dir)
-            logger.debug(f'{base_dir=} {rel_dir=} {abs_dir=} {must_exist=}')
+        for dir_name, rel_dir in directories.items():
+            # Only want relative directories.
+            if rel_dir.startswith('/') is False:
+                abs_dir = os.path.join(base_dir, rel_dir)
+                logger.trace(f'{base_dir=} {rel_dir=} {abs_dir=} {must_exist=}')
 
-            if must_exist and not os.path.exists(abs_dir):
-                logger.warning(f'{must_exist=} but {abs_dir=} does not exist, skipping')
-            else:
-                logger.debug(f'Setting {dir_name} to {abs_dir}')
-                directories[dir_name] = abs_dir
+                if must_exist and not os.path.exists(abs_dir):
+                    logger.warning(f'{must_exist=} but {abs_dir=} does not exist, skipping')
+                else:
+                    logger.trace(f'Setting {dir_name} to {abs_dir}')
+                    directories[dir_name] = abs_dir
 
     return directories
 
