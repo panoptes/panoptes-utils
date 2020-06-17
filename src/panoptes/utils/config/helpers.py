@@ -83,11 +83,11 @@ def load_config(config_files=None, parse=True, ignore_local=False):
     if parse:
         logger.trace(f'Parsing {config=}')
         try:
-            config = parse_config_directories(config['directories'])
+            config['directories'] = parse_config_directories(config['directories'])
         except Exception as e:
             logger.warning(f'Unable to parse config: {e=}')
         else:
-            logger.trace(f'Config parsed: {config=}')
+            logger.trace(f'Config directories parsed: {config=}')
 
     return config
 
