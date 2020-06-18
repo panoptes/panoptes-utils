@@ -2,6 +2,19 @@
 Changelog
 =========
 
+0.2.21dev
+---------
+
+Changed
+^^^^^^^
+
+* Bump PyYaml to latest for security warning. (#222)
+* Config Server  
+
+  * Better parsing of directories entry in config server. (#222)  
+  * Make config server less noisy. (#222)  
+
+
 0.2.20 - 2020-06-09
 -------------------
 
@@ -14,7 +27,6 @@ Changed
 * Running pytest locally will generate coverage report in terminal. (#218)
 * Lots of documentation. (#218)
 * Removing the environment section from the readme. (#218)
-* Bump PyYaml to latest for security warning. (#222)
 * Config Server (#217)
 
   * Better logging.
@@ -25,8 +37,6 @@ Changed
   * Config items no longer assume any defaults for either directories or files. A config file name is always required and it should always be an absolute path. (#218)
   * Adding test file for config items. (#218)
   * ``panoptes-config-server`` re-worked and now includes ``run``, ``get``, and ``set`` subcomamnds. (#221)
-  * Better parsing of directories entry in config server. (#222)
-  * Make config server less noisy. (#222)
 
 * Testing (#218)
 
