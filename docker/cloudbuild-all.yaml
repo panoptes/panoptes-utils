@@ -1,0 +1,75 @@
+steps:
+  # Set up multiarch support
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'setup-buildx'
+    env:
+      - 'DOCKER_CLI_EXPERIMENTAL=enabled'
+    args:
+      - 'run'
+      - '--privileged'
+      - '--rm'
+      - 'docker/binfmt:a7996909642ee92942dcd6cff44b9b95f08dad64'
+    waitFor: ['-']
+
+  # Build builder
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-builder'
+    env:
+      - 'DOCKER_CLI_EXPERIMENTAL=enabled'
+    args:
+      - 'buildx'
+      - 'create'
+      - '--use'
+      - '--driver=docker-container'
+    waitFor: ['setup-buildx']
+
+  # Build
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-images'
+    env:
+      - 'DOCKER_CLI_EXPERIMENTAL=enabled'
+    args:
+      - 'buildx'
+      - 'build'
+      - '--platform=linux/amd64,linux/arm64'
+      - '-f=docker/${_TAG}.Dockerfile'
+      - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}'
+      - '.'
+    waitFor: ['build-builder']
+
+  # Push
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-build-images'
+    args:
+      - 'push'
+      - 'gcr.io/${PROJECT_ID}/panoptes-utils:amd64'
+      - 'gcr.io/${PROJECT_ID}/panoptes-utils:arm64'
+    waitFor: ['build-images']
+
+  # Manifest file for multiarch
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'manifest-base'
+    env:
+      - 'DOCKER_CLI_EXPERIMENTAL=enabled'
+    args:
+      - 'manifest'
+      - 'create'
+      - 'gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}'
+      - 'gcr.io/${PROJECT_ID}/panoptes-utils:amd64'
+      - 'gcr.io/${PROJECT_ID}/panoptes-utils:arm64'
+    waitFor: ['push-build-images']
+
+  # Push manifest file
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-manifest-base'
+    env:
+      - 'DOCKER_CLI_EXPERIMENTAL=enabled'
+    args:
+      - 'manifest'
+      - 'push'
+      - 'gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}'
+    waitFor: ['manifest-base']
+images:
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:amd64'
+  - 'gcr.io/${PROJECT_ID}/panoptes-utils:arm64'
