@@ -34,6 +34,7 @@ steps:
       - '--platform=linux/amd64,linux/arm64'
       - '-f=docker/${_TAG}.Dockerfile'
       - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}'
+      - '--cache-from=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}'
       - '.'
     waitFor: ['build-builder']
 

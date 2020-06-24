@@ -32,7 +32,9 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         gosu wget curl bzip2 ca-certificates zsh openssh-client nano \
         astrometry.net sextractor dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
-        libfreetype6-dev libpng-dev fonts-lato libsnappy-dev python3-pip python3-scipy python3-dev \
+        libfreetype6-dev libpng-dev fonts-lato libsnappy-dev \
+        python3-pip python3-scipy python3-dev python3-pillow python3-pandas \
+        libffi-dev libssl-dev \
         gcc git pkg-config sudo && \
     # Oh My ZSH. :)
     mkdir -p "${ZSH_CUSTOM}" && \
