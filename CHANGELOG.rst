@@ -5,6 +5,11 @@ Changelog
 0.2.21dev
 ---------
 
+Added
+^^^^^
+
+* Adding ``arm64`` build for Docker.
+
 Changed
 ^^^^^^^
 
