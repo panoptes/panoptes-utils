@@ -6,8 +6,7 @@ from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
 
 import numpy as np
-import pendulum
-from pendulum.parsing.exceptions import ParserError
+from dateutil.parser import parse as date_parse
 from astropy.time import Time
 from astropy import units as u
 
@@ -278,7 +277,7 @@ def deserialize_all_objects(obj):
 
     A boolean.
 
-    A `datetime.datetime` object as parsed by `pendulum.parse`.
+    A `datetime.datetime` object as parsed by `dateutil.parser.parse`.
 
     If a string ending with any of ``['m', 'deg', 's']``, an ``astropy.unit.Quantity``
 
@@ -304,8 +303,8 @@ def deserialize_all_objects(obj):
         return bool(obj)
 
     # Try to turn into a time
-    with suppress(ParserError, TypeError):
-        return pendulum.parse(obj)
+    with suppress(Exception):
+        return date_parse(obj)
 
     # Try to parse as quantity if certain type
     if isinstance(obj, str) and obj > '':
@@ -325,15 +324,15 @@ def serialize_object(obj):
     individual objects.  Also called in a loop by ``serialize_all_objects``.
 
     >>> from panoptes.utils.serializers import serialize_object
-    >>> import pendulum
+    >>> from dateutil.parser import parse as date_parse
     >>> from astropy import units as u
 
     >>> serialize_object(42 * u.meter)
     '42.0 m'
 
-    >>> party_time = pendulum.parse('1999-12-31 11:59:59')
+    >>> party_time = date_parse('1999-12-31 11:59:59')
     >>> type(party_time)
-     <class 'pendulum.datetime.DateTime'>
+     <class 'datetime.datetime'>
     >>> serialize_object(party_time)
     '1999-12-31T11:59:59.000'
 

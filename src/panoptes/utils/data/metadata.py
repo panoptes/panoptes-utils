@@ -7,10 +7,11 @@ from astropy.utils.data import download_file
 import pandas as pd
 import hvplot.pandas  # noqa
 
-import pendulum
+from dateutil.parser import parse as date_parse
 from tqdm import tqdm
 
 from .. import listify
+from ..time import current_time
 from ..logging import logger
 
 OBS_BASE_URL = 'https://storage.googleapis.com/panoptes-observations'
@@ -172,12 +173,12 @@ def search_observations(
         start_date = '2018-01-01'
 
     if end_date is None:
-        end_date = pendulum.now()
+        end_date = current_time()
 
     with suppress(TypeError):
-        start_date = pendulum.parse(start_date).replace(tzinfo=None)
+        start_date = date_parse(start_date).replace(tzinfo=None)
     with suppress(TypeError):
-        end_date = pendulum.parse(end_date).replace(tzinfo=None)
+        end_date = date_parse(end_date).replace(tzinfo=None)
 
     ra_max = (coords.ra + (radius * u.degree)).value
     ra_min = (coords.ra - (radius * u.degree)).value
@@ -189,7 +190,10 @@ def search_observations(
     # Get the observation list
     obs_df = source
     if obs_df is None:
-        local_path = download_file(source_url, cache='update', show_progress=False, pkgname='panoptes')
+        local_path = download_file(source_url,
+                                   cache='update',
+                                   show_progress=False,
+                                   pkgname='panoptes')
         obs_df = pd.read_csv(local_path).convert_dtypes()
 
     logger.debug(f'Found {len(obs_df)} total observations')
