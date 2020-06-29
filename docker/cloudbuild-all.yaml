@@ -31,6 +31,7 @@ steps:
     args:
       - 'buildx'
       - 'build'
+      - '--push'
       - '--platform=linux/amd64,linux/arm64'
       - '-f=docker/${_TAG}.Dockerfile'
       - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}'
@@ -38,38 +39,6 @@ steps:
       - '.'
     waitFor: ['build-builder']
 
-  # Push
-  - name: 'gcr.io/cloud-builders/docker'
-    id: 'push-build-images'
-    args:
-      - 'push'
-      - 'gcr.io/${PROJECT_ID}/panoptes-utils:amd64'
-      - 'gcr.io/${PROJECT_ID}/panoptes-utils:arm64'
-    waitFor: ['build-images']
-
-  # Manifest file for multiarch
-  - name: 'gcr.io/cloud-builders/docker'
-    id: 'manifest-base'
-    env:
-      - 'DOCKER_CLI_EXPERIMENTAL=enabled'
-    args:
-      - 'manifest'
-      - 'create'
-      - 'gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}'
-      - 'gcr.io/${PROJECT_ID}/panoptes-utils:amd64'
-      - 'gcr.io/${PROJECT_ID}/panoptes-utils:arm64'
-    waitFor: ['push-build-images']
-
-  # Push manifest file
-  - name: 'gcr.io/cloud-builders/docker'
-    id: 'push-manifest-base'
-    env:
-      - 'DOCKER_CLI_EXPERIMENTAL=enabled'
-    args:
-      - 'manifest'
-      - 'push'
-      - 'gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}'
-    waitFor: ['manifest-base']
 images:
   - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
   - 'gcr.io/${PROJECT_ID}/panoptes-utils:amd64'

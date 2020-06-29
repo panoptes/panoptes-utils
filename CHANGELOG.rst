@@ -8,16 +8,22 @@ Changelog
 Added
 ^^^^^
 
-* Adding ``arm64`` build for Docker.
+* Added `arm64` build for Docker based off `ubuntu` image.
 
 Changed
 ^^^^^^^
 
-* Bump PyYaml to latest for security warning. (#222)
-* Config Server  
+* Docker
 
-  * Better parsing of directories entry in config server. (#222)  
-  * Make config server less noisy. (#222)  
+  * Changed base image to `ubuntu`.
+
+* Config Server
+
+  * Better parsing of directories entry in config server. (#222)
+  * Make config server less noisy. (#222)
+
+* Bump PyYaml to latest for security warning. (#222)
+* Remove pendulum because too hard to build on `arm processors <https://github.com/sdispater/pendulum/issues/457>`_.
 
 
 0.2.20 - 2020-06-09

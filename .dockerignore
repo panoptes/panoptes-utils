@@ -1,9 +1,9 @@
-docs/*
 .idea
 .venv
 venv
 
-.git
+# Need to pass git to allow version :(
+!.git
 .github
 
 *.md

@@ -33,7 +33,7 @@ RUN apt-get update && \
         gosu wget curl bzip2 ca-certificates zsh openssh-client nano \
         astrometry.net sextractor dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
         libfreetype6-dev libpng-dev fonts-lato libsnappy-dev \
-        python3-pip python3-scipy python3-dev python3-pillow python3-pandas \
+        python3-pip python3-scipy python3-dev python3-pillow python3-pandas python3-matplotlib \
         libffi-dev libssl-dev \
         gcc git pkg-config sudo && \
     # Oh My ZSH. :)
@@ -62,8 +62,9 @@ RUN apt-get update && \
     # astrometry.net folders
     mkdir -p "${astrometry_dir}" && \
     echo "add_path ${astrometry_dir}" >> /etc/astrometry.cfg && \
-    # astrometry.net index files
+    # Preinstall some modules.
     pip3 install astropy astroplan click loguru && \
+    # astrometry.net index files
     python3 /tmp/download-data.py \
         --wide-field --narrow-field \
         --folder "${astrometry_dir}" \
@@ -72,7 +73,9 @@ RUN apt-get update && \
     chmod -R 777 ${astrometry_dir}
 
 # Install module
-RUN pip3 install "panoptes-utils[testing]" && \
+COPY . "${PANDIR}/panoptes-utils"
+RUN cd "${PANDIR}/panoptes-utils" && \
+    pip3 install ".[testing]" && \
     # Cleanup
     apt-get autoremove --purge -y \
         autoconf \
