@@ -16,6 +16,7 @@ Changed
 * Docker
 
   * Changed base image to `ubuntu`.
+  * `amd64` and `arm64` images built by default.
 
 * Config Server
 
