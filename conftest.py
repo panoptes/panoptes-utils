@@ -40,7 +40,7 @@ logger.add(log_file_path,
            colorize=True,
            backtrace=True,
            diagnose=True,
-           catch=True,
+           catch=False,
            # Start new log file for each testing run.
            rotation=lambda msg, _: startup_message in msg,
            level='TRACE')
