@@ -8,15 +8,16 @@ Changelog
 Added
 ^^^^^
 
-* Added `arm64` build for Docker based off `ubuntu` image.
+* Added `arm64` build for Docker based off `ubuntu` image. (#223)
 
 Changed
 ^^^^^^^
 
 * Docker
 
-  * Changed base image to `ubuntu`.
-  * `amd64` and `arm64` images built by default.
+  * Changed base image to `ubuntu`. (#223)
+  * `amd64` and `arm64` images built by default. (#223)
+  * Ubuntu has changed `sextractor` to `source-extractor` (yay). (#223)
 
 * Config Server
 

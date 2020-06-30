@@ -57,7 +57,7 @@ fi
 
 # Test for file
 if [[ ! -s "${JPG}" ]]; then
-    echo "JPG was not extract successfully."
+    echo "JPG was not extracted successfully."
     exit 1
 fi
 
