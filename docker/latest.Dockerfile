@@ -75,7 +75,7 @@ RUN apt-get update && \
 # Install module
 COPY . "${PANDIR}/panoptes-utils"
 RUN cd "${PANDIR}/panoptes-utils" && \
-    pip3 install ".[testing]" && \
+    pip3 install ".[testing,google]" && \
     # Cleanup
     apt-get autoremove --purge -y \
         autoconf \
