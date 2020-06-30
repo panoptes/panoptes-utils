@@ -33,7 +33,7 @@ RUN apt-get update && \
         gosu wget curl bzip2 ca-certificates zsh openssh-client nano \
         astrometry.net sextractor dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
         libfreetype6-dev libpng-dev fonts-lato libsnappy-dev libjpeg-dev \
-        python3-pip python3-scipy python3-dev python3-pillow python3-pandas python3-matplotlib \
+        python3-pip python3-scipy python3-dev python3-pandas python3-matplotlib \
         libffi-dev libssl-dev \
         gcc git pkg-config sudo && \
     # Oh My ZSH. :)
