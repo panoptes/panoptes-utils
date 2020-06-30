@@ -302,10 +302,6 @@ def deserialize_all_objects(obj):
     if isinstance(obj, bool):
         return bool(obj)
 
-    # Try to turn into a time
-    with suppress(Exception):
-        return date_parse(obj)
-
     # Try to parse as quantity if certain type
     if isinstance(obj, str) and obj > '':
         with suppress(IndexError):
@@ -313,6 +309,10 @@ def deserialize_all_objects(obj):
             if units_string in ['m', 'deg', 's']:
                 with suppress(Exception):
                     return u.Quantity(obj)
+
+    # Try to turn into a time
+    with suppress(Exception):
+        return date_parse(obj)
 
     return obj
 
