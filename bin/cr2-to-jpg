@@ -55,6 +55,12 @@ else
     fi
 fi
 
+# Test for file
+if [[ ! -s "${JPG}" ]]; then
+    echo "JPG was not extract successfully."
+    exit 1
+fi
+
 if [[ -n "$TITLE" ]]
   then
   	echo "Adding title \"${TITLE}\""
