@@ -25,7 +25,7 @@ Changed
   * Make config server less noisy. (#222)
 
 * Bump PyYaml to latest for security warning. (#222)
-* Remove pendulum because too hard to build on `arm processors <https://github.com/sdispater/pendulum/issues/457>`_.
+* Remove pendulum because too hard to build on `arm processors <https://github.com/sdispater/pendulum/issues/457>`_. (#223)
 
 
 0.2.20 - 2020-06-09
