@@ -1,4 +1,4 @@
-ARG IMAGE_URL=python:3.8-slim-buster
+ARG IMAGE_URL=ubuntu
 
 FROM ${IMAGE_URL} AS base-image
 LABEL description="Installs the panoptes-utils module from pip. \
@@ -32,7 +32,9 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         gosu wget curl bzip2 ca-certificates zsh openssh-client nano \
         astrometry.net sextractor dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
-        libfreetype6-dev libpng-dev fonts-lato libsnappy-dev \
+        libfreetype6-dev libpng-dev fonts-lato libsnappy-dev libjpeg-dev \
+        python3-pip python3-scipy python3-dev python3-pandas python3-matplotlib \
+        libffi-dev libssl-dev \
         gcc git pkg-config sudo && \
     # Oh My ZSH. :)
     mkdir -p "${ZSH_CUSTOM}" && \
@@ -57,18 +59,25 @@ RUN apt-get update && \
     # Update permissions for current user.
     chown -R ${PANUSER}:${PANUSER} "/home/${panuser}" && \
     chown -R ${PANUSER}:${PANUSER} ${PANDIR} && \
-    # Install module
-    pip install "panoptes-utils[testing]" && \
     # astrometry.net folders
     mkdir -p "${astrometry_dir}" && \
     echo "add_path ${astrometry_dir}" >> /etc/astrometry.cfg && \
+    # Preinstall some modules.
+    pip3 install astropy astroplan click loguru && \
     # astrometry.net index files
-    python /tmp/download-data.py \
+    python3 /tmp/download-data.py \
         --wide-field --narrow-field \
         --folder "${astrometry_dir}" \
         --verbose && \
     chown -R ${PANUSER}:${PANUSER} ${astrometry_dir} && \
     chmod -R 777 ${astrometry_dir} && \
+    # Allow sudo without password
+    echo "$PANUSER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+# Install module
+COPY . "${PANDIR}/panoptes-utils"
+RUN cd "${PANDIR}/panoptes-utils" && \
+    pip3 install ".[testing,google]" && \
     # Cleanup
     apt-get autoremove --purge -y \
         autoconf \

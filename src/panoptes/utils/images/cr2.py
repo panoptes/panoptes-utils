@@ -3,7 +3,7 @@ import subprocess
 import shutil
 
 import numpy as np
-import pendulum
+from dateutil.parser import parse as date_parse
 from json import loads
 from warnings import warn
 from astropy.io import fits
@@ -58,7 +58,7 @@ def cr2_to_fits(
         # Set the PGM as the primary data for the FITS file
         hdu = fits.PrimaryHDU(pgm)
 
-        obs_date = pendulum.parse(exif.get('DateTimeOriginal', '').replace(':', '-', 2)).isoformat()
+        obs_date = date_parse(exif.get('DateTimeOriginal', '').replace(':', '-', 2)).isoformat()
 
         # Set some default headers
         hdu.header.set('FILTER', 'RGGB')

@@ -18,7 +18,7 @@ DETECT_THRESH    3.0            # <sigmas> or <threshold>,<ZP> in mag.arcsec-2
 ANALYSIS_THRESH  1.5            # <sigmas> or <threshold>,<ZP> in mag.arcsec-2
 
 FILTER           Y              # apply filter for detection (Y or N)?
-FILTER_NAME      /usr/share/sextractor/default.conv   # name of the file containing the filter
+FILTER_NAME      /usr/share/source-extractor/default.conv   # name of the file containing the filter
 
 DEBLEND_NTHRESH  32             # Number of deblending sub-thresholds
 DEBLEND_MINCONT  0.005          # Minimum contrast parameter for deblending
@@ -59,7 +59,7 @@ PIXEL_SCALE      10.3           # size of pixel in arcsec (0=use FITS WCS info)
 #------------------------- Star/Galaxy Separation ----------------------------
 
 SEEING_FWHM      1.5            # stellar FWHM in arcsec
-STARNNW_NAME     /usr/share/sextractor/default.nnw    # Neural-Network_Weight table filename
+STARNNW_NAME     /usr/share/source-extractor/default.nnw    # Neural-Network_Weight table filename
 
 #------------------------------ Background -----------------------------------
 
@@ -99,6 +99,6 @@ VERBOSE_TYPE     NORMAL         # can be QUIET, NORMAL or FULL
 HEADER_SUFFIX    .head          # Filename extension for additional headers
 WRITE_XML        N              # Write XML file (Y/N)?
 XML_NAME         sex.xml        # Filename for XML output
-XSL_URL          file:///usr/local/share/sextractor/sextractor.xsl
+XSL_URL          file:///usr/share/source-extractor/sextractor.xsl
                                 # Filename for XSL style-sheet
 

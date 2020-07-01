@@ -5,8 +5,7 @@ import shutil
 from contextlib import suppress
 from warnings import warn
 
-import pendulum
-import pendulum.exceptions
+from dateutil.parser import parse as date_parse
 import numpy as np
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -42,7 +41,8 @@ def crop_data(data, box_width=200, center=None, data_only=True, wcs=None, **kwar
             a `astropy.nddata.Cutout2D` object.
 
     """
-    assert data.shape[0] >= box_width, f"Can't clip data, it's smaller than {box_width} ({data.shape})"
+    assert data.shape[
+               0] >= box_width, f"Can't clip data, it's smaller than {box_width} ({data.shape})"
     # Get the center
     if center is None:
         x_len, y_len = data.shape
@@ -145,8 +145,8 @@ def _make_pretty_from_fits(fname=None,
             # If we don't have DATE-OBS, check filename for date
             try:
                 basename = os.path.splitext(os.path.basename(fname))[0]
-                date_time = pendulum.parse(basename).isoformat()
-            except pendulum.exceptions.ParserError:  # pragma: no cover
+                date_time = date_parse(basename).isoformat()
+            except Exception:  # pragma: no cover
                 # Otherwise use now
                 date_time = current_time(pretty=True)
 
