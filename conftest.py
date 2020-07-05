@@ -136,7 +136,7 @@ def db_type(request):
 
 @pytest.fixture(scope='function')
 def db(db_type):
-    return PanDB(db_type=db_type, db_name='panoptes_testing', connect=True)
+    return PanDB(db_type=db_type, db_name='panoptes_testing', storage_dir='testing', connect=True)
 
 
 @pytest.fixture(scope='function')
