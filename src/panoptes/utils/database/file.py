@@ -108,7 +108,7 @@ class PanFileDB(AbstractPanDB):
         return str(uuid4())
 
     @classmethod
-    def permanently_erase_database(cls, storage_dir, db_name):
+    def permanently_erase_database(cls, db_name, storage_dir='json_store'):
         # Clear out any .json files.
         storage_dir = os.path.join(os.environ['PANDIR'], storage_dir, db_name)
         for f in glob(os.path.join(storage_dir, '*.json')):
