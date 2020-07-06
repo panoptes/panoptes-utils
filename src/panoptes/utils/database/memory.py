@@ -88,7 +88,7 @@ class PanMemoryDB(AbstractPanDB):
             del self.current[entry_type]
 
     @classmethod
-    def permanently_erase_database(cls, db_name):
+    def permanently_erase_database(cls, *args, **kwargs):
         # For some reason we're not seeing all the references disappear
         # after tests. Perhaps there is some global variable pointing at
         # the db or one of its referrers, or perhaps a pytest fixture
