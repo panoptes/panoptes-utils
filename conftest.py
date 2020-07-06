@@ -129,8 +129,11 @@ def db_type(request):
     if request.param not in db_list and 'all' not in db_list:  # pragma: no cover
         pytest.skip(f"Skipping {request.param} DB, set --test-all-databases=True")
 
-    PanDB.permanently_erase_database(
-        request.param, 'panoptes_testing', really='Yes', dangerous='Totally')
+    PanDB.permanently_erase_database(request.param,
+                                     'panoptes_testing',
+                                     storage_dir='testing',
+                                     really='Yes',
+                                     dangerous='Totally')
     return request.param
 
 
