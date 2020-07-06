@@ -387,7 +387,7 @@ def _lookup_via_sextractor(fits_file,
     if not os.path.exists(source_file) or force_new:
         logger.debug("No catalog found, building from sextractor")
         # Build catalog of point sources
-        sextractor = shutil.which('sextractor')
+        sextractor = shutil.which('sextractor') or shutil.which('source-extractor')
 
         assert sextractor is not None, 'sextractor not found'
 

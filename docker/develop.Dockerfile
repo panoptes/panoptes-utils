@@ -14,9 +14,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV SHELL /bin/zsh
 
-ARG userid=1000
-
-ENV USERID $userid
 ENV PANDIR $pan_dir
 ENV PANLOG "$pan_dir/logs"
 ENV PANUSER panoptes
@@ -24,14 +21,12 @@ ENV POCS $pocs_dir
 ENV SOLVE_FIELD /usr/bin/solve-field
 
 # Install module
-USER ${PANUSER}
-COPY --chown=panoptes:panoptes . "${PANDIR}/panoptes-utils/"
+COPY . "${PANDIR}/panoptes-utils/"
 RUN wget -qO- $cr2_url > "${PANDIR}/panoptes-utils/tests/data/canon.cr2" && \
     cd "${PANDIR}/panoptes-utils" && \
-    pip install -e ".[testing]"
+    pip3 install -e ".[testing,google]"
 
 # Cleanup apt.
-USER root
 RUN apt-get autoremove --purge -y && \
     apt-get -y clean && \
     rm -rf /var/lib/apt/lists/* && \

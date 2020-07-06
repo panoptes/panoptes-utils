@@ -193,17 +193,6 @@ The ``panoptes-config-server set`` command will set the value for the given key.
 .. code-block:: bash
 
     $ panoptes-config-server set 'location.horizon' '37 deg'
-    {
-      "elevation": 3400,
-      "flat_horizon": -6,
-      "focus_horizon": -12,
-      "gmt_offset": -600,
-      "horizon": "37 deg",
-      "latitude": 19.54,
-      "longitude": -155.58,
-      "name": "New Location",
-      "observe_horizon": -18,
-      "timezone": "US/Hawaii"
-    }
+    {'location.horizon': <Quantity 37. deg>}
 
 See ``panoptes-config-server get --help`` and ``panoptes-config-server set --help`` for more details.
