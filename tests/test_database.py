@@ -6,7 +6,7 @@ from panoptes.utils import error
 
 def test_bad_db():
     with pytest.raises(Exception):
-        PanDB('foobar')
+        PanDB('foobar', storage_dir='')
 
 
 def test_insert_and_no_permanent(db):
@@ -74,5 +74,6 @@ def test_delete_file_db():
     with pytest.raises(ValueError):
         PanDB.permanently_erase_database('memory', 'do_not_delete_me', really='Nope', dangerous='Again, we hope not')
 
-    PanDB.permanently_erase_database('file', 'panoptes_testing', really='Yes', dangerous='Totally')
+    PanDB.permanently_erase_database('file', 'panoptes_testing', storage_dir='testing', really='Yes',
+                                     dangerous='Totally')
     PanDB.permanently_erase_database('memory', 'panoptes_testing', dangerous='Totally', really='Yes')

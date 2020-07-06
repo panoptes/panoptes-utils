@@ -14,13 +14,17 @@ from ..logging import logger
 class PanFileDB(AbstractPanDB):
     """Stores collections as files of JSON records."""
 
-    def __init__(self, db_name='panoptes', **kwargs):
-        """Flat file storage for json records
+    def __init__(self, db_name='panoptes', storage_dir='json_store', **kwargs):
+        """Flat file storage for json records.
 
         This will simply store each json record inside a file corresponding
         to the type. Each entry will be stored in a single line.
+
         Args:
             db_name (str, optional): Name of the database containing the collections.
+            storage_dir (str, optional): The name of the directory in $PANDIR where
+                the database files will be stored. Default is `json_store` for backwards
+                compatibility.
         """
 
         super().__init__(db_name=db_name, **kwargs)
@@ -28,8 +32,8 @@ class PanFileDB(AbstractPanDB):
         self.db_folder = db_name
 
         # Set up storage directory.
-        self._storage_dir = os.path.join(os.environ['PANDIR'], 'json_store', self.db_folder)
-        os.makedirs(self._storage_dir, exist_ok=True)
+        self.storage_dir = os.path.join(os.environ['PANDIR'], storage_dir, self.db_folder)
+        os.makedirs(self.storage_dir, exist_ok=True)
 
     def insert_current(self, collection, obj, store_permanently=True):
         obj_id = self._make_id()
@@ -98,14 +102,14 @@ class PanFileDB(AbstractPanDB):
             name = f'{collection}.json'
         else:
             name = f'current_{collection}.json'
-        return os.path.join(self._storage_dir, name)
+        return os.path.join(self.storage_dir, name)
 
     def _make_id(self):
         return str(uuid4())
 
     @classmethod
-    def permanently_erase_database(cls, db_name):
+    def permanently_erase_database(cls, db_name, storage_dir='json_store'):
         # Clear out any .json files.
-        storage_dir = os.path.join(os.environ['PANDIR'], 'json_store', db_name)
+        storage_dir = os.path.join(os.environ['PANDIR'], storage_dir, db_name)
         for f in glob(os.path.join(storage_dir, '*.json')):
             os.remove(f)

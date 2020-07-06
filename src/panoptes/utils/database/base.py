@@ -172,6 +172,7 @@ class PanDB(object):
     def permanently_erase_database(cls,
                                    db_type,
                                    db_name,
+                                   storage_dir=None,
                                    really=False,
                                    dangerous=False,
                                    *args, **kwargs):
@@ -184,4 +185,4 @@ class PanDB(object):
             raise Exception('PanDB.permanently_erase_database called with invalid args!')
 
         # Load the correct DB module and do the deletion.
-        get_db_class(db_type).permanently_erase_database(db_name, *args, **kwargs)
+        get_db_class(db_type).permanently_erase_database(db_name, storage_dir=storage_dir, *args, **kwargs)
