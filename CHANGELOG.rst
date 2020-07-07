@@ -2,6 +2,15 @@
 Changelog
 =========
 
+0.2.22dev
+---------
+
+Changed
+^^^^^^^
+
+* Changed `dir` to `directory` in disk space check. (#226)
+* Pass the git folder to the build context when making local docker images. (#226)
+
 0.2.21 - 2020-07-05
 -------------------
 
