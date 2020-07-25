@@ -14,7 +14,6 @@ from astropy.coordinates import SkyCoord
 
 from .time import current_time
 
-
 PATH_MATCHER = re.compile(r'''
     .*?
     (?P<unit_id>PAN\d{3})[/_]{1}
@@ -70,27 +69,27 @@ def listify(obj):
         return [obj]
 
 
-def get_free_space(dir=None):
-    """Return the amoung of freespace in gigabytes for given dir.
+def get_free_space(directory=None):
+    """Return the amoung of freespace in gigabytes for given directory.
 
     >>> from panoptes.utils import get_free_space
     >>> get_free_space()
     <Quantity ... Gbyte>
 
-    >>> get_free_space(dir='/')
+    >>> get_free_space(directory='/')
     <Quantity ... Gbyte>
 
     Args:
-        dir (str, optional): Path to directory. If None defaults to $PANDIR.
+        directory (str, optional): Path to directory. If None defaults to $PANDIR.
 
     Returns:
         astropy.units.Quantity: The number of gigabytes avialable in folder.
 
     """
-    if dir is None:
-        dir = os.getenv('PANDIR')
+    if directory is None:
+        directory = os.getenv('PANDIR')
 
-    _, _, free_space = shutil.disk_usage(dir)
+    _, _, free_space = shutil.disk_usage(directory)
     free_space = (free_space * u.byte).to(u.gigabyte)
     return free_space
 

@@ -12,7 +12,7 @@ docker build \
     "${PANOPTES_UTILS}"
 
 # In the local develop we need to pass git to the docker build context.
-sed -i s'/^\.git$/\!\.git/' .dockerignore
+#sed -i s'/^\.git$/\!\.git/' .dockerignore
 
 echo "Building local panoptes-utils:develop"
 docker build \
@@ -23,7 +23,7 @@ docker build \
     "${PANOPTES_UTILS}"
 
 # Revert our .dockerignore changes.
-sed -i s'/^!\.git$/\.git/' .dockerignore
+#sed -i s'/^!\.git$/\.git/' .dockerignore
 
 cat <<EOF
 Done building the local images.
