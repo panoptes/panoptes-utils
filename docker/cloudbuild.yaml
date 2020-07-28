@@ -23,6 +23,22 @@ steps:
       - "--driver=docker-container"
     waitFor: ["setup-buildx"]
 
+  # Build base
+  - name: "gcr.io/cloud-builders/docker"
+    id: "build-base"
+    env:
+      - "DOCKER_CLI_EXPERIMENTAL=enabled"
+    args:
+      - "buildx"
+      - "build"
+      - "--push"
+      - "--platform=linux/amd64,linux/arm64"
+      - "-f=docker/base.Dockerfile"
+      - "--tag=gcr.io/${PROJECT_ID}/panoptes-base:${_TAG}"
+      - "--cache-from=gcr.io/${PROJECT_ID}/panoptes-base:${_TAG}"
+      - "."
+    waitFor: ["build-builder"]
+
   # Build
   - name: "gcr.io/cloud-builders/docker"
     id: "build-images"
@@ -32,10 +48,9 @@ steps:
       - "buildx"
       - "build"
       - "--push"
-      - "--platform=${_PLATFORMS}"
+      - "--platform=linux/amd64,linux/arm64"
       - "-f=docker/${_TAG}.Dockerfile"
       - "--tag=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}"
       - "--cache-from=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}"
       - "."
-    waitFor: ["build-builder"]
-
+    waitFor: ["build-base"]

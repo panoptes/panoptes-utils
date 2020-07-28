@@ -99,7 +99,10 @@ RUN wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/M
     "${PANDIR}/conda/envs/${conda_env_name}/bin/python" /tmp/download-data.py \
         --wide-field --narrow-field \
         --folder "${astrometry_dir}" \
-        --verbose
+        --verbose && \
+    # Cleanup conda.
+    "${PANDIR}/conda/bin/conda" clean -tipsy
+
 
 USER root
 WORKDIR "${PANDIR}"
