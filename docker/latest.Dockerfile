@@ -4,6 +4,7 @@ FROM ${IMAGE_URL} AS base-image
 
 ARG panuser=panoptes
 ARG pan_dir=/var/panoptes
+ARG conda_env_name="panoptes"
 
 ENV PANUSER $panuser
 ENV PANDIR $pan_dir

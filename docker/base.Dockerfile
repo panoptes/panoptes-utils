@@ -7,13 +7,13 @@ LABEL maintainers="developers@projectpanoptes.org"
 LABEL repo="github.com/panoptes/panoptes-utils"
 
 ARG panuser=panoptes
+ARG pan_user_fullname="PANOPTES User"
 ARG userid=1000
 ARG pan_dir=/var/panoptes
 ARG pocs_dir="${pan_dir}/POCS"
 ARG astrometry_dir="/astrometry/data"
 ARG cr2_url="https://storage.googleapis.com/panoptes-resources/test-data/canon.cr2"
 ARG conda_env_name="panoptes"
-ARG pan_user_fullname="PANOPTES User"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
