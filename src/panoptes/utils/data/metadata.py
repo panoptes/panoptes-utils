@@ -5,7 +5,6 @@ from astropy import units as u
 from astropy.utils.data import download_file
 
 import pandas as pd
-import hvplot.pandas  # noqa
 
 from dateutil.parser import parse as date_parse
 from tqdm import tqdm

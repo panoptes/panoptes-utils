@@ -2,6 +2,19 @@
 Changelog
 =========
 
+0.2.23dev
+---------
+
+Changed
+^^^^^^^
+
+* Updated Pillow requirement to include the `7.x` branch. Also allows for installing via `conda`. (#229)
+
+Removed
+^^^^^^^
+
+* Removed `holoviews` and `hvplot` as dependencies. (#229)
+
 0.2.22 - 2020-07-25
 -------------------
 
