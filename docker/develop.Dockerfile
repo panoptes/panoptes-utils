@@ -15,7 +15,7 @@ COPY . "${PANDIR}/panoptes-utils"
 RUN cd "${PANDIR}/panoptes-utils" && \
     "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install -U ".[testing,google]" && \
     # Cleanup
-    apt-get autoremove --purge -y \
+    sudo apt-get autoremove --purge -y \
         autoconf \
         automake \
         autopoint \
@@ -24,9 +24,9 @@ RUN cd "${PANDIR}/panoptes-utils" && \
         gettext \
         libtool \
         pkg-config && \
-    apt-get autoremove --purge -y && \
-    apt-get -y clean && \
-    rm -rf /var/lib/apt/lists/* && \
+    sudo apt-get autoremove --purge -y && \
+    sudo apt-get -y clean && \
+    sudo rm -rf /var/lib/apt/lists/* && \
     "${PANDIR}/conda/bin/conda" clean -tipsy
 
 WORKDIR ${PANDIR}/panoptes-utils
