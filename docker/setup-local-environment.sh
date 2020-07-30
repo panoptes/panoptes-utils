@@ -10,7 +10,6 @@ sed -i s'/^\.git$/\!\.git/' .dockerignore
 echo "Building local panoptes-utils:develop"
 docker build \
   --quiet --force-rm \
-  --build-arg IMAGE_URL="panoptes-utils:latest" \
   -t "panoptes-utils:develop" \
   -f "${PANOPTES_UTILS}/docker/develop.Dockerfile" \
   "${PANOPTES_UTILS}"

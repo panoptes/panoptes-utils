@@ -10,10 +10,10 @@ The `panoptes-utils` repository serves as the base for a number of services that
 
 The base image will install all necessary tools for working with the `panoptes-utils` library, such as `astrometry.net`, `source-extractor`, `astropy` and friends, as well as various FITS libraries.  
 
-The base image has an entrypoint that merely runs commands as the `PANUSER` (default is `panoptes`) via `gosu`.
+This image runs as `PANUSER` with no `ENTRYPOINT` specified. The default `CMD` is a `/bin/zsh` and the `WORKDIR` is `PANDIR`.
 
 ## Utils image
 
 `gcr.io/panoptes-exp/panoptes-utils:latest` is built on top of `panoptes-base` and merely installs the `panoptes-utils` module from `pip`.
 
-This image also clears the `ENTRYPOINT` and instead starts as the `PANUSER`.
+This image runs as `PANUSER` with no `ENTRYPOINT` specified. The default `CMD` is a `/bin/zsh` and the `WORKDIR` is `PANDIR/panoptes-utils`.

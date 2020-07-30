@@ -29,6 +29,4 @@ RUN "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install -U "panoptes-utils[
 
 WORKDIR ${PANDIR}/panoptes-utils
 
-# We clear the entrypoint and instead start as PANUSER.
-ENTRYPOINT []
 CMD ["/bin/zsh"]

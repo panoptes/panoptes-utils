@@ -106,11 +106,5 @@ RUN wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/M
     # Cleanup conda.
     "${PANDIR}/conda/bin/conda" clean -tipsy
 
-USER root
 WORKDIR "${PANDIR}"
-
-# Hard to avoid these hard-coded names for some reason.
-COPY docker/entrypoint.sh /var/panoptes/scripts/docker-entrypoint.sh
-ENTRYPOINT ["/bin/sh", "/var/panoptes/scripts/docker-entrypoint.sh"]
-
 CMD ["/bin/zsh"]

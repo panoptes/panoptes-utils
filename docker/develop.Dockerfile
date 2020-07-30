@@ -11,7 +11,9 @@ ENV PANDIR $pan_dir
 
 # Install module locally. Note that there must be a .git folder (e.g. a clone or zip).
 USER ${PANUSER}
-RUN "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install -U ".[testing,google]" && \
+COPY . "${PANDIR}/panoptes-utils"
+RUN cd "${PANDIR}/panoptes-utils" && \
+    "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install -U ".[testing,google]" && \
     # Cleanup
     apt-get autoremove --purge -y \
         autoconf \
