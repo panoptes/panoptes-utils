@@ -13,7 +13,7 @@ ENV PANDIR $pan_dir
 USER ${PANUSER}
 COPY . "${PANDIR}/panoptes-utils"
 RUN cd "${PANDIR}/panoptes-utils" && \
-    "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install -U ".[testing,google]" && \
+    "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install ".[testing,google]" && \
     # Cleanup
     sudo apt-get autoremove --purge -y \
         autoconf \
