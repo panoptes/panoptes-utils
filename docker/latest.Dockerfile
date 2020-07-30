@@ -11,7 +11,7 @@ ENV PANDIR $pan_dir
 
 # Install module
 USER ${PANUSER}
-RUN "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install -U "panoptes-utils[testing,google]" && \
+RUN "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install "panoptes-utils[testing,google]" && \
     # Cleanup
     sudo apt-get autoremove --purge -y \
         autoconf \
