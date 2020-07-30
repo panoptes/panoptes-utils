@@ -2,6 +2,24 @@
 Changelog
 =========
 
+0.2.23dev
+---------
+
+Changed
+^^^^^^^
+
+* Simplified docker docker images. (#227)
+
+    * `panoptes-base` serves as a base image for all docker services.
+    * `panoptes-utils:latest` installs the `panoptes-utils` module from pip.
+    * `panoptes-utils:develop` is used for testing and can be built locally with the `docker/setup-local-environment.sh` script.
+    * Docker images run directly as `$PANUSER` rather than via `gosu`.
+    * The `ENTRYPOINT` has been removed from the images and the default `CMD` is a zsh.
+    * `miniforge <https://github.com/conda-forge/miniforge>`_ used to install a `conda` environment with `conda-forge` as default channels.
+    * `amd64` (`x86_64`) and `arm64` (`aarch64`) images are built via `buildx` and provided on `gcr.io`.
+    * Extra zsh plugins in the docker image.
+    * Properly disable auto-update of zsh.
+
 0.2.22 - 2020-07-25
 -------------------
 
