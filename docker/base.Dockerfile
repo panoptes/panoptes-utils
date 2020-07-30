@@ -83,6 +83,7 @@ COPY --chown="${PANUSER}:${PANUSER}" ./scripts/download-data.py /tmp/download-da
 RUN wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-$(uname -m).sh" \
         -O "${PANDIR}/install-miniforge.sh" && \
     /bin/sh "${PANDIR}/install-miniforge.sh" -b -f -p "${PANDIR}/conda" && \
+    # Make sure to use conda for some of the larger modules.
     "${PANDIR}/conda/bin/conda" create -y -n "${conda_env_name}" python=3.8 \
         astroplan \
         astropy \
@@ -91,6 +92,8 @@ RUN wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/M
         matplotlib \
         numpy \
         pandas \
+        pillow \
+        pyarrow \
         scipy && \
     "${PANDIR}/conda/bin/conda" init zsh && \
     # Activate the environment by default.
@@ -102,7 +105,6 @@ RUN wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/M
         --verbose && \
     # Cleanup conda.
     "${PANDIR}/conda/bin/conda" clean -tipsy
-
 
 USER root
 WORKDIR "${PANDIR}"
