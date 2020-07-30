@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-PANOPTES_UTILS=${PANOPTES_UTILS:-/var/panoptes/panoptes-utils}
+PANOPTES_UTILS=${PANOPTES_UTILS:-$PANDIR/panoptes-utils}
 
 cd "${PANOPTES_UTILS}"
 
@@ -9,7 +9,7 @@ sed -i s'/^\.git$/\!\.git/' .dockerignore
 
 echo "Building local panoptes-utils:develop"
 docker build \
-  --quiet --force-rm \
+  --force-rm \
   -t "panoptes-utils:develop" \
   -f "${PANOPTES_UTILS}/docker/develop.Dockerfile" \
   "${PANOPTES_UTILS}"

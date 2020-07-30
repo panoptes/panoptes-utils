@@ -9,7 +9,7 @@ coverage erase
 
 # Run coverage over the pytest suite.
 echo "Starting tests"
-coverage run "$(command -v pytest-3)"
+coverage run "$(command -v pytest)"
 
 echo "Combining coverage"
 coverage combine
