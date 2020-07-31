@@ -29,6 +29,6 @@ RUN cd "${PANDIR}/panoptes-utils" && \
     sudo rm -rf /var/lib/apt/lists/* && \
     "${PANDIR}/conda/bin/conda" clean -tipsy
 
-WORKDIR ${PANDIR}/panoptes-utils
-
+USER root
+WORKDIR "${PANDIR}/panoptes-utils"
 CMD ["/bin/zsh"]

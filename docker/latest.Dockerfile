@@ -27,6 +27,6 @@ RUN "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install "panoptes-utils[tes
     sudo rm -rf /var/lib/apt/lists/* && \
     "${PANDIR}/conda/bin/conda" clean -tipsy
 
-WORKDIR ${PANDIR}/panoptes-utils
-
+USER root
+WORKDIR "${PANDIR}/panoptes-utils"
 CMD ["/bin/zsh"]

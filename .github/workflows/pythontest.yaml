@@ -45,7 +45,7 @@ jobs:
             -v $PWD/coverage_dir:/var/panoptes/logs \
             -v $PWD/coverage_dir:/tmp/coverage \
             panoptes-utils:develop \
-            "/bin/zsh -c /var/panoptes/panoptes-utils/scripts/testing/run-tests.sh"
+            "/usr/bin/zsh -c /var/panoptes/panoptes-utils/scripts/testing/run-tests.sh"
       - name: Upload coverage report to codecov.io
         uses: codecov/codecov-action@v1
         if: success()
