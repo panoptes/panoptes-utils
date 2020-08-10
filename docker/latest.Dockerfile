@@ -29,4 +29,4 @@ RUN "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install "panoptes-utils[tes
 
 USER root
 WORKDIR "${PANDIR}/panoptes-utils"
-CMD ["/bin/zsh"]
+CMD ["/usr/bin/zsh"]

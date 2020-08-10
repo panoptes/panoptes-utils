@@ -16,10 +16,10 @@ tail -F ${PANDIR}/logs/panoptes-testing.log
 Tests will begin in 5 seconds. Press Ctrl-c to cancel.
 EOF
 
-sleep 5;
+#sleep 5;
 
 docker run --rm -it \
     -v "${PANDIR}/panoptes-utils":/var/panoptes/panoptes-utils \
     -v "${PANDIR}/logs":/var/panoptes/logs \
     panoptes-utils:develop \
-    "${PANDIR}/panoptes-utils/scripts/testing/run-tests.sh"
+    /var/panoptes/panoptes-utils/scripts/testing/run-tests.sh

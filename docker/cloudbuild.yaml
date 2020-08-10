@@ -49,7 +49,7 @@ steps:
       - "build"
       - "--push"
       - "--platform=linux/amd64,linux/arm64"
-      - "-f=docker/${_TAG}.Dockerfile"
+      - "-f=docker/Dockerfile"
       - "--tag=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}"
       - "--cache-from=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}"
       - "."

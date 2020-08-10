@@ -43,7 +43,18 @@ You can build a local copy of the images for testing. The easiest way is
 docker/setup-local-environment.sh
 ``` 
 
-This will create a `panoptes-utils:develop` image. 
+This will create a `panoptes-utils:develop` image. Note that this uses the official
+`gcr.io/panoptes-exp/panoptes-base:latest` image as the base. If you need to test
+new system dependencies and need a new local base image, you can:
+
+```bash
+INCLUDE_BASE=true docker/setup-local-environment.sh
+``` 
+
+> Note that the `.git` folder is passed to the Docker build context when running locally.
+This is because our `pyscaffold` package tool relies on `setuptools_scm` for version
+numbers, which are ultimately based off the current code according to git.  This means
+the local `develop` image will likely be much larger than the official `latest` image.
 
 ### Testing local image and code
 

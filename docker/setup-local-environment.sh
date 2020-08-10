@@ -1,23 +1,42 @@
 #!/bin/bash -e
 
+INCLUDE_BASE=${1:-false}
 PANOPTES_UTILS=${PANOPTES_UTILS:-$PANDIR/panoptes-utils}
+_IMAGE_URL="gcr.io/panoptes-exp/panoptes-base:latest"
 
 cd "${PANOPTES_UTILS}"
 
-# In the local develop we need to pass git to the docker build context.
-sed -i s'/^\.git$/\!\.git/' .dockerignore
+build_base() {
+  echo "Building local panoptes-base:develop in ${PANOPTES_UTILS}"
+  docker build \
+    --force-rm \
+    -t "panoptes-base:develop" \
+    -f "${PANOPTES_UTILS}/docker/base.Dockerfile" \
+    "${PANOPTES_UTILS}"
 
-echo "Building local panoptes-utils:develop"
-docker build \
-  --force-rm \
-  -t "panoptes-utils:develop" \
-  -f "${PANOPTES_UTILS}/docker/develop.Dockerfile" \
-  "${PANOPTES_UTILS}"
+  # Use our local base for build below.
+  _IMAGE_URL="panoptes-base:develop"
+}
 
-# Revert our .dockerignore changes.
-sed -i s'/^!\.git$/\.git/' .dockerignore
+build_develop() {
+  echo "Building local panoptes-utils:develop from ${_IMAGE_URL} in ${PANOPTES_UTILS}"
+  docker build \
+    --force-rm \
+    --build-arg="image_url=${_IMAGE_URL}" \
+    --build-arg="pip_install=.[testing,google]" \
+    -t "panoptes-utils:develop" \
+    -f "${PANOPTES_UTILS}/docker/Dockerfile" \
+    "${PANOPTES_UTILS}"
+}
+
+if [ "${INCLUDE_BASE}" ]; then
+  build_base
+fi
+
+build_develop
 
 cat <<EOF
+clear;
 Done building the local images.
 
 To run the tests enter:

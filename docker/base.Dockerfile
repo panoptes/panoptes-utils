@@ -47,24 +47,19 @@ RUN apt-get update && \
     cp -r /root/.oh-my-zsh /etc/skel && \
     cat "/tmp/zshrc" >> /root/.zshrc && \
     cat "/tmp/zshrc" >> /etc/skel/.zshrc && \
-
     # Create $PANUSER.
     useradd --shell /bin/zsh -u ${USERID} -o -c "${pan_user_fullname}" \
         -p panoptes -m -G plugdev,dialout,users,sudo ${PANUSER} && \
-
     # Allow sudo without password.
     echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
-
     # Create ssh-key for user.
     mkdir -p /home/${PANUSER}/.key && \
     ssh-keygen -q -t rsa -N "" -f "/home/${PANUSER}/.key/id_rsa" && \
-
     # astrometry.net folders.
     mkdir -p "${astrometry_dir}" && \
     echo "add_path ${astrometry_dir}" >> /etc/astrometry.cfg && \
     chown -R ${PANUSER}:${PANUSER} ${astrometry_dir} && \
     chmod -R 777 ${astrometry_dir} && \
-
     # Create PANOPTES directories.
     mkdir -p ${PANDIR} && \
     mkdir -p ${PANDIR}/logs && \
@@ -72,7 +67,6 @@ RUN apt-get update && \
     mkdir -p ${PANDIR}/temp && \
     mkdir -p ${PANDIR}/.key && \
     mkdir -p ${PANDIR}/panoptes-utils && \
-
     # Update permissions for current user (root user created ssh).
     chown -R ${PANUSER}:${PANUSER} "/home/${PANUSER}" && \
     chown -R ${PANUSER}:${PANUSER} ${PANDIR}
@@ -106,11 +100,6 @@ RUN wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/M
     # Cleanup conda.
     "${PANDIR}/conda/bin/conda" clean -tipsy
 
-
-# Comes from base image - hard-coded for now ☹.
 USER root
-COPY ./docker/entrypoint.sh /var/panoptes/scripts/entrypoint.sh
-ENTRYPOINT ["/bin/sh", "/var/panoptes/scripts/entrypoint.sh"]
-
 WORKDIR "${PANDIR}"
-CMD ["/bin/zsh"]
+CMD ["/usr/bin/zsh"]
