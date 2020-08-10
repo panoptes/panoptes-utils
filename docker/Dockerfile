@@ -1,17 +1,21 @@
-ARG IMAGE_URL=gcr.io/panoptes-exp/panoptes-base:latest
+ARG image_url=gcr.io/panoptes-exp/panoptes-base:latest
 
-FROM ${IMAGE_URL} AS base-image
+FROM ${image_url} AS base-image
 
 ARG panuser=panoptes
 ARG pan_dir=/var/panoptes
 ARG conda_env_name="panoptes"
+# Default install latest from pip.
+ARG pip_install="panoptes-utils[testing,google]"
 
 ENV PANUSER $panuser
 ENV PANDIR $pan_dir
 
 # Install module
 USER ${PANUSER}
-RUN "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install "panoptes-utils[testing,google]" && \
+WORKDIR "${PANDIR}/panoptes-utils"
+COPY . .
+RUN "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install "${pip_install}" && \
     # Cleanup
     sudo apt-get autoremove --purge -y \
         autoconf \
@@ -27,6 +31,9 @@ RUN "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install "panoptes-utils[tes
     sudo rm -rf /var/lib/apt/lists/* && \
     "${PANDIR}/conda/bin/conda" clean -tipsy
 
+# Comes from base image - hard-coded for now ☹.
 USER root
-WORKDIR "${PANDIR}/panoptes-utils"
+COPY ./docker/entrypoint.sh /var/panoptes/scripts/entrypoint.sh
+ENTRYPOINT ["/bin/sh", "/var/panoptes/scripts/entrypoint.sh"]
+
 CMD ["/usr/bin/zsh"]
