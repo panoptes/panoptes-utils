@@ -31,9 +31,7 @@ RUN "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install "${pip_install}" &&
     sudo rm -rf /var/lib/apt/lists/* && \
     "${PANDIR}/conda/bin/conda" clean -tipsy
 
-# Comes from base image - hard-coded for now ☹.
 USER root
-COPY ./docker/entrypoint.sh /var/panoptes/scripts/entrypoint.sh
-ENTRYPOINT ["/bin/sh", "/var/panoptes/scripts/entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "/var/panoptes/panoptes-utils/scripts/entrypoint.sh"]
 
 CMD ["/usr/bin/zsh"]
