@@ -73,7 +73,7 @@ RUN apt-get update && \
 
 # Install miniforge (conda-forge) as PANUSER
 USER "${PANUSER}"
-COPY --chown="${PANUSER}:${PANUSER}" ./scripts/download-data.py /tmp/download-data.py
+COPY --chown=panoptes:panoptes ./scripts/download-data.py /tmp/download-data.py
 RUN wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-$(uname -m).sh" \
         -O "${PANDIR}/install-miniforge.sh" && \
     /bin/sh "${PANDIR}/install-miniforge.sh" -b -f -p "${PANDIR}/conda" && \
