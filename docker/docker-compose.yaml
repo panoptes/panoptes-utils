@@ -12,10 +12,9 @@ services:
       - pandir:/var/panoptes
     command: ["/var/panoptes/panoptes-utils/bin/panoptes-config-server"]
 volumes:
-    pandir:
-      driver: local
-      driver_opts:
-        type: none
-        device: /var/panoptes
-        o: bind
-
+  pandir:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/panoptes
+      o: bind

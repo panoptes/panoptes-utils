@@ -89,9 +89,14 @@ RUN wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/M
         pillow \
         pyarrow \
         scipy && \
+    # Initialize conda for the shells.
+    "${PANDIR}/conda/bin/conda" init bash && \
     "${PANDIR}/conda/bin/conda" init zsh && \
     # Activate the environment by default.
+    printf "\nconda activate ${conda_env_name}\n" >> "${HOME}/.bashrc" && \
     printf "\nconda activate ${conda_env_name}\n" >> "${HOME}/.zshrc" && \
+    printf "\necho Welcome to POCS!\n" >> "${HOME}/.bashrc" && \
+    printf "\necho Welcome to POCS!\n" >> "${HOME}/.zshrc" && \
     # Download astrometry.net index files.
     "${PANDIR}/conda/envs/${conda_env_name}/bin/python" /tmp/download-data.py \
         --wide-field --narrow-field \
@@ -102,4 +107,3 @@ RUN wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/M
 
 USER root
 WORKDIR "${PANDIR}"
-CMD ["/usr/bin/zsh"]

@@ -1,4 +1,5 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -e
 
 REPORT_FILE=${REPORT_FILE:-coverage.xml}
 

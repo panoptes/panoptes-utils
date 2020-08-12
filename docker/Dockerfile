@@ -32,6 +32,5 @@ RUN "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install "${pip_install}" &&
     "${PANDIR}/conda/bin/conda" clean -tipsy
 
 USER root
-ENTRYPOINT ["/bin/sh", "/var/panoptes/panoptes-utils/scripts/entrypoint.sh"]
-
+ENTRYPOINT ["/bin/sh", "/var/panoptes/panoptes-utils/docker/entrypoint.sh"]
 CMD ["/usr/bin/zsh"]
