@@ -15,4 +15,4 @@ install: true
 script:
   - docker run -it
     panoptes-utils:develop
-    "/usr/bin/zsh -c /var/panoptes/panoptes-utils/scripts/testing/run-tests.sh"
+    "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh"
