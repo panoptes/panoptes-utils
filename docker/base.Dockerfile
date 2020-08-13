@@ -80,6 +80,7 @@ RUN wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/M
     "${PANDIR}/conda/bin/conda" create -y -n "${conda_env_name}" python=3.8 \
         astroplan \
         astropy \
+        bokeh \
         click \
         loguru \
         matplotlib \
