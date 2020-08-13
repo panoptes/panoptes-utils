@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-INCLUDE_BASE=${1:-false}
+INCLUDE_BASE=${INCLUDE_BASE:-false}
 PANOPTES_UTILS=${PANOPTES_UTILS:-$PANDIR/panoptes-utils}
 _IMAGE_URL="gcr.io/panoptes-exp/panoptes-base:latest"
 
