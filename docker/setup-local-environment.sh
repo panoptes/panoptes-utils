@@ -23,7 +23,7 @@ build_develop() {
   docker build \
     --force-rm \
     --build-arg="image_url=${_IMAGE_URL}" \
-    --build-arg="pip_install=.[testing,google]" \
+    --build-arg="pip_install=.[testing,google,social]" \
     -t "panoptes-utils:develop" \
     -f "${PANOPTES_UTILS}/docker/Dockerfile" \
     "${PANOPTES_UTILS}"
