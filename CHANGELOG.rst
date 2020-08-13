@@ -15,8 +15,8 @@ Changed
     * `panoptes-utils:latest` installs editable `panoptes-utils` module from github `develop` branch.
     * `panoptes-utils:develop` is used for testing and can be built locally with the `docker/setup-local-environment.sh` script.
     * Tests on GH and Travis use the `docker/setup-local-environment.sh` script for building test images.
-    * `miniforge <https://github.com/conda-forge/miniforge>`_ used to install a `conda` environment with `conda-forge` as default channels.
-    * Multi-arch builds are supported on `gcr.io` via the `cloudbuild.yaml` file. Built with `buildx` plugin to docker. Currently `linux/amd64`, `linux/arm64`, `linux/arm/v7`, and `linux/arm/v6`.
+    * `miniforge <https://github.com/conda-forge/miniforge>`_ used to install a `conda` environment with `conda-forge` as default channels. Forces 64bit support.
+    * Multi-arch builds are supported on `gcr.io` via the `cloudbuild.yaml` file. Built with `buildx` plugin to docker. Currently `linux/amd64` and `linux/arm64`.
     * Extra zsh plugins in the docker image.
     * Properly disable auto-update of zsh.
     * Cleanup of entrypoint for better loading of environment.
