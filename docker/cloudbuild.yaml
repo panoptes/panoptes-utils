@@ -1,3 +1,12 @@
+options:
+  machineType: "N1_HIGHCPU_8"
+  substitutionOption: "ALLOW_LOOSE"
+timeout: 18000s  # 5 hours
+
+substitutions:
+  _PLATFORMS: linux/amd64,linux/arm64
+  _TAG: latest
+
 steps:
   # Set up multiarch support
   - name: "gcr.io/cloud-builders/docker"
@@ -32,7 +41,7 @@ steps:
       - "buildx"
       - "build"
       - "--push"
-      - "--platform=linux/amd64,linux/arm64"
+      - "--platform=${_PLATFORMS}"
       - "-f=docker/base.Dockerfile"
       - "--tag=gcr.io/${PROJECT_ID}/panoptes-base:${_TAG}"
       - "--cache-from=gcr.io/${PROJECT_ID}/panoptes-base:${_TAG}"

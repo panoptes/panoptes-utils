@@ -6,7 +6,9 @@ ARG panuser=panoptes
 ARG pan_dir=/var/panoptes
 ARG conda_env_name="panoptes"
 # Default install latest from pip.
-ARG pip_install="git+https://github.com/panoptes/panoptes-utils@develop#egg=panoptes-utils[testing,google]"
+ARG github_branch="${BRANCH_NAME:-master}"
+ARG pip_extras="[testing,google,social]"
+ARG pip_install="git+https://github.com/panoptes/panoptes-utils@${github_branch}#egg=panoptes-utils${pip_extras}"
 
 ENV PANUSER $panuser
 ENV PANDIR $pan_dir
