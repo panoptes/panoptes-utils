@@ -27,6 +27,7 @@ build_develop() {
     -t "panoptes-utils:develop" \
     -f "${PANOPTES_UTILS}/docker/Dockerfile" \
     "${PANOPTES_UTILS}"
+  clear
 }
 
 if [ "${INCLUDE_BASE}" ]; then
@@ -36,7 +37,6 @@ fi
 build_develop
 
 cat <<EOF
-clear;
 Done building the local images.
 
 To run the tests enter:
