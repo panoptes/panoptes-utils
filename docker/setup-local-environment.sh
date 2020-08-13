@@ -27,7 +27,6 @@ build_develop() {
     -t "panoptes-utils:develop" \
     -f "${PANOPTES_UTILS}/docker/Dockerfile" \
     "${PANOPTES_UTILS}"
-  clear
 }
 
 if [ "${INCLUDE_BASE}" ]; then
