@@ -44,8 +44,7 @@ RUN apt-get update && \
     git clone --single-branch --quiet https://github.com/denysdovhan/spaceship-prompt.git "${ZSH_CUSTOM}/themes/spaceship-prompt" && \
     ln -s "${ZSH_CUSTOM}/themes/spaceship-prompt/spaceship.zsh-theme" "${ZSH_CUSTOM}/themes/spaceship.zsh-theme" && \
     git clone --single-branch --quiet https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM}/plugins/zsh-autosuggestions && \
-    cp -r /root/.oh-my-zsh /etc/skel && \
-    cat "/tmp/zshrc" >> /root/.zshrc && \
+    cp -r "${ZSH_CUSTOM}" /etc/skel && \
     cat "/tmp/zshrc" >> /etc/skel/.zshrc && \
     # Create $PANUSER.
     useradd --shell /bin/zsh -u ${USERID} -o -c "${pan_user_fullname}" \
