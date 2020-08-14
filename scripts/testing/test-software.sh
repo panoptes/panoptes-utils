@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-clear;
+clear
 
 cat <<EOF
 Beginning test of panoptes-utils software. This software is run inside a virtualized docker
@@ -16,10 +16,13 @@ tail -F ${PANDIR}/logs/panoptes-testing.log
 Tests will begin in 5 seconds. Press Ctrl-c to cancel.
 EOF
 
-sleep 5;
+SLEEP_TIME=${1:-5}
+
+sleep "${SLEEP_TIME}"
 
 docker run --rm -it \
-    -v "${PANDIR}/panoptes-utils":/var/panoptes/panoptes-utils \
-    -v "${PANDIR}/logs":/var/panoptes/logs \
-    panoptes-utils:develop \
-    "${PANDIR}/panoptes-utils/scripts/testing/run-tests.sh"
+  --init \
+  -v "${PANDIR}/panoptes-utils":/var/panoptes/panoptes-utils \
+  -v "${PANDIR}/logs":/var/panoptes/logs \
+  panoptes-utils:develop \
+  "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh"

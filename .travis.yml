@@ -10,10 +10,9 @@ python:
 services:
   - docker
 before_install:
-  - sed -i s'/^\.git$/\!\.git/' .dockerignore
-  - docker build -t panoptes-utils:develop -f ${TRAVIS_BUILD_DIR}/docker/develop.Dockerfile ${TRAVIS_BUILD_DIR}
+  - PANOPTES_UTILS="${TRAVIS_BUILD_DIR}" INCLUDE_BASE=true docker/setup-local-environment.sh
 install: true
 script:
   - docker run -it
     panoptes-utils:develop
-    scripts/testing/run-tests.sh
+    "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh"
