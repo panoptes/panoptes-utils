@@ -22,12 +22,12 @@ Changed
   * Cleanup of entrypoint for better loading of environment.
 
 Fixes
------
+^^^^^
 
 * `Pillow` fights.
 
 Removes
--------
+^^^^^^^
 
 * Dependencies: `pyarrow` too hard to build on arm. `hvplot` and `holoviews` not needed in default install.
 
