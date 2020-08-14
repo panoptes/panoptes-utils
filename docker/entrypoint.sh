@@ -1,4 +1,5 @@
-#!/bin/bash -ie
+#!/usr/bin/env bash
+set -e
 
 # Pass arguments
-exec gosu panoptes "$@"
+exec gosu panoptes /usr/bin/env zsh -ic "$@"

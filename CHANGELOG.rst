@@ -2,6 +2,36 @@
 Changelog
 =========
 
+0.2.23
+------
+
+Changed
+^^^^^^^
+
+* Simplified docker docker images. (#227)
+
+  * Consolidation of Dockerfile to support images:
+  * `panoptes-base` serves as a base image for all docker services.
+  * `panoptes-utils:latest` installs editable `panoptes-utils` module from github `develop` branch.
+  * `panoptes-utils:develop` is used for testing and can be built locally with the `docker/setup-local-environment.sh` script.
+  * Tests on GH and Travis use the `docker/setup-local-environment.sh` script for building test images.
+  * `miniforge <https://github.com/conda-forge/miniforge>`_ used to install a `conda` environment with `conda-forge` as default channels. Forces 64bit support.
+  * Multi-arch builds are supported on `gcr.io` via the `cloudbuild.yaml` file. Built with `buildx` plugin to docker. Currently `linux/amd64` and `linux/arm64`.
+  * Extra zsh plugins in the docker image.
+  * Properly disable auto-update of zsh.
+  * Cleanup of entrypoint for better loading of environment.
+
+Fixes
+^^^^^
+
+* `Pillow` fights.
+
+Removes
+^^^^^^^
+
+* Dependencies: `pyarrow` too hard to build on arm. `hvplot` and `holoviews` not needed in default install.
+
+
 0.2.22 - 2020-07-25
 -------------------
 

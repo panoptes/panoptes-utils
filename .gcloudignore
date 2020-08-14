@@ -1,9 +1,8 @@
 .idea
-.venv
-venv
+*venv
 
-# Need to pass git to allow version :(
-!.git
+# See note in .dockerignore about the git folder.
+.git
 .github
 
 *.md

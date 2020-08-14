@@ -1,45 +1,65 @@
+options:
+  machineType: "N1_HIGHCPU_8"
+  substitutionOption: "ALLOW_LOOSE"
+timeout: 18000s  # 5 hours
+
+substitutions:
+  _PLATFORMS: linux/amd64,linux/arm64
+  _TAG: latest
+
 steps:
   # Set up multiarch support
-  - name: 'gcr.io/cloud-builders/docker'
-    id: 'setup-buildx'
+  - name: "gcr.io/cloud-builders/docker"
+    id: "setup-buildx"
     env:
-      - 'DOCKER_CLI_EXPERIMENTAL=enabled'
+      - "DOCKER_CLI_EXPERIMENTAL=enabled"
     args:
-      - 'run'
-      - '--privileged'
-      - '--rm'
-      - 'docker/binfmt:a7996909642ee92942dcd6cff44b9b95f08dad64'
-    waitFor: ['-']
+      - "run"
+      - "--privileged"
+      - "--rm"
+      - "docker/binfmt:a7996909642ee92942dcd6cff44b9b95f08dad64"
+    waitFor: ["-"]
 
   # Build builder
-  - name: 'gcr.io/cloud-builders/docker'
-    id: 'build-builder'
+  - name: "gcr.io/cloud-builders/docker"
+    id: "build-builder"
     env:
-      - 'DOCKER_CLI_EXPERIMENTAL=enabled'
+      - "DOCKER_CLI_EXPERIMENTAL=enabled"
     args:
-      - 'buildx'
-      - 'create'
-      - '--use'
-      - '--driver=docker-container'
-    waitFor: ['setup-buildx']
+      - "buildx"
+      - "create"
+      - "--use"
+      - "--driver=docker-container"
+    waitFor: ["setup-buildx"]
+
+  # Build base
+  - name: "gcr.io/cloud-builders/docker"
+    id: "build-base"
+    env:
+      - "DOCKER_CLI_EXPERIMENTAL=enabled"
+    args:
+      - "buildx"
+      - "build"
+      - "--push"
+      - "--platform=${_PLATFORMS}"
+      - "-f=docker/base.Dockerfile"
+      - "--tag=gcr.io/${PROJECT_ID}/panoptes-base:${_TAG}"
+      - "--cache-from=gcr.io/${PROJECT_ID}/panoptes-base:${_TAG}"
+      - "."
+    waitFor: ["build-builder"]
 
   # Build
-  - name: 'gcr.io/cloud-builders/docker'
-    id: 'build-images'
+  - name: "gcr.io/cloud-builders/docker"
+    id: "build-images"
     env:
-      - 'DOCKER_CLI_EXPERIMENTAL=enabled'
+      - "DOCKER_CLI_EXPERIMENTAL=enabled"
     args:
-      - 'buildx'
-      - 'build'
-      - '--push'
-      - '--platform=linux/amd64,linux/arm64'
-      - '-f=docker/${_TAG}.Dockerfile'
-      - '--tag=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}'
-      - '--cache-from=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}'
-      - '.'
-    waitFor: ['build-builder']
-
-images:
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:latest'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:amd64'
-  - 'gcr.io/${PROJECT_ID}/panoptes-utils:arm64'
+      - "buildx"
+      - "build"
+      - "--push"
+      - "--platform=linux/amd64,linux/arm64"
+      - "-f=docker/Dockerfile"
+      - "--tag=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}"
+      - "--cache-from=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}"
+      - "."
+    waitFor: ["build-base"]
