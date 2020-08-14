@@ -1,4 +1,6 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+
+set -e
 
 INCLUDE_BASE=${INCLUDE_BASE:-false}
 PANOPTES_UTILS=${PANOPTES_UTILS:-$PANDIR/panoptes-utils}

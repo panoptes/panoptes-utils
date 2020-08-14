@@ -8,7 +8,7 @@ ARG conda_env_name="panoptes"
 # Default install latest from pip.
 ARG github_branch="${BRANCH_NAME:-master}"
 ARG pip_extras="[testing,google,social]"
-ARG pip_install="git+https://github.com/panoptes/panoptes-utils@${github_branch}#egg=panoptes-utils${pip_extras}"
+ARG pip_install="git+https://github.com/panoptes/panoptes-utils@${github_branch}#egg=panoptes-utils"
 
 ENV PANUSER $panuser
 ENV PANDIR $pan_dir
@@ -20,7 +20,7 @@ WORKDIR "${PANDIR}/panoptes-utils"
 # Can't seem to get around the hard-coding here.
 COPY --chown=panoptes:panoptes . .
 RUN echo "Installing ${pip_install}" && \
-    "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install -e "${pip_install}" && \
+    "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install -e "${pip_install}${pip_extras}" && \
     # Cleanup
     sudo apt-get autoremove --purge -y \
         autoconf \
