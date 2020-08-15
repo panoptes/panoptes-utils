@@ -12,7 +12,6 @@ ARG userid=1000
 ARG pan_dir=/var/panoptes
 ARG pocs_dir="${pan_dir}/POCS"
 ARG astrometry_dir="/astrometry/data"
-ARG cr2_url="https://storage.googleapis.com/panoptes-resources/test-data/canon.cr2"
 ARG conda_env_name="panoptes"
 
 ENV DEBIAN_FRONTEND=noninteractive

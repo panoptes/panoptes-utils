@@ -25,27 +25,23 @@ image would be `gcr.io/panoptes-exp/panoptes-utils:latest`.
 
 The base image will install all necessary tools for working with the `panoptes-utils` library, such as `astrometry.net`, `source-extractor`, `astropy` and friends, as well as various FITS libraries.  
 
-This image runs as `PANUSER` with no `ENTRYPOINT` specified. The default `CMD` is a `/bin/zsh` and the `WORKDIR` is `PANDIR`.
+This image runs as root with `ENTRYPOINT` passing the `CMD` to the `PANUSER` via `gosu`.  
+See the `docker/entrypoint.sh` for details.
+
+The default `CMD` is a `zsh` with a `panoptes` conda environment activated and the `WORKDIR` is `PANDIR`.
 
 ### Utils image
 
 `gcr.io/panoptes-exp/panoptes-utils:latest` is built on top of `panoptes-base` and merely installs the `panoptes-utils` module from `pip`.
 
-This image runs as `PANUSER` with no `ENTRYPOINT` specified. The default `CMD` is a `/bin/zsh` and the `WORKDIR` is `PANDIR/panoptes-utils`.
-
 ## Develop and Testing Image
 
 ### Building local image
 
+> Note: Make sure you have your ``$PANDIR`` environment variable set 
+> to something like: ``PANDIR=/var/panoptes``
+
 You can build a local copy of the images for testing. The easiest way is
-
-```bash
-docker/setup-local-environment.sh
-``` 
-
-This will create a `panoptes-utils:develop` image. Note that this uses the official
-`gcr.io/panoptes-exp/panoptes-base:latest` image as the base. If you need to test
-new system dependencies and need a new local base image, you can:
 
 ```bash
 INCLUDE_BASE=true docker/setup-local-environment.sh
@@ -55,6 +51,13 @@ INCLUDE_BASE=true docker/setup-local-environment.sh
 This is because our `pyscaffold` package tool relies on `setuptools_scm` for version
 numbers, which are ultimately based off the current code according to git.  This means
 the local `develop` image will likely be much larger than the official `latest` image.
+>
+> In practice this doesn't matter because when you run the local image you usually want
+> to mount the working directory anyway, e.g.
+>
+>     docker run -it --rm \
+>         -v "${PANDIR}/panoptes-utils":/var/panoptes/panoptes-utils \
+>         panoptes-utils:develop 
 
 ### Testing local image and code
 

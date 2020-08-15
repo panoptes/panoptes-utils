@@ -5,6 +5,7 @@ FROM ${image_url} AS base-image
 ARG panuser=panoptes
 ARG pan_dir=/var/panoptes
 ARG conda_env_name="panoptes"
+
 # Default install latest from pip.
 ARG github_branch="${BRANCH_NAME:-master}"
 ARG pip_extras="[testing,google,social]"
@@ -22,17 +23,9 @@ COPY --chown=panoptes:panoptes . .
 RUN echo "Installing ${pip_install}" && \
     "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install -e "${pip_install}${pip_extras}" && \
     # Cleanup
-    sudo apt-get autoremove --purge -y \
-        autoconf \
-        automake \
-        autopoint \
-        build-essential \
-        gcc \
-        gettext \
-        libtool \
-        pkg-config && \
-    sudo apt-get autoremove --purge -y && \
-    sudo apt-get -y clean && \
+    sudo apt-get autoremove --purge --yes && \
+    sudo apt-get autoclean --yes && \
+    sudo apt-get --yes clean && \
     sudo rm -rf /var/lib/apt/lists/* && \
     "${PANDIR}/conda/bin/conda" clean -tipsy
 
