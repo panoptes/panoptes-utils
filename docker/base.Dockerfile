@@ -75,10 +75,10 @@ RUN apt-get update && \
 
 # Install miniforge (conda-forge) as PANUSER
 USER "${PANUSER}"
-COPY --chown=panoptes:panoptes ./scripts/download-data.py /tmp/download-data.py
+COPY --chown=panoptes:panoptes ./scripts/download-data.py "${PANDIR}/scripts/download-data.py"
 RUN wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-$(uname -m).sh" \
-        -O "${PANDIR}/install-miniforge.sh" && \
-    /bin/sh "${PANDIR}/install-miniforge.sh" -b -f -p "${PANDIR}/conda" && \
+        -O "${PANDIR}/scripts/install-miniforge.sh" && \
+    /bin/sh "${PANDIR}/scripts/install-miniforge.sh" -b -f -p "${PANDIR}/conda" && \
     # Make sure to use conda for some of the larger modules.
     "${PANDIR}/conda/bin/conda" create -y -n "${conda_env_name}" python=3.8 \
         astroplan \
@@ -100,7 +100,7 @@ RUN wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/M
     printf "\necho Welcome to POCS!\n" >> "${HOME}/.zshrc" && \
     # Download astrometry.net index files.
     # TODO replace this with a pre-constructed volume that has the files.
-    "${PANDIR}/conda/envs/${conda_env_name}/bin/python" /tmp/download-data.py \
+    "${PANDIR}/conda/envs/${conda_env_name}/bin/python" "${PANDIR}/scripts/download-data.py" \
         --wide-field --narrow-field \
         --folder "${astrometry_dir}" \
         --verbose && \
