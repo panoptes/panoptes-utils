@@ -91,6 +91,7 @@ RUN wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/M
         pandas \
         pillow \
         pyarrow \
+        readline \
         scipy && \
     # Initialize conda for the shells.
     "${PANDIR}/conda/bin/conda" init bash zsh && \
