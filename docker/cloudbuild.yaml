@@ -11,7 +11,9 @@ steps:
   # Fetch teh repo from github
   - name: "gcr.io/cloud-builders/git"
     id: "fetch-history"
-    args: ['fetch', '--unshallow']
+    args:
+      - "fetch"
+      - "--unshallow"
     waitFor: ["build-builder"]
 
   # Set up multiarch support
