@@ -8,13 +8,13 @@ substitutions:
   _TAG: latest
 
 steps:
-  # Fetch teh repo from github
+  # Fetch the repo from github
   - name: "gcr.io/cloud-builders/git"
     id: "fetch-history"
     args:
       - "fetch"
       - "--unshallow"
-    waitFor: ["build-builder"]
+    waitFor: ["-"]
 
   # Set up multiarch support
   - name: "gcr.io/cloud-builders/docker"
@@ -26,7 +26,7 @@ steps:
       - "--privileged"
       - "--rm"
       - "docker/binfmt:a7996909642ee92942dcd6cff44b9b95f08dad64"
-    waitFor: ["-"]
+    waitFor: ["fetch-history"]
 
   # Build builder
   - name: "gcr.io/cloud-builders/docker"
@@ -70,4 +70,4 @@ steps:
       - "--tag=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}"
       - "--cache-from=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}"
       - "."
-    waitFor: ["fetch-history"]
+    waitFor: ["build-base"]
