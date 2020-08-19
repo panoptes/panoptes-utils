@@ -8,6 +8,14 @@ substitutions:
   _TAG: latest
 
 steps:
+  # Fetch teh repo from github
+  - name: "gcr.io/cloud-builders/git"
+    id: "fetch-history"
+    args:
+      - "fetch"
+      - "--unshallow"
+    waitFor: ["build-builder"]
+
   # Set up multiarch support
   - name: "gcr.io/cloud-builders/docker"
     id: "setup-buildx"
