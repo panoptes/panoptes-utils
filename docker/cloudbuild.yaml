@@ -48,6 +48,11 @@ steps:
       - "."
     waitFor: ["build-builder"]
 
+  - name: "gcr.io/cloud-builders/git"
+    id: "fetch-history"
+    args: ['fetch', '--unshallow']
+    waitFor: ["build-builder"]
+
   # Build
   - name: "gcr.io/cloud-builders/docker"
     id: "build-images"
@@ -62,4 +67,4 @@ steps:
       - "--tag=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}"
       - "--cache-from=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}"
       - "."
-    waitFor: ["build-base"]
+    waitFor: ["fetch-history"]
