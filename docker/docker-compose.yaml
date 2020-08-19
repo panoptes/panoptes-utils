@@ -7,14 +7,10 @@ services:
     privileged: true
     network_mode: host
     env_file: $PANDIR/.env
+    environment:
+      POCS_CONFIG_FILE: "${PANDIR}/config_files/pocs.yaml"
     restart: on-failure
-    volumes:
-      - pandir:/var/panoptes
-    command: ["/var/panoptes/panoptes-utils/bin/panoptes-config-server"]
-volumes:
-  pandir:
-    driver: local
-    driver_opts:
-      type: none
-      device: /var/panoptes
-      o: bind
+    command:
+      - "/var/panoptes/panoptes-utils/bin/panoptes-config-server"
+      - "run"
+      - "${POCS_CONFIG_FILE}"

@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-
 set -e
 
 INCLUDE_BASE=${INCLUDE_BASE:-false}
-PANOPTES_UTILS=${PANOPTES_UTILS:-$PANDIR/panoptes-utils}
-_IMAGE_URL="gcr.io/panoptes-exp/panoptes-base:latest"
 
+PANOPTES_UTILS=${PANOPTES_UTILS:-$PANDIR/panoptes-utils}
+_BASE_IMAGE_URL="gcr.io/panoptes-exp/panoptes-base:latest"
+
+echo "Setting up local environment."
 cd "${PANOPTES_UTILS}"
 
 build_base() {
@@ -17,21 +18,22 @@ build_base() {
     "${PANOPTES_UTILS}"
 
   # Use our local base for build below.
-  _IMAGE_URL="panoptes-base:develop"
+  _BASE_IMAGE_URL="panoptes-base:develop"
 }
 
 build_develop() {
-  echo "Building local panoptes-utils:develop from ${_IMAGE_URL} in ${PANOPTES_UTILS}"
+  echo "Building local panoptes-utils:develop from ${_BASE_IMAGE_URL} in ${PANOPTES_UTILS}"
   docker build \
-    --force-rm \
-    --build-arg="image_url=${_IMAGE_URL}" \
-    --build-arg="pip_install=." \
     -t "panoptes-utils:develop" \
     -f "${PANOPTES_UTILS}/docker/Dockerfile" \
     "${PANOPTES_UTILS}"
 }
 
-if [ "${INCLUDE_BASE}" ]; then
+####################################################################################
+# Script logic below
+####################################################################################
+
+if [ "${INCLUDE_BASE}" = true ]; then
   build_base
 fi
 
