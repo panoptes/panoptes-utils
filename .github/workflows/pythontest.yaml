@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Build panoptes-utils image
         run: |
-          PANOPTES_UTILS=${PWD} INCLUDE_BASE=true docker/setup-local-environment.sh
+          PANOPTES_UTILS=${PWD} INCLUDE_BASE=true scripts/setup-local-environment.sh
       - name: Test with pytest in panoptes-utils container
         run: |
           mkdir -p coverage_dir && chmod 777 coverage_dir
