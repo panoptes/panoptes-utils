@@ -27,7 +27,7 @@ ENV POCS $pocs_dir
 ENV PATH "/home/${PANUSER}/.local/bin:$PATH"
 ENV SOLVE_FIELD /usr/bin/solve-field
 
-COPY ./docker/zshrc /tmp
+COPY ./resources/docker/zshrc /tmp
 USER root
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
