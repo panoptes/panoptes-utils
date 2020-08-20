@@ -15,17 +15,13 @@ steps:
     args: ["clone", "${_REPO_URL}"]
     waitFor: ["-"]
 
-  - name: 'gcr.io/cloud-builders/git'
-    id: "pull-history"
-    args: ['fetch', '--unshallow']
-    waitFor: ["clone-repo"]
-
   - name: "bash"
     id: "whatsgoingon2"
     args:
       - "ls"
       - "-la"
-    waitFor: ["pull-history"]
+      - "panoptes-utils"
+    waitFor: ["clone-repo"]
 
   # Set up multiarch support
   - name: "gcr.io/cloud-builders/docker"
