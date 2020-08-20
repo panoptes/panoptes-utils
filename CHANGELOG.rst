@@ -20,6 +20,7 @@ Changed
 -------
 
 * Changelog fixes. (#237)
+* Changed git branch `master` to `main`.
 
 
 0.2.23 - 2020-08-16
