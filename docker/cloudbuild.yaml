@@ -13,18 +13,19 @@ steps:
   - name: gcr.io/cloud-builders/git
     id: "clone-repo"
     args: ["clone", "${_REPO_URL}"]
+    waitFor: ["-"]
 
   - name: 'gcr.io/cloud-builders/git'
     id: "pull-history"
     args: ['fetch', '--unshallow']
-    waitFor: ["whatsgoingon2"]
+    waitFor: ["clone-repo"]
 
   - name: "bash"
     id: "whatsgoingon2"
     args:
       - "ls"
       - "-la"
-    waitFor: ["-"]
+    waitFor: ["pull-history"]
 
   # Set up multiarch support
   - name: "gcr.io/cloud-builders/docker"
@@ -92,4 +93,4 @@ steps:
       - "--tag=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}"
       - "--cache-from=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}"
       - "."
-    waitFor: ["build-base"]
+    waitFor: ["build-base", "pull-history"]
