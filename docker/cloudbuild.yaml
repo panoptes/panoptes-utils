@@ -9,12 +9,19 @@ substitutions:
 
 steps:
   # Fetch the repo from github
+  - name: "gcr.io/cloud-builders/bash"
+    id: "whatsgoingon"
+    args:
+      - "pwd && ls -la"
+    waitFor: ["-"]
+
+  # Fetch the repo from github
   - name: "gcr.io/cloud-builders/git"
-    id: "fetch-history"
+    id: "clone?"
     args:
       - "fetch"
       - "--unshallow"
-    waitFor: ["-"]
+    waitFor: ["whatsgoingon"]
 
   # Set up multiarch support
   - name: "gcr.io/cloud-builders/docker"
@@ -65,7 +72,7 @@ steps:
       - "buildx"
       - "build"
       - "--push"
-      - "--platform=linux/amd64,linux/arm64"
+      - "--platform=${_PLATFORMS}"
       - "-f=docker/Dockerfile"
       - "--tag=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}"
       - "--cache-from=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}"
