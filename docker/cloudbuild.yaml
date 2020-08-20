@@ -15,14 +15,6 @@ steps:
     args: ["clone", "${_REPO_URL}"]
     waitFor: ["-"]
 
-  - name: "bash"
-    id: "whatsgoingon2"
-    args:
-      - "ls"
-      - "-la"
-      - "panoptes-utils"
-    waitFor: ["clone-repo"]
-
   # Set up multiarch support
   - name: "gcr.io/cloud-builders/docker"
     id: "setup-buildx"
