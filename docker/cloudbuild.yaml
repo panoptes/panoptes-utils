@@ -89,4 +89,4 @@ steps:
       - "--tag=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}"
       - "--cache-from=gcr.io/${PROJECT_ID}/panoptes-utils:${_TAG}"
       - "panoptes-utils"
-    waitFor: ["build-base", "pull-history"]
+    waitFor: ["build-base", "clone-repo"]
