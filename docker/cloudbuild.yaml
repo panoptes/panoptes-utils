@@ -56,6 +56,10 @@ steps:
     entrypoint: 'bash'
     args: ['-c', 'docker pull gcr.io/$PROJECT_ID/panoptes-base:${_TAG} || exit 0']
     waitFor: ["pull-cached-image"]
+  - name: 'gcr.io/cloud-builders/git'
+    id: "pull-history"
+    args: ['fetch', '--unshallow']
+    waitFor: ["pull-cached-image"]
 
   # Build base
   - name: "gcr.io/cloud-builders/docker"
@@ -71,7 +75,7 @@ steps:
       - "--tag=gcr.io/${PROJECT_ID}/panoptes-base:${_TAG}"
       - "--cache-from=gcr.io/${PROJECT_ID}/panoptes-base:${_TAG}"
       - "."
-    waitFor: ["pull-cached-base-image"]
+    waitFor: ["pull-history"]
 
   # Build
   - name: "gcr.io/cloud-builders/docker"
