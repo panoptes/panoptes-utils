@@ -22,6 +22,11 @@ steps:
       - "-la"
     waitFor: ["-"]
 
+  - name: 'gcr.io/cloud-builders/git'
+    id: "pull-history"
+    args: ['fetch', '--unshallow']
+    waitFor: ["whatsgoingon2"]
+
   # Set up multiarch support
   - name: "gcr.io/cloud-builders/docker"
     id: "setup-buildx"
@@ -51,21 +56,16 @@ steps:
     entrypoint: 'bash'
     args: ['-c', 'docker pull gcr.io/$PROJECT_ID/panoptes-utils:${_TAG} || exit 0']
     waitFor: ["build-builder"]
+
   - name: 'gcr.io/cloud-builders/docker'
     id: "pull-cached-base-image"
     entrypoint: 'bash'
     args: ['-c', 'docker pull gcr.io/$PROJECT_ID/panoptes-base:${_TAG} || exit 0']
     waitFor: ["pull-cached-image"]
-  - name: 'gcr.io/cloud-builders/git'
-    id: "pull-history"
-    working-directory: "/workspace"
-    args: ['fetch', '--unshallow']
-    waitFor: ["pull-cached-image"]
 
   # Build base
   - name: "gcr.io/cloud-builders/docker"
     id: "build-base"
-    working-directory: "/workspace"
     env:
       - "DOCKER_CLI_EXPERIMENTAL=enabled"
     args:
@@ -77,14 +77,13 @@ steps:
       - "--tag=gcr.io/${PROJECT_ID}/panoptes-base:${_TAG}"
       - "--cache-from=gcr.io/${PROJECT_ID}/panoptes-base:${_TAG}"
       - "."
-    waitFor: ["pull-history"]
+    waitFor: ["pull-cached-image"]
 
   # Build
   - name: "gcr.io/cloud-builders/docker"
     id: "build-images"
     env:
       - "DOCKER_CLI_EXPERIMENTAL=enabled"
-    working-directory: "/workspace"
     args:
       - "buildx"
       - "build"
