@@ -5,15 +5,19 @@ timeout: 18000s  # 5 hours
 
 substitutions:
   _PLATFORMS: linux/amd64,linux/arm64
+  _REPO_URL: https://github.com/panoptes/panoptes-utils
   _TAG: latest
 
 steps:
   # Fetch the repo from github
-  - name: "bash"
-    id: "whatsgoingon"
-    args:
-      - "pwd"
-    waitFor: ["-"]
+  - name: gcr.io/cloud-builders/git
+    id: "clone-repo"
+    args: ["clone", "${_REPO_URL}"]
+
+  - name: 'gcr.io/cloud-builders/git'
+    id: "pull-history"
+    args: ['fetch', '--unshallow']
+    waitFor: ["whatsgoingon2"]
 
   - name: "bash"
     id: "whatsgoingon2"
@@ -21,11 +25,6 @@ steps:
       - "ls"
       - "-la"
     waitFor: ["-"]
-
-  - name: 'gcr.io/cloud-builders/git'
-    id: "pull-history"
-    args: ['fetch', '--unshallow']
-    waitFor: ["whatsgoingon2"]
 
   # Set up multiarch support
   - name: "gcr.io/cloud-builders/docker"
