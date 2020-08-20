@@ -21,7 +21,7 @@ WORKDIR "${PANDIR}/panoptes-utils"
 
 # Can't seem to get around the hard-coding here.
 COPY --chown=panoptes:panoptes . .
-RUN echo "Installing ${pip_install}" && \
+RUN echo "Installing editable module with ${pip_extras}" && \
     "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install -e ".${pip_extras}" && \
     # Cleanup
     sudo apt-get autoremove --purge --yes && \
