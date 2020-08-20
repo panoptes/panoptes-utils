@@ -58,12 +58,14 @@ steps:
     waitFor: ["pull-cached-image"]
   - name: 'gcr.io/cloud-builders/git'
     id: "pull-history"
+    working-directory: "/workspace"
     args: ['fetch', '--unshallow']
     waitFor: ["pull-cached-image"]
 
   # Build base
   - name: "gcr.io/cloud-builders/docker"
     id: "build-base"
+    working-directory: "/workspace"
     env:
       - "DOCKER_CLI_EXPERIMENTAL=enabled"
     args:
@@ -82,6 +84,7 @@ steps:
     id: "build-images"
     env:
       - "DOCKER_CLI_EXPERIMENTAL=enabled"
+    working-directory: "/workspace"
     args:
       - "buildx"
       - "build"
