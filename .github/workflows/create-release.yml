@@ -5,7 +5,7 @@ on:
     tags:
       - 'v[0-9].[0-9]+.[0-9]+' # Push events to matching vX.Y.Z, but not vX.Y.Zdev
 
-name: Create Release
+name: Create GitHub Release
 
 jobs:
   build:
