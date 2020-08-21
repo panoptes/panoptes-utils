@@ -1,52 +1,35 @@
-# Docker
+PANOPTES Utils Image
+--------------------
 
-The `panoptes-utils` repository serves as the base for a number of services that are running Docker. 
-
-Terminology:
-
-**image**: The "virtual machine" that has been built with all the dependencies pre-installed.
-
-**tag**: An `image` has a tag, typically `latest` and `develop`, although it could be anything. All images have tags and if left unspecified defaults to `latest`.
-
-**container**: A running copy of a `tagged `image`. There can be many containers running from a single image. They are each running their own copy and don't share between them (by default).
-
-From the command line we typically `pull` images from `gcr.io` (the default with a command like `docker pull ubuntu` is to pull from [DockerHub](https://hub.docker.com/)). 
-
-All PANOPTES images are hosted on `gcr.io` at the `panoptes-exp` project. 
-
-Image names for PANOPTES are thus: `<SERVER_URL>/<GOOGLE_PROJECT_ID>/<IMAGE_NAME>:<TAG>`.
-
-A valid image would be `gcr.io/panoptes-exp/panoptes-utils:latest`.
-
-## Images
-
-### Base image
-
-`gcr.io/panoptes-exp/panoptes-base:latest` is the base image and is available for `amd64` (`x86_64`) as well as `arm64` (`aarch64`). Other builds are possible but not provided by default.
-
-**Note: The base image should not be used directly for a service.**
-
-The base image will install all necessary tools for working with the `panoptes-utils` library, such as `astrometry.net`, `source-extractor`, `astropy` and friends, as well as various FITS libraries.  
-
-This image runs as root with `ENTRYPOINT` passing the `CMD` to the `PANUSER` via `gosu`.  
-See the `resources/docker/entrypoint.sh` for details.
-
-The default `CMD` is a `zsh` with a [conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) 
-activated (named `panoptes`) and the `WORKDIR` is `PANDIR`.
-
-### Utils image
-
-`gcr.io/panoptes-exp/panoptes-utils:latest` is built on top of `panoptes-base` and installs the `panoptes-utils` module 
+The `panoptes-utils` image is built on top of `panoptes-base` and installs the `panoptes-utils` module 
 (in editable mode) from the appropriate branch on Github.
 
-## Develop and Testing Image
+By default the module is installed with the `testing` and `google` extras (i.e
+`pip install -e ".[testing,google]"`)
 
-### Building local image
+## Image Details
 
-> Note: Make sure you have your ``$PANDIR`` environment variable set 
-> to something like: ``PANDIR=/var/panoptes``
+Image name: `gcr.io/panoptes-exp/panoptes-utils`
 
-You can build a local copy of the images for testing. The easiest way is
+Tags: `latest`, `develop`
+
+Platforms: `amd64` (`x86_64`) as well as `arm64` (`aarch64`). Other builds are 
+possible but not provided by default.
+
+Workdir: `$PANDIR/panoptes-utils` (default is `/var/panoptes/panoptes-utils`)
+
+Entrypoint: `/usr/bin/zsh` as `$PANUSER` (default `panoptes`) user via `gosu`. See 
+`resources/docker/entrypoint.sh` for details.
+
+Cmd: The default `CMD` is a `zsh` with a [conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) 
+activated (named `panoptes`) and the `WORKDIR` is `PANDIR`.
+
+## Building the image locally
+
+> Note: Make sure you have your `$PANDIR` environment variable set 
+> to something like: `PANDIR=/var/panoptes`
+
+You can build a local copy of the images for testing. The easiest way is:
 
 ```bash
 INCLUDE_BASE=true scripts/setup-local-environment.sh
