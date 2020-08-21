@@ -50,7 +50,7 @@ steps:
       - "build"
       - "--push"
       - "--platform=${_PLATFORMS}"
-      - "-f=docker/base.Dockerfile"
+      - "-f=docker/base/Dockerfile"
       - "--tag=gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${_TAG}"
       - "--cache-from=gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${_TAG}"
       - "."
