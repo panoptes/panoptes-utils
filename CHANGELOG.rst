@@ -2,8 +2,10 @@
 Changelog
 =========
 
-0.2.26dev
----------
+0.2.26 - 2020-08-21
+-------------------
+
+This release is mostly cleanup and testing of our autobuild features.
 
 Changed
 ^^^^^^^
