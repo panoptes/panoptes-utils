@@ -14,7 +14,7 @@ build_base() {
   docker build \
     --force-rm \
     -t "panoptes-base:develop" \
-    -f "${PANOPTES_UTILS}/docker/base.Dockerfile" \
+    -f "${PANOPTES_UTILS}/docker/base/Dockerfile" \
     "${PANOPTES_UTILS}"
 
   # Use our local base for build below.

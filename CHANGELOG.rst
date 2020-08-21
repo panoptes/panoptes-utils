@@ -2,6 +2,21 @@
 Changelog
 =========
 
+0.2.26dev
+---------
+
+Changed
+^^^^^^^
+
+* Splitting the `panoptes-base` files into separate folder. (#238)
+* Consolidate the GitHub Actions for building and publishing a release package. (#239)
+
+Fixed
+^^^^^
+
+* Fix Github Actions for building releases. (#238)
+
+
 0.2.25 - 2020-08-20
 -------------------
 

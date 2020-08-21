@@ -5,18 +5,10 @@ timeout: 18000s  # 5 hours
 
 substitutions:
   _PLATFORMS: linux/amd64,linux/arm64
-  _BASE_IMAGE: panoptes-base:latest
-  _IMAGE_NAME: panoptes-utils
-  _REPO_URL: https://github.com/panoptes/panoptes-utils
+  _IMAGE_NAME: panoptes-base
   _TAG: latest
 
 steps:
-  # Fetch the repo from github
-  - name: gcr.io/cloud-builders/git
-    id: "clone-repo"
-    args: ["clone", "${_REPO_URL}"]
-    waitFor: ["-"]
-
   # Pull the cached image.
   - name: 'gcr.io/cloud-builders/docker'
     id: "pull-cached-image"
@@ -24,7 +16,7 @@ steps:
     args: ['-c', 'docker pull gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${_TAG} || exit 0']
     waitFor: ["-"]
 
-  # Set up multiarch support
+  # Set up multiarch support.
   - name: "gcr.io/cloud-builders/docker"
     id: "setup-buildx"
     env:
@@ -36,7 +28,7 @@ steps:
       - "docker/binfmt:a7996909642ee92942dcd6cff44b9b95f08dad64"
     waitFor: ["-"]
 
-  # Build builder
+  # Build builder.
   - name: "gcr.io/cloud-builders/docker"
     id: "build-builder"
     env:
@@ -48,9 +40,9 @@ steps:
       - "--driver=docker-container"
     waitFor: ["setup-buildx"]
 
-  # Build with cloned panoptes-utils as source directory
-  - name: "gcr.io/cloud-builders/docker"
-    id: "build-images"
+  # Build image.
+  - name: "gcr.io/cloud-build/docker"
+    id: "build-base"
     env:
       - "DOCKER_CLI_EXPERIMENTAL=enabled"
     args:
@@ -58,9 +50,8 @@ steps:
       - "build"
       - "--push"
       - "--platform=${_PLATFORMS}"
-      - "-f=docker/Dockerfile"
-      - "--build-arg=image_url=gcr.io/${PROJECT_ID}/${_BASE_IMAGE}"
+      - "-f=docker/base/Dockerfile"
       - "--tag=gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${_TAG}"
       - "--cache-from=gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${_TAG}"
-      - "panoptes-utils"
-    waitFor: ["build-builder", "clone-repo"]
+      - "."
+    waitFor: ["build-builder", "pull-cached-image"]
