@@ -9,6 +9,7 @@ Changed
 ^^^^^^^
 
 * Splitting the `panoptes-base` files into separate folder. (#238)
+* Consolidate the GitHub Actions for building and publishing a release package. (#239)
 
 Fixed
 ^^^^^
