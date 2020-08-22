@@ -55,7 +55,7 @@ RUN apt-get update && \
     # Allow sudo without password.
     echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
     # Create ssh-key for user.
-    mkdir -p /home/${PANUSER}/.key && \
+    mkdir -p /home/${PANUSER}/.ssh && \
     ssh-keygen -q -t rsa -N "" -f "/home/${PANUSER}/.ssh/id_rsa" && \
     # astrometry.net folders.
     mkdir -p "${astrometry_dir}" && \
