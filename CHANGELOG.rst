@@ -2,6 +2,15 @@
 Changelog
 =========
 
+0.2.27dev
+---------
+
+Fixed
+^^^^^
+
+* Docker images: fixed the created ``ssh`` directory for ``$PANUSER``. (#240)
+
+
 0.2.26 - 2020-08-21
 -------------------
 
