@@ -9,6 +9,7 @@ from contextlib import suppress
 # Doctest modules
 import numpy as np
 import pytest
+from _pytest.logging import caplog as _caplog  # noqas
 from matplotlib import pyplot as plt
 from panoptes.utils.config.client import get_config
 from panoptes.utils.config.client import set_config

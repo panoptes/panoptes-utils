@@ -16,10 +16,12 @@ def server(runner, config_host, config_port, config_path):
     def start_server():
         result = runner.invoke(config_server_cli,
                                [
-                                   'run', config_path,
+                                   'run',
+                                   '--config-file', f'{config_path}',
                                    '--host', f'{config_host}',
                                    '--port', f'{config_port}',
-                                   '--no-save', '--ignore-local'
+                                   '--no-save',
+                                   '--ignore-local'
                                ])
         assert result.exit_code == 0
 
