@@ -1,3 +1,5 @@
+import os
+
 import requests
 
 from ..logging import logger
@@ -5,7 +7,7 @@ from ..serializers import from_json
 from ..serializers import to_json
 
 
-def get_config(key=None, host='localhost', port='6563', parse=True, default=None):
+def get_config(key=None, host=None, port=None, parse=True, default=None):
     """Get a config item from the config server.
 
     Return the config entry for the given ``key``. If ``key=None`` (default), return
@@ -44,8 +46,10 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
 
     Args:
         key (str): The key to update, see Examples in :func:`get_config` for details.
-        host (str, optional): The config server host, defaults to '127.0.0.1'.
-        port (str, optional): The config server port, defaults to 6563.
+        host (str, optional): The config server host. First checks for PANOPTES_CONFIG_HOST
+            env var, defaults to 'localhost'.
+        port (str, optional): The config server port. First checks for PANOPTES_CONFIG_HOST
+            env var, defaults to 6563.
         parse (bool, optional): If response should be parsed by
             :func:`panoptes.utils.serializers.from_json`, default True.
         default (str, optional): The config server port, defaults to 6563.
@@ -56,11 +60,15 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
     Raises:
         Exception: Raised if the config server is not available.
     """
+    host = host or os.getenv('PANOPTES_CONFIG_HOST', 'localhost')
+    port = port or os.getenv('PANOPTES_CONFIG_PORT', 6563)
+
     url = f'http://{host}:{port}/get-config'
 
     config_entry = default
 
     try:
+        logger.info(f'Calling get_config on {url=}')
         response = requests.post(url, json={'key': key})
         if not response.ok:  # pragma: no cover
             logger.warning(f'Problem with get_config: {response.content!r}')
@@ -83,7 +91,7 @@ def get_config(key=None, host='localhost', port='6563', parse=True, default=None
     return config_entry
 
 
-def set_config(key, new_value, host='localhost', port='6563', parse=True):
+def set_config(key, new_value, host=None, port=None, parse=True):
     """Set config item in config server.
 
     Given a `key` entry, update the config to match. The `key` is a dot accessible
@@ -110,8 +118,10 @@ def set_config(key, new_value, host='localhost', port='6563', parse=True):
     Args:
         key (str): The key to update, see Examples in :func:`get_config` for details.
         new_value (scalar|object): The new value for the key, can be any serializable object.
-        host (str, optional): The config server host, defaults to '127.0.0.1'.
-        port (str, optional): The config server port, defaults to 6563.
+        host (str, optional): The config server host. First checks for PANOPTES_CONFIG_HOST
+            env var, defaults to 'localhost'.
+        port (str, optional): The config server port. First checks for PANOPTES_CONFIG_HOST
+            env var, defaults to 6563.
         parse (bool, optional): If response should be parsed by
             :func:`panoptes.utils.serializers.from_json`, default True.
 
@@ -121,6 +131,8 @@ def set_config(key, new_value, host='localhost', port='6563', parse=True):
     Raises:
         Exception: Raised if the config server is not available.
     """
+    host = host or os.getenv('PANOPTES_CONFIG_HOST', 'localhost')
+    port = port or os.getenv('PANOPTES_CONFIG_PORT', 6563)
     url = f'http://{host}:{port}/set-config'
 
     json_str = to_json({key: new_value})
@@ -128,6 +140,7 @@ def set_config(key, new_value, host='localhost', port='6563', parse=True):
     config_entry = None
     try:
         # We use our own serializer so pass as `data` instead of `json`.
+        logger.info(f'Calling set_config on {url=}')
         response = requests.post(url,
                                  data=json_str,
                                  headers={'Content-Type': 'application/json'}
