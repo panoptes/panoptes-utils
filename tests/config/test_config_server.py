@@ -1,4 +1,3 @@
-import pytest
 import requests
 
 from astropy import units as u
@@ -38,10 +37,8 @@ def test_config_client_bad(caplog):
     assert found_log
 
 
-def test_config_reset():
+def test_config_reset(config_host, config_port):
     # Reset config
-    config_host = 'localhost'
-    config_port = 6563
     url = f'http://{config_host}:{config_port}/reset-config'
 
     def reset_conf():
