@@ -9,18 +9,12 @@ def runner():
 
 
 @pytest.fixture(scope='module')
-def dummy_cli_port():
-    # Start via the cli but on a different port.
-    return 12345
-
-
-@pytest.fixture(scope='module')
-def server(runner, config_path, dummy_cli_port):
+def server(runner, config_path):
     result = runner.invoke(config_server_cli,
                            [
                                'run',
                                '--config-file', f'{config_path}',
-                               '--port', dummy_cli_port,
+                               '--port', 12345,
                                '--no-save',
                                '--ignore-local'
                            ])
