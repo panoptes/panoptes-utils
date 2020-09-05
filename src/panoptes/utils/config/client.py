@@ -51,7 +51,7 @@ def get_config(key=None, host=None, port=None, parse=True, default=None):
         key (str): The key to update, see Examples in :func:`get_config` for details.
         host (str, optional): The config server host. First checks for PANOPTES_CONFIG_HOST
             env var, defaults to 'localhost'.
-        port (str, optional): The config server port. First checks for PANOPTES_CONFIG_HOST
+        port (str or int, optional): The config server port. First checks for PANOPTES_CONFIG_HOST
             env var, defaults to 6563.
         parse (bool, optional): If response should be parsed by
             :func:`panoptes.utils.serializers.from_json`, default True.
@@ -123,7 +123,7 @@ def set_config(key, new_value, host=None, port=None, parse=True):
         new_value (scalar|object): The new value for the key, can be any serializable object.
         host (str, optional): The config server host. First checks for PANOPTES_CONFIG_HOST
             env var, defaults to 'localhost'.
-        port (str, optional): The config server port. First checks for PANOPTES_CONFIG_HOST
+        port (str or int, optional): The config server port. First checks for PANOPTES_CONFIG_HOST
             env var, defaults to 6563.
         parse (bool, optional): If response should be parsed by
             :func:`panoptes.utils.serializers.from_json`, default True.

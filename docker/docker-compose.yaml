@@ -1,16 +1,10 @@
-version: '3.7'
+version: '3.8'
 services:
   config-server:
     image: gcr.io/panoptes-exp/panoptes-utils:latest
     init: true
-    container_name: config-server
+    container_name: panoptes-config-server
     privileged: true
     network_mode: host
-    env_file: $PANDIR/.env
-    environment:
-      POCS_CONFIG_FILE: "${PANDIR}/config_files/pocs.yaml"
     restart: on-failure
-    command:
-      - "/var/panoptes/panoptes-utils/bin/panoptes-config-server"
-      - "run"
-      - "${POCS_CONFIG_FILE}"
+    command: [ "panoptes-config-server run" ]

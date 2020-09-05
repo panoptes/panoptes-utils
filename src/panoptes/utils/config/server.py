@@ -1,10 +1,12 @@
 import logging
-from flask import Flask
-from flask import request
-from flask import jsonify
-from flask.json import JSONEncoder
-
+import os
 from multiprocessing import Process
+
+from dotenv import load_dotenv
+from flask import Flask
+from flask import jsonify
+from flask import request
+from flask.json import JSONEncoder
 from scalpl import Cut
 
 from .helpers import load_config
@@ -12,8 +14,10 @@ from .helpers import save_config
 from ..logging import logger
 from ..serializers import serialize_object
 
+# Turn off noisy logging for Flask wsgi server.
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
+load_dotenv()
 app = Flask(__name__)
 
 
@@ -36,8 +40,8 @@ app.json_encoder = CustomJSONEncoder
 
 
 def config_server(config_file,
-                  host='localhost',
-                  port=6563,
+                  host=None,
+                  port=None,
                   ignore_local=False,
                   auto_save=False,
                   auto_start=True,
@@ -47,9 +51,11 @@ def config_server(config_file,
     A convenience function to start the config server.
 
     Args:
-        config_file (str): The absolute path to the config file to load.
-        host (str, optional): Name of host, default 'localhost'.
-        port (int, optional): Port for server, default 6563.
+        config_file (str or None): The absolute path to the config file to load.
+        host (str, optional): The config server host. First checks for PANOPTES_CONFIG_HOST
+            env var, defaults to 'localhost'.
+        port (str or int, optional): The config server port. First checks for PANOPTES_CONFIG_HOST
+            env var, defaults to 6563.
         ignore_local (bool, optional): If local config files should be ignored, default False.
         auto_save (bool, optional): If setting new values should auto-save to local file, default False.
         auto_start (bool, optional): If server process should be started automatically, default True.
@@ -58,6 +64,7 @@ def config_server(config_file,
     Returns:
         multiprocessing.Process: The process running the config server.
     """
+    config_file = config_file or os.environ['PANOPTES_CONFIG_FILE']
     app.config['auto_save'] = auto_save
     app.config['config_file'] = config_file
     app.config['ignore_local'] = ignore_local
@@ -68,12 +75,14 @@ def config_server(config_file,
 
     def start_server(**kwargs):
         try:
-            logger.info(f'Starting flask config server with {kwargs=}')
+            logger.info(f'Starting panoptes config server with {kwargs=}')
             app.run(**kwargs)
         except OSError:
             logger.warning(f'Problem starting config server, is another config server already running?')
             return None
 
+    host = host or os.getenv('PANOPTES_CONFIG_HOST', 'localhost')
+    port = port or os.getenv('PANOPTES_CONFIG_PORT', 6563)
     cmd_kwargs = dict(host=host, port=port, debug=debug)
     logger.debug(f'Setting up config server process with {cmd_kwargs=}')
     server_process = Process(target=start_server,
