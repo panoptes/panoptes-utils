@@ -1,10 +1,13 @@
 import os
 
 import requests
+from dotenv import load_dotenv
 
 from ..logging import logger
 from ..serializers import from_json
 from ..serializers import to_json
+
+load_dotenv()
 
 
 def get_config(key=None, host=None, port=None, parse=True, default=None):
