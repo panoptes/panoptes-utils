@@ -48,7 +48,7 @@ def test_config_server_cli(server, runner, dummy_cli_port):
     # Ugh. I hate this. Logger is interfering in annoying ways.
     assert result.stdout.endswith("Testing PANOPTES Unit\n")
 
-    result = runner.invoke(config_server_cli, ['set', '--port', f'{dummy_cli_port}', f'name', f'foobar'])
+    result = runner.invoke(config_server_cli, ['set', '--verbose', '--port', f'{dummy_cli_port}', f'name', f'foobar'])
     assert result.exit_code == 0
     assert result.stdout.endswith("\n{'name': 'foobar'}\n")
 
