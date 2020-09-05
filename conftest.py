@@ -1,23 +1,20 @@
-import os
 import copy
-import pytest
-import time
+import logging
+import os
 import shutil
 import tempfile
-
-import logging
-from _pytest.logging import caplog as _caplog
+import time
 from contextlib import suppress
-
-from panoptes.utils.logging import logger
-from panoptes.utils.database import PanDB
-from panoptes.utils.config.client import get_config
-from panoptes.utils.config.client import set_config
-from panoptes.utils.config.server import config_server
 
 # Doctest modules
 import numpy as np
+import pytest
 from matplotlib import pyplot as plt
+from panoptes.utils.config.client import get_config
+from panoptes.utils.config.client import set_config
+from panoptes.utils.config.server import config_server
+from panoptes.utils.database import PanDB
+from panoptes.utils.logging import logger
 
 _all_databases = ['file', 'memory']
 
@@ -84,12 +81,25 @@ def config_path():
     return os.path.expandvars('${PANDIR}/panoptes-utils/tests/panoptes_utils_testing.yaml')
 
 
+@pytest.fixture(scope='session')
+def config_host():
+    # Open on full network because we test mostly on docker.
+    return '0.0.0.0'
+
+
+@pytest.fixture(scope='session')
+def config_port():
+    return 9999
+
+
 @pytest.fixture(scope='session', autouse=True)
-def static_config_server(config_path, images_dir, db_name):
+def static_config_server(config_path, config_host, config_port, images_dir, db_name):
     logger.log('testing', f'Starting static_config_server for testing session')
 
     proc = config_server(
         config_file=config_path,
+        host=config_host,
+        port=config_port,
         ignore_local=True,
         auto_save=False
     )
