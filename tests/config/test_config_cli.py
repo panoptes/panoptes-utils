@@ -22,7 +22,7 @@ def server(runner, config_path):
 
 
 def test_config_server_cli(runner, config_port):
-    result = runner.invoke(config_server_cli, ['get', '--verbose', '--key', f'name', '--port', f'{config_port}'])
+    result = runner.invoke(config_server_cli, ['--verbose', 'get', '--key', f'name', '--port', f'{config_port}'])
     assert result.exit_code == 0
     # Ugh. I hate this. Logger is interfering in annoying ways.
     assert result.stdout.endswith("Testing PANOPTES Unit\n")
