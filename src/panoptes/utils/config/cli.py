@@ -66,9 +66,7 @@ def run(config_file=None, host=None, port=None, save=True, ignore_local=False, d
 
 
 @click.command('get')
-@click.option('--key',
-              default=None,
-              help='The config key. Use dotted notation for nested entries.')
+@click.argument('key', nargs=-1)
 @click.option('--host',
               default=None,
               envvar='PANOPTES_CONFIG_HOST',
@@ -79,13 +77,33 @@ def run(config_file=None, host=None, port=None, save=True, ignore_local=False, d
               envvar='PANOPTES_CONFIG_PORT',
               help='The config server port. First checks cli argument, '
                    'then PANOPTES_CONFIG_PORT, then 6563')
-@click.option('--parse/--no-parse', default=True, help='If results should be parsed into object')
-@click.option('--default', help='The default to return if not key is found, default None')
-def config_getter(key=None, host='localhost', port='6563', parse=True, default=None):
-    """Get an item from the config server by key name."""
+@click.option('--parse/--no-parse',
+              default=False,
+              help='If results should be parsed into object, default False. '
+                   'Not that since this is returning to stdout you usually do not want to parse.')
+@click.option('--default',
+              help='The default to return if not key is found, default None')
+def config_getter(key, host='localhost', port='6563', parse=True, default=None):
+    """Get an item from the config server by key name, using dotted notation (e.g. 'location.elevation')
+
+    If no key is given, returns the entire config.
+    """
+    try:
+        # The nargs=-1 makes this a tuple.
+        key = key[0]
+    except IndexError:
+        key = None
     logger.debug(f'Getting config {key=}')
-    config_entry = get_config(key=key, host=host, port=port, parse=parse, default=default)
-    click.echo(config_entry)
+    try:
+        config_entry = get_config(key=key, host=host, port=port, parse=parse, default=default)
+    except Exception as e:
+        logger.error(f'Error while trying to get config: {e!r}')
+        click.secho(f'Error while trying to get config: {e!r}', fg='red')
+    else:
+        logger.debug(f'Config server response: {config_entry=}')
+        click.echo(config_entry)
+
+    # logger.warning(f'No entry received, is the config server running?')
 
 
 @click.command('set')

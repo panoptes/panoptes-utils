@@ -79,12 +79,12 @@ def get_config(key=None, host=None, port=None, parse=True, default=None):
         logger.warning(f'Problem with get_config: {e!r}')
     else:
         if response.text != 'null\n':
-            logger.trace(f'Received config {key=} {response.text=}')
+            logger.debug(f'Received config {key=} {response.text=}')
             if parse:
-                logger.trace(f'Parsing config results')
-                config_entry = from_json(response.content.decode('utf8'))
+                logger.debug(f'Parsing config results')
+                config_entry = from_json(response.text)
             else:
-                config_entry = response.json()
+                config_entry = response.text
 
     if config_entry is None:
         logger.trace(f'No config entry found, returning {default=}')

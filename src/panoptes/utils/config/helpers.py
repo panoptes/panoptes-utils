@@ -2,9 +2,9 @@ import os
 from contextlib import suppress
 
 from ..logging import logger
-from ..utils import listify
 from ..serializers import from_yaml
 from ..serializers import to_yaml
+from ..utils import listify
 
 
 def load_config(config_files=None, parse=True, ignore_local=False):
@@ -82,11 +82,8 @@ def load_config(config_files=None, parse=True, ignore_local=False):
     # parse_config_directories currently only corrects directory names.
     if parse:
         logger.trace(f'Parsing {config=}')
-        try:
+        with suppress(KeyError):
             config['directories'] = parse_config_directories(config['directories'])
-        except Exception as e:
-            logger.warning(f'Unable to parse config: {e=}')
-        else:
             logger.trace(f'Config directories parsed: {config=}')
 
     return config

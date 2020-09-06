@@ -2,7 +2,6 @@ import logging
 import os
 from multiprocessing import Process
 
-from dotenv import load_dotenv
 from flask import Flask
 from flask import jsonify
 from flask import request
@@ -17,7 +16,6 @@ from ..serializers import serialize_object
 # Turn off noisy logging for Flask wsgi server.
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
-load_dotenv()
 app = Flask(__name__)
 
 
@@ -51,7 +49,8 @@ def config_server(config_file,
     A convenience function to start the config server.
 
     Args:
-        config_file (str or None): The absolute path to the config file to load.
+        config_file (str or None): The absolute path to the config file to load. Checks for
+            PANOPTES_CONFIG_FILE env var and fails if not provided.
         host (str, optional): The config server host. First checks for PANOPTES_CONFIG_HOST
             env var, defaults to 'localhost'.
         port (str or int, optional): The config server port. First checks for PANOPTES_CONFIG_HOST
@@ -65,13 +64,17 @@ def config_server(config_file,
         multiprocessing.Process: The process running the config server.
     """
     config_file = config_file or os.environ['PANOPTES_CONFIG_FILE']
+    logger.info(f'Starting panoptes-config-server with {config_file=}')
+    config = load_config(config_files=config_file, ignore_local=ignore_local)
+    logger.success(f'Config server Loaded {len(config)} top-level items')
+    cut_config = Cut(config)
+
     app.config['auto_save'] = auto_save
     app.config['config_file'] = config_file
     app.config['ignore_local'] = ignore_local
-    app.config['POCS'] = load_config(config_files=config_file, ignore_local=ignore_local)
-    logger.trace(f'Cutting the config with scalpl')
-    app.config['POCS_cut'] = Cut(app.config['POCS'])
-    logger.trace(f'Config cut and POCS_cut item saved')
+    app.config['POCS'] = config
+    app.config['POCS_cut'] = cut_config
+    logger.info(f'Config items saved to flask config-server')
 
     def start_server(**kwargs):
         try:
@@ -134,6 +137,7 @@ def get_config_entry():
 
     if request.is_json:
         # If requesting specific key
+        logger.trace(f'Received {req_json=}')
         try:
             key = req_json['key']
         except KeyError:
@@ -148,13 +152,14 @@ def get_config_entry():
         else:
             try:
                 show_config = app.config['POCS_cut'].get(key, None)
-            except KeyError:
+            except Exception as e:
+                logger.error(f'Error while getting config item: {e!r}')
                 show_config = None
     else:
         # Return entire config
         show_config = app.config['POCS']
 
-    return jsonify(show_config)
+    return jsonify(**show_config)
 
 
 @app.route('/set-config', methods=['GET', 'POST'])

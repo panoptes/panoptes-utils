@@ -28,10 +28,22 @@ def test_config_server_cli(runner, config_port):
     # Ugh. I hate this. Logger is interfering in annoying ways.
     assert result.stdout.endswith("Testing PANOPTES Unit\n")
 
+    # Set the name
     result = runner.invoke(config_server_cli, ['set', '--port', f'{config_port}', f'name', f'foobar'])
     assert result.exit_code == 0
     assert result.stdout.endswith("\n{'name': 'foobar'}\n")
 
+    # Test using --key
     result = runner.invoke(config_server_cli, ['get', '--key', f'name', '--port', f'{config_port}'])
     assert result.exit_code == 0
     assert result.stdout.endswith("\nfoobar\n")
+
+    # Set the name
+    result = runner.invoke(config_server_cli, ['set', '--port', f'{config_port}', f'name', f'raboof'])
+    assert result.exit_code == 0
+    assert result.stdout.endswith("\n{'name': 'raboof'}\n")
+
+    # Test without key
+    result = runner.invoke(config_server_cli, ['get', f'name', '--port', f'{config_port}'])
+    assert result.exit_code == 0
+    assert result.stdout.endswith("\nraboof\n")

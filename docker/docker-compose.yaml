@@ -1,10 +1,19 @@
-version: '3.8'
-services:
-  config-server:
-    image: gcr.io/panoptes-exp/panoptes-utils:latest
-    init: true
-    container_name: panoptes-config-server
-    privileged: true
-    network_mode: host
-    restart: on-failure
-    command: [ "panoptes-config-server run" ]
+config-server:
+  image: panoptes-utils:develop
+  tty: true
+  container_name: panoptes-config-server
+  privileged: true
+  environment:
+    PANDIR:
+    POCS:
+    PANLOG:
+    PANOPTES_CONFIG_HOST:
+    PANOPTES_CONFIG_PORT:
+    PANOPTES_CONFIG_FILE:
+  ports:
+    - "6563:6563"
+  restart: on-failure
+  volumes:
+    - /var/panoptes/panoptes-utils:/var/panoptes/panoptes-utils
+    - /var/panoptes/config_files:/var/panoptes/config_files
+  command: [ "panoptes-config-server  --verbose run" ]
