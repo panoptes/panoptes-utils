@@ -8,7 +8,10 @@ Changelog
 Added
 ^^^^^
 
-* Config server available on separate host and port via two new env vars, ``PANOPTES_CONFIG_HOST`` and ``PANOPTES_CONFIG_PORT``. Will also look for file in ``PANOPTES_CONFIG_FILE``. ``python-dotenv`` is loaded automatically to look for env files. (@wtgee #241)
+* Config server startup controlled via envvars, incorporating ``python-dotenv`` (@wtgee #241):
+
+  * ``PANOPTES_CONFIG_HOST`` and ``PANOPTES_CONFIG_PORT``
+  * ``PANOPTES_CONFIG_FILE``
 
 Fixed
 ^^^^^
