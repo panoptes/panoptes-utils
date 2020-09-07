@@ -98,7 +98,7 @@ RUN wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/M
     # Activate the environment by default.
     printf "\nconda activate ${conda_env_name}\n" >> "${HOME}/.bashrc" && \
     printf "\nconda activate ${conda_env_name}\n" >> "${HOME}/.zshrc" && \
-    printf "\necho Welcome to POCS!\n" >> "${HOME}/.zshrc" && \
+    printf "\necho PANOPTES utils activated!\n" >> "${HOME}/.zshrc" && \
     # Download astrometry.net index files.
     # TODO replace this with a pre-constructed volume that has the files.
     "${PANDIR}/conda/envs/${conda_env_name}/bin/python" "${PANDIR}/scripts/download-data.py" \

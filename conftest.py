@@ -3,7 +3,6 @@ import logging
 import os
 import shutil
 import tempfile
-import time
 from contextlib import suppress
 
 # Doctest modules
@@ -11,9 +10,6 @@ import numpy as np
 import pytest
 from _pytest.logging import caplog as _caplog  # noqas
 from matplotlib import pyplot as plt
-from panoptes.utils.config.client import get_config
-from panoptes.utils.config.client import set_config
-from panoptes.utils.config.server import config_server
 from panoptes.utils.database import PanDB
 from panoptes.utils.logging import logger
 
@@ -67,71 +63,18 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope='session')
-def db_name():
-    return 'panoptes_testing'
-
-
-@pytest.fixture(scope='session')
-def images_dir(tmpdir_factory):
-    directory = tmpdir_factory.mktemp('images')
-    return str(directory)
-
-
-@pytest.fixture(scope='session')
-def config_path():
-    return os.path.expandvars('${PANDIR}/panoptes-utils/tests/panoptes_utils_testing.yaml')
-
-
-@pytest.fixture(scope='session')
 def config_host():
-    # Open on full network because we test mostly on docker.
-    return '0.0.0.0'
+    return os.getenv('PANOPTES_CONFIG_HOST', 'localhost')
 
 
 @pytest.fixture(scope='session')
 def config_port():
-    return 9999
+    return os.getenv('PANOPTES_CONFIG_PORT', 6563)
 
 
-@pytest.fixture(scope='session', autouse=True)
-def static_config_server(config_path, config_host, config_port, images_dir, db_name):
-    logger.log('testing', f'Starting static_config_server for testing session')
-
-    proc = config_server(
-        config_file=config_path,
-        host=config_host,
-        port=config_port,
-        ignore_local=True,
-        auto_save=False
-    )
-
-    logger.log('testing', f'static_config_server started with {proc.pid=}')
-
-    # Give server time to start
-    while get_config('name') is None:  # pragma: no cover
-        logger.log('testing', f'Waiting for static_config_server {proc.pid=}, sleeping 1 second.')
-        time.sleep(1)
-
-    logger.log('testing', f'Startup config_server name=[{get_config("name")}]')
-
-    # Adjust various config items for testing
-    unit_id = 'PAN000'
-    logger.log('testing', f'Setting testing name and unit_id to {unit_id}')
-    set_config('pan_id', unit_id)
-
-    logger.log('testing', f'Setting testing database to {db_name}')
-    set_config('db.name', db_name)
-
-    fields_file = 'simulator.yaml'
-    logger.log('testing', f'Setting testing scheduler fields_file to {fields_file}')
-    set_config('scheduler.fields_file', fields_file)
-
-    logger.log('testing', f'Setting temporary image directory for testing')
-    set_config('directories.images', images_dir)
-
-    yield
-    logger.log('testing', f'Killing static_config_server started with PID={proc.pid}')
-    proc.terminate()
+@pytest.fixture(scope='session')
+def config_path():
+    return os.getenv('PANOPTES_CONFIG_FILE', '/var/panoptes/panoptes-utils/tests/testing.yaml')
 
 
 @pytest.fixture(scope='function', params=_all_databases)
@@ -150,6 +93,7 @@ def db_type(request):
 
 @pytest.fixture(scope='function')
 def db(db_type):
+    # TODO don't hardcode the db name.
     return PanDB(db_type=db_type, db_name='panoptes_testing', storage_dir='testing', connect=True)
 
 

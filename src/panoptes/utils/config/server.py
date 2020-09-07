@@ -6,6 +6,7 @@ from flask import Flask
 from flask import jsonify
 from flask import request
 from flask.json import JSONEncoder
+from gevent.pywsgi import WSGIServer
 from scalpl import Cut
 
 from .helpers import load_config
@@ -40,10 +41,9 @@ app.json_encoder = CustomJSONEncoder
 def config_server(config_file,
                   host=None,
                   port=None,
-                  ignore_local=False,
-                  auto_save=False,
-                  auto_start=True,
-                  debug=False):
+                  load_local=True,
+                  save_local=False,
+                  auto_start=True):
     """Start the config server in a separate process.
 
     A convenience function to start the config server.
@@ -55,40 +55,49 @@ def config_server(config_file,
             env var, defaults to 'localhost'.
         port (str or int, optional): The config server port. First checks for PANOPTES_CONFIG_HOST
             env var, defaults to 6563.
-        ignore_local (bool, optional): If local config files should be ignored, default False.
-        auto_save (bool, optional): If setting new values should auto-save to local file, default False.
+        load_local (bool, optional): If local config files should be used when loading, default True.
+        save_local (bool, optional): If setting new values should auto-save to local file, default False.
         auto_start (bool, optional): If server process should be started automatically, default True.
-        debug (bool, optional): Flask server debug mode, default False.
 
     Returns:
         multiprocessing.Process: The process running the config server.
     """
     config_file = config_file or os.environ['PANOPTES_CONFIG_FILE']
     logger.info(f'Starting panoptes-config-server with {config_file=}')
-    config = load_config(config_files=config_file, ignore_local=ignore_local)
+    config = load_config(config_files=config_file, load_local=load_local)
     logger.success(f'Config server Loaded {len(config)} top-level items')
+
+    # Add an entry to control running of the server.
+    config['config_server'] = dict(running=True)
+
+    logger.success(f'{config!r}')
     cut_config = Cut(config)
 
-    app.config['auto_save'] = auto_save
     app.config['config_file'] = config_file
-    app.config['ignore_local'] = ignore_local
+    app.config['save_local'] = save_local
+    app.config['load_local'] = load_local
     app.config['POCS'] = config
     app.config['POCS_cut'] = cut_config
     logger.info(f'Config items saved to flask config-server')
 
-    def start_server(**kwargs):
+    def start_server(host='localhost', port=6563):
         try:
-            logger.info(f'Starting panoptes config server with {kwargs=}')
-            app.run(**kwargs)
+            logger.info(f'Starting panoptes config server with {host}:{port}')
+            http_server = WSGIServer((host, int(port)), app)
+            http_server.serve_forever()
         except OSError:
             logger.warning(f'Problem starting config server, is another config server already running?')
+            return None
+        except Exception as e:
+            logger.warning(f'Problem starting config server: {e!r}')
             return None
 
     host = host or os.getenv('PANOPTES_CONFIG_HOST', 'localhost')
     port = port or os.getenv('PANOPTES_CONFIG_PORT', 6563)
-    cmd_kwargs = dict(host=host, port=port, debug=debug)
+    cmd_kwargs = dict(host=host, port=port)
     logger.debug(f'Setting up config server process with {cmd_kwargs=}')
     server_process = Process(target=start_server,
+                             daemon=True,
                              kwargs=cmd_kwargs)
 
     if auto_start:
@@ -134,12 +143,16 @@ def get_config_entry():
         Otherwise a json string with ``status`` and ``msg`` keys will be returned.
     """
     req_json = request.get_json()
+    verbose = req_json.get('verbose', True)
+    log_level = 'DEBUG' if verbose else 'TRACE'
+
+    # If requesting specific key
+    logger.log(log_level, f'Received {req_json=}')
 
     if request.is_json:
-        # If requesting specific key
-        logger.trace(f'Received {req_json=}')
         try:
             key = req_json['key']
+            logger.log(log_level, f'Request contains {key=}')
         except KeyError:
             return jsonify({
                 'success': False,
@@ -148,18 +161,23 @@ def get_config_entry():
 
         if key is None:
             # Return all
+            logger.log(log_level, 'No valid key given, returning entire config')
             show_config = app.config['POCS']
         else:
             try:
+                logger.log(log_level, f'Looking for {key=} in config')
                 show_config = app.config['POCS_cut'].get(key, None)
             except Exception as e:
                 logger.error(f'Error while getting config item: {e!r}')
                 show_config = None
     else:
         # Return entire config
+        logger.log(log_level, 'No valid key given, returning entire config')
         show_config = app.config['POCS']
 
-    return jsonify(**show_config)
+    logger.log(log_level, f'Returning {show_config=}')
+    logger.log(log_level, f'Returning {show_config!r}')
+    return jsonify(show_config)
 
 
 @app.route('/set-config', methods=['GET', 'POST'])
@@ -210,9 +228,9 @@ def set_config_entry():
                 app.config['POCS_cut'].setdefault(k, v)
 
         # Config has been modified so save to file
-        auto_save = app.config['auto_save']
-        logger.info(f'Setting config {auto_save=}')
-        if auto_save and app.config['config_file'] is not None:
+        save_local = app.config['save_local']
+        logger.info(f'Setting config {save_local=}')
+        if save_local and app.config['config_file'] is not None:
             save_config(app.config['config_file'], app.config['POCS_cut'].copy())
 
         return jsonify(req_data)
@@ -249,9 +267,12 @@ def reset_config():
 
         if req_data['reset']:
             # Reload the config
-            app.config['POCS'] = load_config(config_files=app.config['config_file'],
-                                             ignore_local=app.config['ignore_local'])
-            app.config['POCS_cut'] = Cut(app.config['POCS'])
+            config = load_config(config_files=app.config['config_file'],
+                                 load_local=app.config['load_local'])
+            # Add an entry to control running of the server.
+            config['config_server'] = dict(running=True)
+            app.config['POCS'] = config
+            app.config['POCS_cut'] = Cut(config)
 
         return jsonify({
             'success': True,

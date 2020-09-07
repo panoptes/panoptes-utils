@@ -1,19 +1,23 @@
-config-server:
-  image: panoptes-utils:develop
-  tty: true
-  container_name: panoptes-config-server
-  privileged: true
-  environment:
-    PANDIR:
-    POCS:
-    PANLOG:
-    PANOPTES_CONFIG_HOST:
-    PANOPTES_CONFIG_PORT:
-    PANOPTES_CONFIG_FILE:
-  ports:
-    - "6563:6563"
-  restart: on-failure
-  volumes:
-    - /var/panoptes/panoptes-utils:/var/panoptes/panoptes-utils
-    - /var/panoptes/config_files:/var/panoptes/config_files
-  command: [ "panoptes-config-server  --verbose run" ]
+version: '3.7'
+services:
+  panoptes-config-server:
+    image: panoptes-utils:develop
+    tty: true
+    container_name: panoptes-config-server
+    privileged: true
+    network_mode: host
+    environment:
+      PANDIR:
+      PANLOG:
+      PANOPTES_CONFIG_HOST:
+      PANOPTES_CONFIG_PORT:
+      PANOPTES_CONFIG_FILE:
+    ports:
+      - "6563:6563"
+    restart: on-failure
+    volumes:
+      - "${PANDIR}/panoptes-utils:/var/panoptes/panoptes-utils"
+      - "${PANDIR}/logs:/var/panoptes/logs"
+      - "${PANDIR}/config_files:/var/panoptes/config_files"
+    command: [ "panoptes-config-server --verbose run" ]
+

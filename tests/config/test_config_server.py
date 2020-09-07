@@ -10,13 +10,13 @@ from panoptes.utils.config.client import set_config
 def test_config_client():
     assert isinstance(get_config(), dict)
 
+    assert get_config('location.horizon') == 30 * u.degree
     assert set_config('location.horizon', 47 * u.degree) == {'location.horizon': 47 * u.degree}
-
-    # With parsing
     assert get_config('location.horizon') == 47 * u.degree
 
-    # Without parsing
-    assert get_config('location.horizon', parse=False) == '47.0 deg'
+    # Without parsing the result contains the double-quotes since that's what the raw
+    # response has.
+    assert get_config('location.horizon', parse=False) == '"47.0 deg"'
 
     assert set_config('location.horizon', 42 * u.degree, parse=False) == {'location.horizon': '42.0 deg'}
 
@@ -38,7 +38,7 @@ def test_config_client_bad(caplog):
 
 
 def test_config_reset(config_host, config_port):
-    # Reset config
+    # Reset config via url
     url = f'http://{config_host}:{config_port}/reset-config'
 
     def reset_conf():

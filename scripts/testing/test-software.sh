@@ -20,11 +20,4 @@ SLEEP_TIME=${1:-5}
 
 sleep "${SLEEP_TIME}"
 
-docker run --rm -it \
-  --init \
-  -v "${PANDIR}/panoptes-utils":/var/panoptes/panoptes-utils \
-  -v "${PANDIR}/logs":/var/panoptes/logs \
-  -e PANOPTES_CONFIG_HOST="0.0.0.0" \
-  -e PANOPTES_CONFIG_PORT="9999" \
-  panoptes-utils:develop \
-  "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh"
+docker-compose -f docker/docker-compose-testing.yaml up

@@ -3,6 +3,7 @@ import os
 import requests
 from dotenv import load_dotenv
 
+from ..error import InvalidConfig
 from ..logging import logger
 from ..serializers import from_json
 from ..serializers import to_json
@@ -10,7 +11,7 @@ from ..serializers import to_json
 load_dotenv()
 
 
-def get_config(key=None, host=None, port=None, parse=True, default=None):
+def get_config(key=None, host=None, port=None, parse=True, default=None, verbose=True):
     """Get a config item from the config server.
 
     Return the config entry for the given ``key``. If ``key=None`` (default), return
@@ -28,8 +29,9 @@ def get_config(key=None, host=None, port=None, parse=True, default=None):
         >>> get_config(key='location.horizon')
         <Quantity 30. deg>
 
+        >>> # With no parsing, the raw string (including quotes) is returned.
         >>> get_config(key='location.horizon', parse=False)
-        '30.0 deg'
+        '"30.0 deg"'
         >>> get_config(key='cameras.devices[1].model')
         'canon_gphoto2'
 
@@ -47,6 +49,13 @@ def get_config(key=None, host=None, port=None, parse=True, default=None):
         >>> get_config(key='foobar', default=42 * u.meter)
         <Quantity 42. m>
 
+    Notes:
+        By default all calls to this function will log at the `trace` level because
+        there are some calls (e.g. during POCS operation) that will be quite noisy.
+
+        Setting `verbose=True` changes those to `debug` log levels for an individual
+        call.
+
     Args:
         key (str): The key to update, see Examples in :func:`get_config` for details.
         host (str, optional): The config server host. First checks for PANOPTES_CONFIG_HOST
@@ -56,13 +65,16 @@ def get_config(key=None, host=None, port=None, parse=True, default=None):
         parse (bool, optional): If response should be parsed by
             :func:`panoptes.utils.serializers.from_json`, default True.
         default (str, optional): The config server port, defaults to 6563.
-
+        verbose (bool, optional): Determines the output log level, defaults to
+            True (i.e. `debug` log level). See notes for details.
     Returns:
         dict: The corresponding config entry.
 
     Raises:
         Exception: Raised if the config server is not available.
     """
+    log_level = 'DEBUG' if verbose else 'TRACE'
+
     host = host or os.getenv('PANOPTES_CONFIG_HOST', 'localhost')
     port = port or os.getenv('PANOPTES_CONFIG_PORT', 6563)
 
@@ -71,26 +83,28 @@ def get_config(key=None, host=None, port=None, parse=True, default=None):
     config_entry = default
 
     try:
-        logger.info(f'Calling get_config on {url=}')
-        response = requests.post(url, json={'key': key})
+        logger.log(log_level, f'Calling get_config on {url=} with {key=}')
+        response = requests.post(url, json={'key': key, 'verbose': verbose})
         if not response.ok:  # pragma: no cover
-            logger.warning(f'Problem with get_config: {response.content!r}')
+            raise InvalidConfig(f'Config server returned invalid JSON: {response.content=}')
     except Exception as e:
         logger.warning(f'Problem with get_config: {e!r}')
     else:
-        if response.text != 'null\n':
-            logger.debug(f'Received config {key=} {response.text=}')
+        response_text = response.text.strip()
+        logger.log(log_level, f'Decoded {response_text=}')
+        if response_text != 'null':
+            logger.log(log_level, f'Received config {key=} {response_text=}')
             if parse:
-                logger.debug(f'Parsing config results')
-                config_entry = from_json(response.text)
+                logger.log(log_level, f'Parsing config results: {response_text=}')
+                config_entry = from_json(response_text)
             else:
-                config_entry = response.text
+                config_entry = response_text
 
     if config_entry is None:
-        logger.trace(f'No config entry found, returning {default=}')
+        logger.log(log_level, f'No config entry found, returning {default=}')
         config_entry = default
 
-    logger.trace(f'Config {key=}: {config_entry=}')
+    logger.log(log_level, f'Config {key=}: {config_entry=}')
     return config_entry
 
 
