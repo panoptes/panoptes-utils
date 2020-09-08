@@ -8,7 +8,7 @@ from contextlib import suppress
 # Doctest modules
 import numpy as np
 import pytest
-from _pytest.logging import caplog as _caplog  # noqas
+from _pytest.logging import caplog as _caplog  # noqa
 from matplotlib import pyplot as plt
 from panoptes.utils.database import PanDB
 from panoptes.utils.logging import logger
@@ -17,21 +17,20 @@ _all_databases = ['file', 'memory']
 
 logger.enable('panoptes')
 logger.level("testing", no=15, icon="🤖", color="<YELLOW><black>")
-log_file_path = os.path.join(
-    os.getenv('PANLOG', '/var/panoptes/logs'),
-    'panoptes-testing.log'
-)
 log_fmt = "<lvl>{level:.1s}</lvl> " \
           "<light-blue>{time:MM-DD HH:mm:ss.ss!UTC}</>" \
           "<blue>({time:HH:mm:ss.ss})</> " \
           "| <c>{name} {function}:{line}</c> | " \
           "<lvl>{message}</lvl>\n"
 
+# Put the log file in the local build dir.
+log_file_path = os.path.abspath('./build/panoptes-testing.log')
 startup_message = f' STARTING NEW PYTEST RUN - LOGS: {log_file_path} '
 logger.add(log_file_path,
            enqueue=True,  # multiprocessing
            format=log_fmt,
            colorize=True,
+           # TODO decide on these options
            backtrace=True,
            diagnose=True,
            catch=True,

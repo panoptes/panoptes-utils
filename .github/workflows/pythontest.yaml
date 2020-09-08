@@ -34,21 +34,17 @@ jobs:
           PANOPTES_UTILS=${PWD} INCLUDE_BASE=true scripts/setup-local-environment.sh
       - name: Test with pytest in panoptes-utils container
         run: |
-          # Write logs to local dir with permissions
-          mkdir -p ./logs && chmod 777 ./logs
-          echo "PANLOG=./logs" >> ./tests/env
-          cat ./tests/env
           scripts/testing/test-software.sh 0
       - name: Upload coverage report to codecov.io
         uses: codecov/codecov-action@v1
         if: success()
         with:
           name: codecov-upload
-          file: ./logs/coverage.xml
+          file: ./build/coverage.xml
           fail_ci_if_error: true
       - name: Create log file artifact
         uses: actions/upload-artifact@v1
         if: always()
         with:
           name: log-files
-          path: ./logs/panoptes-testing.log
+          path: ./build/panoptes-testing.log

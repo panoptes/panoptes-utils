@@ -19,4 +19,6 @@ SLEEP_TIME=${1:-5}
 
 sleep "${SLEEP_TIME}"
 
+# Create a directory for storing log files and coverage reports.
+mkdir -p build/
 docker-compose -f docker/docker-compose-testing.yaml up
