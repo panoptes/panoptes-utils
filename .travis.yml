@@ -11,7 +11,7 @@ python:
 services:
   - docker
 before_install:
-  - INCLUDE_BASE=true scripts/setup-local-environment.sh
+  - PANOPTES_UTILS="${TRAVIS_BUILD_DIR}" INCLUDE_BASE=true scripts/setup-local-environment.sh
 install: true
 script:
   - scripts/testing/test-software.sh 0
