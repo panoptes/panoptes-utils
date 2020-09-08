@@ -27,7 +27,7 @@ log_fmt = "<lvl>{level:.1s}</lvl> " \
           "| <c>{name} {function}:{line}</c> | " \
           "<lvl>{message}</lvl>\n"
 
-startup_message = ' STARTING NEW PYTEST RUN '
+startup_message = f' STARTING NEW PYTEST RUN - LOGS: {log_file_path} '
 logger.add(log_file_path,
            enqueue=True,  # multiprocessing
            format=log_fmt,
