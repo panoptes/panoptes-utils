@@ -8,7 +8,7 @@ container that has all of the required dependencies installed.
 
 You can view the output for the tests in a separate terminal:
 
-tail -F panoptes-testing.log
+tail -F ${PANLOG}/panoptes-testing.log
 
 Tests will begin in 5 seconds. Press Ctrl-c to cancel.
 EOF

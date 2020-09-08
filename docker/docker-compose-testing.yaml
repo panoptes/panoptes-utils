@@ -16,4 +16,6 @@ services:
       - "panoptes-config-server"
     env_file:
       - ../tests/env
+    volumes:
+      - "${PANLOG}:/var/panoptes/logs"
     command: [ "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]
