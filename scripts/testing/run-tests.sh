@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-COVERAGE_REPORT_FILE=${COVERAGE_REPORT_FILE:-./build/coverage.xml}
+COVERAGE_REPORT_FILE=${COVERAGE_REPORT_FILE:-/tmp/panoptes/coverage.xml}
 
 # This assumes we are always running in a docker container.
 export COVERAGE_PROCESS_START="/var/panoptes/panoptes-utils/setup.cfg"

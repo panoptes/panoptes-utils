@@ -23,8 +23,8 @@ log_fmt = "<lvl>{level:.1s}</lvl> " \
           "| <c>{name} {function}:{line}</c> | " \
           "<lvl>{message}</lvl>\n"
 
-# Put the log file in the local build dir.
-log_file_path = os.path.abspath('./build/panoptes-testing.log')
+# Put the log file in the tmp dir.
+log_file_path = os.path.abspath('/tmp/panoptes/panoptes-testing.log')
 startup_message = f' STARTING NEW PYTEST RUN - LOGS: {log_file_path} '
 logger.add(log_file_path,
            enqueue=True,  # multiprocessing

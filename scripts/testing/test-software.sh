@@ -2,8 +2,7 @@
 
 clear
 
-BUILD_DIR="${BUILD_DIR:-../../build}"
-PANLOG="${PANLOG:-/var/panoptes/logs}"
+PANLOG="${PANLOG:-/tmp/panoptes/logs}"
 
 cat <<EOF
 Beginning test of panoptes-utils software. This software is run inside a virtualized docker

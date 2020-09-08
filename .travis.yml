@@ -11,6 +11,7 @@ python:
 services:
   - docker
 before_install:
+  - mkdir -p ./tmp && chmod -R 777 /tmp
   - PANOPTES_UTILS="${TRAVIS_BUILD_DIR}" INCLUDE_BASE=true scripts/setup-local-environment.sh
 install: true
 script:

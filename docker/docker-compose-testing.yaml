@@ -7,7 +7,7 @@ services:
     env_file:
       - ../tests/env
     volumes:
-      - ./build:/var/panoptes/panoptes-utils/build
+      - ./tmp:/tmp/panoptes
     command: [ "panoptes-config-server --verbose run --no-save-local --no-load-local" ]
 
   pytest-testing:
@@ -19,5 +19,5 @@ services:
     env_file:
       - ../tests/env
     volumes:
-      - ./build:/var/panoptes/panoptes-utils/build
+      - ./tmp:/tmp/panoptes
     command: [ "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]
