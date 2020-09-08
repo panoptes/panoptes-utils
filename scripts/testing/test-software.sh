@@ -2,7 +2,7 @@
 
 clear
 
-PANLOG="${PANLOG:-/tmp/panoptes/logs}"
+PANLOG="${PANLOG:-./tmp/}"
 
 cat <<EOF
 Beginning test of panoptes-utils software. This software is run inside a virtualized docker
