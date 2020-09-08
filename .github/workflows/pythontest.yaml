@@ -34,7 +34,8 @@ jobs:
           PANOPTES_UTILS=${PWD} INCLUDE_BASE=true scripts/setup-local-environment.sh
       - name: Test with pytest in panoptes-utils container
         run: |
-          scripts/testing/test-software.sh 0
+          mkdir build && chmod 777 build
+          BUILD_DIR=output scripts/testing/test-software.sh 0
       - name: Upload coverage report to codecov.io
         uses: codecov/codecov-action@v1
         if: success()
