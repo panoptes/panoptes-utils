@@ -8,8 +8,8 @@ services:
       - ../tests/env
     network_mode: host
     volumes:
-      - "${PANDIR}/panoptes-utils:/var/panoptes/panoptes-utils"
-      - "${PANLOG}:/var/panoptes/logs"
+      - "${PWD}:/var/panoptes/panoptes-utils"
+      - "${PWD}:/var/panoptes/logs"
     command: [ "panoptes-config-server --verbose run --no-save-local --no-load-local" ]
 
   pytest-testing:
@@ -22,6 +22,6 @@ services:
       - ../tests/env
     network_mode: host
     volumes:
-      - "${PANDIR}/panoptes-utils:/var/panoptes/panoptes-utils"
-      - "${PANLOG}:/var/panoptes/logs"
+      - "${PWD}:/var/panoptes/panoptes-utils"
+      - "${PWD}:/var/panoptes/logs"
     command: [ "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]
