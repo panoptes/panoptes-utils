@@ -10,7 +10,7 @@ services:
     volumes:
       - "${PANDIR}/panoptes-utils:/var/panoptes/panoptes-utils"
       - "${PANDIR}/logs:/var/panoptes/logs"
-    command: [ "panoptes-config-server run --no-save-local --no-load-local" ]
+    command: [ "panoptes-config-server --verbose run --no-save-local --no-load-local" ]
 
   pytest-testing:
     image: panoptes-utils:develop
