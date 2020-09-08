@@ -35,9 +35,9 @@ jobs:
       - name: Test with pytest in panoptes-utils container
         run: |
           # Write logs to local dir with permissions
-          mkdir -p logs && chmod 777 logs
-          echo "PANLOG=${PWD}/logs" >> tests/env
-          cat tests/env
+          mkdir -p ./logs && chmod 777 ./logs
+          echo "PANLOG=./logs" >> ./tests/env
+          cat ./tests/env
           scripts/testing/test-software.sh 0
       - name: Upload coverage report to codecov.io
         uses: codecov/codecov-action@v1
