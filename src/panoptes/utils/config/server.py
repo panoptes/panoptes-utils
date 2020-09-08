@@ -227,7 +227,7 @@ def set_config_entry():
             for k, v in req_data.items():
                 app.config['POCS_cut'].setdefault(k, v)
 
-        # Config has been modified so save to file
+        # Config has been modified so save to file.
         save_local = app.config['save_local']
         logger.info(f'Setting config {save_local=}')
         if save_local and app.config['config_file'] is not None:

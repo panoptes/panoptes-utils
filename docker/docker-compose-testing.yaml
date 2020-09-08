@@ -1,12 +1,11 @@
 version: '3.7'
 services:
-  config-server:
+  panoptes-config-server:
     image: panoptes-utils:develop
     tty: true
     container_name: panoptes-config-server
     env_file:
       - ../tests/env
-    network_mode: host
     command: [ "panoptes-config-server --verbose run --no-save-local --no-load-local" ]
 
   pytest-testing:
@@ -14,8 +13,7 @@ services:
     tty: true
     container_name: panoptes-pytest
     depends_on:
-      - "config-server"
+      - "panoptes-config-server"
     env_file:
       - ../tests/env
-    network_mode: host
     command: [ "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]
