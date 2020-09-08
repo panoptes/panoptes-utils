@@ -30,11 +30,11 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: /var/panoptes/panoptes-utils
+      device: "$PWD"
       o: bind
   log_dir:
     driver: local
     driver_opts:
       type: none
-      device: /var/panoptes/logs
+      device: "$PWD"
       o: bind
