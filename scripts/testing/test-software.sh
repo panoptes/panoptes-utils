@@ -2,6 +2,8 @@
 
 clear
 
+PANLOG="${PANLOG:-/var/panoptes/logs}"
+
 cat <<EOF
 Beginning test of panoptes-utils software. This software is run inside a virtualized docker
 container that has all of the required dependencies installed.
