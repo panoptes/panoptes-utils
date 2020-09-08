@@ -2,7 +2,9 @@
 
 clear
 
-PANLOG="${PANLOG:-./tmp/}"
+SLEEP_TIME=${SLEEP_TIME:-5}
+TEMPDIR="${TEMPDIR:-./tmp}"
+PANLOG="${PANLOG:-/var/panoptes/logs}"
 
 cat <<EOF
 Beginning test of panoptes-utils software. This software is run inside a virtualized docker
@@ -15,9 +17,10 @@ tail -F ${PANLOG}/panoptes-testing.log
 Tests will begin in 5 seconds. Press Ctrl-c to cancel.
 EOF
 
-SLEEP_TIME=${1:-5}
-
 sleep "${SLEEP_TIME}"
 
+echo "Making temp directory for testing."
+mkdir -p "${TEMPDIR}" && chmod -R 777 "${TEMPDIR}"
+ls -laR .
 docker-compose -f docker/docker-compose-testing.yaml up
-ls -laR ./tmp
+ls -laR .

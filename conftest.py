@@ -24,7 +24,7 @@ log_fmt = "<lvl>{level:.1s}</lvl> " \
           "<lvl>{message}</lvl>\n"
 
 # Put the log file in the tmp dir.
-log_file_path = os.path.abspath('/tmp/panoptes/panoptes-testing.log')
+log_file_path = os.path.abspath('/var/panoptes/logs/panoptes-testing.log')
 startup_message = f' STARTING NEW PYTEST RUN - LOGS: {log_file_path} '
 logger.add(log_file_path,
            enqueue=True,  # multiprocessing
