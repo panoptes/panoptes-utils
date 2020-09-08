@@ -7,9 +7,6 @@ services:
     env_file:
       - ../tests/env
     network_mode: host
-    volumes:
-      - working_dir:/var/panoptes/panoptes-utils
-      - log_dir:/var/panoptes/panoptes-utils
     command: [ "panoptes-config-server --verbose run --no-save-local --no-load-local" ]
 
   pytest-testing:
@@ -21,20 +18,4 @@ services:
     env_file:
       - ../tests/env
     network_mode: host
-    volumes:
-      - working_dir:/var/panoptes/panoptes-utils
-      - log_dir:/var/panoptes/panoptes-utils
     command: [ "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]
-volumes:
-  working_dir:
-    driver: local
-    driver_opts:
-      type: none
-      device: "$PWD"
-      o: bind
-  log_dir:
-    driver: local
-    driver_opts:
-      type: none
-      device: "$PWD"
-      o: bind
