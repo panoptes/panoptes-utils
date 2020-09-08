@@ -9,7 +9,6 @@ services:
     network_mode: host
     volumes:
       - "${PWD}:/var/panoptes/panoptes-utils"
-      - "${PWD}:/var/panoptes/logs"
     command: [ "panoptes-config-server --verbose run --no-save-local --no-load-local" ]
 
   pytest-testing:
@@ -23,5 +22,4 @@ services:
     network_mode: host
     volumes:
       - "${PWD}:/var/panoptes/panoptes-utils"
-      - "${PWD}:/var/panoptes/logs"
     command: [ "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]
