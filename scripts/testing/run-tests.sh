@@ -10,6 +10,8 @@ coverage erase
 
 # Run coverage over the pytest suite.
 echo "Starting tests"
+echo $PWD
+ls -la .
 coverage run "$(command -v pytest)"
 
 echo "Combining coverage"

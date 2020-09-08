@@ -22,7 +22,10 @@ sleep "${SLEEP_TIME}"
 
 # Create a directory for storing log files and coverage reports.
 mkdir -p "${BUILD_DIR}" && chmod 777 "${BUILD_DIR}"
+echo "Set ${BUILD_DIR}"
+ls -la .
 docker-compose -f docker/docker-compose-testing.yaml up
 
 echo "Build dir output"
+ls -la .
 ls -la "${BUILD_DIR}"
