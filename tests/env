@@ -11,3 +11,4 @@ PANLOG=./logs
 PANOPTES_CONFIG_FILE=/var/panoptes/panoptes-utils/tests/testing.yaml
 PANOPTES_CONFIG_HOST=panoptes-config-server
 PANOPTES_CONFIG_PORT=8765
+COVERAGE_REPORT_FILE=/var/panoptes/panoptes-utils/tests/coverage.xml
