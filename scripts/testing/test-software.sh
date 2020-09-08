@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -e
-
 clear
 
 BUILD_DIR="${BUILD_DIR:-../../build}"
