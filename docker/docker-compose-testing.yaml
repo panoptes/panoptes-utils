@@ -18,4 +18,4 @@ services:
     env_file:
       - ../tests/env
     network_mode: host
-    command: [ "PANLOG=$PWD /var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]
+    command: [ "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]
