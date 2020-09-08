@@ -16,8 +16,13 @@ services:
       - "6563:6563"
     restart: on-failure
     volumes:
-      - "${PANDIR}/panoptes-utils:/var/panoptes/panoptes-utils"
-      - "${PANDIR}/logs:/var/panoptes/logs"
-      - "${PANDIR}/config_files:/var/panoptes/config_files"
+      - working_dir:/var/panoptes/panoptes-utils
     command: [ "panoptes-config-server --verbose run" ]
+volumes:
+  working_dir:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/panoptes/panoptes-utils
+      o: bind
 
