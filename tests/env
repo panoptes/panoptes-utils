@@ -3,7 +3,8 @@
 # Note this doesn't support full interpolation or quotes.
 #   See https://docs.docker.com/compose/compose-file/#env_file
 #
-# These are values inside a running docker container.
+# THESE ARE VALUES INSIDE A RUNNING DOCKER CONTAINER.
+#
 PANUSER=panoptes
 PANDIR=/var/panoptes
 POCS=/var/panoptes/POCS

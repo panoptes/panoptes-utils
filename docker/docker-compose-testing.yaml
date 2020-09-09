@@ -20,7 +20,7 @@ services:
       - ../tests/env
     volumes:
       - type: bind
-        source: ${TEST_OUTPUT}
+        source: "${PANLOG}"
         target: /var/panoptes/logs
 
-    command: [ "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]
+    command: [ "echo 'PANLOG is $PANLOG' && /var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]
