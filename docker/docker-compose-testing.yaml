@@ -21,7 +21,7 @@ services:
     volumes:
       - tempdir:/var/panoptes/logs
     command:
-      - "bin/wait-for-it.sh"
+      - "scripts/wait-for-it.sh"
       - "panoptes-config-server:8765"
       - "--"
       - "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh"
