@@ -8,6 +8,11 @@ services:
       - 8765
     env_file:
       - ../tests/env
+    volumes:
+      - type: bind
+        # Relative to docker-compose file.
+        source: ../logs
+        target: /var/panoptes/logs      
     command: [ "panoptes-config-server --verbose run --no-save-local --no-load-local" ]
 
   pytest-testing:
