@@ -7,6 +7,7 @@ services:
     privileged: true
     network_mode: host
     environment:
+      # These need to be defined in the shell on the host.
       PANDIR:
       PANLOG:
       PANOPTES_CONFIG_HOST:
@@ -16,13 +17,8 @@ services:
       - "6563:6563"
     restart: on-failure
     volumes:
-      - working_dir:/var/panoptes/panoptes-utils
+      - type: bind
+        source: .
+        target: /var/panoptes/panoptes-utils
     command: [ "panoptes-config-server --verbose run" ]
-volumes:
-  working_dir:
-    driver: local
-    driver_opts:
-      type: none
-      device: /var/panoptes/panoptes-utils
-      o: bind
 

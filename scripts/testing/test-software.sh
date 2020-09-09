@@ -19,6 +19,3 @@ EOF
 sleep "${SLEEP_TIME}"
 
 docker-compose -f docker/docker-compose-testing.yaml up
-
-echo "Show ./logs"
-ls -l ./logs
