@@ -18,4 +18,5 @@ EOF
 
 sleep "${SLEEP_TIME}"
 
+mkdir -p logs && chmod 777 logs
 docker-compose -f docker/docker-compose-testing.yaml up
