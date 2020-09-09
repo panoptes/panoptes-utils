@@ -20,7 +20,7 @@ services:
       - ../tests/env
     volumes:
       - tempdir:/var/panoptes/logs
-    command: [ "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]
+    command: [ "bin/wait-for-it.sh panoptes-config-server:8765 -- /var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]
 volumes:
   tempdir:
     driver: local
