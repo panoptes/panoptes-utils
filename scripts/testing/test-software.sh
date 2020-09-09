@@ -18,4 +18,6 @@ EOF
 
 sleep "${SLEEP_TIME}"
 
+ls -l ./tmp
 docker-compose -f docker/docker-compose-testing.yaml up
+ls -l ./tmp
