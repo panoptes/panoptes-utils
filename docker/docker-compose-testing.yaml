@@ -4,6 +4,9 @@ services:
     image: panoptes-utils:develop
     tty: true
     container_name: panoptes-config-server
+    expose:
+      - 6563
+      - 8765
     env_file:
       - ../tests/env
     volumes:
