@@ -35,9 +35,12 @@ jobs:
       - name: Test with pytest in panoptes-utils container
         run: |
           mkdir -p ./tmp && chmod -R 777 ./tmp
+          echo "Showing . dir from $PWD before GHA"
           ls -l .
           SLEEP_TIME=0 scripts/testing/test-software.sh
+          echo "Showing . dir from $PWD after GHA"
           ls -l .
+          echo "Showing ./tmp dir from $PWD"
           ls -l ./tmp
       - name: Upload coverage report to codecov.io
         uses: codecov/codecov-action@v1

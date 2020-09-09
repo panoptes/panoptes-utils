@@ -20,6 +20,7 @@ coverage combine
 
 echo "Making XML coverage report at ${COVERAGE_REPORT_FILE}"
 coverage xml -o "${COVERAGE_REPORT_FILE}"
+echo "Showing info on ${COVERAGE_REPORT_FILE} from inside container."
 ls -l "${COVERAGE_REPORT_FILE}"
 
 coverage report --show-missing

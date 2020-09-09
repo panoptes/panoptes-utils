@@ -18,6 +18,8 @@ EOF
 
 sleep "${SLEEP_TIME}"
 
+echo "test-software shows ${PWD}/tmp before"
 ls -l ./tmp
 docker-compose -f docker/docker-compose-testing.yaml up
+echo "test-software shows ${PWD}/tmp"
 ls -l ./tmp
