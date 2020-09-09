@@ -18,7 +18,7 @@ EOF
 
 sleep "${SLEEP_TIME}"
 
-export TEST_OUTPUT="${TEST_OUTPUT:-build}"
+export TEST_OUTPUT="${TEST_OUTPUT:-./build}"
 
 docker-compose -f docker/docker-compose-testing.yaml up
 
