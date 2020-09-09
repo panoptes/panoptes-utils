@@ -35,8 +35,8 @@ jobs:
       - name: Test with pytest in panoptes-utils container
         run: |
           mkdir -p tmp && chmod -R 777 tmp
-          PANLOG=./tmp SLEEP_TIME=0 scripts/testing/test-software.sh
-          echo "Showing ./tmp after"
+          PANLOG="${PWD}/tmp" SLEEP_TIME=0 scripts/testing/test-software.sh
+          echo "Showing ${PWD}/tmp after"
           ls -l tmp/
       - name: Upload coverage report to codecov.io
         uses: codecov/codecov-action@v1
