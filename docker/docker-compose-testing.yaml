@@ -20,7 +20,7 @@ services:
       - ../tests/env
     volumes:
       - type: bind
-        source: ../tmp
+        source: ${TEST_OUTPUT}
         target: /var/panoptes/logs
 
-    command: [ "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop && ls -l /var/panoptes/logs/" ]
+    command: [ "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]

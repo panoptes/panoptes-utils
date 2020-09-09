@@ -18,8 +18,8 @@ EOF
 
 sleep "${SLEEP_TIME}"
 
-echo "test-software shows ${PWD}/tmp before"
-ls -l ./tmp/
+export TEST_OUTPUT="${TEST_OUTPUT:-build}"
+
 docker-compose -f docker/docker-compose-testing.yaml up
-echo "test-software shows ${PWD}/tmp"
-ls -l ./tmp/
+
+ls -l "${TEST_OUTPUT}"
