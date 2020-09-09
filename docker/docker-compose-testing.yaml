@@ -21,8 +21,8 @@ services:
     volumes:
       - tempdir:/var/panoptes/logs
     command:
-      - "$PANDIR/panoptes-utils/bin/wait-for-it.sh"
-      - "localhost:6563"
+      - "bin/wait-for-it.sh"
+      - "panoptes-config-server:8765"
       - "--"
       - "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh"
       - "&&"
