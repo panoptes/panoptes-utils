@@ -17,10 +17,12 @@ services:
     depends_on:
       - "panoptes-config-server"
     env_file:
+        # Relative to docker-compose file.
       - ../tests/env
     volumes:
       - type: bind
-        source: "${PANLOG}"
+        # Relative to docker-compose file.
+        source: ../logs
         target: /var/panoptes/logs
 
-    command: [ "echo 'PANLOG is $PANLOG' && /var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]
+    command: [ "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]

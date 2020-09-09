@@ -3,7 +3,7 @@
 clear
 
 SLEEP_TIME=${SLEEP_TIME:-5}
-export PANLOG="${PANLOG:-/var/panoptes/logs}"
+PANLOG="${PANLOG:-/var/panoptes/logs}"
 
 cat <<EOF
 Beginning test of panoptes-utils software. This software is run inside a virtualized docker
@@ -20,5 +20,5 @@ sleep "${SLEEP_TIME}"
 
 docker-compose -f docker/docker-compose-testing.yaml up
 
-echo "Show ${PANLOG}"
-ls -l "${PANLOG}"
+echo "Show ./logs"
+ls -l ./logs
