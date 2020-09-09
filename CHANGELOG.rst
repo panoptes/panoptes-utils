@@ -27,8 +27,9 @@ Changed
   * ``stop`` command added that sets ``config_server.running=False`` to break loop.
 
 
-* Testing: all testing is started from ``scripts/test-software.sh``, which runs the ``docker/docker-compose-testing.yaml`` file (@wtgee #241).
+* Testing  (@wtgee #241): 
 
+  * all testing is started from ``scripts/test-software.sh``, which runs the ``docker/docker-compose-testing.yaml`` file.
   * The ``panoptes-config-server`` is started as an external service, not in the pytest conf.
   * Added a ``tests/env`` file that is used by the docker compose file for setting vars inside the running containers.
   * Config server uses ``tests/testing.yaml`` for all testing.
