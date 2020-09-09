@@ -3,7 +3,7 @@
 clear
 
 SLEEP_TIME=${SLEEP_TIME:-5}
-PANLOG="${PANLOG:-/var/panoptes/logs}"
+export PANLOG="${PANLOG:-/var/panoptes/logs}"
 
 cat <<EOF
 Beginning test of panoptes-utils software. This software is run inside a virtualized docker
