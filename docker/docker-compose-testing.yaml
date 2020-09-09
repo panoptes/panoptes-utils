@@ -7,7 +7,7 @@ services:
     env_file:
       - ../tests/env
     volumes:
-      - ./tmp:/var/panoptes/logs
+      - tempdir:/var/panoptes/logs
     command: [ "panoptes-config-server --verbose run --no-save-local --no-load-local" ]
 
   pytest-testing:
@@ -19,5 +19,12 @@ services:
     env_file:
       - ../tests/env
     volumes:
-      - ./tmp:/var/panoptes/logs
+      - tempdir:/var/panoptes/logs
     command: [ "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]
+volumes:
+  tempdir:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./tmp
+      o: bind

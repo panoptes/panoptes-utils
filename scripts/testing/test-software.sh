@@ -3,7 +3,6 @@
 clear
 
 SLEEP_TIME=${SLEEP_TIME:-5}
-TEMPDIR="${TEMPDIR:-./tmp}"
 PANLOG="${PANLOG:-/var/panoptes/logs}"
 
 cat <<EOF
@@ -19,8 +18,4 @@ EOF
 
 sleep "${SLEEP_TIME}"
 
-echo "Making temp directory for testing."
-mkdir -p "${TEMPDIR}" && chmod -R 777 "${TEMPDIR}"
-ls -laR .
 docker-compose -f docker/docker-compose-testing.yaml up
-ls -laR .
