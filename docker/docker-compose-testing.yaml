@@ -9,7 +9,6 @@ services:
     env_file:
       - ../tests/env
     volumes:
-      - ../:/var/panoptes/panoptes-utils
       - ../logs:/var/panoptes/panoptes-utils/logs
     command: [ "panoptes-config-server --verbose run --no-save-local --no-load-local" ]
 
