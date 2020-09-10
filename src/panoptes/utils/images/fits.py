@@ -118,7 +118,7 @@ def get_solve_field(fname, replace=True, overwrite=True, timeout=30, **kwargs):
     >>> solve_info = fits_utils.solve_field(fits_fn, ra=ra, dec=dec, radius=radius)
 
     >>> # Pass kwargs to `solve-field` program.
-    >>> solve_kwargs = {'--pnm': './awesome.bmp', '--use-wget': True}
+    >>> solve_kwargs = {'--pnm': '/tmp/awesome.bmp', '--use-wget': True}
     >>> solve_info = fits_utils.get_solve_field(fits_fn, **solve_kwargs, skip_solved=False)
     >>> assert os.path.exists('awesome.bmp')
     >>> # Cleanup
