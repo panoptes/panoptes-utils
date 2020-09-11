@@ -7,11 +7,13 @@ LABEL maintainers="developers@projectpanoptes.org"
 LABEL repo="github.com/panoptes/panoptes-utils"
 
 ARG panuser=panoptes
+ARG userid=1000
 ARG pan_dir=/var/panoptes
 ARG conda_env_name="panoptes"
 
 ARG pip_extras="[testing,google,social]"
 
+ENV USERID $userid
 ENV PANUSER $panuser
 ENV PANDIR $pan_dir
 
@@ -20,8 +22,9 @@ USER ${PANUSER}
 WORKDIR "${PANDIR}/panoptes-utils"
 
 # Can't seem to get around the hard-coding here.
-COPY --chown=panoptes:panoptes . .
+COPY --chown=${userid}:${userid} . .
 RUN echo "Installing editable module with ${pip_extras}" && \
+    ls -l . && \
     "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install -e ".${pip_extras}" && \
     # Cleanup
     sudo apt-get autoremove --purge --yes && \

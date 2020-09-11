@@ -13,6 +13,7 @@ build_base() {
   echo "Building local panoptes-base:develop in ${PANOPTES_UTILS}"
   docker build \
     --force-rm \
+    --build-arg "userid=$(id -u)" \
     -t "panoptes-base:develop" \
     -f "${PANOPTES_UTILS}/docker/base/Dockerfile" \
     "${PANOPTES_UTILS}"
@@ -24,6 +25,7 @@ build_base() {
 build_develop() {
   echo "Building local panoptes-utils:develop from ${_BASE_IMAGE_URL} in ${PANOPTES_UTILS}"
   docker build \
+    --build-arg "userid=$(id -u)" \
     --build-arg "image_url=${_BASE_IMAGE_URL}" \
     -t "panoptes-utils:develop" \
     -f "${PANOPTES_UTILS}/docker/Dockerfile" \
