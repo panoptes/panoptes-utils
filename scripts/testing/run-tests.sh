@@ -14,7 +14,7 @@ scripts/wait-for-it.sh --timeout=30 --strict panoptes-config-server:8765 -- echo
 # Run coverage over the pytest suite.
 coverage run "$(command -v pytest)"
 
-echo "Combining coverage"
+echo "Combining coverage for ${COVERAGE_REPORT_FILE}"
 coverage combine
 
 echo "Making XML coverage report at ${COVERAGE_REPORT_FILE}"
