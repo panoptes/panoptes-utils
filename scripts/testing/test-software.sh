@@ -3,7 +3,8 @@
 clear
 
 SLEEP_TIME=${SLEEP_TIME:-5}
-PANLOG="${PANLOG:-/var/panoptes/logs}"
+export PANDIR="${PANDIR:-/var/panoptes}"
+export PANLOG="${PANLOG:-${PANDIR}/logs}"
 
 cat <<EOF
 Beginning test of panoptes-utils software. This software is run inside a virtualized docker
@@ -19,5 +20,6 @@ EOF
 sleep "${SLEEP_TIME}"
 
 mkdir -p logs && chmod 777 logs
+echo "Using PANDIR=${PANDIR} for docker-compose"
 docker-compose -f docker/docker-compose-testing.yaml up
 # TODO send appropriate failure signal if error.

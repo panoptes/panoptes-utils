@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.7'
 services:
   panoptes-config-server:
     image: panoptes-utils:develop
@@ -32,11 +32,11 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: ../
+      device: "${PANDIR}/panoptes-utils"
       o: bind
   logdir:
     driver: local
     driver_opts:
       type: none
-      device: ../logs
+      device: "${PANDIR}/panoptes-utils/logs"
       o: bind

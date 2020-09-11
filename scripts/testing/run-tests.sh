@@ -11,12 +11,17 @@ coverage erase
 echo "Checking to make sure panoptes-config-server is running"
 scripts/wait-for-it.sh --timeout=30 --strict panoptes-config-server:8765 -- echo "Found panoptes-config-server, starting tests."
 
+echo "Figure out where we are: ${PWD}"
+
+ls -la
+
 # Run coverage over the pytest suite.
 coverage run "$(command -v pytest)"
 
 echo "Combining coverage for ${COVERAGE_REPORT_FILE}"
 coverage combine
 
+ls -la
 echo "Making XML coverage report at ${COVERAGE_REPORT_FILE}"
 coverage xml -o "${COVERAGE_REPORT_FILE}"
 coverage report --show-missing
