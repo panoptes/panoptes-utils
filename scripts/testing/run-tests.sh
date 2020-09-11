@@ -12,6 +12,7 @@ echo "Checking to make sure panoptes-config-server is running"
 scripts/wait-for-it.sh --timeout=30 --strict panoptes-config-server:8765 -- echo "Found panoptes-config-server, starting tests."
 
 echo "Figure out where we are: ${PWD}"
+echo "Figure out PATH: ${PATH}"
 
 id
 ls -la
