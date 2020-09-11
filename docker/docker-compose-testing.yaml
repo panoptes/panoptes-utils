@@ -32,11 +32,11 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: ../
+      device: ./
       o: bind
   logdir:
     driver: local
     driver_opts:
       type: none
-      device: ../logs
+      device: ./logs
       o: bind
