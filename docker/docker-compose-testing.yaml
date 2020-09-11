@@ -1,42 +1,13 @@
 version: '3.7'
 services:
-  panoptes-config-server:
-    image: panoptes-utils:develop
-    tty: true
-    container_name: panoptes-config-server
-    expose:
-      - 8765
-    env_file:
-      # Relative to docker-compose file.
-      - ../tests/env
-    volumes:
-      - panutilsdir:/var/panoptes/panoptes-utils/
-      - logdir:/var/panoptes/logs
-    command: [ "id && echo $$PATH && echo $$PWD && ls -la && panoptes-config-server --verbose run --no-save-local --no-load-local" ]
-
   pytest-testing:
     image: panoptes-utils:develop
     tty: true
     container_name: panoptes-pytest
-    depends_on:
-      - "panoptes-config-server"
     env_file:
       # Relative to docker-compose file.
       - ../tests/env
     volumes:
-      - panutilsdir:/var/panoptes/panoptes-utils/
-      - logdir:/var/panoptes/logs
-    command: [ "id && echo $$PATH && echo $$PWD && ls -la && /var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]
-volumes:
-  panutilsdir:
-    driver: local
-    driver_opts:
-      type: none
-      device: "${PANDIR}/panoptes-utils"
-      o: bind
-  logdir:
-    driver: local
-    driver_opts:
-      type: none
-      device: "${PANDIR}/panoptes-utils/logs"
-      o: bind
+      - ../:/var/panoptes/panoptes-utils/
+      - ../logs:/var/panoptes/logs
+    command: [ "id && echo $$PATH && echo $$PWD && ls -la && /var/panoptes/panoptes-utils/scripts/testing/run-tests.sh" ]

@@ -18,7 +18,12 @@ id
 ls -la
 
 # Run coverage over the pytest suite.
+echo "Starting config server"
+coverage run "panoptes-config-server --verbose run"
+echo "Starting testing"
 coverage run "$(command -v pytest)"
+echo "Stopping config server"
+coverage run "panoptes-config-server --verbose stop"
 
 echo "Combining coverage for ${COVERAGE_REPORT_FILE}"
 coverage combine
