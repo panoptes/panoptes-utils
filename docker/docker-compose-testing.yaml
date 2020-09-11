@@ -10,8 +10,8 @@ services:
       # Relative to docker-compose file.
       - ../tests/env
     volumes:
-      - ../tests:/var/panoptes/panoptes-utils/tests
-      - ../logs:/var/panoptes/logs
+      - panutilsdir:/var/panoptes/panoptes-utils/
+      - logdir:/var/panoptes/logs
     command: [ "panoptes-config-server --verbose run --no-save-local --no-load-local" ]
 
   pytest-testing:
@@ -24,6 +24,19 @@ services:
       # Relative to docker-compose file.
       - ../tests/env
     volumes:
-      - ../:/var/panoptes/panoptes-utils
-      - ../logs:/var/panoptes/logs
+      - panutilsdir:/var/panoptes/panoptes-utils/
+      - logdir:/var/panoptes/logs
     command: [ "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]
+volumes:
+  panutilsdir:
+    driver: local
+    driver_opts:
+      type: none
+      device: ../
+      o: bind
+  logdir:
+    driver: local
+    driver_opts:
+      type: none
+      device: ../logs
+      o: bind
