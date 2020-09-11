@@ -21,6 +21,7 @@ sleep "${SLEEP_TIME}"
 
 mkdir -p logs && chmod 777 logs
 echo "Using PANDIR=${PANDIR} for docker-compose"
+id
 echo "PWD=${PWD}"
 ls -la
 docker-compose -f docker/docker-compose-testing.yaml up

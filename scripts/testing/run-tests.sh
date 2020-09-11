@@ -13,6 +13,7 @@ scripts/wait-for-it.sh --timeout=30 --strict panoptes-config-server:8765 -- echo
 
 echo "Figure out where we are: ${PWD}"
 
+id
 ls -la
 
 # Run coverage over the pytest suite.
