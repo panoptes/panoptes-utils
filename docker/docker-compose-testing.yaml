@@ -12,7 +12,7 @@ services:
     volumes:
       - panutilsdir:/var/panoptes/panoptes-utils/
       - logdir:/var/panoptes/logs
-    command: [ "id && echo $$PWD && ls -la && panoptes-config-server --verbose run --no-save-local --no-load-local" ]
+    command: [ "id && echo $$PATH && echo $$PWD && ls -la && panoptes-config-server --verbose run --no-save-local --no-load-local" ]
 
   pytest-testing:
     image: panoptes-utils:develop
@@ -26,7 +26,7 @@ services:
     volumes:
       - panutilsdir:/var/panoptes/panoptes-utils/
       - logdir:/var/panoptes/logs
-    command: [ "id && echo $$PWD && ls -la && /var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]
+    command: [ "id && echo $$PATH && echo $$PWD && ls -la && /var/panoptes/panoptes-utils/scripts/testing/run-tests.sh && panoptes-config-server stop" ]
 volumes:
   panutilsdir:
     driver: local
