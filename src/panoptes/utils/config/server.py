@@ -16,6 +16,7 @@ from ..serializers import serialize_object
 
 # Turn off noisy logging for Flask wsgi server.
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
+logging.getLogger('gevent').setLevel(logging.WARNING)
 
 app = Flask(__name__)
 
@@ -43,7 +44,10 @@ def config_server(config_file,
                   port=None,
                   load_local=True,
                   save_local=False,
-                  auto_start=True):
+                  auto_start=True,
+                  access_logs=None,
+                  error_logs='logger',
+                  ):
     """Start the config server in a separate process.
 
     A convenience function to start the config server.
@@ -58,6 +62,12 @@ def config_server(config_file,
         load_local (bool, optional): If local config files should be used when loading, default True.
         save_local (bool, optional): If setting new values should auto-save to local file, default False.
         auto_start (bool, optional): If server process should be started automatically, default True.
+        access_logs ('default' or `logger` or `File`-like or None, optional): Controls access logs for
+            the gevent WSGIServer. The `default` string will cause access logs to go to stderr. The
+            string `logger` will use the panoptes logger. A File-like will write to file. The default
+            `None` will turn off all access logs.
+        error_logs ('default' or 'logger' or `File`-like or None, optional): Same as `access_logs` except we use
+            our `logger` as the default.
 
     Returns:
         multiprocessing.Process: The process running the config server.
@@ -80,10 +90,14 @@ def config_server(config_file,
     app.config['POCS_cut'] = cut_config
     logger.info(f'Config items saved to flask config-server')
 
+    # Set up access and error logs for server.
+    access_logs = logger if access_logs == 'logger' else access_logs
+    error_logs = logger if error_logs == 'logger' else error_logs
+
     def start_server(host='localhost', port=6563):
         try:
             logger.info(f'Starting panoptes config server with {host}:{port}')
-            http_server = WSGIServer((host, int(port)), app)
+            http_server = WSGIServer((host, int(port)), app, log=access_logs, error_log=error_logs)
             http_server.serve_forever()
         except OSError:
             logger.warning(f'Problem starting config server, is another config server already running?')
@@ -104,6 +118,27 @@ def config_server(config_file,
         server_process.start()
 
     return server_process
+
+
+@app.route('/heartbeat', methods=['GET', 'POST'])
+def heartbeat():
+    """A simple echo service to be used for a heartbeat.
+
+    Defaults to looking for the 'config_server.running' bool value, although a
+    different `key` can be specified in the POST.
+    """
+    params = dict()
+    if request.method == 'GET':
+        params = request.args
+    elif request.method == 'POST':
+        params = request.get_json()
+
+    key = params.get('key', 'config_server.running')
+    if key is None:
+        key = 'config_server.running'
+    is_running = app.config['POCS_cut'].get(key, False)
+
+    return jsonify(is_running)
 
 
 @app.route('/get-config', methods=['GET', 'POST'])
@@ -142,16 +177,21 @@ def get_config_entry():
         str: The json string for the requested object if object is found in config.
         Otherwise a json string with ``status`` and ``msg`` keys will be returned.
     """
-    req_json = request.get_json()
-    verbose = req_json.get('verbose', True)
+    params = dict()
+    if request.method == 'GET':
+        params = request.args
+    elif request.method == 'POST':
+        params = request.get_json()
+
+    verbose = params.get('verbose', True)
     log_level = 'DEBUG' if verbose else 'TRACE'
 
     # If requesting specific key
-    logger.log(log_level, f'Received {req_json=}')
+    logger.log(log_level, f'Received {params=}')
 
     if request.is_json:
         try:
-            key = req_json['key']
+            key = params['key']
             logger.log(log_level, f'Request contains {key=}')
         except KeyError:
             return jsonify({
@@ -218,27 +258,31 @@ def set_config_entry():
         str: If method is successful, returned json string will be a copy of the set values.
         On failure, a json string with ``status`` and ``msg`` keys will be returned.
     """
-    if request.is_json:
-        req_data = request.get_json()
+    params = dict()
+    if request.method == 'GET':
+        params = request.args
+    elif request.method == 'POST':
+        params = request.get_json()
 
-        try:
-            app.config['POCS_cut'].update(req_data)
-        except KeyError:
-            for k, v in req_data.items():
-                app.config['POCS_cut'].setdefault(k, v)
+    if params is None:
+        return jsonify({
+            'success': False,
+            'msg': "Invalid. Need json request: {'key': <config_entry>, 'value': <new_values>}"
+        })
 
-        # Config has been modified so save to file.
-        save_local = app.config['save_local']
-        logger.info(f'Setting config {save_local=}')
-        if save_local and app.config['config_file'] is not None:
-            save_config(app.config['config_file'], app.config['POCS_cut'].copy())
+    try:
+        app.config['POCS_cut'].update(params)
+    except KeyError:
+        for k, v in params.items():
+            app.config['POCS_cut'].setdefault(k, v)
 
-        return jsonify(req_data)
+    # Config has been modified so save to file.
+    save_local = app.config['save_local']
+    logger.info(f'Setting config {save_local=}')
+    if save_local and app.config['config_file'] is not None:
+        save_config(app.config['config_file'], app.config['POCS_cut'].copy())
 
-    return jsonify({
-        'success': False,
-        'msg': "Invalid. Need json request: {'key': <config_entry>, 'value': <new_values>}"
-    })
+    return jsonify(params)
 
 
 @app.route('/reset-config', methods=['POST'])
@@ -261,25 +305,29 @@ def reset_config():
         str: A json string object containing the keys ``success`` and ``msg`` that indicate
         success or failure.
     """
-    if request.is_json:
-        logger.warning(f'Resetting config server')
-        req_data = request.get_json()
+    params = dict()
+    if request.method == 'GET':
+        params = request.args
+    elif request.method == 'POST':
+        params = request.get_json()
 
-        if req_data['reset']:
-            # Reload the config
-            config = load_config(config_files=app.config['config_file'],
-                                 load_local=app.config['load_local'])
-            # Add an entry to control running of the server.
-            config['config_server'] = dict(running=True)
-            app.config['POCS'] = config
-            app.config['POCS_cut'] = Cut(config)
+    logger.warning(f'Resetting config server')
 
+    if params['reset']:
+        # Reload the config
+        config = load_config(config_files=app.config['config_file'],
+                             load_local=app.config['load_local'])
+        # Add an entry to control running of the server.
+        config['config_server'] = dict(running=True)
+        app.config['POCS'] = config
+        app.config['POCS_cut'] = Cut(config)
+    else:
         return jsonify({
-            'success': True,
-            'msg': f'Configuration reset'
+            'success': False,
+            'msg': "Invalid. Need json request: {'reset': True}"
         })
 
     return jsonify({
-        'success': False,
-        'msg': "Invalid. Need json request: {'reset': True}"
+        'success': True,
+        'msg': f'Configuration reset'
     })

@@ -11,7 +11,19 @@ from ..serializers import to_json
 load_dotenv()
 
 
-def get_config(key=None, host=None, port=None, parse=True, default=None, verbose=True):
+def server_is_running():
+    """Thin-wrapper to check server."""
+    return get_config(endpoint='heartbeat', verbose=False)
+
+
+def get_config(key=None,
+               host=None,
+               port=None,
+               endpoint='get-config',
+               parse=True,
+               default=None,
+               verbose=True
+               ):
     """Get a config item from the config server.
 
     Return the config entry for the given ``key``. If ``key=None`` (default), return
@@ -62,6 +74,9 @@ def get_config(key=None, host=None, port=None, parse=True, default=None, verbose
             env var, defaults to 'localhost'.
         port (str or int, optional): The config server port. First checks for PANOPTES_CONFIG_HOST
             env var, defaults to 6563.
+        endpoint (str, optional): The relative url endpoint to use for getting
+            the config items, default 'get-config'. See `server_is_running()`
+            for example of usage.
         parse (bool, optional): If response should be parsed by
             :func:`panoptes.utils.serializers.from_json`, default True.
         default (str, optional): The config server port, defaults to 6563.
@@ -78,7 +93,7 @@ def get_config(key=None, host=None, port=None, parse=True, default=None, verbose
     host = host or os.getenv('PANOPTES_CONFIG_HOST', 'localhost')
     port = port or os.getenv('PANOPTES_CONFIG_PORT', 6563)
 
-    url = f'http://{host}:{port}/get-config'
+    url = f'http://{host}:{port}/{endpoint}'
 
     config_entry = default
 

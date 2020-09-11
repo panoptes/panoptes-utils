@@ -2,7 +2,7 @@ import time
 
 import click
 
-from .client import get_config, set_config
+from .client import get_config, set_config, server_is_running
 from .server import config_server
 from ..logging import logger
 
@@ -68,7 +68,7 @@ def run(context, config_file=None, save_local=True, load_local=False):
               f'Set "config_server.running=False" or Ctrl-c to stop')
 
         # Loop until config told to stop.
-        while get_config('config_server.running', verbose=False):
+        while server_is_running():
             time.sleep(1)
 
         server_process.terminate()
