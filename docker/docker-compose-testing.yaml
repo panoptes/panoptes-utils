@@ -10,7 +10,7 @@ services:
       # Relative to docker-compose file.
       - ../tests/env
     volumes:
-      - ../:/var/panoptes/panoptes-utils
+      - ../tests:/var/panoptes/panoptes-utils/tests
       - ../logs:/var/panoptes/logs
     command: [ "panoptes-config-server --verbose run --no-save-local --no-load-local" ]
 
