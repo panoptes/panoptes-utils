@@ -6,8 +6,8 @@ services:
     container_name: panoptes-pytest
     env_file:
       # Relative to docker-compose file.
-      - ../tests/env
+      - ./tests/env
     volumes:
-      - ../:/var/panoptes/panoptes-utils/
-      - ../logs:/var/panoptes/logs
+      - ./:/var/panoptes/panoptes-utils/
+      - ./logs:/var/panoptes/logs
     command: [ "id && echo $$PATH && echo $$PWD && ls -la && /var/panoptes/panoptes-utils/scripts/testing/run-tests.sh" ]

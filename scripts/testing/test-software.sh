@@ -19,10 +19,8 @@ EOF
 
 sleep "${SLEEP_TIME}"
 
+echo "Running tests with $(id)"
 mkdir -p logs && chmod 777 logs
-echo "Using PANDIR=${PANDIR} for docker-compose"
-id
-echo "PWD=${PWD}"
-ls -la
-docker-compose --verbose -f docker/docker-compose-testing.yaml up
+echo "Using PANDIR=${PANDIR} for docker-compose with project-directory=${PWD}"
+docker-compose --project-directory "${PWD}" -f docker/docker-compose-testing.yaml up
 # TODO send appropriate failure signal if error.
