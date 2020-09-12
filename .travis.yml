@@ -10,7 +10,7 @@ python:
 services:
   - docker
 before_install:
-  - PANOPTES_UTILS="${TRAVIS_BUILD_DIR}" INCLUDE_BASE=true scripts/setup-local-environment.sh
+  - PANOPTES_UTILS="${PWD}" INCLUDE_BASE=true scripts/setup-local-environment.sh
 install: true
 script:
   - mkdir -p logs && chmod -R 777 logs
