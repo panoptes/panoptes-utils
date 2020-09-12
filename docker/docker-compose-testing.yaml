@@ -9,4 +9,4 @@ services:
       - ./tests/env
     volumes:
       - ./logs:/var/panoptes/logs
-    command: [ "id && echo $$PATH && echo $$PWD && ls -la && /var/panoptes/panoptes-utils/scripts/testing/run-tests.sh" ]
+    command: [ "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh" ]

@@ -10,12 +10,6 @@ export COVERAGE_PROCESS_START="/var/panoptes/panoptes-utils/setup.cfg"
 
 coverage erase
 
-echo "Figure out where we are: ${PWD}"
-echo "Figure out PATH: ${PATH}"
-
-id
-ls -la
-
 # Run coverage over the pytest suite.
 echo "Starting config server in background"
 panoptes-config-server --verbose --host "${PANOPTES_CONFIG_HOST}" --port "${PANOPTES_CONFIG_PORT}" run --no-load-local --no-save-local &
@@ -31,7 +25,6 @@ panoptes-config-server --verbose --host "${PANOPTES_CONFIG_HOST}" --port "${PANO
 echo "Combining coverage for ${COVERAGE_REPORT_FILE}"
 coverage combine
 
-ls -la
 echo "Making XML coverage report at ${COVERAGE_REPORT_FILE}"
 coverage xml -o "${COVERAGE_REPORT_FILE}"
 coverage report --show-missing
