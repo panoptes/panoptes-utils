@@ -50,6 +50,7 @@ RUN apt-get update && \
     # Copy zshrc to /etc/skel for new users.
     cat "/tmp/zshrc" >> /etc/skel/.zshrc && \
     # Create $PANUSER.
+    echo "Creating new user ${USERID} ${PANUSER} '${pan_user_fullname}'" && \
     useradd --shell /bin/zsh -u ${USERID} -o -c "${pan_user_fullname}" \
         -p panoptes -m -G plugdev,dialout,users,sudo ${PANUSER} && \
     # Allow sudo without password.
