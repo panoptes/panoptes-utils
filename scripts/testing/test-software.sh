@@ -24,5 +24,5 @@ echo "Using PANDIR=${PANDIR} for docker-compose"
 id
 echo "PWD=${PWD}"
 ls -la
-docker-compose -f docker/docker-compose-testing.yaml up
+docker-compose --verbose -f docker/docker-compose-testing.yaml up
 # TODO send appropriate failure signal if error.

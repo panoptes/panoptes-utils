@@ -38,7 +38,7 @@ jobs:
           echo "PWD=$PWD from GHA"
           echo "ls -la"
           echo "$PATH"
-          PANDIR="${PWD}/../" SLEEP_TIME=0 scripts/testing/test-software.sh
+          PANDIR="${PWD}/../../" SLEEP_TIME=0 scripts/testing/test-software.sh
           echo "ls -la"
       - name: Upload coverage report to codecov.io
         uses: codecov/codecov-action@v1
