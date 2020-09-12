@@ -1,32 +1,33 @@
 #!/usr/bin/env bash
 set -e
 
-INCLUDE_BASE=${INCLUDE_BASE:-false}
+TAG="${TAG:-develop}"
+PANOPTES_UTILS="${PANOPTES_UTILS:-${PANDIR}/panoptes-utils}"
+INCLUDE_BASE="${INCLUDE_BASE:-false}"
+BASE_IMAGE_URL="${BASE_IMAGE_URL:-gcr.io/panoptes-exp/panoptes-base:latest}"
 
-PANOPTES_UTILS=${PANOPTES_UTILS:-$PANDIR/panoptes-utils}
-_BASE_IMAGE_URL="gcr.io/panoptes-exp/panoptes-base:latest"
-
-echo "Setting up local environment."
+echo "Setting up local environment in ${PANOPTES_UTILS}"
 cd "${PANOPTES_UTILS}"
 
 build_base() {
-  echo "Building local panoptes-base:develop in ${PANOPTES_UTILS}"
+  echo "Building local panoptes-base:${TAG} in ${PANOPTES_UTILS}"
   docker build \
     --force-rm \
     --build-arg "userid=$(id -u)" \
-    -t "panoptes-base:develop" \
+    -t "panoptes-base:${TAG}" \
     -f "${PANOPTES_UTILS}/docker/base/Dockerfile" \
     "${PANOPTES_UTILS}"
 
   # Use our local base for build below.
-  _BASE_IMAGE_URL="panoptes-base:develop"
+  BASE_IMAGE_URL="panoptes-base:${TAG}"
+  echo "Setting BASE_IMAGE_URL=${BASE_IMAGE_URL}"
 }
 
 build_develop() {
-  echo "Building local panoptes-utils:develop from ${_BASE_IMAGE_URL} in ${PANOPTES_UTILS}"
+  echo "Building local panoptes-utils:${TAG} from ${BASE_IMAGE_URL} in ${PANOPTES_UTILS}"
   docker build \
-    --build-arg "userid=$(id -u),image_url=${_BASE_IMAGE_URL}" \
-    -t "panoptes-utils:develop" \
+    --build-arg "userid=$(id -u),image_url=${BASE_IMAGE_URL}" \
+    -t "panoptes-utils:${TAG}" \
     -f "${PANOPTES_UTILS}/docker/Dockerfile" \
     "${PANOPTES_UTILS}"
 }

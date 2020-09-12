@@ -10,8 +10,8 @@ python:
 services:
   - docker
 before_install:
-  - PANOPTES_UTILS="${PWD}" INCLUDE_BASE=true scripts/setup-local-environment.sh
+  - PANDIR="${PWD}" INCLUDE_BASE=true scripts/setup-local-environment.sh
 install: true
 script:
   - mkdir -p logs && chmod -R 777 logs
-  - SLEEP_TIME=0 scripts/testing/test-software.sh
+  - PANDIR="${PWD}" SLEEP_TIME=0 scripts/testing/test-software.sh
