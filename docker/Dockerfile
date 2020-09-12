@@ -22,7 +22,7 @@ USER "${PANUSER}"
 WORKDIR "${PANDIR}/panoptes-utils"
 
 # Can't seem to get around the hard-coding here.
-COPY --chown="${USERID}:${USERID}" . .
+COPY --chown=panoptes:panoptes . .
 RUN echo "Installing editable module with ${pip_extras}" && \
     ls -l . && \
     "${PANDIR}/conda/envs/${conda_env_name}/bin/pip" install -e ".${pip_extras}" && \
