@@ -20,7 +20,11 @@ EOF
 sleep "${SLEEP_TIME}"
 
 echo "Running tests with $(id)"
-mkdir -p logs && chmod 777 logs
 echo "Using PANDIR=${PANDIR} for docker-compose with project-directory=${PWD}"
-docker-compose --project-directory "${PWD}" -f docker/docker-compose-testing.yaml up
-# TODO send appropriate failure signal if error.
+docker run --rm -it \
+  --init \
+  --env-file "${PANDIR}/panoptes-utils/tests/env" \
+  -v "${PANDIR}/panoptes-utils":/var/panoptes/panoptes-utils \
+  -v "${PANDIR}/logs":/var/panoptes/logs \
+  panoptes-utils:develop \
+  "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh"

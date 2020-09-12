@@ -5,7 +5,6 @@ addons:
   apt:
     packages:
       - docker-ce
-      - docker-compose
 python:
   - "3.6"
 services:
