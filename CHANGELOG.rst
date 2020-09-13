@@ -2,6 +2,14 @@
 Changelog
 =========
 
+0.2.28dev
+---------
+
+Changed
+^^^^^^^
+
+* Single cloudbuild file for both ``panotpes-base`` and ``panotpes-utils``. (#242)
+
 0.2.27 - 2020-09-12
 -------------------
 
