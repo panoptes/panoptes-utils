@@ -14,4 +14,4 @@ before_install:
 install: true
 script:
   - mkdir -p logs && chmod -R 777 logs
-  - PANDIR="${PWD}" SLEEP_TIME=0 scripts/testing/test-software.sh
+  - PANDIR="${PWD}/../" SLEEP_TIME=0 scripts/testing/test-software.sh
