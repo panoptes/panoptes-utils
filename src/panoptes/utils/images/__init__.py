@@ -266,7 +266,7 @@ def mask_saturated(data, saturation_level=None, threshold=0.9, bit_depth=None, d
             # No bit depth specified, try to guess.
             try:
             # Try to use np.iinfo to compute machine limits. Will work for integer types.
-                saturation_level = threshold * dtype_info = np.iinfo(data.dtype).max
+                saturation_level = threshold * np.iinfo(data.dtype).max
             except ValueError:
                 # ValueError from np.iinfo means not an integer type.
                 raise error.IllegalValue("Neither saturation_level or bit_depth given, & data " +
