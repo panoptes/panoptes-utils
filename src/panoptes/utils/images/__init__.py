@@ -261,9 +261,11 @@ def mask_saturated(data, saturation_level=None, threshold=0.9, bit_depth=None, d
                                              f"got {bit_depth!r}")
 
             bit_depth = int(bit_depth)
+            logger.trace(f"Using bit depth {bit_depth!r}")
             saturation_level = threshold * (2**bit_depth - 1)
         else:
             # No bit depth specified, try to guess.
+            logger.trace(f"Inferring bit_depth from data type, {data.dtype!r}")
             try:
             # Try to use np.iinfo to compute machine limits. Will work for integer types.
                 saturation_level = threshold * np.iinfo(data.dtype).max
@@ -272,7 +274,7 @@ def mask_saturated(data, saturation_level=None, threshold=0.9, bit_depth=None, d
                 raise error.IllegalValue("Neither saturation_level or bit_depth given, and data " +
                                          "is not an integer type. Cannot determine correct " +
                                          "saturation level.")
-
+    logger.debug(f"Masking image using saturation level {saturation_level!r}")
     # Convert data to masked array of requested dtype, mask values above saturation level.
     return np.ma.array(data, mask=(data > saturation_level), dtype=dtype)
 
