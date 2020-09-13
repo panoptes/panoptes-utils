@@ -10,9 +10,8 @@ python:
 services:
   - docker
 before_install:
-  - PANOPTES_UTILS="${TRAVIS_BUILD_DIR}" INCLUDE_BASE=true scripts/setup-local-environment.sh
+  - PANDIR="${PWD}/../" INCLUDE_BASE=true scripts/setup-local-environment.sh
 install: true
 script:
-  - docker run -it
-    panoptes-utils:develop
-    "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh"
+  - mkdir -p logs && chmod -R 777 logs
+  - PANLOG="${PWD}/logs" SLEEP_TIME=0 scripts/testing/test-software.sh

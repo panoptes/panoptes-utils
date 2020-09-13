@@ -1,12 +1,12 @@
 name: Test Python
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 jobs:
   lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [ 3.8 ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -25,35 +25,27 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [ 3.8 ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Build panoptes-utils image
         run: |
-          PANOPTES_UTILS=${PWD} INCLUDE_BASE=true scripts/setup-local-environment.sh
+          INCLUDE_BASE=true scripts/setup-local-environment.sh
       - name: Test with pytest in panoptes-utils container
         run: |
-          mkdir -p coverage_dir && chmod 777 coverage_dir
-          ci_env=`bash <(curl -s https://codecov.io/env)`
-          docker run -i \
-            $ci_env \
-            -e REPORT_FILE="/tmp/coverage/coverage.xml" \
-            --network "host" \
-            -v $PWD/coverage_dir:/var/panoptes/logs \
-            -v $PWD/coverage_dir:/tmp/coverage \
-            panoptes-utils:develop \
-            "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh"
+          mkdir -p logs && chmod -R 777 logs
+          PANLOG="${PWD}/logs" SLEEP_TIME=0 scripts/testing/test-software.sh
       - name: Upload coverage report to codecov.io
         uses: codecov/codecov-action@v1
         if: success()
         with:
           name: codecov-upload
-          file: coverage_dir/coverage.xml
+          file: logs/coverage.xml
           fail_ci_if_error: true
       - name: Create log file artifact
         uses: actions/upload-artifact@v1
         if: always()
         with:
           name: log-files
-          path: coverage_dir/panoptes-testing.log
+          path: logs/panoptes-testing.log

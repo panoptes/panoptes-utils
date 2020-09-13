@@ -1,43 +1,36 @@
-import os
 import copy
-import pytest
-import time
+import logging
+import os
 import shutil
 import tempfile
-
-import logging
-from _pytest.logging import caplog as _caplog
 from contextlib import suppress
-
-from panoptes.utils.logging import logger
-from panoptes.utils.database import PanDB
-from panoptes.utils.config.client import get_config
-from panoptes.utils.config.client import set_config
-from panoptes.utils.config.server import config_server
 
 # Doctest modules
 import numpy as np
+import pytest
+from _pytest.logging import caplog as _caplog  # noqa
 from matplotlib import pyplot as plt
+from panoptes.utils.database import PanDB
+from panoptes.utils.logging import logger
 
 _all_databases = ['file', 'memory']
 
 logger.enable('panoptes')
 logger.level("testing", no=15, icon="🤖", color="<YELLOW><black>")
-log_file_path = os.path.join(
-    os.getenv('PANLOG', '/var/panoptes/logs'),
-    'panoptes-testing.log'
-)
 log_fmt = "<lvl>{level:.1s}</lvl> " \
           "<light-blue>{time:MM-DD HH:mm:ss.ss!UTC}</>" \
           "<blue>({time:HH:mm:ss.ss})</> " \
           "| <c>{name} {function}:{line}</c> | " \
           "<lvl>{message}</lvl>\n"
 
-startup_message = ' STARTING NEW PYTEST RUN '
+# Put the log file in the tmp dir.
+log_file_path = os.path.expandvars('${PANLOG}/panoptes-testing.log')
+startup_message = f' STARTING NEW PYTEST RUN - LOGS: {log_file_path} '
 logger.add(log_file_path,
            enqueue=True,  # multiprocessing
            format=log_fmt,
            colorize=True,
+           # TODO decide on these options
            backtrace=True,
            diagnose=True,
            catch=True,
@@ -69,58 +62,18 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope='session')
-def db_name():
-    return 'panoptes_testing'
+def config_host():
+    return os.getenv('PANOPTES_CONFIG_HOST', 'localhost')
 
 
 @pytest.fixture(scope='session')
-def images_dir(tmpdir_factory):
-    directory = tmpdir_factory.mktemp('images')
-    return str(directory)
+def config_port():
+    return os.getenv('PANOPTES_CONFIG_PORT', 6563)
 
 
 @pytest.fixture(scope='session')
 def config_path():
-    return os.path.expandvars('${PANDIR}/panoptes-utils/tests/panoptes_utils_testing.yaml')
-
-
-@pytest.fixture(scope='session', autouse=True)
-def static_config_server(config_path, images_dir, db_name):
-    logger.log('testing', f'Starting static_config_server for testing session')
-
-    proc = config_server(
-        config_file=config_path,
-        ignore_local=True,
-        auto_save=False
-    )
-
-    logger.log('testing', f'static_config_server started with {proc.pid=}')
-
-    # Give server time to start
-    while get_config('name') is None:  # pragma: no cover
-        logger.log('testing', f'Waiting for static_config_server {proc.pid=}, sleeping 1 second.')
-        time.sleep(1)
-
-    logger.log('testing', f'Startup config_server name=[{get_config("name")}]')
-
-    # Adjust various config items for testing
-    unit_id = 'PAN000'
-    logger.log('testing', f'Setting testing name and unit_id to {unit_id}')
-    set_config('pan_id', unit_id)
-
-    logger.log('testing', f'Setting testing database to {db_name}')
-    set_config('db.name', db_name)
-
-    fields_file = 'simulator.yaml'
-    logger.log('testing', f'Setting testing scheduler fields_file to {fields_file}')
-    set_config('scheduler.fields_file', fields_file)
-
-    logger.log('testing', f'Setting temporary image directory for testing')
-    set_config('directories.images', images_dir)
-
-    yield
-    logger.log('testing', f'Killing static_config_server started with PID={proc.pid}')
-    proc.terminate()
+    return os.getenv('PANOPTES_CONFIG_FILE', '/var/panoptes/panoptes-utils/tests/testing.yaml')
 
 
 @pytest.fixture(scope='function', params=_all_databases)
@@ -139,6 +92,7 @@ def db_type(request):
 
 @pytest.fixture(scope='function')
 def db(db_type):
+    # TODO don't hardcode the db name.
     return PanDB(db_type=db_type, db_name='panoptes_testing', storage_dir='testing', connect=True)
 
 

@@ -1,9 +1,10 @@
-import pytest
 import os
+
+import pytest
 from astropy import units as u
-from panoptes.utils.serializers import to_yaml
 from panoptes.utils.config.helpers import load_config
 from panoptes.utils.config.helpers import save_config
+from panoptes.utils.serializers import to_yaml
 
 
 def test_load_config(config_path):
@@ -25,20 +26,20 @@ def test_load_config_custom_file(tmp_path):
     temp_conf_local_file.write_text(to_yaml(temp_conf_text))
 
     # Ignore the local name
-    temp_config = load_config(str(temp_conf_file.absolute()), ignore_local=True)
+    temp_config = load_config(str(temp_conf_file.absolute()), load_local=False)
     assert len(temp_config) == 2
     assert temp_config['name'] == 'Temporary Name'
     assert temp_config['location']['elevation'] == 1234.56 * u.m
     assert isinstance(temp_config['location'], dict)
 
-    # Don't load the local
-    temp_config = load_config(str(temp_conf_local_file.absolute()), ignore_local=False)
+    # Load the local
+    temp_config = load_config(str(temp_conf_local_file.absolute()), load_local=True)
     assert len(temp_config) == 2
     assert temp_config['name'] == 'Local Name'
     assert temp_config['location']['elevation'] == 1234.56 * u.m
     assert isinstance(temp_config['location'], dict)
 
-    # Reload the local but don't parse
+    # Reload the local but don't parse, load_local is default.
     temp_config = load_config(str(temp_conf_file.absolute()), parse=False)
     assert len(temp_config) == 2
     assert temp_config['name'] == 'Local Name'
@@ -55,11 +56,11 @@ def test_save_config_custom_file(tmp_path):
     temp_local = str(temp_conf_file).replace('.yaml', '_local.yaml')
     assert os.path.exists(temp_local)
 
-    temp_config = load_config(str(temp_conf_file), ignore_local=True)
-    assert temp_config == dict()
-
-    temp_config = load_config(str(temp_conf_file), ignore_local=False)
+    temp_config = load_config(str(temp_conf_file), load_local=True)
     assert temp_config['foo'] == 1
+
+    temp_config = load_config(str(temp_conf_file), load_local=False)
+    assert temp_config == dict()
 
     with pytest.raises(FileExistsError):
         save_config(str(temp_conf_file), dict(foo=2, bar=2), overwrite=False)
@@ -78,7 +79,7 @@ def test_save_config_custom_local_file(tmp_path):
     save_config(str(temp_conf_local_file), dict(foo=1, bar=2), overwrite=False)
     assert os.path.exists(temp_conf_local_file)
 
-    temp_config = load_config(str(temp_conf_file), ignore_local=True)
+    temp_config = load_config(str(temp_conf_file), load_local=False)
     assert temp_config == dict()
 
     temp_config = load_config(str(temp_conf_file))

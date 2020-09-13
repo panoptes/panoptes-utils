@@ -1,13 +1,13 @@
 PANOPTES Utils Image
---------------------
+====================
 
-The `panoptes-utils` image is built on top of `panoptes-base` and installs the `panoptes-utils` module 
-(in editable mode) from the appropriate branch on Github.
+The `panoptes-utils` image is built on top of `panoptes-base` and installs 
+the `panoptes-utils` module (in editable mode) from the appropriate branch on Github.
 
-By default the module is installed with the `testing` and `google` extras (i.e
-`pip install -e ".[testing,google]"`)
+By default the module is installed with the `testing` and `google` extras 
+(i.e `pip install -e ".[testing,google]"`).
 
-## Image Details
+# Image Details
 
 Image name: `gcr.io/panoptes-exp/panoptes-utils`
 
@@ -24,7 +24,7 @@ Entrypoint: `/usr/bin/zsh` as `$PANUSER` (default `panoptes`) user via `gosu`. S
 Cmd: The default `CMD` is a `zsh` with a [conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) 
 activated (named `panoptes`) and the `WORKDIR` is `PANDIR`.
 
-## Building the image locally
+# Building the image locally
 
 > Note: Make sure you have your `$PANDIR` environment variable set 
 > to something like: `PANDIR=/var/panoptes`
