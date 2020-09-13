@@ -2,7 +2,9 @@
 set -e
 
 TAG="${TAG:-develop}"
+PANDIR="${PANDIR:-$PWD/../}"
 PANOPTES_UTILS="${PANOPTES_UTILS:-${PANDIR}/panoptes-utils}"
+
 INCLUDE_BASE="${INCLUDE_BASE:-false}"
 BASE_IMAGE_URL="${BASE_IMAGE_URL:-gcr.io/panoptes-exp/panoptes-base:latest}"
 

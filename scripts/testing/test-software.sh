@@ -3,8 +3,8 @@
 clear
 
 SLEEP_TIME=${SLEEP_TIME:-5}
-export PANDIR="${PANDIR:-/var/panoptes}"
-export PANLOG="${PANLOG:-${PANDIR}/logs}"
+PANDIR="${PANDIR:-$PWD/../../}"
+PANLOG="${PANLOG:-${PANDIR}/logs}"
 
 cat <<EOF
 Beginning test of panoptes-utils software. This software is run inside a virtualized docker
