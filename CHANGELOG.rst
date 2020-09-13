@@ -23,13 +23,13 @@ Changed
   * ``host`` and ``port`` are specified at the top-level command, e.g. ``panoptes-config-server --host foobar --port 9999 get``.
   * ``host`` and ``port`` respect the above envvars above.
   * Options changed from ``auto-save`` and ``ignore-local`` to ``save-local`` and ``load-local``.
-  * ``run`` command daemonizes properly and adds ``config_server.running=True`` entry to the server.
+  * ``run`` command adds the``config_server.running=True`` entry to the server.
   * ``stop`` command added that sets ``config_server.running=False`` to break loop.
 
 
 * Testing  (@wtgee #241): 
 
-  * all testing is started from ``scripts/test-software.sh``, which runs the ``docker/docker-compose-testing.yaml`` file.
+  * All testing is started from ``scripts/test-software.sh``.
   * The ``panoptes-config-server`` is started as an external service, not in the pytest conf.
   * Added a ``tests/env`` file that is used by the docker compose file for setting vars inside the running containers.
   * Config server uses ``tests/testing.yaml`` for all testing.
