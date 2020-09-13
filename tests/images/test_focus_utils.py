@@ -1,8 +1,6 @@
 import os
 import pytest
 
-import numpy as np
-
 from astropy.io import fits
 
 from panoptes.utils.images import mask_saturated

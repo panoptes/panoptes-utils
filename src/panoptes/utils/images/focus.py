@@ -1,3 +1,4 @@
+import numpy as np
 
 
 def focus_metric(data, merit_function='vollath_F4', **kwargs):
