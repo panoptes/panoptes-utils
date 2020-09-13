@@ -269,7 +269,7 @@ def mask_saturated(data, saturation_level=None, threshold=0.9, bit_depth=None, d
                 saturation_level = threshold * np.iinfo(data.dtype).max
             except ValueError:
                 # ValueError from np.iinfo means not an integer type.
-                raise error.IllegalValue("Neither saturation_level or bit_depth given, & data " +
+                raise error.IllegalValue("Neither saturation_level or bit_depth given, and data " +
                                          "is not an integer type. Cannot determine correct " +
                                          "saturation level.")
 
