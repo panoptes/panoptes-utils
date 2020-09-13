@@ -2,12 +2,12 @@ import os
 from contextlib import suppress
 
 from ..logging import logger
-from ..utils import listify
 from ..serializers import from_yaml
 from ..serializers import to_yaml
+from ..utils import listify
 
 
-def load_config(config_files=None, parse=True, ignore_local=False):
+def load_config(config_files=None, parse=True, load_local=True):
     """Load configuration information.
 
     .. note::
@@ -45,14 +45,14 @@ def load_config(config_files=None, parse=True, ignore_local=False):
     a local version of the file so the default settings can always be recovered if necessary.
 
     Local files can be ignored (mostly for testing purposes or for recovering default values)
-    with the ``ignore_local`` parameter.
+    with the ``load_local=False`` parameter.
 
     Args:
         config_files (list, optional): A list of files to load as config,
             see Notes for details of how to specify files.
         parse (bool, optional): If the config file should attempt to create
             objects such as dates, astropy units, etc.
-        ignore_local (bool, optional): If local files should be ignored, see
+        load_local (bool, optional): If local files should be used, see
             Notes for details.
 
     Returns:
@@ -70,23 +70,19 @@ def load_config(config_files=None, parse=True, ignore_local=False):
             logger.warning(f"Problem with {config_file=}, skipping. {e!r}")
 
         # Load local version of config
-        if ignore_local is False:
+        if load_local:
             local_version = config_file.replace('.', '_local.')
             if os.path.exists(local_version):
                 try:
                     _add_to_conf(config, local_version, parse=parse)
                 except Exception as e:  # pragma: no cover
-                    logger.warning(
-                        f"Problem with local config file {local_version}, skipping: {e!r}")
+                    logger.warning(f"Problem with {local_version=}, skipping: {e!r}")
 
     # parse_config_directories currently only corrects directory names.
     if parse:
         logger.trace(f'Parsing {config=}')
-        try:
+        with suppress(KeyError):
             config['directories'] = parse_config_directories(config['directories'])
-        except Exception as e:
-            logger.warning(f'Unable to parse config: {e=}')
-        else:
             logger.trace(f'Config directories parsed: {config=}')
 
     return config
