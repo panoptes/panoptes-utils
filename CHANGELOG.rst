@@ -8,7 +8,8 @@ Changelog
 Changed
 ^^^^^^^
 
-* Single cloudbuild file for both ``panotpes-base`` and ``panotpes-utils``. (#242)
+* Single cloudbuild file for both ``panoptes-base`` and ``panoptes-utils``. (#242)
+* Add ``astropy`` channel.
 
 0.2.27 - 2020-09-12
 -------------------
