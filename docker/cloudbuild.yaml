@@ -49,7 +49,7 @@ steps:
     waitFor: [ "setup-buildx" ]
 
   # Build panoptes-base.
-  - name: "gcr.io/cloud-build/docker"
+  - name: "gcr.io/cloud-builders/docker"
     id: "build-base"
     env:
       - "DOCKER_CLI_EXPERIMENTAL=enabled"
