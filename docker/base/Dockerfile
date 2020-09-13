@@ -81,11 +81,18 @@ RUN wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/M
         -O "${PANDIR}/scripts/install-miniforge.sh" && \
     /bin/sh "${PANDIR}/scripts/install-miniforge.sh" -b -f -p "${PANDIR}/conda" && \
     # Make sure to use conda for some of the larger modules.
-    "${PANDIR}/conda/bin/conda" create -y -n "${conda_env_name}" python=3.8 \
+    "${PANDIR}/conda/bin/conda" create \
+        --yes --name "${conda_env_name}" \
+        --channel astropy \
+        --channel conda-forge \
+        # Python version
+        python=3.8 \
+        # Packages
         astroplan \
         astropy \
         bokeh \
         click \
+        gevent \
         loguru \
         matplotlib \
         numpy \
