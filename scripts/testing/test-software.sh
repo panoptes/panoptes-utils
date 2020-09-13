@@ -19,11 +19,12 @@ EOF
 
 sleep "${SLEEP_TIME}"
 
-echo "Running tests with $(id)"
-echo "Using PANDIR=${PANDIR} for docker-compose with project-directory=${PWD}"
 docker run --rm -it \
   --init \
-  --env-file "${PANDIR}/panoptes-utils/tests/env" \
-  -v "${PANDIR}/logs":/var/panoptes/logs \
+  --env-file "./tests/env" \
+  -v "${PANLOG}":/var/panoptes/logs \
   panoptes-utils:develop \
   "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh"
+
+echo "test output dir ${PANLOG}:"
+ls "${PANLOG}/panoptes-testing.log"
