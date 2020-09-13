@@ -273,6 +273,7 @@ def mask_saturated(data, saturation_level=None, threshold=0.9, bit_depth=None, d
                                          "is not an integer type. Cannot determine correct " +
                                          "saturation level.")
 
+    # Convert data to masked array of requested dtype, mask values above saturation level.
     return np.ma.array(data, mask=(data > saturation_level), dtype=dtype)
 
 
