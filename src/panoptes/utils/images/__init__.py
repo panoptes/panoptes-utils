@@ -222,7 +222,7 @@ def _make_pretty_from_cr2(fname, title=None, **kwargs):
     return fname.replace('cr2', 'jpg')
 
 
-def mask_saturated(data, saturation_level=None, threshold=0.9, bit_depth=None):
+def mask_saturated(data, saturation_level=None, threshold=0.9, bit_depth=None, dtype=None):
     """Convert data to a masked array with saturated values masked.
 
     Args:
@@ -236,6 +236,8 @@ def mask_saturated(data, saturation_level=None, threshold=0.9, bit_depth=None):
             otherwise an attempt will be made to infer the maximum pixel value from the
             data type of the data. If data is not an integer type the maximum pixel value
             cannot be inferred and an IllegalValue exception will be raised.
+        dtype (numpy.dtype, optional): The requested dtype for the masked array. If not given
+            the dtype of the masked array will be same as data.
 
     Returns:
         numpy.ma.array: The masked numpy array.
@@ -271,7 +273,7 @@ def mask_saturated(data, saturation_level=None, threshold=0.9, bit_depth=None):
                                          "is not an integer type. Cannot determine correct " +
                                          "saturation level.")
 
-    return np.ma.array(data, mask=(data > saturation_level))
+    return np.ma.array(data, mask=(data > saturation_level), dtype=dtype)
 
 
 def make_timelapse(
