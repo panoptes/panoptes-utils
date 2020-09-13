@@ -2,7 +2,67 @@
 Changelog
 =========
 
-0.2.24 - 2020-08-20
+0.2.27 - 2020-09-12
+-------------------
+
+Added
+^^^^^
+
+* Config server startup controlled via envvars, incorporating ``python-dotenv`` (@wtgee #241):
+
+  * ``PANOPTES_CONFIG_HOST`` and ``PANOPTES_CONFIG_PORT``
+  * ``PANOPTES_CONFIG_FILE``
+
+Changed
+^^^^^^^
+
+* Config server updates (@wtgee #241):
+
+  * Config server with project dir mounted can be started via ``docker/docker-testing.yaml``.
+  * Config server flask instances are run on ``gevent`` wsgi server instead of development server.
+  * ``host`` and ``port`` are specified at the top-level command, e.g. ``panoptes-config-server --host foobar --port 9999 get``.
+  * ``host`` and ``port`` respect the above envvars above.
+  * Options changed from ``auto-save`` and ``ignore-local`` to ``save-local`` and ``load-local``.
+  * ``run`` command adds the``config_server.running=True`` entry to the server.
+  * ``stop`` command added that sets ``config_server.running=False`` to break loop.
+
+
+* Testing  (@wtgee #241): 
+
+  * All testing is started from ``scripts/test-software.sh``.
+  * The ``panoptes-config-server`` is started as an external service, not in the pytest conf.
+  * Added a ``tests/env`` file that is used by the docker compose file for setting vars inside the running containers.
+  * Config server uses ``tests/testing.yaml`` for all testing.
+  * Testing logs are stored in ``./logs``, relative to the project root outside the container.
+  * Coverage file is stored in ``/var/panoptes/logs``.
+  * A ``scripts/wait-for-it.sh`` script added to check that config server is running properly before starting tests.
+
+
+Fixed
+^^^^^
+
+* ``scripts/setup-local-environment.sh`` properly uses new base image if requested. (@wtgee #241)
+* Docker images: fixed the created ``ssh`` directory for ``$PANUSER``. (@wtgee #240)
+
+
+0.2.26 - 2020-08-21
+-------------------
+
+This release is mostly cleanup and testing of our autobuild features.
+
+Changed
+^^^^^^^
+
+* Splitting the `panoptes-base` files into separate folder. (#238)
+* Consolidate the GitHub Actions for building and publishing a release package. (#239)
+
+Fixed
+^^^^^
+
+* Fix Github Actions for building releases. (#238)
+
+
+0.2.25 - 2020-08-20
 -------------------
 
 Added

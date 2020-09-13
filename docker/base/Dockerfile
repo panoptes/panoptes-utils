@@ -50,13 +50,14 @@ RUN apt-get update && \
     # Copy zshrc to /etc/skel for new users.
     cat "/tmp/zshrc" >> /etc/skel/.zshrc && \
     # Create $PANUSER.
+    echo "Creating new user ${USERID} ${PANUSER} '${pan_user_fullname}'" && \
     useradd --shell /bin/zsh -u ${USERID} -o -c "${pan_user_fullname}" \
         -p panoptes -m -G plugdev,dialout,users,sudo ${PANUSER} && \
     # Allow sudo without password.
     echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
     # Create ssh-key for user.
-    mkdir -p /home/${PANUSER}/.key && \
-    ssh-keygen -q -t rsa -N "" -f "/home/${PANUSER}/.key/id_rsa" && \
+    mkdir -p /home/${PANUSER}/.ssh && \
+    ssh-keygen -q -t rsa -N "" -f "/home/${PANUSER}/.ssh/id_rsa" && \
     # astrometry.net folders.
     mkdir -p "${astrometry_dir}" && \
     echo "add_path ${astrometry_dir}" >> /etc/astrometry.cfg && \
@@ -98,7 +99,7 @@ RUN wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/M
     # Activate the environment by default.
     printf "\nconda activate ${conda_env_name}\n" >> "${HOME}/.bashrc" && \
     printf "\nconda activate ${conda_env_name}\n" >> "${HOME}/.zshrc" && \
-    printf "\necho Welcome to POCS!\n" >> "${HOME}/.zshrc" && \
+    printf "\necho PANOPTES utils activated!\n" >> "${HOME}/.zshrc" && \
     # Download astrometry.net index files.
     # TODO replace this with a pre-constructed volume that has the files.
     "${PANDIR}/conda/envs/${conda_env_name}/bin/python" "${PANDIR}/scripts/download-data.py" \
