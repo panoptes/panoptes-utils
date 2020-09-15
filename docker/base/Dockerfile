@@ -80,6 +80,8 @@ COPY --chown=panoptes:panoptes ./scripts/download-data.py "${PANDIR}/scripts/dow
 RUN wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-$(uname -m).sh" \
         -O "${PANDIR}/scripts/install-miniforge.sh" && \
     /bin/sh "${PANDIR}/scripts/install-miniforge.sh" -b -f -p "${PANDIR}/conda" && \
+    # Remove install file.
+    rm "${PANDIR}/scripts/install-miniforge.sh" && \
     # Make sure to use conda for some of the larger modules.
     "${PANDIR}/conda/bin/conda" create \
         --yes --name "${conda_env_name}" \
