@@ -2,15 +2,13 @@ import os
 import shutil
 import subprocess
 
-from google.cloud import bigquery
-from google.auth.credentials import AnonymousCredentials
-
-from astropy.table import Table
 from astropy import units as u
 from astropy.coordinates import SkyCoord, match_coordinates_sky
-
-from .images import fits as fits_utils
-from .logging import logger
+from astropy.table import Table
+from google.auth.credentials import AnonymousCredentials
+from google.cloud import bigquery
+from panoptes.utils.images import fits as fits_utils
+from panoptes.utils.logging import logger
 
 
 def _get_bq_client(project_id='panoptes-exp', credentials=AnonymousCredentials()):

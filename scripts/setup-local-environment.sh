@@ -28,7 +28,8 @@ build_base() {
 build_develop() {
   echo "Building local panoptes-utils:${TAG} from ${BASE_IMAGE_URL} in ${PANOPTES_UTILS}"
   docker build \
-    --build-arg "userid=$(id -u),image_url=${BASE_IMAGE_URL}" \
+    --build-arg userid="$(id -u)" \
+    --build-arg image_url="${BASE_IMAGE_URL}" \
     -t "panoptes-utils:${TAG}" \
     -f "${PANOPTES_UTILS}/docker/Dockerfile" \
     "${PANOPTES_UTILS}"

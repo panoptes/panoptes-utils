@@ -1,14 +1,14 @@
 """Provides SerialData, a PySerial wrapper."""
 
 import operator
-import serial
-from serial.tools.list_ports import comports as get_comports
 import time
 from contextlib import suppress
 
-from . import error
-from .logging import logger
-from .serializers import from_json
+import serial
+from panoptes.utils import error
+from panoptes.utils import serializers
+from panoptes.utils.logging import logger
+from serial.tools.list_ports import comports as get_comports
 
 
 # Note: get_serial_port_info is replaced by tests to override the normal
@@ -264,7 +264,7 @@ class SerialData(object):
                 continue
 
             with suppress(error.InvalidDeserialization):
-                data = from_json(line)
+                data = serializers.from_json(line)
                 if data:
                     return (ts, data)
         return None

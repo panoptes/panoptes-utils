@@ -2,11 +2,10 @@ import os
 
 import requests
 from dotenv import load_dotenv
-
-from ..error import InvalidConfig
-from ..logging import logger
-from ..serializers import from_json
-from ..serializers import to_json
+from panoptes.utils.error import InvalidConfig
+from panoptes.utils.logging import logger
+from panoptes.utils.serializers import from_json
+from panoptes.utils.serializers import to_json
 
 load_dotenv()
 

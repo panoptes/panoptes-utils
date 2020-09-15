@@ -1,8 +1,8 @@
 import abc
 
-from ..time import current_time
-from ..library import load_module
-from ..logging import logger
+from panoptes.utils.library import load_module
+from panoptes.utils.logging import logger
+from panoptes.utils.time import current_time
 
 
 def create_storage_obj(collection, data, obj_id):

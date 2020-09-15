@@ -72,8 +72,8 @@ instead of `My File.py`.
 - Use root-relative imports (i.e. relative to the POCS directory). This means that rather
   than using a directory relative imports such as:
   ```python
-  from ..base import PanBase
-  from ..utils import current_time
+  from panoptes.utils.base import PanBase
+  from panoptes.utils.utils import current_time
   ```
   Import from the top-down instead:
   ```python
