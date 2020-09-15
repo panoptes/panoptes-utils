@@ -9,15 +9,15 @@ import copy
 import datetime
 import queue
 import random
-from serial import serialutil
 import threading
 import time
 import urllib
 
+from panoptes.utils import serial_handlers
 from panoptes.utils.logging import logger
-from panoptes.utils.serializers import to_json
 from panoptes.utils.serializers import from_json
-from .. import serial_handlers
+from panoptes.utils.serializers import to_json
+from serial import serialutil
 
 
 def _drain_queue(q):

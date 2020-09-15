@@ -1,9 +1,9 @@
+import collections.abc
 import contextlib
 import os
 import re
 import shutil
 import signal
-import collections.abc
 from urllib.parse import unquote as unquote_url
 
 import numpy as np
@@ -11,8 +11,7 @@ from astropy import units as u
 from astropy.coordinates import AltAz
 from astropy.coordinates import ICRS
 from astropy.coordinates import SkyCoord
-
-from .time import current_time
+from panoptes.utils.time import current_time
 
 PATH_MATCHER = re.compile(r'''
     .*?

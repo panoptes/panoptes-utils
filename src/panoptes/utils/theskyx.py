@@ -1,11 +1,10 @@
 import socket
 
-from .logging import logger
-from . import error
+from panoptes.utils import error
+from panoptes.utils.logging import logger
 
 
 class TheSkyX(object):
-
     """ A socket connection for communicating with TheSkyX
 
 

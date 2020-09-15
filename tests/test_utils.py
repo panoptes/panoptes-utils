@@ -1,12 +1,12 @@
 import os
-import pytest
 import signal
 
-from panoptes.utils import DelaySigTerm
-from panoptes.utils import listify
+import pytest
 from panoptes.utils import error
-from panoptes.utils.library import load_module
+from panoptes.utils import listify
 from panoptes.utils.library import load_c_library
+from panoptes.utils.library import load_module
+from panoptes.utils.utils import DelaySigTerm
 
 
 def test_bad_load_module():

@@ -1,1 +1,1 @@
-from .base import AbstractPanDB, PanDB
+from panoptes.utils.database.base import AbstractPanDB, PanDB

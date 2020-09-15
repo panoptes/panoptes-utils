@@ -1,10 +1,9 @@
 import time
 
 import click
-
-from .client import get_config, set_config, server_is_running
-from .server import config_server
-from ..logging import logger
+from panoptes.utils.config import server
+from panoptes.utils.config.client import get_config, set_config, server_is_running
+from panoptes.utils.logging import logger
 
 
 @click.group()
@@ -52,7 +51,7 @@ def run(context, config_file=None, save_local=True, load_local=False):
     """
     host = context.obj.get('host')
     port = context.obj.get('port')
-    server_process = config_server(
+    server_process = server.config_server(
         config_file,
         host=host,
         port=port,

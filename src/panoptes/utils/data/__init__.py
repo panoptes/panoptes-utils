@@ -1,1 +1,1 @@
-from .metadata import get_metadata, search_observations
+from panoptes.utils.data.metadata import get_metadata, search_observations
