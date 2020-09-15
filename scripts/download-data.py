@@ -3,11 +3,9 @@
 import os
 import shutil
 
+import click
 from astroplan import download_IERS_A
 from astropy.utils import data
-
-import click
-
 from loguru import logger
 
 DEFAULT_DATA_FOLDER = os.path.expandvars("$PANDIR/astrometry/data")
@@ -117,16 +115,17 @@ class Downloader(object):
             download_IERS_A(show_progress=self.verbose)
             return True
         except Exception as e:
-            logger.warning(f'Failed to download IERS A bulletin: {e}')
+            logger.warning(f'Failed to download IERS A bulletin: {e!r}')
             return False
 
     def download_one_file(self, fn):
         """Downloads one astrometry.net file into self.data_folder."""
-        dest = "{}/{}".format(self.data_folder, os.path.basename(fn))
+        dest = f"{self.data_folder}/{os.path.basename(fn)}"
         if os.path.exists(dest):
             return True
-        url = "http://data.astrometry.net/{}".format(fn)
+        url = f"http://data.astrometry.net/{fn}"
         try:
+            logger.debug(f'Downloading {url=}')
             df = data.download_file(url)
         except Exception as e:
             if not self.keep_going:
@@ -135,7 +134,7 @@ class Downloader(object):
             return False
         # The file has been downloaded to some directory. Move the file into the data folder.
         try:
-            self.create_data_folder()
+            os.makedirs(self.data_folder, exist_ok=True)
             shutil.move(df, dest)
             return True
         except OSError as e:
@@ -143,12 +142,6 @@ class Downloader(object):
                 raise e
             logger.warning(f"Problem saving {url}. Check permissions: {e}")
             return False
-
-    def create_data_folder(self):
-        """Creates the data folder if it does not exist."""
-        if not os.path.exists(self.data_folder):
-            logger.info("Creating data folder: {}.".format(self.data_folder))
-            os.makedirs(self.data_folder)
 
 
 if __name__ == '__main__':

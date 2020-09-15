@@ -1,25 +1,24 @@
 import os
 import re
-import subprocess
 import shutil
+import subprocess
 from contextlib import suppress
 from warnings import warn
 
-from dateutil.parser import parse as date_parse
 import numpy as np
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-from matplotlib.figure import Figure
-
-from astropy.wcs import WCS
+from astropy import units as u
 from astropy.nddata import Cutout2D
 from astropy.visualization import (PercentileInterval, LogStretch, ImageNormalize)
-
-from .. import error
-from ..logging import logger
-from ..time import current_time
-from ..images import fits as fits_utils
-from ..images.plot import add_colorbar
-from ..images.plot import get_palette
+from astropy.wcs import WCS
+from dateutil.parser import parse as date_parse
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
+from panoptes.utils import error
+from panoptes.utils.images import fits as fits_utils
+from panoptes.utils.images.plot import add_colorbar
+from panoptes.utils.images.plot import get_palette
+from panoptes.utils.logging import logger
+from panoptes.utils.time import current_time
 
 
 def crop_data(data, box_width=200, center=None, data_only=True, wcs=None, **kwargs):
@@ -221,31 +220,59 @@ def _make_pretty_from_cr2(fname, title=None, **kwargs):
     return fname.replace('cr2', 'jpg')
 
 
-def mask_saturated(data, saturation_level=None, threshold=0.9, dtype=np.float64):
-    """Convert data to masked array of requested dtype with saturated values masked.
+def mask_saturated(data, saturation_level=None, threshold=0.9, bit_depth=None, dtype=None):
+    """Convert data to a masked array with saturated values masked.
 
     Args:
         data (array_like): The numpy data array.
-        saturation_level (float, optional): The saturation level. If None,
-            the level will be set to the threshold times the max value for the dtype.
-        threshold (float, optional): The percentage of the max value to use.
-        dtype (numpy.dtype, optional): The requested dtype for the new array.
+        saturation_level (scalar, optional): The saturation level. If not given then the
+            saturation level will be set to threshold times the maximum pixel value.
+        threshold (float, optional): The fraction of the maximum pixel value to use as
+            the saturation level, default 0.9.
+        bit_depth (astropy.units.Quantity or int, optional): The effective bit depth of the
+            data. If given the maximum pixel value will be assumed to be 2**bit_depth,
+            otherwise an attempt will be made to infer the maximum pixel value from the
+            data type of the data. If data is not an integer type the maximum pixel value
+            cannot be inferred and an IllegalValue exception will be raised.
+        dtype (numpy.dtype, optional): The requested dtype for the masked array. If not given
+            the dtype of the masked array will be same as data.
 
     Returns:
         numpy.ma.array: The masked numpy array.
+
+    Raises:
+        error.IllegalValue: Raised if bit_depth is an astropy.units.Quantity object but the
+            units are not compatible with either bits or bits/pixel.
+        error.IllegalValue: Raised if neither saturation level or bit_depth are given, and data
+            has a non integer data type.
     """
     if not saturation_level:
-        try:
-            # If data is an integer type use iinfo to compute machine limits.
-            dtype_info = np.iinfo(data.dtype)
-        except ValueError:
-            # Not an integer type. Assume for now we have 16 bit data.
-            saturation_level = threshold * (2 ** 16 - 1)
-        else:
-            # Data is an integer type, set saturation level at specified fraction of
-            # max value for the type.
-            saturation_level = threshold * dtype_info.max
+        if bit_depth is not None:
+            try:
+                with suppress(AttributeError):
+                    bit_depth = bit_depth.to_value(unit=u.bit)
+            except u.UnitConversionError:
+                try:
+                    bit_depth = bit_depth.to_value(unit=u.bit / u.pixel)
+                except u.UnitConversionError:
+                    raise error.IllegalValue("bit_depth must have units of bits or bits/pixel, " +
+                                             f"got {bit_depth!r}")
 
+            bit_depth = int(bit_depth)
+            logger.trace(f"Using bit depth {bit_depth!r}")
+            saturation_level = threshold * (2**bit_depth - 1)
+        else:
+            # No bit depth specified, try to guess.
+            logger.trace(f"Inferring bit_depth from data type, {data.dtype!r}")
+            try:
+            # Try to use np.iinfo to compute machine limits. Will work for integer types.
+                saturation_level = threshold * np.iinfo(data.dtype).max
+            except ValueError:
+                # ValueError from np.iinfo means not an integer type.
+                raise error.IllegalValue("Neither saturation_level or bit_depth given, and data " +
+                                         "is not an integer type. Cannot determine correct " +
+                                         "saturation level.")
+    logger.debug(f"Masking image using saturation level {saturation_level!r}")
     # Convert data to masked array of requested dtype, mask values above saturation level.
     return np.ma.array(data, mask=(data > saturation_level), dtype=dtype)
 

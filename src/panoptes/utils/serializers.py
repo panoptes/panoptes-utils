@@ -1,16 +1,15 @@
+import json
+from collections import OrderedDict
 from contextlib import suppress
 from copy import deepcopy
-from collections import OrderedDict
-import json
-from ruamel.yaml import YAML
-from ruamel.yaml.compat import StringIO
 
 import numpy as np
-from dateutil.parser import parse as date_parse
-from astropy.time import Time
 from astropy import units as u
-
-from . import error
+from astropy.time import Time
+from dateutil.parser import parse as date_parse
+from panoptes.utils import error
+from ruamel.yaml import YAML
+from ruamel.yaml.compat import StringIO
 
 
 class StringYAML(YAML):

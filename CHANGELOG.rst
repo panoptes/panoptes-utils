@@ -2,6 +2,22 @@
 Changelog
 =========
 
+0.2.28 - 2020-09-15
+-------------------
+
+Added
+^^^^^
+
+* Add bit_depth argument to mask_saturated, no longer convert to float64 by default (@AnthonyHorton #244)
+
+Changed
+^^^^^^^
+
+* Single cloudbuild file for both ``panoptes-base`` and ``panoptes-utils``. (#242)
+* Add ``astropy`` channel.
+* Remove the miniforge installer from the docker image and clean up build args. (@wtgee #245)
+* Changed relative to absolute imports. (@wtgee #246)
+
 0.2.27 - 2020-09-12
 -------------------
 
