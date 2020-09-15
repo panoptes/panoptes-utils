@@ -2,6 +2,7 @@ from decimal import Decimal
 
 import numpy as np
 from astropy.stats import SigmaClip
+from panoptes.utils.images import fits as fits_utils
 from panoptes.utils.logging import logger
 from photutils import Background2D
 from photutils import BkgZoomInterpolator
@@ -9,8 +10,6 @@ from photutils import MMMBackground
 from photutils import MeanBackground
 from photutils import MedianBackground
 from photutils import SExtractorBackground
-
-from . import fits as fits_utils
 
 
 def get_rgb_data(data, separate_green=False):

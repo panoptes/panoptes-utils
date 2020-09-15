@@ -10,8 +10,9 @@ except DistributionNotFound:
 finally:
     del get_distribution, DistributionNotFound
 
+from panoptes.utils.utils import listify, get_quantity_value, altaz_to_radec, get_free_space
+from panoptes.utils.time import current_time, flatten_time, wait_for_events, CountdownTimer
+
 from loguru import logger
-from .utils import *
-from .time import *
 
 logger.disable('panoptes')

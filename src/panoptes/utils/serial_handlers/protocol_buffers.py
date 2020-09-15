@@ -1,10 +1,10 @@
 # This module implements a handler for serial_for_url("buffers://").
 
-from . import NoOpSerial
-
 import io
-from serial import serialutil
 import threading
+
+from panoptes.utils.serial_handlers import NoOpSerial
+from serial import serialutil
 
 # r_buffer and w_buffer are binary I/O buffers. read(size=N) on an instance
 # of Serial reads the next N bytes from r_buffer, and write(data) appends the

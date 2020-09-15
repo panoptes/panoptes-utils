@@ -1,5 +1,6 @@
 import sys
-from .logging import logger
+
+from panoptes.utils.logging import logger
 
 
 class PanError(Exception):
