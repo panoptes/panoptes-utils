@@ -1,5 +1,5 @@
 import requests
-from ..logging import logger
+from panoptes.utils.logging import logger
 
 
 class SocialSlack(object):

@@ -1,10 +1,10 @@
 import time
 
 import click
+from panoptes.utils.logging import logger
 
 from .client import get_config, set_config, server_is_running
 from .server import config_server
-from ..logging import logger
 
 
 @click.group()
