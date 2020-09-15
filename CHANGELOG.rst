@@ -10,11 +10,6 @@ Added
 
 * Add bit_depth argument to mask_saturated, no longer convert to float64 by default (@AnthonyHorton #244)
 
-Bug fixes
-^^^^^^^^^
-
-* Remove
-
 Changed
 ^^^^^^^
 
