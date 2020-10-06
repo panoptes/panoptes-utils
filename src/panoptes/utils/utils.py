@@ -207,7 +207,7 @@ def altaz_to_radec(alt=None, az=None, location=None, obstime=None, **kwargs):
     Args:
         alt (int or float): Altitude.
         az (int or float): Azimuth.
-        location (None|astropy.coordinates.EarthLocation, required): A valid location.
+        location (astropy.coordinates.EarthLocation, required): A valid location.
         obstime (None, optional): Time for object, defaults to `current_time`
 
     Returns:
@@ -217,8 +217,8 @@ def altaz_to_radec(alt=None, az=None, location=None, obstime=None, **kwargs):
     if obstime is None:
         obstime = current_time()
 
-    alt = get_quantity_value(alt, 'degree')
-    az = get_quantity_value(az, 'degree')
+    alt = get_quantity_value(alt, 'degree') * u.degree
+    az = get_quantity_value(az, 'degree') * u.degree
 
     altaz = AltAz(obstime=obstime, location=location, alt=alt, az=az)
     return SkyCoord(altaz.transform_to(ICRS))
