@@ -167,7 +167,7 @@ def string_to_params(opts):
     return args, kwargs
 
 
-def altaz_to_radec(alt=35, az=90, location=None, obstime=None, **kwargs):
+def altaz_to_radec(alt=None, az=None, location=None, obstime=None, **kwargs):
     """Convert alt/az degrees to RA/Dec SkyCoord.
 
     >>> from panoptes.utils import altaz_to_radec
@@ -188,11 +188,11 @@ def altaz_to_radec(alt=35, az=90, location=None, obstime=None, **kwargs):
         (281.78..., 4.807...)>
 
     >>> # Will use current time if none given.
-    >>> altaz_to_radec(location=keck)
+    >>> altaz_to_radec(alt=35, az=90, location=keck)
     <SkyCoord (ICRS): (ra, dec) in deg
         (..., ...)>
 
-    >>> altaz_to_radec(location=keck, obstime='2020-02-02T20:20:02.02')
+    >>> altaz_to_radec(alt=35, az=90, location=keck, obstime='2020-02-02T20:20:02.02')
     <SkyCoord (ICRS): (ra, dec) in deg
         (338.4096..., 11.1175...)>
 
@@ -205,14 +205,15 @@ def altaz_to_radec(alt=35, az=90, location=None, obstime=None, **kwargs):
     AssertionError
 
     Args:
-        alt (int, optional): Altitude, defaults to 35
-        az (int, optional): Azimuth, defaults to 90 (east)
+        alt (int): Altitude.
+        az (int): Azimuth.
         location (None|astropy.coordinates.EarthLocation, required): A valid location.
         obstime (None, optional): Time for object, defaults to `current_time`
 
     Returns:
         astropy.coordinates.SkyCoord: Coordinates corresponding to the AltAz.
     """
+    assert alt is not None and az is not None
     assert location is not None
     if obstime is None:
         obstime = current_time()
