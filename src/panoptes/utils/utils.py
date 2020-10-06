@@ -176,8 +176,12 @@ def altaz_to_radec(alt=35, az=90, location=None, obstime=None, **kwargs):
     >>> keck = EarthLocation.of_site('Keck Observatory')
     ...
 
+    >>> altaz_to_radec(alt=75, az=180, location=keck, obstime='2020-02-02T20:20:02.02')
+    <SkyCoord (ICRS): (ra, dec) in deg
+        (281.78..., 4.807...)>
+
     >>> # Can use quantities or not.
-    >>> alt = 75
+    >>> alt = 4500 * u.arcmin
     >>> az = 180 * u.degree
     >>> altaz_to_radec(alt=alt, az=az, location=keck, obstime='2020-02-02T20:20:02.02')
     <SkyCoord (ICRS): (ra, dec) in deg
