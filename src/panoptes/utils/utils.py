@@ -192,7 +192,7 @@ def altaz_to_radec(alt=None, az=None, location=None, obstime=None, **kwargs):
     <SkyCoord (ICRS): (ra, dec) in deg
         (..., ...)>
 
-    >>> altaz_to_radec(alt=35, az=90, location=keck, obstime='2020-02-02T20:20:02.02')
+    >>> altaz_to_radec(alt=0, az=0, location=keck, obstime='2020-02-02T20:20:02.02')
     <SkyCoord (ICRS): (ra, dec) in deg
         (338.4096..., 11.1175...)>
 
@@ -205,15 +205,14 @@ def altaz_to_radec(alt=None, az=None, location=None, obstime=None, **kwargs):
     AssertionError
 
     Args:
-        alt (int): Altitude.
-        az (int): Azimuth.
+        alt (int or float): Altitude.
+        az (int or float): Azimuth.
         location (None|astropy.coordinates.EarthLocation, required): A valid location.
         obstime (None, optional): Time for object, defaults to `current_time`
 
     Returns:
         astropy.coordinates.SkyCoord: Coordinates corresponding to the AltAz.
     """
-    assert alt is not None and az is not None
     assert location is not None
     if obstime is None:
         obstime = current_time()
@@ -296,7 +295,7 @@ def get_quantity_value(quantity, unit=None):
     60
 
     Args:
-        quantity (astropy.units.Quantity): Quantity to extract numerical value from.
+        quantity (astropy.units.Quantity or scalar): Quantity to extract numerical value from.
         unit (astropy.units.Unit, optional): unit to convert to.
 
     Returns:
