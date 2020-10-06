@@ -1,9 +1,9 @@
 version: '3.7'
 services:
-  panoptes-config-server:
-    image: panoptes-utils:develop
+  panoptes-dev-env:
+    image: panoptes-utils:developer
     tty: true
-    container_name: panoptes-config-server
+    container_name: panoptes-jupyter-lab
     privileged: true
     network_mode: host
     environment:
@@ -14,14 +14,12 @@ services:
       PANOPTES_CONFIG_PORT:
       PANOPTES_CONFIG_FILE:
     ports:
-      - "6563:6563"
+      # JupyterLab
+      - "${JUPYTER_PORT:-8080}:8080"
     restart: on-failure
     volumes:
       - type: bind
         source: ../
         target: /var/panoptes/panoptes-utils
-      - type: bind
-        source: "${PANDIR}/logs/"
-        target: /var/panoptes/logs
-    command: [ "panoptes-config-server --verbose run" ]
+    command: [ "jupyter-lab --no-browser --port ${JUPYTER_PORT:-8080}" ]
 

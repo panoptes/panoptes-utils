@@ -1,18 +1,19 @@
 import os
 
 import requests
-from dotenv import load_dotenv
 from panoptes.utils.error import InvalidConfig
 from panoptes.utils.logging import logger
 from panoptes.utils.serializers import from_json
 from panoptes.utils.serializers import to_json
 
-load_dotenv()
-
 
 def server_is_running():
     """Thin-wrapper to check server."""
-    return get_config(endpoint='heartbeat', verbose=False)
+    try:
+        return get_config(endpoint='heartbeat', verbose=False)
+    except Exception as e:
+        logger.warning(f'server_is_running error (ignore if just starting server): {e!r}')
+        return False
 
 
 def get_config(key=None,
