@@ -8,13 +8,15 @@ Changelog
 Changed
 ^^^^^^^
 
-* Docker Tools:
+* ``altaz_to_radec`` accepts astropy quantities. (@wtgee #250)
+* Downloaded helper script doesn't have ``python3`` hardcoded. (@wtgee #250)
+* Docker Tools (@wtgee #248):
 
   * Adds a "developer" dockerfile and compose file to install things for developers.
   * Docker CMD will run ipython.
   * docker-compose file will start a jupyter-lab instance.
 
-* Config Server:
+* Config Server (@wtgee #248):
 
   * Option to start a heartbeat or not.
 
