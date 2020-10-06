@@ -2,6 +2,23 @@
 Changelog
 =========
 
+0.2.29dev
+---------
+
+Changed
+^^^^^^^
+
+* Docker Tools:
+
+  * Adds a "developer" dockerfile and compose file to install things for developers.
+  * Docker CMD will run ipython.
+  * docker-compose file will start a jupyter-lab instance.
+
+* Config Server:
+
+  * Option to start a heartbeat or not.
+
+
 0.2.28 - 2020-09-15
 -------------------
 
