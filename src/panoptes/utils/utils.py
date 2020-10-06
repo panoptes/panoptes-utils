@@ -192,10 +192,6 @@ def altaz_to_radec(alt=None, az=None, location=None, obstime=None, **kwargs):
     <SkyCoord (ICRS): (ra, dec) in deg
         (..., ...)>
 
-    >>> altaz_to_radec(alt=0, az=0, location=keck, obstime='2020-02-02T20:20:02.02')
-    <SkyCoord (ICRS): (ra, dec) in deg
-        (338.4096..., 11.1175...)>
-
     >>> # Must pass a `location` instance.
     >>> altaz_to_radec()
     Traceback (most recent call last):
