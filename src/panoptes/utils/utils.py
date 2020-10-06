@@ -172,14 +172,18 @@ def altaz_to_radec(alt=35, az=90, location=None, obstime=None, **kwargs):
 
     >>> from panoptes.utils import altaz_to_radec
     >>> from astropy.coordinates import EarthLocation
+    >>> from astropy import units as u
     >>> keck = EarthLocation.of_site('Keck Observatory')
     ...
 
-    >>> altaz_to_radec(alt=75, az=180, location=keck, obstime='2020-02-02T20:20:02.02')
+    >>> # Can use quantities or not.
+    >>> alt = 75
+    >>> az = 180 * u.degree
+    >>> altaz_to_radec(alt=alt, az=az, location=keck, obstime='2020-02-02T20:20:02.02')
     <SkyCoord (ICRS): (ra, dec) in deg
         (281.78..., 4.807...)>
 
-    >>> # Will use current time if none given
+    >>> # Will use current time if none given.
     >>> altaz_to_radec(location=keck)
     <SkyCoord (ICRS): (ra, dec) in deg
         (..., ...)>
@@ -198,7 +202,7 @@ def altaz_to_radec(alt=35, az=90, location=None, obstime=None, **kwargs):
 
     Args:
         alt (int, optional): Altitude, defaults to 35
-        az (int, optional): Azimute, defaults to 90 (east)
+        az (int, optional): Azimuth, defaults to 90 (east)
         location (None|astropy.coordinates.EarthLocation, required): A valid location.
         obstime (None, optional): Time for object, defaults to `current_time`
 
@@ -209,7 +213,10 @@ def altaz_to_radec(alt=35, az=90, location=None, obstime=None, **kwargs):
     if obstime is None:
         obstime = current_time()
 
-    altaz = AltAz(obstime=obstime, location=location, alt=alt * u.deg, az=az * u.deg)
+    alt = get_quantity_value(alt, 'degree')
+    az = get_quantity_value(az, 'degree')
+
+    altaz = AltAz(obstime=obstime, location=location, alt=alt, az=az)
     return SkyCoord(altaz.transform_to(ICRS))
 
 
