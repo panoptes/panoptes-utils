@@ -6,7 +6,9 @@ PANDIR="${PANDIR:-$PWD/../}"
 PANOPTES_UTILS="${PANOPTES_UTILS:-${PANDIR}/panoptes-utils}"
 
 INCLUDE_BASE="${INCLUDE_BASE:-false}"
+INCLUDE_DEVELOPER="${INCLUDE_DEVELOPER:-false}"
 BASE_IMAGE_URL="${BASE_IMAGE_URL:-gcr.io/panoptes-exp/panoptes-base:latest}"
+DEVELOPER_IMAGE_URL="${BASE_IMAGE_URL:-gcr.io/panoptes-exp/panoptes-utils:develop}"
 
 echo "Setting up local environment in ${PANOPTES_UTILS}"
 cd "${PANOPTES_UTILS}"
@@ -33,6 +35,21 @@ build_develop() {
     -t "panoptes-utils:${TAG}" \
     -f "${PANOPTES_UTILS}/docker/Dockerfile" \
     "${PANOPTES_UTILS}"
+
+  # Use our local develop for building developer below.
+  DEVELOPER_IMAGE_URL="panoptes-utils:${TAG}"
+  echo "Setting DEVELOPER_IMAGE_URL=${DEVELOPER_IMAGE_URL}"
+}
+
+build_developer() {
+  # Developer is always build from local.
+  echo "Building local panoptes-utils:developer from ${DEVELOPER_IMAGE_URL} in ${PANOPTES_UTILS}"
+  docker build \
+    --build-arg userid="$(id -u)" \
+    --build-arg image_url="${DEVELOPER_IMAGE_URL}" \
+    -t "panoptes-utils:developer" \
+    -f "${PANOPTES_UTILS}/docker/developer/Dockerfile" \
+    "${PANOPTES_UTILS}"
 }
 
 ####################################################################################
@@ -44,6 +61,10 @@ if [ "${INCLUDE_BASE}" = true ]; then
 fi
 
 build_develop
+
+if [ "${INCLUDE_DEVELOPER}" = true ]; then
+  build_developer
+fi
 
 cat <<EOF
 Done building the local images.

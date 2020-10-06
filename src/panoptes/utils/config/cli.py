@@ -42,8 +42,11 @@ def config_server_cli(context, host='localhost', port=6563, verbose=False):
 @click.option('--save-local/--no-save-local',
               default=True,
               help='If the set values should be saved to the local file, default True.')
+@click.option('--heartbeat',
+              default=2,
+              help='Heartbeat interval, default 2 seconds.')
 @click.pass_context
-def run(context, config_file=None, save_local=True, load_local=False):
+def run(context, config_file=None, save_local=True, load_local=False, heartbeat=True):
     """Runs the config server with command line options.
 
     This function is installed as an entry_point for the module, accessible
@@ -68,7 +71,7 @@ def run(context, config_file=None, save_local=True, load_local=False):
 
         # Loop until config told to stop.
         while server_is_running():
-            time.sleep(1)
+            time.sleep(heartbeat)
 
         server_process.terminate()
         server_process.join(30)
