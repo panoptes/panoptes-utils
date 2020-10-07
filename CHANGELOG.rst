@@ -10,13 +10,15 @@ Changed
 
 * Docker Tools:
 
-  * Adds a "developer" dockerfile and compose file to install things for developers.
-  * Docker CMD will run ipython.
-  * docker-compose file will start a jupyter-lab instance.
+  * Don't install a separate conda environment, just use the base to help reduce image size, complexity. (@wtgee @252)
+  * Conda environment built from ``resources/environment.yaml``. (@wtgee #252)
+  * Adds a "developer" dockerfile and compose file to install things for developers. (@wtgee #248)
+  * Docker CMD will run ipython. (@wtgee #248)
+  * docker-compose file will start a jupyter-lab instance. (@wtgee #248)
 
 * Config Server:
 
-  * Option to start a heartbeat or not.
+  * Option to start a heartbeat or not. (@wtgee #248)
 
 Removed
 ^^^^^^^

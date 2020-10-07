@@ -12,7 +12,6 @@ ARG userid=1000
 ARG pan_dir=/var/panoptes
 ARG pocs_dir="${pan_dir}/POCS"
 ARG astrometry_dir="/astrometry/data"
-ARG conda_env_name="panoptes"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
@@ -76,6 +75,7 @@ RUN apt-get update && \
 
 # Install miniforge (conda-forge) as PANUSER
 USER "${PANUSER}"
+COPY --chown=panoptes:panoptes ./scripts/download-data.py "${PANDIR}/scripts/download-data.py"
 COPY --chown=panoptes:panoptes ./resources/environment.yaml /tmp/
 RUN mkdir -p "${PANDIR}/scripts/" && \
     wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-$(uname -m).sh" \
@@ -88,6 +88,11 @@ RUN mkdir -p "${PANDIR}/scripts/" && \
     # Initialize conda for the shells.
     "${PANDIR}/conda/bin/conda" init bash zsh && \
     printf "\necho PANOPTES utils activated!\n" >> "${HOME}/.zshrc" && \
+    # Download index files.
+    "${PANDIR}/conda/bin/python" "${PANDIR}/scripts/download-data.py" \
+        --wide-field --narrow-field \
+        --folder "${astrometry_dir}" \
+        --verbose && \
     # Cleanup conda.
     "${PANDIR}/conda/bin/conda" clean -tipy
 
