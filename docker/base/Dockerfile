@@ -32,7 +32,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         gosu wget curl bzip2 ca-certificates zsh openssh-client nano \
         astrometry.net sextractor dcraw exiftool libcfitsio-dev libcfitsio-bin imagemagick \
-        libfreetype6-dev libpng-dev fonts-lato libsnappy-dev libjpeg-dev \
+        libfreetype6-dev libpng-dev fonts-lato libjpeg-dev \
         libffi-dev libssl-dev \
         gcc git pkg-config sudo && \
     # All our shells are belong to Oh My ZSH w/ Spaceship prompt. :)
