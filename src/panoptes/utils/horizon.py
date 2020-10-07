@@ -1,5 +1,4 @@
 import numpy as np
-from scipy import interpolate
 
 
 class Horizon(object):
@@ -81,7 +80,7 @@ class Horizon(object):
             self.az.append([point[1] for point in obstruction])
 
         for obs_az, obs_alt in zip(self.az, self.alt):
-            f = interpolate.interp1d(obs_az, obs_alt)
+            f = np.poly1d(np.polyfit(obs_az, obs_alt, 1))
 
             x_range = np.arange(obs_az[0], obs_az[-1] + 1)
             new_y = f(x_range)
