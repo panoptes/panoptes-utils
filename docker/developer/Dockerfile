@@ -26,6 +26,7 @@ RUN echo "Installing developer modules" && \
     "${PANDIR}/conda/bin/conda" install --yes --name "${conda_env_name}" \
         jupyterlab \
         ipython \
+        pyarrow \
         # Plotting
         altair \
         bokeh \

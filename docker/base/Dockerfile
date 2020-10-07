@@ -76,45 +76,18 @@ RUN apt-get update && \
 
 # Install miniforge (conda-forge) as PANUSER
 USER "${PANUSER}"
-COPY --chown=panoptes:panoptes ./scripts/download-data.py "${PANDIR}/scripts/download-data.py"
-RUN wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-$(uname -m).sh" \
+COPY --chown=panoptes:panoptes ./resources/environment.yaml /tmp/
+RUN mkdir -p "${PANDIR}/scripts/" && \
+    wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-$(uname -m).sh" \
         -O "${PANDIR}/scripts/install-miniforge.sh" && \
     /bin/sh "${PANDIR}/scripts/install-miniforge.sh" -b -f -p "${PANDIR}/conda" && \
     # Remove install file.
     rm "${PANDIR}/scripts/install-miniforge.sh" && \
     # Make sure to use conda for some of the larger modules.
-    "${PANDIR}/conda/bin/conda" create \
-        --yes --name "${conda_env_name}" \
-        --channel astropy \
-        --channel conda-forge \
-        # Python version
-        python=3.8 \
-        # Packages
-        astroplan \
-        astropy \
-        bokeh \
-        click \
-        gevent \
-        loguru \
-        matplotlib \
-        numpy \
-        pandas \
-        pillow \
-        pyarrow \
-        readline \
-        scipy && \
+    "${PANDIR}/conda/bin/conda" env update --file /tmp/environment.yaml && \
     # Initialize conda for the shells.
     "${PANDIR}/conda/bin/conda" init bash zsh && \
-    # Activate the environment by default.
-    printf "\nconda activate ${conda_env_name}\n" >> "${HOME}/.bashrc" && \
-    printf "\nconda activate ${conda_env_name}\n" >> "${HOME}/.zshrc" && \
     printf "\necho PANOPTES utils activated!\n" >> "${HOME}/.zshrc" && \
-    # Download astrometry.net index files.
-    # TODO replace this with a pre-constructed volume that has the files.
-    "${PANDIR}/conda/envs/${conda_env_name}/bin/python" "${PANDIR}/scripts/download-data.py" \
-        --wide-field --narrow-field \
-        --folder "${astrometry_dir}" \
-        --verbose && \
     # Cleanup conda.
     "${PANDIR}/conda/bin/conda" clean -tipy
 
