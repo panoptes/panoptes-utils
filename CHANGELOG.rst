@@ -11,7 +11,9 @@ Changed
 * Changed the horizon module to use numpy interpolation so we don't need to explicitly install scipy. (@wtgee #248)
 * Docker Tools:
 
-  * Don't install a separate conda environment, just use the base to help reduce image size, complexity. (@wtgee @252)
+  * Remove ``source-extractor`` from ``panoptes-utils`` and move to ``panoptes-pipeline``. (@wtgee #252)
+  * Remove ``imagemagick`` from ``panoptes-utils``. This is used for adding titles to JPGs. (@wtgee #252)
+  * Don't install a separate conda environment, just use the base to help reduce image size, complexity. (@wtgee #252)
   * Cleanup unused dependencies. (@wtgee @252)
   * Conda environment built from ``resources/environment.yaml``. (@wtgee #252)
   * Adds a "developer" dockerfile and compose file to install things for developers. (@wtgee #248)
