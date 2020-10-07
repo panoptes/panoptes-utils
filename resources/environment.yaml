@@ -13,5 +13,6 @@ dependencies:
   - pandas
   - photutils
   - pillow
+  - pyarrow
   - readline
   - scipy
