@@ -201,8 +201,8 @@ def altaz_to_radec(alt=None, az=None, location=None, obstime=None, **kwargs):
     AssertionError
 
     Args:
-        alt (int or float): Altitude.
-        az (int or float): Azimuth.
+        alt (astropy.units.Quantity or scalar): Altitude.
+        az (astropy.units.Quantity or scalar): Azimuth.
         location (astropy.coordinates.EarthLocation, required): A valid location.
         obstime (None, optional): Time for object, defaults to `current_time`
 
