@@ -22,8 +22,8 @@ usage() {
 }
 
 if [[ $# -eq 0 ]]; then
-    usage
-    exit 1
+  usage
+  exit 1
 fi
 
 FNAME=$1
@@ -33,41 +33,42 @@ JPG="${FNAME%.cr2}.jpg"
 
 echo "Converting CR2 to ${JPG}."
 
-function command_exists {
-    # https://gist.github.com/gubatron/1eb077a1c5fcf510e8e5
-    # this should be a very portable way of checking if something is on the path
-    # usage: "if command_exists foo; then echo it exists; fi"
-  type "$1" &> /dev/null
+function command_exists() {
+  # https://gist.github.com/gubatron/1eb077a1c5fcf510e8e5
+  # this should be a very portable way of checking if something is on the path
+  # usage: "if command_exists foo; then echo it exists; fi"
+  type "$1" &>/dev/null
 }
 
 # Use exiftool to extract preview if it exists
 if command_exists exiftool; then
-    echo "Using exiftool to extract JPG."
-    exiftool -b -PreviewImage "${FNAME}" > "${JPG}"
+  echo "Using exiftool to extract JPG."
+  exiftool -b -PreviewImage "${FNAME}" >"${JPG}"
 else
-    if command_exists dcraw; then
-        # Convert CR2 to JPG
-        echo "Using dcraw to convert to JPG."
-        dcraw -c -q 3 -a -w -H 5 -b 5 "${FNAME}" | cjpeg -quality 90 > "${JPG}"
-    else
-        echo "Can't find either exiftool or dcraw, cannot proceed"
-        exit 1
-    fi
+  if command_exists dcraw; then
+    # Convert CR2 to JPG
+    echo "Using dcraw to convert to JPG."
+    dcraw -c -q 3 -a -w -H 5 -b 5 "${FNAME}" | cjpeg -quality 90 >"${JPG}"
+  else
+    echo "Can't find either exiftool or dcraw, cannot proceed"
+    exit 1
+  fi
 fi
 
 # Test for file
 if [[ ! -s "${JPG}" ]]; then
-    echo "JPG was not extracted successfully."
-    exit 1
+  echo "JPG was not extracted successfully."
+  exit 1
 fi
 
-if [[ -n "$TITLE" ]]
-  then
-  	echo "Adding title \"${TITLE}\""
-	# Make thumbnail from jpg.
-	convert "${JPG}" -background black -fill red \
-	    -font 'Lato-Regular' -pointsize 60 label:"${TITLE}" \
-	    -gravity South -append "${JPG}"
+if [[ -n "$TITLE" ]]; then
+  if command_exists convert; then
+    echo "Adding title \"${TITLE}\""
+    # Make thumbnail from jpg.
+    convert "${JPG}" -background black -fill red \
+      -font 'Lato-Regular' -pointsize 60 label:"${TITLE}" \
+      -gravity South -append "${JPG}"
+  fi
 fi
 
 echo "${JPG}"
