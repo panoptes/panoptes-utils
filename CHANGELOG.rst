@@ -20,6 +20,11 @@ Changed
 
   * Option to start a heartbeat or not.
 
+Removed
+^^^^^^^
+
+* The ``stars`` module, which has been moved to ``panoptes-pipeline``. (@wtgee #251)
+
 
 0.2.28 - 2020-09-15
 -------------------
