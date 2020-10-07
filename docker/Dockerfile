@@ -11,7 +11,7 @@ ARG userid=1000
 ARG pan_dir=/var/panoptes
 ARG conda_env_name="panoptes"
 
-ARG pip_extras="[testing,google,social]"
+ARG pip_extras="[testing,social]"
 
 ENV USERID $userid
 ENV PANUSER $panuser
