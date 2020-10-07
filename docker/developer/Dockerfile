@@ -27,8 +27,9 @@ RUN echo "Installing developer modules" && \
         jupyterlab \
         ipython \
         # Plotting
-        bokeh \
         altair \
+        bokeh \
+        seaborn \
     && \
     # Cleanup
     sudo apt-get autoremove --purge --yes && \
