@@ -9,12 +9,10 @@ LABEL repo="github.com/panoptes/panoptes-utils"
 ARG panuser=panoptes
 ARG userid=1000
 ARG pan_dir=/var/panoptes
-ARG conda_env_name="panoptes"
 
 ENV USERID $userid
 ENV PANUSER $panuser
 ENV PANDIR $pan_dir
-ENV CONDADIR "${PANDIR}/conda/envs/${conda_env_name}"
 
 # Install module
 USER "${PANUSER}"
@@ -23,7 +21,7 @@ WORKDIR "${PANDIR}/panoptes-utils"
 # Can't seem to get around the hard-coding here.
 COPY --chown=panoptes:panoptes . .
 RUN echo "Installing developer modules" && \
-    "${PANDIR}/conda/bin/conda" install --yes --name "${conda_env_name}" \
+    "${PANDIR}/conda/bin/conda" install --yes --name base \
         jupyterlab \
         ipython \
         pyarrow \
@@ -39,4 +37,4 @@ RUN echo "Installing developer modules" && \
     sudo rm -rf /var/lib/apt/lists/*
 
 USER root
-CMD ["${CONDADIR}/bin/ipython"]
+CMD ["${PANDIR}/conda/bin/ipython"]
