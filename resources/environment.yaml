@@ -1,4 +1,4 @@
-name: panoptes
+name: base
 channels:
   - https://conda.anaconda.org/conda-forge
 dependencies:
