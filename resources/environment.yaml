@@ -3,7 +3,6 @@ channels:
   - https://conda.anaconda.org/conda-forge
 dependencies:
   - python=3.8
-  - google-cloud-sdk
   - astroplan
   - astropy
   - click
