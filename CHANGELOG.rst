@@ -9,7 +9,9 @@ Changed
 ^^^^^^^
 
 * Changed the horizon module to use numpy interpolation so we don't need to explicitly install scipy. (@wtgee #248)
-* Docker Tools:
+* ``altaz_to_radec`` accepts astropy quantities. (@wtgee #250)
+* Downloaded helper script doesn't have ``python3`` hardcoded. (@wtgee #250)
+* Docker Tools (@wtgee #248):
 
   * Remove ``source-extractor`` from ``panoptes-utils`` and move to ``panoptes-pipeline``. (@wtgee #252)
   * Remove ``imagemagick`` from ``panoptes-utils``. This is used for adding titles to JPGs. (@wtgee #252)
