@@ -88,7 +88,7 @@ def stop(context):
     """Stops the config server by setting a flag in the server itself."""
     host = context.obj.get('host')
     port = context.obj.get('port')
-    logger.info('Shutting down config server on {host}:{port}')
+    logger.info(f'Shutting down config server on {host}:{port}')
     set_config('config_server.running', False, host=host, port=port)
 
 
