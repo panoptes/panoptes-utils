@@ -98,28 +98,28 @@ def get_config(key=None,
     config_entry = default
 
     try:
-        logger.log(log_level, f'Calling get_config on {url=} with {key=}')
+        logger.log(log_level, f'Calling get_config on url={url!r} with  key={key!r}')
         response = requests.post(url, json={'key': key, 'verbose': verbose})
         if not response.ok:  # pragma: no cover
-            raise InvalidConfig(f'Config server returned invalid JSON: {response.content=}')
+            raise InvalidConfig(f'Config server returned invalid JSON:  response.content={response.content!r}')
     except Exception as e:
         logger.warning(f'Problem with get_config: {e!r}')
     else:
         response_text = response.text.strip()
-        logger.log(log_level, f'Decoded {response_text=}')
+        logger.log(log_level, f'Decoded  response_text={response_text!r}')
         if response_text != 'null':
-            logger.log(log_level, f'Received config {key=} {response_text=}')
+            logger.log(log_level, f'Received config key={key!r}  response_text={response_text!r}')
             if parse:
-                logger.log(log_level, f'Parsing config results: {response_text=}')
+                logger.log(log_level, f'Parsing config results:  response_text={response_text!r}')
                 config_entry = from_json(response_text)
             else:
                 config_entry = response_text
 
     if config_entry is None:
-        logger.log(log_level, f'No config entry found, returning {default=}')
+        logger.log(log_level, f'No config entry found, returning  default={default!r}')
         config_entry = default
 
-    logger.log(log_level, f'Config {key=}: {config_entry=}')
+    logger.log(log_level, f'Config key={key!r}:  config_entry={config_entry!r}')
     return config_entry
 
 
@@ -172,7 +172,7 @@ def set_config(key, new_value, host=None, port=None, parse=True):
     config_entry = None
     try:
         # We use our own serializer so pass as `data` instead of `json`.
-        logger.info(f'Calling set_config on {url=}')
+        logger.info(f'Calling set_config on  url={url!r}')
         response = requests.post(url,
                                  data=json_str,
                                  headers={'Content-Type': 'application/json'}
