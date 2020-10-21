@@ -213,7 +213,7 @@ def _make_pretty_from_cr2(fname, title=None, **kwargs):
 
     try:
         output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        logger.debug(f'Pretty CR2 {output=}')
+        logger.debug(f'Pretty CR2  output={output!r}')
     except subprocess.CalledProcessError as e:
         raise error.InvalidCommand(f"Error executing {script_name}: {e.output!r}\nCommand: {cmd}")
 

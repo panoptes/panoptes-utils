@@ -66,7 +66,7 @@ def run(context, config_file=None, save_local=True, load_local=False, heartbeat=
     try:
         print(f'Starting config server. Ctrl-c to stop')
         server_process.start()
-        print(f'Config server started on {server_process.pid=}. '
+        print(f'Config server started on  server_process.pid={server_process.pid!r}. '
               f'Set "config_server.running=False" or Ctrl-c to stop')
 
         # Loop until config told to stop.
@@ -88,7 +88,7 @@ def stop(context):
     """Stops the config server by setting a flag in the server itself."""
     host = context.obj.get('host')
     port = context.obj.get('port')
-    logger.info('Shutting down config server on {host}:{port}')
+    logger.info(f'Shutting down config server on {host}:{port}')
     set_config('config_server.running', False, host=host, port=port)
 
 
@@ -111,14 +111,14 @@ def config_getter(context, key, parse=True, default=None):
         key = key[0]
     except IndexError:
         key = None
-    logger.debug(f'Getting config {key=}')
+    logger.debug(f'Getting config  key={key!r}')
     try:
         config_entry = get_config(key=key, host=host, port=port, parse=parse, default=default)
     except Exception as e:
         logger.error(f'Error while trying to get config: {e!r}')
         click.secho(f'Error while trying to get config: {e!r}', fg='red')
     else:
-        logger.debug(f'Config server response: {config_entry=}')
+        logger.debug(f'Config server response:  config_entry={config_entry!r}')
         click.echo(config_entry)
 
 
@@ -134,7 +134,7 @@ def config_setter(context, key, new_value, parse=True):
     host = context.obj.get('host')
     port = context.obj.get('port')
 
-    logger.debug(f'Setting config {key=} {new_value=} on {host}:{port}')
+    logger.debug(f'Setting config key={key!r}  new_value={new_value!r} on {host}:{port}')
     config_entry = set_config(key, new_value, host=host, port=port, parse=parse)
     click.echo(config_entry)
 

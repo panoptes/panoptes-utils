@@ -123,7 +123,7 @@ class Downloader(object):
             return True
         url = f"http://data.astrometry.net/{fn}"
         try:
-            logger.debug(f'Downloading {url=}')
+            logger.debug(f'Downloading {url}')
             df = data.download_file(url)
         except Exception as e:
             if not self.keep_going:

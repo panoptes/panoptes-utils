@@ -8,6 +8,8 @@ Changelog
 Changed
 ^^^^^^^
 
+* Reverting back to ``python=3.7`` for compatibility w/ GCP notebooks. (@wtgee #255)
+* Freezing ``astropy<=4.0.1`` while we wait for ``astroplan`` to get pushed. (@wtgee #255)
 * Changed the horizon module to use numpy interpolation so we don't need to explicitly install scipy. (@wtgee #248)
 * ``altaz_to_radec`` accepts astropy quantities. (@wtgee #250)
 * Downloaded helper script doesn't have ``python3`` hardcoded. (@wtgee #250)
@@ -104,7 +106,7 @@ This release is mostly cleanup and testing of our autobuild features.
 Changed
 ^^^^^^^
 
-* Splitting the `panoptes-base` files into separate folder. (#238)
+* Splitting the ``panoptes-base`` files into separate folder. (#238)
 * Consolidate the GitHub Actions for building and publishing a release package. (#239)
 
 Fixed
@@ -128,7 +130,7 @@ Added
   * If a semantically tagged branch is pushed to GH, a release will automatically be generated and a package will be built and sent to PyPi. (#237)
 
 Changed
--------
+^^^^^^^
 
 * Changelog fixes. (#237)
 
