@@ -5,6 +5,13 @@ Changelog
 0.2.29dev
 ---------
 
+Added
+^^^^^
+
+* Config Server:
+
+  * Option to start a heartbeat or not. (@wtgee #248)
+
 Changed
 ^^^^^^^
 
@@ -15,28 +22,31 @@ Changed
 * Downloaded helper script doesn't have ``python3`` hardcoded. (@wtgee #250)
 * Docker Tools (@wtgee #248):
 
-  * Remove ``source-extractor`` from ``panoptes-utils`` and move to ``panoptes-pipeline``. (@wtgee #252)
-  * Remove ``imagemagick`` from ``panoptes-utils``. This is used for adding titles to JPGs. (@wtgee #252)
-  * Don't install a separate conda environment, just use the base to help reduce image size, complexity. (@wtgee #252)
-  * Cleanup unused dependencies. (@wtgee @252)
   * Conda environment built from ``resources/environment.yaml``. (@wtgee #252)
   * Adds a "developer" dockerfile and compose file to install things for developers. (@wtgee #248)
   * Docker CMD will run ipython. (@wtgee #248)
   * docker-compose file will start a jupyter-lab instance. (@wtgee #248)
 
-* Config Server:
+Fixed
+^^^^^
 
-  * Option to start a heartbeat or not. (@wtgee #248)
-
-* Testing:
-
-  * Adios travis! (@wtgee #252)
+* Fixed the ``oh-my-zsh`` path for Docker install. (@wtgee #256)
 
 Removed
 ^^^^^^^
 
 * The ``stars`` module, which has been moved to ``panoptes-pipeline``. (@wtgee #251)
 * The ``metadata`` module, which has been moved to ``panoptes-pipeline``. (@wtgee #252)
+* Docker Tools (@wtgee #248):
+
+  * Remove ``source-extractor`` from ``panoptes-utils`` and move to ``panoptes-pipeline``. (@wtgee #252)
+  * Remove ``imagemagick`` from ``panoptes-utils``. This is used for adding titles to JPGs. (@wtgee #252)
+  * Don't install a separate conda environment, just use the base to help reduce image size, complexity. (@wtgee #252)
+  * Cleanup unused dependencies. (@wtgee @252)
+
+* Testing:
+
+  * Adios travis! (@wtgee #252)
 
 
 0.2.28 - 2020-09-15
