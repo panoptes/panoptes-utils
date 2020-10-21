@@ -40,8 +40,10 @@ RUN apt-get update && \
     mkdir -p "${ZSH_CUSTOM}" && \
     chmod -R 755 "${ZSH_CUSTOM}" && \
     sh -c "$(wget ${zsh_url} -O -)" && \
+    # ZSH theme.
     git clone --single-branch --quiet https://github.com/denysdovhan/spaceship-prompt.git "${ZSH_CUSTOM}/themes/spaceship-prompt" && \
     ln -s "${ZSH_CUSTOM}/themes/spaceship-prompt/spaceship.zsh-theme" "${ZSH_CUSTOM}/themes/spaceship.zsh-theme" && \
+    # ZSH auto-suggestion plugin.
     git clone --single-branch --quiet https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM}/plugins/zsh-autosuggestions && \
     # Copy zshrc for root user.
     cat "/tmp/zshrc" >> /root/.zshrc && \
@@ -93,7 +95,7 @@ RUN mkdir -p "${PANDIR}/scripts/" && \
     "${PANDIR}/conda/bin/python" "${PANDIR}/scripts/download-data.py" \
         --wide-field --narrow-field \
         --folder "${astrometry_dir}" \
-        --verbose && \
+        --verbose || exit 0 && \
     # Cleanup conda.
     "${PANDIR}/conda/bin/conda" clean -tipy
 
