@@ -8,7 +8,7 @@ Changelog
 Added
 ^^^^^
 
-* Adding ``oh-my-zsh`` install file directly to ease some issues with GCP builds. (@wtgee #256)
+* Adding ``oh-my-zsh`` install file directly to ease some issues with GCP builds. (@wtgee #257)
 * Config Server:
 
   * Option to start a heartbeat or not. (@wtgee #248)
