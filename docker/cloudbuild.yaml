@@ -4,7 +4,7 @@ options:
 timeout: 18000s  # 5 hours
 
 substitutions:
-  _TAG: latest
+  _TAG: develop
   _PLATFORMS: linux/amd64,linux/arm64
   _BASE_IMAGE: panoptes-base
   _IMAGE_NAME: panoptes-utils

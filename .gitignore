@@ -21,6 +21,7 @@
 .settings
 .idea
 tags
+pythonenv*
 
 # Package files
 *.egg

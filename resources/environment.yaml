@@ -1,0 +1,16 @@
+name: base
+channels:
+  - https://conda.anaconda.org/conda-forge
+dependencies:
+  - python=3.7
+  - astroplan
+  - astropy<=4.0.1
+  - click
+  - gevent
+  - loguru
+  - matplotlib
+  - numpy
+  - pandas
+  - photutils
+  - pillow
+  - readline

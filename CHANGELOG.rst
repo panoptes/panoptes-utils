@@ -2,6 +2,56 @@
 Changelog
 =========
 
+0.2.29dev
+---------
+
+Added
+^^^^^
+
+* Added ``oh-my-zsh`` install file directly to ease some issues with GCP builds. (@wtgee #257)
+* Added ``source-extractor`` to dependencies but with no custom config files. (@wtgee #257)
+* Config Server:
+
+  * Option to start a heartbeat or not. (@wtgee #248)
+
+Changed
+^^^^^^^
+
+* Reverting back to ``python=3.7`` for compatibility w/ GCP notebooks. (@wtgee #255)
+* Freezing ``astropy<=4.0.1`` while we wait for ``astroplan`` to get pushed. (@wtgee #255)
+* Changed the horizon module to use numpy interpolation so we don't need to explicitly install scipy. (@wtgee #248)
+* ``altaz_to_radec`` accepts astropy quantities. (@wtgee #250)
+* Downloaded helper script doesn't have ``python3`` hardcoded. (@wtgee #250)
+* Docker Tools (@wtgee #248):
+
+  * Conda environment built from ``resources/environment.yaml``. (@wtgee #252)
+  * Adds a "developer" dockerfile and compose file to install things for developers. (@wtgee #248)
+  * Docker CMD will run ipython. (@wtgee #248)
+  * docker-compose file will start a jupyter-lab instance. (@wtgee #248)
+
+Fixed
+^^^^^
+
+* Fixed the ``oh-my-zsh`` path for Docker install. (@wtgee #256)
+* Return testing output from docker container, passint exit status. (@wtgee #256)
+
+Removed
+^^^^^^^
+
+* The ``stars`` module, which has been moved to ``panoptes-pipeline``. (@wtgee #251)
+* The ``metadata`` module, which has been moved to ``panoptes-pipeline``. (@wtgee #252)
+* Docker Tools (@wtgee #248):
+
+  * Remove ``source-extractor`` from ``panoptes-utils`` and move to ``panoptes-pipeline``. (@wtgee #252)
+  * Remove ``imagemagick`` from ``panoptes-utils``. This is used for adding titles to JPGs. (@wtgee #252)
+  * Don't install a separate conda environment, just use the base to help reduce image size, complexity. (@wtgee #252)
+  * Cleanup unused dependencies. (@wtgee @252)
+
+* Testing:
+
+  * Adios travis! (@wtgee #252)
+
+
 0.2.28 - 2020-09-15
 -------------------
 
@@ -69,7 +119,7 @@ This release is mostly cleanup and testing of our autobuild features.
 Changed
 ^^^^^^^
 
-* Splitting the `panoptes-base` files into separate folder. (#238)
+* Splitting the ``panoptes-base`` files into separate folder. (#238)
 * Consolidate the GitHub Actions for building and publishing a release package. (#239)
 
 Fixed
@@ -93,7 +143,7 @@ Added
   * If a semantically tagged branch is pushed to GH, a release will automatically be generated and a package will be built and sent to PyPi. (#237)
 
 Changed
--------
+^^^^^^^
 
 * Changelog fixes. (#237)
 

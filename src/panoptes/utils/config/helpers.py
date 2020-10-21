@@ -61,13 +61,13 @@ def load_config(config_files=None, parse=True, load_local=True):
     config = dict()
 
     config_files = listify(config_files)
-    logger.debug(f'Loading config files: {config_files=}')
+    logger.debug(f'Loading config files:  config_files={config_files!r}')
     for config_file in config_files:
         try:
-            logger.debug(f'Adding {config_file=} to config dict')
+            logger.debug(f'Adding  config_file={config_file!r} to config dict')
             _add_to_conf(config, config_file, parse=parse)
         except Exception as e:  # pragma: no cover
-            logger.warning(f"Problem with {config_file=}, skipping. {e!r}")
+            logger.warning(f"Problem with  config_file={config_file!r}, skipping. {e!r}")
 
         # Load local version of config
         if load_local:
@@ -76,14 +76,14 @@ def load_config(config_files=None, parse=True, load_local=True):
                 try:
                     _add_to_conf(config, local_version, parse=parse)
                 except Exception as e:  # pragma: no cover
-                    logger.warning(f"Problem with {local_version=}, skipping: {e!r}")
+                    logger.warning(f"Problem with  local_version={local_version!r}, skipping: {e!r}")
 
     # parse_config_directories currently only corrects directory names.
     if parse:
-        logger.trace(f'Parsing {config=}')
+        logger.trace(f'Parsing  config={config!r}')
         with suppress(KeyError):
             config['directories'] = parse_config_directories(config['directories'])
-            logger.trace(f'Config directories parsed: {config=}')
+            logger.trace(f'Config directories parsed:  config={config!r}')
 
     return config
 
@@ -167,17 +167,18 @@ def parse_config_directories(directories, must_exist=False):
     # Try to get the base directory first.
     base_dir = directories.get('base', os.environ['PANDIR'])
     if os.path.isdir(base_dir):
-        logger.trace(f'Using {base_dir=} for setting config directories')
+        logger.trace(f'Using  base_dir={base_dir!r} for setting config directories')
 
         # Add the base directory to any relative dir.
         for dir_name, rel_dir in directories.items():
             # Only want relative directories.
             if rel_dir.startswith('/') is False:
                 abs_dir = os.path.join(base_dir, rel_dir)
-                logger.trace(f'{base_dir=} {rel_dir=} {abs_dir=} {must_exist=}')
+                logger.trace(
+                    f'base_dir={base_dir!r} rel_dir={rel_dir!r} abs_dir={abs_dir!r}  must_exist={must_exist!r}')
 
                 if must_exist and not os.path.exists(abs_dir):
-                    logger.warning(f'{must_exist=} but {abs_dir=} does not exist, skipping')
+                    logger.warning(f'must_exist={must_exist!r} but  abs_dir={abs_dir!r} does not exist, skipping')
                 else:
                     logger.trace(f'Setting {dir_name} to {abs_dir}')
                     directories[dir_name] = abs_dir
