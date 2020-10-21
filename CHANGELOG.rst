@@ -130,7 +130,7 @@ Added
   * If a semantically tagged branch is pushed to GH, a release will automatically be generated and a package will be built and sent to PyPi. (#237)
 
 Changed
--------
+^^^^^^^
 
 * Changelog fixes. (#237)
 
