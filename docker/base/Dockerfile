@@ -12,6 +12,7 @@ ARG userid=1000
 ARG pan_dir=/var/panoptes
 ARG pocs_dir="${pan_dir}/POCS"
 ARG astrometry_dir="/astrometry/data"
+ARG zsh_url="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
@@ -38,7 +39,7 @@ RUN apt-get update && \
     # All our shells are belong to Oh My ZSH w/ Spaceship prompt. :)
     mkdir -p "${ZSH_CUSTOM}" && \
     chmod -R 755 "${ZSH_CUSTOM}" && \
-    sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)" && \
+    sh -c "$(wget ${zsh_url} -O -)" && \
     git clone --single-branch --quiet https://github.com/denysdovhan/spaceship-prompt.git "${ZSH_CUSTOM}/themes/spaceship-prompt" && \
     ln -s "${ZSH_CUSTOM}/themes/spaceship-prompt/spaceship.zsh-theme" "${ZSH_CUSTOM}/themes/spaceship.zsh-theme" && \
     git clone --single-branch --quiet https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM}/plugins/zsh-autosuggestions && \
