@@ -12,7 +12,6 @@ ARG userid=1000
 ARG pan_dir=/var/panoptes
 ARG pocs_dir="${pan_dir}/POCS"
 ARG astrometry_dir="/astrometry/data"
-ARG zsh_url="https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
@@ -28,18 +27,20 @@ ENV PATH "/home/${PANUSER}/.local/bin:$PATH"
 ENV SOLVE_FIELD /usr/bin/solve-field
 
 COPY ./resources/docker/zshrc /tmp
+COPY ./resources/docker/install-ohmyzsh.sh /tmp
 USER root
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         gosu wget curl bzip2 ca-certificates zsh openssh-client nano \
-        astrometry.net dcraw exiftool libcfitsio-dev libcfitsio-bin \
+        astrometry.net source-extractor dcraw exiftool libcfitsio-dev libcfitsio-bin \
         libfreetype6-dev libpng-dev libjpeg-dev \
         libffi-dev libssl-dev \
         gcc git pkg-config sudo && \
     # All our shells are belong to Oh My ZSH w/ Spaceship prompt. :)
+    echo "Install oh-my-zsh" && \
     mkdir -p "${ZSH_CUSTOM}" && \
     chmod -R 755 "${ZSH_CUSTOM}" && \
-    sh -c "$(wget ${zsh_url} -O -)" && \
+    sh /tmp/install-ohmyzsh.sh --unattended && \
     # ZSH theme.
     git clone --single-branch --quiet https://github.com/denysdovhan/spaceship-prompt.git "${ZSH_CUSTOM}/themes/spaceship-prompt" && \
     ln -s "${ZSH_CUSTOM}/themes/spaceship-prompt/spaceship.zsh-theme" "${ZSH_CUSTOM}/themes/spaceship.zsh-theme" && \
