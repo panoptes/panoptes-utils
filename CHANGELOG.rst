@@ -8,7 +8,8 @@ Changelog
 Added
 ^^^^^
 
-* Adding ``oh-my-zsh`` install file directly to ease some issues with GCP builds. (@wtgee #257)
+* Added ``oh-my-zsh`` install file directly to ease some issues with GCP builds. (@wtgee #257)
+* Added ``source-extractor`` to dependencies but with no custom config files. (@wtgee #257)
 * Config Server:
 
   * Option to start a heartbeat or not. (@wtgee #248)
