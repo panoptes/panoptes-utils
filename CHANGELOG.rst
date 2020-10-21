@@ -31,6 +31,7 @@ Fixed
 ^^^^^
 
 * Fixed the ``oh-my-zsh`` path for Docker install. (@wtgee #256)
+* Return testing output from docker container, passint exit status. (@wtgee #256)
 
 Removed
 ^^^^^^^
