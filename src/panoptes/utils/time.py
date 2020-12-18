@@ -180,7 +180,7 @@ class CountdownTimer(object):
 
         # Sleep only for max time if requested.
         if max_sleep and max_sleep < remaining:
-            sleep_time = min(max_sleep, 0)
+            sleep_time = max(max_sleep, 0)
 
         logger.log(log_level.upper(), f'Sleeping for {sleep_time:.02f} seconds')
         time.sleep(sleep_time)
