@@ -91,7 +91,7 @@ def test_countdown_timer_sleep():
 def test_countdown_timer_sleep_log(caplog):
     count_time = 1
     timer = CountdownTimer(count_time)
-    # Default is a trace level
+    # Default is a debug level
     timer.sleep()
     assert caplog.records[-1].levelname == 'DEBUG'
     assert caplog.records[-1].message.startswith('Sleeping for')
