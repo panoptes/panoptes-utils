@@ -163,11 +163,12 @@ class CountdownTimer(object):
         self.target_time = time.monotonic() + self.duration
         logger.debug(f'Restarting {self}')
 
-    def sleep(self, max_sleep=None):
+    def sleep(self, max_sleep=None, log_level='TRACE'):
         """Sleep until the timer expires, or for max_sleep, whichever is sooner.
 
         Args:
-            max_sleep: Number of seconds to wait for, or None.
+            max_sleep (int or None): Number of seconds to wait for, or None.
+            log_level (str): Log level for sleeping message, default TRACE.
         Returns:
             True if slept for less than time_left(), False otherwise.
         """
@@ -179,10 +180,9 @@ class CountdownTimer(object):
 
         # Sleep only for max time if requested.
         if max_sleep and max_sleep < remaining:
-            assert max_sleep > 0
-            sleep_time = max_sleep
+            sleep_time = min(max_sleep, 0)
 
-        logger.debug(f'Sleeping for {sleep_time:.02f} seconds')
+        logger.log(log_level.upper(), f'Sleeping for {sleep_time:.02f} seconds')
         time.sleep(sleep_time)
 
         return sleep_time < remaining
@@ -259,10 +259,13 @@ def wait_for_events(events,
         elapsed_secs = round((current_time() - start_time).to_value('second'), 2)
 
         if event_timer.expired():
-            raise error.Timeout(f"Timeout waiting for {len(events)} events after {elapsed_secs} seconds")
+            raise error.Timeout(
+                f"Timeout waiting for {len(events)} events after {elapsed_secs} seconds")
 
         if callable(callback) and callback() is False:
-            logger.warning(f"Waiting for {len(events)} events has been interrupted after {elapsed_secs} seconds")
+            logger.warning(
+                f"Waiting for {len(events)} events has been interrupted after {elapsed_secs} "
+                f"seconds")
             break
 
         # Sleep for a little bit.
