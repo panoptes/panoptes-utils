@@ -163,12 +163,12 @@ class CountdownTimer(object):
         self.target_time = time.monotonic() + self.duration
         logger.debug(f'Restarting {self}')
 
-    def sleep(self, max_sleep=None, log_level='TRACE'):
+    def sleep(self, max_sleep=None, log_level='DEBUG'):
         """Sleep until the timer expires, or for max_sleep, whichever is sooner.
 
         Args:
             max_sleep (int or None): Number of seconds to wait for, or None.
-            log_level (str): Log level for sleeping message, default TRACE.
+            log_level (str): Log level for sleeping message, default DEBUG.
         Returns:
             True if slept for less than time_left(), False otherwise.
         """
