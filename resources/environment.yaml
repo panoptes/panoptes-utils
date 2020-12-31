@@ -3,8 +3,10 @@ channels:
   - https://conda.anaconda.org/conda-forge
 dependencies:
   - python=3.7
+  - Flask
+  - PyYAML
   - astroplan
-  - astropy<=4.0.1
+  - astropy
   - click
   - gevent
   - loguru
@@ -13,4 +15,9 @@ dependencies:
   - pandas
   - photutils
   - pillow
+  - python-dateutil
   - readline
+  - requests
+  - ruamel.yaml
+  - scalpl
+  - scipy
