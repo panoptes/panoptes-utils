@@ -20,7 +20,7 @@ COPY ./resources/environment.yaml /tmp/
 COPY ./scripts/download-data.py /tmp/download-data.py
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        wget bzip2 ca-certificates wait-for-it git gcc pkg-config \
+        wget bzip2 ca-certificates wait-for-it git gcc pkg-config ncdu \
         libffi-dev libssl-dev astrometry.net \
         dcraw exiftool libcfitsio-dev libcfitsio-bin \
         libfreetype6-dev libpng-dev libjpeg-dev && \
@@ -50,7 +50,8 @@ COPY . .
 RUN echo "Installing editable module with ${pip_extras}" && \
     "${PANDIR}/conda/bin/pip" install -e ".${pip_extras}" && \
     # Cleanup
-    apt-get autoremove --purge --yes && \
+    apt-get autoremove --purge --yes \
+        gcc pkg-config && \
     apt-get autoclean --yes && \
     apt-get --yes clean && \
     rm -rf /var/lib/apt/lists/* && \
