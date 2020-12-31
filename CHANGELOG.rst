@@ -2,8 +2,27 @@
 Changelog
 =========
 
-0.2.29dev
+0.2.30dev
 ---------
+
+Changed
+^^^^^^^
+
+* Docker cleanup: (@wtgee #260)
+
+  * No ``panoptes`` user.
+  * No ``base`` or ``developer`` images.
+  * Simplified entrypoint.
+  * Removing unused files.
+  * Docker build is done via ``docker-compose build``.
+  * Dependency cleanup and move more items to the ``conda`` environment file.
+  * Removed the ``wait-for-it.sh`` script and use the ubuntu version.
+
+* Make the ``CountdownTimer.sleep()`` less noisy. (#259)
+
+
+0.2.29 - 2020-10-21
+-------------------
 
 Added
 ^^^^^
@@ -93,7 +112,7 @@ Changed
   * ``stop`` command added that sets ``config_server.running=False`` to break loop.
 
 
-* Testing  (@wtgee #241): 
+* Testing  (@wtgee #241):
 
   * All testing is started from ``scripts/test-software.sh``.
   * The ``panoptes-config-server`` is started as an external service, not in the pytest conf.
