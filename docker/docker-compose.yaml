@@ -2,6 +2,9 @@ version: '3.7'
 services:
   panoptes-config-server:
     image: panoptes-utils:develop
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
     tty: true
     container_name: panoptes-config-server
     privileged: true
@@ -13,15 +16,5 @@ services:
       PANOPTES_CONFIG_HOST:
       PANOPTES_CONFIG_PORT:
       PANOPTES_CONFIG_FILE:
-    ports:
-      - "6563:6563"
     restart: on-failure
-    volumes:
-      - type: bind
-        source: ../
-        target: /var/panoptes/panoptes-utils
-      - type: bind
-        source: "${PANDIR}/logs/"
-        target: /var/panoptes/logs
     command: [ "panoptes-config-server --verbose run" ]
-

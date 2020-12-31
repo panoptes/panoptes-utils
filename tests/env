@@ -5,7 +5,6 @@
 #
 # THESE ARE VALUES INSIDE A RUNNING DOCKER CONTAINER.
 #
-PANUSER=panoptes
 PANDIR=/var/panoptes
 POCS=/var/panoptes/POCS
 PANLOG=/var/panoptes/logs
