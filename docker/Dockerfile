@@ -40,9 +40,7 @@ RUN apt-get update && \
     "${PANDIR}/conda/bin/python" /tmp/download-data.py \
         --wide-field --narrow-field \
         --folder "${astrometry_dir}" \
-        --verbose || exit 0 && \
-    # Cleanup conda.
-    "${PANDIR}/conda/bin/conda" clean -tipy
+        --verbose || exit 0
 
 # Install module
 WORKDIR "${PANDIR}/panoptes-utils"
