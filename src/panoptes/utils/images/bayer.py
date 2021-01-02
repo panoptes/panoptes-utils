@@ -362,17 +362,17 @@ def get_rgb_background(fits_fn,
 
     >>> data = fits_utils.getdata(fits_fn)
     >>> data.mean()
-    2236....
+    2236...
 
     >>> rgb_back = get_rgb_background(fits_fn)
     >>> rgb_back.mean()
-    2202....
+    2202...
 
     >>> rgb_backs = get_rgb_background(fits_fn, return_separate=True)
     >>> rgb_backs[0]
     <photutils.background.background_2d.Background2D...>
     >>> {color:data.background_rms_median for color, data in zip('rgb', rgb_backs)}
-    {'r': 20...., 'g': 32...., 'b': 23....}
+    {'r': 20..., 'g': 32..., 'b': 23...}
 
 
     Args:
