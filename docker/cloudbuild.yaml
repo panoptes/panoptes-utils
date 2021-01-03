@@ -46,22 +46,6 @@ steps:
       - "--driver=docker-container"
     waitFor: [ "setup-buildx" ]
 
-  # panoptes-config-server
-  - name: "gcr.io/cloud-builders/docker"
-    id: "build-config-server"
-    env:
-      - "DOCKER_CLI_EXPERIMENTAL=enabled"
-    args:
-      - "buildx"
-      - "build"
-      - "--push"
-      - "--platform=${_PLATFORMS}"
-      - "-f=docker/config-server.Dockerfile"
-      - "--tag=gcr.io/${PROJECT_ID}/panoptes-config-server:latest"
-      - "--cache-from=gcr.io/${PROJECT_ID}/panoptes-config-server:latest"
-      - "panoptes-utils"
-    waitFor: [ "build-builder" ]
-
   # panoptes-image-tools
   - name: "gcr.io/cloud-builders/docker"
     id: "build-config-server"

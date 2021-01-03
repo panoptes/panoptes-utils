@@ -77,7 +77,6 @@ def db_type(request):
 
 @pytest.fixture(scope='function')
 def db(db_type):
-    # TODO don't hardcode the db name.
     return PanDB(db_type=db_type, db_name='panoptes_testing', storage_dir='testing', connect=True)
 
 

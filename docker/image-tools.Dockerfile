@@ -22,7 +22,7 @@ RUN apt-get update && \
         dcraw exiftool libcfitsio-dev libcfitsio-bin \
         libfreetype6-dev libpng-dev libjpeg-dev && \
     # Download astrometry.net index files.
-    pip3 install click astropy astroplan loguru && \
+    pip3 install astropy astroplan loguru && \
     mkdir -p "${astrometry_dir}" && \
     echo "add_path ${astrometry_dir}" >> /etc/astrometry.cfg && \
     python3 /tmp/download-data.py \
