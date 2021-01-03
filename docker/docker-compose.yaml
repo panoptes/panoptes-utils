@@ -2,6 +2,9 @@ version: '3.7'
 services:
   panoptes-config-server:
     image: panoptes-config-server:latest
+    build:
+      context: ../
+      dockerfile: ./docker/config-server.Dockerfile
     tty: true
     container_name: panoptes-config-server
     environment:
