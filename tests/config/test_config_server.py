@@ -1,7 +1,8 @@
+import os
+
+import pytest
 import requests
-
 from astropy import units as u
-
 from panoptes.utils import serializers
 from panoptes.utils.config.client import get_config
 from panoptes.utils.config.client import set_config
