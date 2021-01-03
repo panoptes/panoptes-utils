@@ -6,7 +6,6 @@
 # THESE ARE VALUES INSIDE A RUNNING DOCKER CONTAINER.
 #
 PANDIR=/var/panoptes
-POCS=/var/panoptes/POCS
 PANLOG=/var/panoptes/logs
 PANOPTES_CONFIG_FILE=/var/panoptes/panoptes-utils/tests/testing.yaml
 PANOPTES_CONFIG_HOST=0.0.0.0

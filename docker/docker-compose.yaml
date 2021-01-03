@@ -1,20 +1,18 @@
 version: '3.7'
 services:
   panoptes-config-server:
-    image: panoptes-utils:develop
-    build:
-      context: ../
-      dockerfile: docker/Dockerfile
+    image: panoptes-config-server:latest
     tty: true
     container_name: panoptes-config-server
-    privileged: true
-    network_mode: host
     environment:
       # These need to be defined in the shell on the host.
-      PANDIR:
       PANLOG:
       PANOPTES_CONFIG_HOST:
       PANOPTES_CONFIG_PORT:
       PANOPTES_CONFIG_FILE:
     restart: on-failure
+    ports:
+      - "${PANOPTES_CONFIG_PORT}:${PANOPTES_CONFIG_PORT}"
+    volumes:
+      - "${PANOPTES_CONFIG_FILE}:${PANOPTES_CONFIG_FILE}"
     command: [ "panoptes-config-server --verbose run" ]

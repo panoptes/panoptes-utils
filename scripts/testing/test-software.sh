@@ -19,10 +19,10 @@ EOF
 
 sleep "${SLEEP_TIME}"
 
-docker run --rm -i \
+docker run --rm -it \
   --init \
   --network "host" \
   --env-file "./tests/env" \
   -v "${PANLOG}":/var/panoptes/logs \
-  panoptes-utils:develop \
+  panoptes-utils:testing \
   "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh"
