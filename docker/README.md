@@ -1,56 +1,30 @@
-PANOPTES Utils Image
-====================
+PANOPTES Services
+=================
 
-The `panoptes-utils` image is built on top of `panoptes-base` and installs 
-the `panoptes-utils` module (in editable mode) from the appropriate branch on Github.
+Two services are currently defined, one for the configuration server and
+another for working with images.
 
-By default the module is installed with the `testing` and `google` extras 
-(i.e `pip install -e ".[testing,google]"`).
+## Config server
 
-# Image Details
+The `panoptes-config-server` is a simple Flask application that acts as
+a centralized location for configuration items. There is a cli tool to
+query the server as well as APi access (via
+`panoptes.utils.config.client`).
 
-Image name: `gcr.io/panoptes-exp/panoptes-utils`
+The `panoptes-config-server` can be controlled via the included
+`docker-compose.yaml` file and uses environment variables to control the
+host/port as well as the actual configuration file used.
 
-Tags: `latest`, `develop`
+| env var                | description                                                                                |
+|:-----------------------|:-------------------------------------------------------------------------------------------|
+| `PANOPTES_CONFIG_HOST` | Host IP address. Default `localhost`. :warning: Use `0.0.0.0` for public server. :warning: |
+| `PANOPTES_CONFIG_PORT` | Host port. Default `6563`.                                                                 |
+| `PANOPTES_CONFIG_FILE` | The host file to use for configuration. **Required**                                       |
 
-Platforms: `amd64` (`x86_64`) as well as `arm64` (`aarch64`). Other builds are 
-possible but not provided by default.
+The service can be started via docker-compose as follows:
 
-Workdir: `$PANDIR/panoptes-utils` (default is `/var/panoptes/panoptes-utils`)
-
-Entrypoint: `/usr/bin/zsh` as `$PANUSER` (default `panoptes`) user via `gosu`. See 
-`resources/docker/entrypoint.sh` for details.
-
-Cmd: The default `CMD` is a `zsh` with a [conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) 
-activated (named `panoptes`) and the `WORKDIR` is `PANDIR`.
-
-# Building the image locally
-
-> Note: Make sure you have your `$PANDIR` environment variable set 
-> to something like: `PANDIR=/var/panoptes`
-
-You can build a local copy of the images for testing. The easiest way is:
-
-```bash
-INCLUDE_BASE=true scripts/setup-local-environment.sh
-``` 
-
-> Note that the `.git` folder is passed to the Docker build context when running locally.
-This is because our `pyscaffold` package tool relies on `setuptools_scm` for version
-numbers, which are ultimately based off the current code according to git.  This means
-the local `develop` image will likely be much larger than the official `latest` image.
->
-> In practice this doesn't matter because when you run the local image you usually want
-> to mount the working directory anyway, e.g.
->
->     docker run -it --rm \
->         -v "${PANDIR}/panoptes-utils":/var/panoptes/panoptes-utils \
->         panoptes-utils:develop 
-
-### Testing local image and code
-
-After building the `develop` image (see above), you can run the tests inside a docker container via:
-
-```bash
-scripts/testing/test-software.sh
 ```
+docker-compose -f docker/docker-compose.yaml up
+```
+
+## Image tools
