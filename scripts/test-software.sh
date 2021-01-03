@@ -19,10 +19,4 @@ EOF
 
 sleep "${SLEEP_TIME}"
 
-docker run --rm -it \
-  --init \
-  --network "host" \
-  --env-file "./tests/env" \
-  -v "${PANLOG}":/var/panoptes/logs \
-  panoptes-utils:testing \
-  "/var/panoptes/panoptes-utils/scripts/testing/run-tests.sh"
+docker-compose -f tests/docker-compose.yaml up
