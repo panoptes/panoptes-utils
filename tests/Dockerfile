@@ -11,7 +11,6 @@ ARG pip_extras="[config,images,testing,social]"
 ARG astrometry_dir="/astrometry/data"
 
 WORKDIR "${PANDIR}/panoptes-utils"
-COPY ./resources/environment.yaml /tmp/
 COPY . .
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -38,4 +37,4 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["/bin/bash", "-ic"]
-CMD [ "" ]
+CMD [ "/var/panoptes/panoptes-utils/tests/run-tests.sh" ]

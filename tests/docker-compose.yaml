@@ -9,6 +9,6 @@ services:
     container_name: panoptes-utils-testing
     env_file:
       - ./env
-    command: [ "scripts/testing/run-tests.sh" ]
+    command: [ "tests/run-tests.sh" ]
     volumes:
       - "${PANLOG}:/var/panoptes/logs"
