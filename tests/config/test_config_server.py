@@ -7,6 +7,16 @@ from panoptes.utils.config.client import get_config
 from panoptes.utils.config.client import set_config
 
 
+@pytest.fixture(scope='module')
+def config_host():
+    return os.getenv('PANOPTES_CONFIG_HOST', 'localhost')
+
+
+@pytest.fixture(scope='module')
+def config_port():
+    return os.getenv('PANOPTES_CONFIG_PORT', 6563)
+
+
 def test_config_client():
     assert isinstance(get_config(), dict)
 
@@ -18,7 +28,8 @@ def test_config_client():
     # response has.
     assert get_config('location.horizon', parse=False) == '"47.0 deg"'
 
-    assert set_config('location.horizon', 42 * u.degree, parse=False) == {'location.horizon': '42.0 deg'}
+    assert set_config('location.horizon', 42 * u.degree, parse=False) == {
+        'location.horizon': '42.0 deg'}
 
 
 def test_config_client_bad(caplog):

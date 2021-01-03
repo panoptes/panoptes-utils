@@ -49,26 +49,11 @@ def pytest_addoption(parser):
         default=False,
         help="If tests that require solving should be run")
     group.addoption(
-        "--theskyx",
-        action="store_true",
-        default=False,
-        help="If running tests alongside a running TheSkyX program.")
-    group.addoption(
         "--test-databases",
         nargs="+",
         default=['file'],
         help=("Test databases in the list. List items can include: " + db_names +
               ". Note that travis-ci will test all of them by default."))
-
-
-@pytest.fixture(scope='session')
-def config_host():
-    return os.getenv('PANOPTES_CONFIG_HOST', 'localhost')
-
-
-@pytest.fixture(scope='session')
-def config_port():
-    return os.getenv('PANOPTES_CONFIG_PORT', 6563)
 
 
 @pytest.fixture(scope='session')
