@@ -12,4 +12,3 @@ services:
     command: [ "tests/run-tests.sh" ]
     volumes:
       - "${PANLOG}:/var/panoptes/logs"
-      - "${PWD}:/var/panoptes/panoptes-utils"

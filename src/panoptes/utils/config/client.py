@@ -7,7 +7,7 @@ from panoptes.utils.serializers import from_json
 from panoptes.utils.serializers import to_json
 
 
-def server_is_running():
+def server_is_running():  # pragma: no cover
     """Thin-wrapper to check server."""
     try:
         return get_config(endpoint='heartbeat', verbose=False)

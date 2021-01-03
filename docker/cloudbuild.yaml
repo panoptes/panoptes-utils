@@ -48,7 +48,7 @@ steps:
 
   # panoptes-image-tools
   - name: "gcr.io/cloud-builders/docker"
-    id: "build-config-server"
+    id: "build-image-tools"
     env:
       - "DOCKER_CLI_EXPERIMENTAL=enabled"
     args:
