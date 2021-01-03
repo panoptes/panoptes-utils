@@ -9,12 +9,16 @@ version: 2
 sphinx:
   configuration: docs/conf.py
 
-formats: all
+formats: htmlzip
 
 python:
-  version: 3.8
+  version: 3.7
   install:
-    - requirements: docs/requirements.txt
     - method: pip
       path: .
+      extras_requirements:
+        - config
+        - docs
+        - images
+        - social
   system_packages: true
