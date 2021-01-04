@@ -40,7 +40,7 @@ def current_time(flatten=False, datetime=False, pretty=False):
 
     .. doctest::
 
-        >>> from panoptes.utils import current_time
+        >>> from panoptes.utils.time import current_time
         >>> current_time()                # doctest: +SKIP
         <Time object: scale='utc' format='datetime' value=2018-10-07 22:29:03.009873>
 
@@ -83,7 +83,7 @@ def flatten_time(t):
     .. doctest::
 
         >>> from astropy.time import Time
-        >>> from panoptes.utils import flatten_time
+        >>> from panoptes.utils.time import flatten_time
         >>> t0 = Time('1999-12-31 23:59:59')
         >>> t0.isot
         '1999-12-31T23:59:59.000'

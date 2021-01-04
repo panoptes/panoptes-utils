@@ -6,9 +6,9 @@ from datetime import timezone as tz
 
 import pytest
 from astropy import units as u
-from panoptes.utils import CountdownTimer
-from panoptes.utils import current_time
 from panoptes.utils import error
+from panoptes.utils.time import CountdownTimer
+from panoptes.utils.time import current_time
 from panoptes.utils.time import wait_for_events
 
 
