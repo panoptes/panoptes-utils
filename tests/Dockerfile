@@ -18,11 +18,10 @@ RUN apt-get update && \
         dcraw exiftool libcfitsio-dev libcfitsio-bin \
         libfreetype6-dev libpng-dev libjpeg-dev
 
+# Install module
 WORKDIR "${PANDIR}/panoptes-utils"
 COPY . .
-RUN cd ${PANDIR}/panoptes-utils && \
-    # Install module
-    pip3 install -e ".${pip_extras}" && \
+RUN pip3 install -e ".${pip_extras}" && \
     # Cleanup
     apt-get autoremove --purge --yes \
         gcc pkg-config && \
@@ -30,5 +29,4 @@ RUN cd ${PANDIR}/panoptes-utils && \
     apt-get --yes clean && \
     rm -rf /var/lib/apt/lists/*
 
-ENTRYPOINT ["/bin/bash", "-ic"]
-CMD [ "" ]
+CMD [ "/bin/bash", "/var/panoptes/panoptes-utils/tests/run-tests.sh" ]

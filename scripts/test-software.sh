@@ -5,6 +5,9 @@ clear
 SLEEP_TIME=${SLEEP_TIME:-5}
 PANDIR="${PANDIR:-$PWD/../}"
 PANLOG="${PANLOG:-${PANDIR}/logs}"
+BUILD_DIR="${PANDIR}/panoptes-utils"
+IMAGE_NAME="${IMAGE_NAME:-panoptes-utils}"
+TAG="${TAG:-testing}"
 
 cat <<EOF
 Beginning test of panoptes-utils software. This software is run inside a virtualized docker
@@ -19,4 +22,14 @@ EOF
 
 sleep "${SLEEP_TIME}"
 
-docker-compose -f tests/docker-compose.yaml up
+# Build testing image (if necessary).
+docker build \
+  -f "${BUILD_DIR}/tests/Dockerfile" \
+  -t "${IMAGE_NAME}:${TAG}" "${BUILD_DIR}"
+
+# Run the tests in docker container.
+docker run --rm -it \
+  --network "host" \
+  --env-file "${BUILD_DIR}/tests/env" \
+  --volume "${PANLOG}:/var/panoptes/logs" \
+  "${IMAGE_NAME}:${TAG}"
