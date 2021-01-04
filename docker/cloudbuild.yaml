@@ -46,6 +46,22 @@ steps:
       - "--driver=docker-container"
     waitFor: [ "setup-buildx" ]
 
+  # panoptes-astrometry-index
+  - name: "gcr.io/cloud-builders/docker"
+    id: "build-astrometry-index"
+    env:
+      - "DOCKER_CLI_EXPERIMENTAL=enabled"
+    args:
+      - "buildx"
+      - "build"
+      - "--push"
+      - "--platform=${_PLATFORMS}"
+      - "-f=docker/astrometry-volume.Dockerfile"
+      - "--tag=gcr.io/${PROJECT_ID}/panoptes-astrometry-index:latest"
+      - "--cache-from=gcr.io/${PROJECT_ID}/panoptes-astrometry-index:latest"
+      - "panoptes-utils"
+    waitFor: [ "build-builder" ]
+
   # panoptes-image-tools
   - name: "gcr.io/cloud-builders/docker"
     id: "build-image-tools"

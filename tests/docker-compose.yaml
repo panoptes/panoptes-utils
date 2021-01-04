@@ -1,5 +1,13 @@
 version: '3.7'
 services:
+  astrometry-index:
+    image: panoptes-astrometry-index:latest
+    build:
+      context: ../
+      dockerfile: docker/astrometry-volume.Dockerfile
+    container_name: panoptes-astrometry-index
+    volumes:
+      - astrometry:/astrometry/data
   testing:
     image: panoptes-utils:testing
     build:
@@ -12,3 +20,8 @@ services:
     command: [ "tests/run-tests.sh" ]
     volumes:
       - "${PANLOG}:/var/panoptes/logs"
+      - astrometry:/astrometry/data
+    depends_on:
+      - astrometry-index
+volumes:
+  astrometry:

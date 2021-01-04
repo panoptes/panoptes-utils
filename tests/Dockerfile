@@ -10,7 +10,6 @@ ENV PANDIR $pan_dir
 ARG pip_extras="[config,images,testing,social]"
 ARG astrometry_dir="/astrometry/data"
 
-COPY scripts/download-data.py /tmp
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         python3-pip wait-for-it \
@@ -20,16 +19,13 @@ RUN apt-get update && \
         libfreetype6-dev libpng-dev libjpeg-dev && \
     # Download astrometry.net index files.
     mkdir -p "${astrometry_dir}" && \
-    echo "add_path ${astrometry_dir}" >> /etc/astrometry.cfg && \
-    pip3 install click astropy astroplan loguru && \
-    python3 /tmp/download-data.py \
-        --narrow-field \
-        --folder "${astrometry_dir}" \
-        --verbose || exit 0
+    echo "add_path ${astrometry_dir}" >> /etc/astrometry.cfg
 
 WORKDIR "${PANDIR}/panoptes-utils"
 COPY . .
-RUN pip3 install -e ".${pip_extras}" && \
+RUN cd ${PANDIR}/panoptes-utils && \
+    # Install module
+    pip3 install -e ".${pip_extras}" && \
     # Cleanup
     apt-get autoremove --purge --yes \
         gcc pkg-config && \
