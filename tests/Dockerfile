@@ -34,4 +34,4 @@ RUN cd ${PANDIR}/panoptes-utils && \
     rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["/bin/bash", "-ic"]
-CMD [ "/var/panoptes/panoptes-utils/tests/run-tests.sh" ]
+CMD [ "" ]
