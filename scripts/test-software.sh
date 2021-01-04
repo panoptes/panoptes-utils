@@ -28,7 +28,7 @@ docker build \
   -t "${IMAGE_NAME}:${TAG}" "${BUILD_DIR}"
 
 # Run the tests in docker container.
-docker run --rm -it \
+docker run --rm -i \
   --network "host" \
   --env-file "${BUILD_DIR}/tests/env" \
   --volume "${PANLOG}:/var/panoptes/logs" \
