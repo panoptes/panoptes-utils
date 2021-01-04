@@ -3,7 +3,7 @@
 clear
 
 SLEEP_TIME=${SLEEP_TIME:-5}
-PANDIR="${PANDIR:-$PWD/../../}"
+PANDIR="${PANDIR:-$PWD/../}"
 PANLOG="${PANLOG:-${PANDIR}/logs}"
 
 cat <<EOF
