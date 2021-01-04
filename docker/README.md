@@ -1,4 +1,0 @@
-PANOPTES Services
-=================
-
-## Image tools
