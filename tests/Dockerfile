@@ -8,18 +8,15 @@ ARG pan_dir=/var/panoptes
 ENV PANDIR $pan_dir
 
 ARG pip_extras="[config,images,testing,social]"
-ARG astrometry_dir="/astrometry/data"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         python3-pip wait-for-it \
         bzip2 ca-certificates git gcc pkg-config \
-        libffi-dev libssl-dev astrometry.net \
+        libffi-dev libssl-dev \
+        astrometry.net astrometry-data-2mass-08-19 \
         dcraw exiftool libcfitsio-dev libcfitsio-bin \
-        libfreetype6-dev libpng-dev libjpeg-dev && \
-    # Download astrometry.net index files.
-    mkdir -p "${astrometry_dir}" && \
-    echo "add_path ${astrometry_dir}" >> /etc/astrometry.cfg
+        libfreetype6-dev libpng-dev libjpeg-dev
 
 WORKDIR "${PANDIR}/panoptes-utils"
 COPY . .
