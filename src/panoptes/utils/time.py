@@ -5,8 +5,8 @@ from datetime import timezone as tz
 
 from astropy import units as u
 from astropy.time import Time
+from loguru import logger
 from panoptes.utils import error
-from panoptes.utils.logging import logger
 
 
 def current_time(flatten=False, datetime=False, pretty=False):

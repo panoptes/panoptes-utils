@@ -1,10 +1,10 @@
 import os
 from contextlib import suppress
 
-from panoptes.utils import listify
-from panoptes.utils.logging import logger
+from loguru import logger
 from panoptes.utils.serializers import from_yaml
 from panoptes.utils.serializers import to_yaml
+from panoptes.utils.utils import listify
 
 
 def load_config(config_files=None, parse=True, load_local=True):

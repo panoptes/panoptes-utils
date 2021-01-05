@@ -1,9 +1,11 @@
 import time
 
 import click
+from loguru import logger
 from panoptes.utils.config import server
-from panoptes.utils.config.client import get_config, set_config, server_is_running
-from panoptes.utils.logging import logger
+from panoptes.utils.config.client import get_config
+from panoptes.utils.config.client import server_is_running
+from panoptes.utils.config.client import set_config
 
 
 @click.group()

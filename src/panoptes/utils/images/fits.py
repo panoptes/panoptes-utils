@@ -6,8 +6,8 @@ from warnings import warn
 from astropy import units as u
 from astropy.io import fits
 from astropy.wcs import WCS
+from loguru import logger
 from panoptes.utils import error
-from panoptes.utils.logging import logger
 
 
 def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):

@@ -1,8 +1,8 @@
 import os
 
 import requests
+from loguru import logger
 from panoptes.utils.error import InvalidConfig
-from panoptes.utils.logging import logger
 from panoptes.utils.serializers import from_json
 from panoptes.utils.serializers import to_json
 

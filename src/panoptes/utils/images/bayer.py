@@ -2,8 +2,8 @@ from decimal import Decimal
 
 import numpy as np
 from astropy.stats import SigmaClip
+from loguru import logger
 from panoptes.utils.images import fits as fits_utils
-from panoptes.utils.logging import logger
 from photutils import Background2D
 from photutils import BkgZoomInterpolator
 from photutils import MeanBackground

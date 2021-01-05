@@ -9,9 +9,9 @@ from contextlib import suppress
 import numpy as np
 import pytest
 from _pytest.logging import caplog as _caplog  # noqa
+from loguru import logger
 from matplotlib import pyplot as plt
 from panoptes.utils.database import PanDB
-from panoptes.utils.logging import logger
 
 _all_databases = ['file', 'memory']
 

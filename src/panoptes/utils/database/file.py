@@ -3,10 +3,10 @@ from contextlib import suppress
 from glob import glob
 from uuid import uuid4
 
+from loguru import logger
 from panoptes.utils import error
 from panoptes.utils.database import AbstractPanDB
 from panoptes.utils.database.base import create_storage_obj
-from panoptes.utils.logging import logger
 from panoptes.utils.serializers import from_json
 from panoptes.utils.serializers import to_json
 
