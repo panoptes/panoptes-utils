@@ -1,6 +1,6 @@
 import typer
 
-import tests
+from panoptes.utils.cli import tests
 
 app = typer.Typer()
 app.add_typer(tests.app, name='tests')

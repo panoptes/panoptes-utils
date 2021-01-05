@@ -33,7 +33,7 @@ def run(
                                       environment=env_vars)
 
     for line in container.logs(stream=True, follow=True):
-        typer.secho(line, nl=False, bg=typer.colors.CYAN)
+        typer.secho(line.decode(), nl=False)
 
 
 def build_test_image(context_dir, image_tag, dockerfile=None, docker_client=None):
