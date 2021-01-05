@@ -11,12 +11,23 @@ app = typer.Typer()
 def run(
         directory: str = typer.Argument('/var/panoptes/panoptes-utils/'),
         image_tag: str = typer.Argument('panoptes-utils:testing'),
-        env_path: str = typer.Argument('/var/panoptes/panoptes-utils/tests/env')
+        env_path: str = typer.Argument('/var/panoptes/panoptes-utils/tests/env'),
+        log_dir: str = typer.Option(None)
 ):
     """Run the test suite."""
     client = docker.from_env()
 
     env_vars = dotenv_values(dotenv_path=env_path)
+    if log_dir is not None:
+        typer.echo(f'Using {log_dir} for logs')
+        env_vars['PANLOG'] = log_dir
+    else:
+        log_dir = env_vars['PANLOG']
+
+    typer.secho(f'Log files will be output to {log_dir}')
+    mount_volumes = {
+        log_dir: {'bind': '/var/panoptes/logs', 'mode': 'rw'}
+    }
 
     try:
         client.images.get(image_tag)
@@ -30,7 +41,9 @@ def run(
                                       name='panoptes-utils-testing',
                                       detach=True,
                                       auto_remove=True,
-                                      environment=env_vars)
+                                      environment=env_vars,
+                                      volumes=mount_volumes
+                                      )
 
     for line in container.logs(stream=True, follow=True):
         typer.secho(line.decode(), nl=False)
