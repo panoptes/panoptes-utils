@@ -18,7 +18,7 @@ echo "Checking to make sure panoptes-config-server is running"
 wait-for-it --timeout=30 --strict "${PANOPTES_CONFIG_HOST}:${PANOPTES_CONFIG_PORT}" -- echo "Config-server up"
 
 echo "Starting testing"
-coverage run "$(command -v pytest-3)"
+pytest-3 --cov panoptes tests
 echo "Stopping config server"
 panoptes-config-server --verbose --host "${PANOPTES_CONFIG_HOST}" --port "${PANOPTES_CONFIG_PORT}" stop
 
