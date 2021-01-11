@@ -11,15 +11,20 @@ ARG pip_extras="[config,images,testing,social]"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        python3-pip wait-for-it \
+        wait-for-it \
         bzip2 ca-certificates git gcc pkg-config \
         libffi-dev libssl-dev \
         astrometry.net astrometry-data-2mass-08-19 \
         dcraw exiftool libcfitsio-dev libcfitsio-bin \
-        libfreetype6-dev libpng-dev libjpeg-dev
+        libfreetype6-dev libpng-dev libjpeg-dev libffi-dev \
+        python3-pip \
+        python3-gevent \
+        python3-scipy \
+        python3-pil \
+        python3-matplotlib
 
-# Install module
 WORKDIR "${PANDIR}/panoptes-utils"
+
 COPY . .
 RUN pip3 install -e ".${pip_extras}" && \
     # Cleanup
