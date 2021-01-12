@@ -20,14 +20,14 @@ RUN apt-get update && \
         libfreetype6-dev libpng-dev libjpeg-dev libffi-dev
 
 COPY environment.yaml .
-RUN conda env update -f base -f environment.yaml
+RUN conda env update -n base -f environment.yaml
 
 WORKDIR "${PANDIR}/panoptes-utils"
 COPY . .
 RUN pip install -e ".${pip_extras}" && \
     # Cleanup
     apt-get autoremove --purge --yes \
-        gcc pkg-config && \
+        gcc pkg-config git && \
     apt-get autoclean --yes && \
     apt-get --yes clean && \
     rm -rf /var/lib/apt/lists/*
