@@ -72,7 +72,7 @@ def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
     options.extend([_modify_opt(opt, val)
                     for opt, val
                     in kwargs.items()
-                    if opt.startswith('--') and opt not in options and not isinstance(val, bool)])
+                    if opt.startswith('--') and opt not in options])
 
     cmd = [solve_field_script] + options + [fname]
 
@@ -117,8 +117,8 @@ def get_solve_field(fname, replace=True, overwrite=True, timeout=30, **kwargs):
     >>> solve_info = fits_utils.solve_field(fits_fn, ra=ra, dec=dec, radius=radius)
 
     >>> # Pass kwargs to `solve-field` program.
-    >>> solve_kwargs = {'--pnm': '/tmp/awesome.bmp', '--overwrite': True}
-    >>> solve_info = fits_utils.get_solve_field(fits_fn, **solve_kwargs, skip_solved=False)
+    >>> solve_kwargs = {'--pnm': '/tmp/awesome.bmp'}
+    >>> solve_info = fits_utils.get_solve_field(fits_fn, skip_solved=False, **solve_kwargs)
     >>> assert os.path.exists('/tmp/awesome.bmp')
 
     Args:
@@ -161,7 +161,7 @@ def get_solve_field(fname, replace=True, overwrite=True, timeout=30, **kwargs):
         logger.debug(f'Using {fname} for solving')
         was_compressed = True
 
-    logger.debug(f'Solving with: {kwargs!r}')
+    logger.debug(f'Use solve arguments: {kwargs!r}')
     proc = solve_field(fname, **kwargs)
     try:
         output, errs = proc.communicate(timeout=timeout)
@@ -327,7 +327,8 @@ def fpack(fits_fname, unpack=False, overwrite=True):
 
     if os.path.exists(out_file):
         if overwrite is False:
-            raise FileExistsError(f'Destination file already exists at location and overwrite=False')
+            raise FileExistsError(
+                f'Destination file already exists at location and overwrite=False')
         else:
             os.remove(out_file)
 
