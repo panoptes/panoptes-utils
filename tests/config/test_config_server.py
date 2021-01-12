@@ -1,5 +1,3 @@
-import os
-
 import pytest
 import requests
 from astropy import units as u
@@ -10,12 +8,12 @@ from panoptes.utils.config.client import set_config
 
 @pytest.fixture(scope='module')
 def config_host():
-    return os.getenv('PANOPTES_CONFIG_HOST', 'localhost')
+    return 'localhost'
 
 
 @pytest.fixture(scope='module')
 def config_port():
-    return os.getenv('PANOPTES_CONFIG_PORT', 6563)
+    return 8765
 
 
 def test_config_client():

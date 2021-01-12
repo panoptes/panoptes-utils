@@ -1,0 +1,27 @@
+channels:
+  - https://conda.anaconda.org/conda-forge
+dependencies:
+  - Flask
+  - PyYAML
+  - astroplan
+  - astropy
+  - click
+  - click-spinner
+  - colorama
+  - coverage
+  - gevent
+  - loguru
+  - matplotlib-base
+  - numpy
+  - pandas
+  - photutils
+  - pillow
+  - python-dateutil
+  - python-dotenv
+  - readline
+  - requests
+  - ruamel
+  - scipy
+  - sphinx_rtd_theme
+  - tweepy
+  - typer
