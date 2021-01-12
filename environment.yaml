@@ -15,7 +15,7 @@ dependencies:
   - numpy
   - pandas
   - photutils
-  - pillow
+  - pillow<7  # https://github.com/ipython/ipython/issues/8052
   - python-dateutil
   - python-dotenv
   - readline

@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM condaforge/miniforge3:latest
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
@@ -9,6 +9,7 @@ ENV PANDIR $pan_dir
 
 ARG pip_extras="[config,images,testing,social]"
 
+WORKDIR /tmp
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         wait-for-it \
@@ -16,17 +17,14 @@ RUN apt-get update && \
         libffi-dev libssl-dev \
         astrometry.net astrometry-data-2mass-08-19 \
         dcraw exiftool libcfitsio-dev libcfitsio-bin \
-        libfreetype6-dev libpng-dev libjpeg-dev libffi-dev \
-        python3-pip \
-        python3-gevent \
-        python3-scipy \
-        python3-pil \
-        python3-matplotlib
+        libfreetype6-dev libpng-dev libjpeg-dev libffi-dev
+
+COPY environment.yaml .
+RUN conda env update -f base -f environment.yaml
 
 WORKDIR "${PANDIR}/panoptes-utils"
-
 COPY . .
-RUN pip3 install -e ".${pip_extras}" && \
+RUN pip install -e ".${pip_extras}" && \
     # Cleanup
     apt-get autoremove --purge --yes \
         gcc pkg-config && \
