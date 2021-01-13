@@ -25,4 +25,7 @@ panoptes-config-server --verbose \
   --port "${PANOPTES_CONFIG_PORT}" \
   stop
 
+# Move the coverage file to where we can access outside docker.
+mv coverage.xml "${PANLOG}/"
+
 exit 0
