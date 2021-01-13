@@ -11,6 +11,7 @@ import pytest
 from _pytest.logging import caplog as _caplog  # noqa
 from loguru import logger
 from matplotlib import pyplot as plt
+from panoptes.utils.config.server import config_server
 from panoptes.utils.database import PanDB
 
 _all_databases = ['file', 'memory']
@@ -24,7 +25,8 @@ log_fmt = "<lvl>{level:.1s}</lvl> " \
           "<lvl>{message}</lvl>\n"
 
 # Put the log file in the tmp dir.
-log_file_path = os.path.expandvars('${PANLOG}/panoptes-testing.log')
+log_dir = os.getenv('PANLOG', 'logs')
+log_file_path = os.path.realpath(f'{log_dir}/panoptes-testing.log')
 startup_message = f' STARTING NEW PYTEST RUN - LOGS: {log_file_path} '
 logger.add(log_file_path,
            enqueue=True,  # multiprocessing
@@ -38,6 +40,21 @@ logger.add(log_file_path,
            rotation=lambda msg, _: startup_message in msg,
            level='TRACE')
 logger.log('testing', '*' * 25 + startup_message + '*' * 25)
+
+
+def pytest_configure(config):
+    """Set up the testing."""
+    logger.info('Setting up the config server.')
+    config_file = 'tests/testing.yaml'
+
+    host = 'localhost'
+    port = '8765'
+
+    os.environ['PANOPTES_CONFIG_HOST'] = host
+    os.environ['PANOPTES_CONFIG_PORT'] = port
+
+    config_server(config_file, host='localhost', port=8765, load_local=False, save_local=False)
+    logger.success('Config server set up')
 
 
 def pytest_addoption(parser):

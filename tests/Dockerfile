@@ -32,4 +32,4 @@ RUN pip install -e ".${pip_extras}" && \
     apt-get --yes clean && \
     rm -rf /var/lib/apt/lists/*
 
-CMD [ "/bin/bash", "/var/panoptes/panoptes-utils/tests/run-tests.sh" ]
+CMD [ "/opt/conda/bin/pytest" ]

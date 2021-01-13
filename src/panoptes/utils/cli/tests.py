@@ -20,7 +20,8 @@ def run(
     typer.secho(f'Log files will be output to {log_dir}')
     os.makedirs(log_dir, exist_ok=True)
     mount_volumes = {
-        os.path.realpath(log_dir): {'bind': '/var/panoptes/logs', 'mode': 'rw'}
+        os.path.realpath(log_dir): {'bind': '/var/panoptes/logs', 'mode': 'rw'},
+        os.path.realpath('.'): {'bind': '/var/panoptes/panoptes-utils', 'mode': 'rw'}
     }
 
     try:
