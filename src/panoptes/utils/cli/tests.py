@@ -12,7 +12,8 @@ app = typer.Typer()
 def run(
         directory: str = typer.Argument('/var/panoptes/panoptes-utils/'),
         image_tag: str = typer.Argument('panoptes-utils:testing'),
-        log_dir: str = typer.Option('logs')
+        log_dir: str = typer.Option('logs',
+                                    help='Location to stir log files, relative to project root.')
 ):
     """Run the test suite."""
     client = docker.from_env()
@@ -36,7 +37,7 @@ def run(
                                       name='panoptes-utils-testing',
                                       detach=True,
                                       auto_remove=True,
-                                      volumes=mount_volumes
+                                      volumes=mount_volumes,
                                       )
 
     for line in container.logs(stream=True, follow=True):

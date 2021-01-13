@@ -22,10 +22,10 @@ log_fmt = "<lvl>{level:.1s}</lvl> " \
           "<light-blue>{time:MM-DD HH:mm:ss.ss!UTC}</>" \
           "<blue>({time:HH:mm:ss.ss})</> " \
           "| <c>{name} {function}:{line}</c> | " \
-          "<lvl>{message}</lvl>\n"
+          "<lvl>{message}</lvl>"
 
 # Put the log file in the tmp dir.
-log_dir = os.getenv('PANLOG', 'logs')
+log_dir = os.getenv('PANLOG', '/var/panoptes/logs')
 log_file_path = os.path.realpath(f'{log_dir}/panoptes-testing.log')
 startup_message = f' STARTING NEW PYTEST RUN - LOGS: {log_file_path} '
 logger.add(log_file_path,
