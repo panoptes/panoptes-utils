@@ -5,20 +5,40 @@ Changelog
 0.2.30dev
 ---------
 
+Added
+^^^^^
+
+* Conda environment file (@wtgee #260)
+* A cli script for `panoptes-utils`. This will eventually take over the `panoptes-config-server` and any other simple commands needed. For now can use `panoptes-utils tests run` for building and running tests.
+
 Changed
 ^^^^^^^
 
-* Docker cleanup: (@wtgee #260)
-
-  * No ``panoptes`` user.
-  * No ``base`` or ``developer`` images.
-  * Simplified entrypoint.
-  * Removing unused files.
-  * Docker build is done via ``docker-compose build``.
-  * Dependency cleanup and move more items to the ``conda`` environment file.
-  * Removed the ``wait-for-it.sh`` script and use the ubuntu version.
-
+* Updated testing to use specific docker image. Updated run script for more specific options on starting testing config server. (@wtgee #260)
+* Different `extras` install options: `config`, `docs`, `images`, `testing`, and `social`. (@wtgee #260)
+* Use `loguru` for logging directly in all files, rather than needless import. (@wtgee #260)
 * Make the ``CountdownTimer.sleep()`` less noisy. (#259)
+
+Fixed
+^^^^^
+
+* Plate solving extras option parsing correctly. (@wtgee #260)
+* Explicit imports for some of the utils. (@wtgee #260)
+
+Removed
+^^^^^^^
+
+* Remove Docker services except for testing. (@wtgee #260)
+* Removed unused files: (@wtgee #260)
+
+
+  * Example data fetching notebook removed.
+  * Hotspot script removed.
+  * Data (astrometry index and IERS) download removed.
+  * `wait-for-it.sh` script removed.
+  * TheSkyX utils moving to POCS directly.
+  * Removed `moving_average`.
+  * Removed pipeline functions for getting `image_id` and `sequence_id`.
 
 
 0.2.29 - 2020-10-21
@@ -367,7 +387,7 @@ Changed
   * Allow for different RA/Dec column names.
   * Better catalog match function.
 * ``sextractor`` param changes. (#194)
-* **Breaking** ``panoptes.utils.logger`` -> ``panoptes.utils.logger`` so we can ``from panoptes.utils.logging import logger`` (#197)
+* **Breaking** ``panoptes.utils.logger`` -> ``panoptes.utils.logger`` so we can ``from panoptes.utils import logger`` (#197)
 * **Breaking** The ``panoptes.utils.data.assets`` module was removed and the
     ``Downloader`` class is placed directly within the ``scripts/download-data.py`` file. (#197)
 * The ``panopes-utils`` module is not installed in editable mode in the ``latest`` docker image. (#197)
