@@ -1,8 +1,9 @@
+import os
+
 import click_spinner
 import docker
 import docker.errors
 import typer
-from dotenv import dotenv_values
 
 app = typer.Typer()
 
@@ -11,22 +12,15 @@ app = typer.Typer()
 def run(
         directory: str = typer.Argument('/var/panoptes/panoptes-utils/'),
         image_tag: str = typer.Argument('panoptes-utils:testing'),
-        env_path: str = typer.Argument('/var/panoptes/panoptes-utils/tests/env'),
-        log_dir: str = typer.Option(None)
+        log_dir: str = typer.Option('logs')
 ):
     """Run the test suite."""
     client = docker.from_env()
 
-    env_vars = dotenv_values(dotenv_path=env_path)
-    if log_dir is not None:
-        typer.echo(f'Using {log_dir} for logs')
-        env_vars['PANLOG'] = log_dir
-    else:
-        log_dir = env_vars['PANLOG']
-
     typer.secho(f'Log files will be output to {log_dir}')
+    os.makedirs(log_dir, exist_ok=True)
     mount_volumes = {
-        log_dir: {'bind': '/var/panoptes/logs', 'mode': 'rw'}
+        os.path.realpath(log_dir): {'bind': '/var/panoptes/logs', 'mode': 'rw'}
     }
 
     try:
@@ -41,7 +35,6 @@ def run(
                                       name='panoptes-utils-testing',
                                       detach=True,
                                       auto_remove=True,
-                                      environment=env_vars,
                                       volumes=mount_volumes
                                       )
 
