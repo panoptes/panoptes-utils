@@ -33,7 +33,8 @@ jobs:
         run: |
           docker build -t panoptes-utils:testing -f tests/Dockerfile .
           mkdir -p logs && chmod -R 777 logs
-          docker run --rm -i -v "${PWD}/logs:/var/panoptes/panoptes-utils/logs" panoptes-utils:testing
+          mkdir -p build && chmod -R 777 build
+          docker run --rm -i -v "${PWD}/logs:/var/panoptes/logs" panoptes-utils:testing
       - name: Upload coverage report to codecov.io
         uses: codecov/codecov-action@v1
         if: success()
