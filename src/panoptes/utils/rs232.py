@@ -213,7 +213,7 @@ class SerialData(object):
         assert self.ser.isOpen()
         return self.ser.read(size=size)
 
-    def read(self, retry_limit=None, retry_delay=None):
+    def read(self, retry_limit=None, retry_delay=None, multiline=False):
         """Reads next line of input using readline.
 
         If no response is given, delay for retry_delay and then try to read
@@ -229,8 +229,12 @@ class SerialData(object):
 
         for _ in range(retry_limit):
             data = self.ser.readline()
-            if data:
+            if multiline:
+                data = self.ser.readlines()
+            if data and not multiline:
                 return data.decode(encoding='ascii')
+            elif data and multiline:
+                return [d.decode(encoding='ascii') for d in data]
             time.sleep(retry_delay)
         return ''
 
