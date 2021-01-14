@@ -235,7 +235,7 @@ class SerialData(object):
         return ''
 
     def readlines(self, retry_limit=None, retry_delay=None):
-        """Reads lines of input using readlines.
+        """Reads lines of input looping read()
         """
         lines = []
         while True:
