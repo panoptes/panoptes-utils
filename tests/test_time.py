@@ -1,15 +1,14 @@
 import os
-import pytest
-
-import time
 import threading
-from datetime import timezone as tz
+import time
 from datetime import datetime as dt
-from astropy import units as u
+from datetime import timezone as tz
 
+import pytest
+from astropy import units as u
 from panoptes.utils import error
-from panoptes.utils import current_time
-from panoptes.utils import CountdownTimer
+from panoptes.utils.time import CountdownTimer
+from panoptes.utils.time import current_time
 from panoptes.utils.time import wait_for_events
 
 
@@ -87,6 +86,20 @@ def test_countdown_timer_sleep():
     assert timer.time_left() == 0
     assert timer.expired() is True
     assert timer.sleep() is False
+
+
+def test_countdown_timer_sleep_log(caplog):
+    count_time = 1
+    timer = CountdownTimer(count_time)
+    # Default is a debug level
+    timer.sleep()
+    assert caplog.records[-1].levelname == 'DEBUG'
+    assert caplog.records[-1].message.startswith('Sleeping for')
+
+    timer.restart()
+    timer.sleep(log_level='info')
+    assert caplog.records[-1].levelname == 'INFO'
+    assert caplog.records[-1].message.startswith('Sleeping for')
 
 
 @pytest.mark.slow

@@ -7,9 +7,9 @@ from warnings import warn
 import numpy as np
 from astropy.io import fits
 from dateutil.parser import parse as date_parse
+from loguru import logger
 from panoptes.utils import error
 from panoptes.utils.images import fits as fits_utils
-from panoptes.utils.logging import logger
 
 
 def cr2_to_fits(

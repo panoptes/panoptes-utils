@@ -73,12 +73,12 @@ instead of `My File.py`.
   than using a directory relative imports such as:
   ```python
   from panoptes.utils.base import PanBase
-  from panoptes.utils.utils import current_time
+  from panoptes.utils.time import current_time
   ```
   Import from the top-down instead:
   ```python
   from pocs.base import PanBase
-  from panoptes.utils import current_time
+  from panoptes.utils.time import current_time
   ```
   The same applies to code inside of `peas`.
 - Test imports are slightly different because `pocs/tests` and `peas/tests` are not Python

@@ -1,7 +1,7 @@
 import abc
 
+from loguru import logger
 from panoptes.utils.library import load_module
-from panoptes.utils.logging import logger
 from panoptes.utils.time import current_time
 
 

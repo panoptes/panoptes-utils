@@ -8,16 +8,18 @@ from warnings import warn
 import numpy as np
 from astropy import units as u
 from astropy.nddata import Cutout2D
-from astropy.visualization import (PercentileInterval, LogStretch, ImageNormalize)
+from astropy.visualization import ImageNormalize
+from astropy.visualization import LogStretch
+from astropy.visualization import PercentileInterval
 from astropy.wcs import WCS
 from dateutil.parser import parse as date_parse
+from loguru import logger
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 from panoptes.utils import error
 from panoptes.utils.images import fits as fits_utils
 from panoptes.utils.images.plot import add_colorbar
 from panoptes.utils.images.plot import get_palette
-from panoptes.utils.logging import logger
 from panoptes.utils.time import current_time
 
 

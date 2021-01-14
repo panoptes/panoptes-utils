@@ -13,8 +13,8 @@ import threading
 import time
 import urllib
 
+from loguru import logger
 from panoptes.utils import serial_handlers
-from panoptes.utils.logging import logger
 from panoptes.utils.serializers import from_json
 from panoptes.utils.serializers import to_json
 from serial import serialutil

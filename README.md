@@ -2,7 +2,7 @@ PANOPTES Utilities
 ==================
 
 <p align="center">
-<img src="https://projectpanoptes.org/uploads/2018/12/16/pan-logo.png" alt="PANOPTES logo" />  
+<img src="https://projectpanoptes.org/uploads/2018/12/16/pan-logo.png" alt="PANOPTES logo" />
 </p>
 <br>
 
@@ -12,6 +12,28 @@ Utility functions for use within the [Project PANOPTES](https://projectpanoptes.
 
 This library defines a number of modules that contain useful functions as well as a few services.
 
+Dependencies
+------------
+
+There are a few system dependencies depending on what functionality you will be using.
+
+In particular, the plate solving requires `astrometry.net` and the appropriate index files.
+
+Use the following on a debian-based system (e.g. Ubuntu) to install all dependencies:
+
+```bash
+apt-get update
+
+apt-get install --no-install-recommends --yes \
+  wait-for-it \
+  bzip2 ca-certificates gcc pkg-config \
+  libffi-dev libssl-dev \
+  astrometry.net astrometry-data-tycho2-08 astrometry-data-tycho2 \
+  dcraw exiftool libcfitsio-dev libcfitsio-bin \
+  libfreetype6-dev libpng-dev libjpeg-dev libffi-dev \
+  git
+```
+
 Install
 -------
 
@@ -20,5 +42,11 @@ To install type:
 ```bash
 pip install panoptes-utils
 ```
-   
+
+Full options for local install:
+
+```bash
+pip install -e ".[config,docs,images,testing,social]"
+```
+
 See the full documentation at: https://panoptes-utils.readthedocs.io

@@ -5,8 +5,8 @@ from datetime import timezone as tz
 
 from astropy import units as u
 from astropy.time import Time
+from loguru import logger
 from panoptes.utils import error
-from panoptes.utils.logging import logger
 
 
 def current_time(flatten=False, datetime=False, pretty=False):
@@ -40,7 +40,7 @@ def current_time(flatten=False, datetime=False, pretty=False):
 
     .. doctest::
 
-        >>> from panoptes.utils import current_time
+        >>> from panoptes.utils.time import current_time
         >>> current_time()                # doctest: +SKIP
         <Time object: scale='utc' format='datetime' value=2018-10-07 22:29:03.009873>
 
@@ -83,7 +83,7 @@ def flatten_time(t):
     .. doctest::
 
         >>> from astropy.time import Time
-        >>> from panoptes.utils import flatten_time
+        >>> from panoptes.utils.time import flatten_time
         >>> t0 = Time('1999-12-31 23:59:59')
         >>> t0.isot
         '1999-12-31T23:59:59.000'
@@ -163,11 +163,12 @@ class CountdownTimer(object):
         self.target_time = time.monotonic() + self.duration
         logger.debug(f'Restarting {self}')
 
-    def sleep(self, max_sleep=None):
+    def sleep(self, max_sleep=None, log_level='DEBUG'):
         """Sleep until the timer expires, or for max_sleep, whichever is sooner.
 
         Args:
-            max_sleep: Number of seconds to wait for, or None.
+            max_sleep (int or None): Number of seconds to wait for, or None.
+            log_level (str): Log level for sleeping message, default DEBUG.
         Returns:
             True if slept for less than time_left(), False otherwise.
         """
@@ -178,11 +179,10 @@ class CountdownTimer(object):
         sleep_time = remaining
 
         # Sleep only for max time if requested.
-        if max_sleep and max_sleep < remaining:
-            assert max_sleep > 0
-            sleep_time = max_sleep
+        if max_sleep and max_sleep < sleep_time:
+            sleep_time = max(max_sleep, 0)
 
-        logger.debug(f'Sleeping for {sleep_time:.02f} seconds')
+        logger.log(log_level.upper(), f'Sleeping for {sleep_time:.02f} seconds')
         time.sleep(sleep_time)
 
         return sleep_time < remaining
@@ -259,10 +259,13 @@ def wait_for_events(events,
         elapsed_secs = round((current_time() - start_time).to_value('second'), 2)
 
         if event_timer.expired():
-            raise error.Timeout(f"Timeout waiting for {len(events)} events after {elapsed_secs} seconds")
+            raise error.Timeout(
+                f"Timeout waiting for {len(events)} events after {elapsed_secs} seconds")
 
         if callable(callback) and callback() is False:
-            logger.warning(f"Waiting for {len(events)} events has been interrupted after {elapsed_secs} seconds")
+            logger.warning(
+                f"Waiting for {len(events)} events has been interrupted after {elapsed_secs} "
+                f"seconds")
             break
 
         # Sleep for a little bit.

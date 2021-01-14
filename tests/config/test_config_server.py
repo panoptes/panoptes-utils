@@ -1,10 +1,19 @@
+import pytest
 import requests
-
 from astropy import units as u
-
 from panoptes.utils import serializers
 from panoptes.utils.config.client import get_config
 from panoptes.utils.config.client import set_config
+
+
+@pytest.fixture(scope='module')
+def config_host():
+    return 'localhost'
+
+
+@pytest.fixture(scope='module')
+def config_port():
+    return 8765
 
 
 def test_config_client():
@@ -18,7 +27,8 @@ def test_config_client():
     # response has.
     assert get_config('location.horizon', parse=False) == '"47.0 deg"'
 
-    assert set_config('location.horizon', 42 * u.degree, parse=False) == {'location.horizon': '42.0 deg'}
+    assert set_config('location.horizon', 42 * u.degree, parse=False) == {
+        'location.horizon': '42.0 deg'}
 
 
 def test_config_client_bad(caplog):
