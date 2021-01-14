@@ -231,10 +231,11 @@ class SerialData(object):
             data = self.ser.readline()
             if multiline:
                 data = self.ser.readlines()
-            if data and not multiline:
-                return data.decode(encoding='ascii')
-            elif data and multiline:
-                return [d.decode(encoding='ascii') for d in data]
+            if data:
+                if not multiline:
+                    return data.decode(encoding='ascii')
+                else:
+                    return [d.decode(encoding='ascii') for d in data]
             time.sleep(retry_delay)
         return ''
 
