@@ -234,6 +234,27 @@ class SerialData(object):
             time.sleep(retry_delay)
         return ''
 
+    def readlines(self, retry_limit=None, retry_delay=None):
+        """Reads next line of input using readline.
+
+        If no response is given, delay for retry_delay and then try to read
+        again. Fail after retry_limit attempts.
+        """
+        assert self.ser
+        assert self.ser.isOpen()
+
+        if retry_limit is None:
+            retry_limit = self.retry_limit
+        if retry_delay is None:
+            retry_delay = self.retry_delay
+
+        for _ in range(retry_limit):
+            data = self.ser.readlines()
+            if data:
+                return [d.decode(encoding='ascii') for d in data]
+            time.sleep(retry_delay)
+        return ''
+
     def get_reading(self):
         """Reads and returns a line, along with the timestamp of the read.
 
