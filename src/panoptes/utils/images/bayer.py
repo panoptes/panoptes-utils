@@ -2,13 +2,13 @@ from decimal import Decimal
 
 import numpy as np
 from astropy.stats import SigmaClip
+from loguru import logger
 from panoptes.utils.images import fits as fits_utils
-from panoptes.utils.logging import logger
 from photutils import Background2D
 from photutils import BkgZoomInterpolator
-from photutils import MMMBackground
 from photutils import MeanBackground
 from photutils import MedianBackground
+from photutils import MMMBackground
 from photutils import SExtractorBackground
 
 
@@ -362,17 +362,17 @@ def get_rgb_background(fits_fn,
 
     >>> data = fits_utils.getdata(fits_fn)
     >>> data.mean()
-    2236.816...
+    2236...
 
     >>> rgb_back = get_rgb_background(fits_fn)
     >>> rgb_back.mean()
-    2202.392...
+    2202...
 
     >>> rgb_backs = get_rgb_background(fits_fn, return_separate=True)
     >>> rgb_backs[0]
     <photutils.background.background_2d.Background2D...>
     >>> {color:data.background_rms_median for color, data in zip('rgb', rgb_backs)}
-    {'r': 20.566..., 'g': 32.787..., 'b': 23.820...}
+    {'r': 20..., 'g': 32..., 'b': 23...}
 
 
     Args:

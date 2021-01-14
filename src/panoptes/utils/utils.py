@@ -4,9 +4,7 @@ import os
 import re
 import shutil
 import signal
-from urllib.parse import unquote as unquote_url
 
-import numpy as np
 from astropy import units as u
 from astropy.coordinates import AltAz
 from astropy.coordinates import ICRS
@@ -71,7 +69,7 @@ def listify(obj):
 def get_free_space(directory=None):
     """Return the amoung of freespace in gigabytes for given directory.
 
-    >>> from panoptes.utils import get_free_space
+    >>> from panoptes.utils.utils import get_free_space
     >>> get_free_space()
     <Quantity ... Gbyte>
 
@@ -113,7 +111,7 @@ def string_to_params(opts):
         `param='42'` will keep the value as the string `'42'`.
 
 
-    >>> from panoptes.utils import string_to_params
+    >>> from panoptes.utils.utils import string_to_params
     >>> args, kwargs = string_to_params("parg1 parg2 key1=a_str key2=2 key2='2' key3=03")
     >>> args
     ['parg1', 'parg2']
@@ -170,7 +168,7 @@ def string_to_params(opts):
 def altaz_to_radec(alt=None, az=None, location=None, obstime=None, **kwargs):
     """Convert alt/az degrees to RA/Dec SkyCoord.
 
-    >>> from panoptes.utils import altaz_to_radec
+    >>> from panoptes.utils.utils import altaz_to_radec
     >>> from astropy.coordinates import EarthLocation
     >>> from astropy import units as u
     >>> keck = EarthLocation.of_site('Keck Observatory')
@@ -275,7 +273,7 @@ def get_quantity_value(quantity, unit=None):
     If passed something other than a Quantity will simply return the original object.
 
     >>> from astropy import units as u
-    >>> from panoptes.utils import get_quantity_value
+    >>> from panoptes.utils.utils import get_quantity_value
 
     >>> get_quantity_value(60 * u.second)
     60.0
@@ -301,79 +299,3 @@ def get_quantity_value(quantity, unit=None):
         return quantity.to_value(unit)
     except AttributeError:
         return quantity
-
-
-def moving_average(data_set, periods=3):
-    """Moving average.
-
-    Args:
-        data_set (`numpy.array`): An array of values over which to perform the moving average.
-        periods (int, optional): Number of periods.
-
-    Returns:
-        `numpy.array`: An array of the computed averages.
-    """
-    weights = np.ones(periods) / periods
-    return np.convolve(data_set, weights, mode='same')
-
-
-def image_id_from_path(path):
-    """Return the `image_id` from the given path or uri.
-
-    >>> from panoptes.utils import image_id_from_path
-    >>> path = 'gs://panoptes-raw-images/PAN012/ee04d1/20190820T111638/20190820T122447.fits'
-    >>> image_id_from_path(path)
-    'PAN012_ee04d1_20190820T122447'
-
-    >>> path = 'nothing/to/match'
-    >>> image_id_from_path(path)
-
-
-    Args:
-        path (str): A path or uri for a file.
-
-    Returns:
-        str: The image id in the form "<unit_id>_<camera_id>_<image_id>"
-    """
-    result = PATH_MATCHER.match(unquote_url(path))
-
-    with contextlib.suppress(AttributeError):
-        match = '{}_{}_{}'.format(
-            result.group('unit_id'),
-            result.group('camera_id'),
-            result.group('image_id')
-        )
-        return match
-
-    return None
-
-
-def sequence_id_from_path(path):
-    """Return the `sequence_id` from the given path or uri.
-
-    >>> from panoptes.utils import sequence_id_from_path
-    >>> path = 'gs://panoptes-raw-images/PAN012/ee04d1/20190820T111638/20190820T122447.fits'
-    >>> sequence_id_from_path(path)
-    'PAN012_ee04d1_20190820T111638'
-
-    >>> path = 'nothing/to/match'
-    >>> sequence_id_from_path(path)
-
-
-    Args:
-        path (str): A path or uri for a file.
-
-    Returns:
-        str: The image id in the form "<unit_id>_<camera_id>_<sequence_id>"
-    """
-    result = PATH_MATCHER.match(unquote_url(path))
-
-    with contextlib.suppress(AttributeError):
-        match = '{}_{}_{}'.format(
-            result.group('unit_id'),
-            result.group('camera_id'),
-            result.group('sequence_id')
-        )
-        return match
-
-    return None

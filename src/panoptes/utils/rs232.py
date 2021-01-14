@@ -5,9 +5,9 @@ import time
 from contextlib import suppress
 
 import serial
+from loguru import logger
 from panoptes.utils import error
 from panoptes.utils import serializers
-from panoptes.utils.logging import logger
 from serial.tools.list_ports import comports as get_comports
 
 

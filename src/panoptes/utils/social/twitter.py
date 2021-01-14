@@ -1,5 +1,5 @@
 import tweepy
-from panoptes.utils.logging import logger
+from loguru import logger
 
 
 class SocialTwitter(object):

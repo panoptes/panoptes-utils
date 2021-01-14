@@ -65,7 +65,7 @@ def to_json(obj, filename=None, append=True, **kwargs):
         >>> to_json({"numpy_array": np.arange(10)})
         '{"numpy_array": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}'
 
-        >>> from panoptes.utils import current_time
+        >>> from panoptes.utils.time import current_time
         >>> to_json({"current_time": current_time()})       # doctest: +SKIP
         '{"current_time": "2019-04-08 22:19:28.402198"}'
 
@@ -137,7 +137,7 @@ def from_json(msg):
         >>> horizon['horizon'].decompose()
         <Quantity 3628800. s>
 
-        >>> from panoptes.utils import current_time
+        >>> from panoptes.utils.time import current_time
         >>> time_str = to_json({"current_time": current_time().datetime})
         >>> from_json(time_str)['current_time']         # doctest: +SKIP
         2019-04-08T06:43:28.232406
@@ -176,7 +176,7 @@ def to_yaml(obj, **kwargs):
 
         >>> import os
         >>> os.environ['POCSTIME'] = '1999-12-31 23:49:49'
-        >>> from panoptes.utils import current_time
+        >>> from panoptes.utils.time import current_time
         >>> t0 = current_time()
         >>> t0
         <Time object: scale='utc' format='iso' value=1999-12-31 23:49:49.000>

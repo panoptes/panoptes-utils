@@ -1,7 +1,7 @@
 import os
 from contextlib import suppress
 
-from panoptes.utils.logging import logger
+from loguru import logger
 from panoptes.utils.serializers import from_yaml
 from panoptes.utils.serializers import to_yaml
 from panoptes.utils.utils import listify
@@ -76,7 +76,8 @@ def load_config(config_files=None, parse=True, load_local=True):
                 try:
                     _add_to_conf(config, local_version, parse=parse)
                 except Exception as e:  # pragma: no cover
-                    logger.warning(f"Problem with  local_version={local_version!r}, skipping: {e!r}")
+                    logger.warning(
+                        f"Problem with  local_version={local_version!r}, skipping: {e!r}")
 
     # parse_config_directories currently only corrects directory names.
     if parse:
@@ -178,7 +179,8 @@ def parse_config_directories(directories, must_exist=False):
                     f'base_dir={base_dir!r} rel_dir={rel_dir!r} abs_dir={abs_dir!r}  must_exist={must_exist!r}')
 
                 if must_exist and not os.path.exists(abs_dir):
-                    logger.warning(f'must_exist={must_exist!r} but  abs_dir={abs_dir!r} does not exist, skipping')
+                    logger.warning(
+                        f'must_exist={must_exist!r} but  abs_dir={abs_dir!r} does not exist, skipping')
                 else:
                     logger.trace(f'Setting {dir_name} to {abs_dir}')
                     directories[dir_name] = abs_dir
