@@ -234,7 +234,7 @@ class SerialData(object):
             time.sleep(retry_delay)
         return ''
 
-    def readlines(self, retry_limit=None, retry_delay=None):
+    def readlines(self):
         """Reads lines of input looping read()
         """
         lines = []
