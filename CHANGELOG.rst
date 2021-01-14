@@ -9,14 +9,14 @@ Added
 ^^^^^
 
 * Conda environment file (@wtgee #260)
-* A cli script for `panoptes-utils`. This will eventually take over the `panoptes-config-server` and any other simple commands needed. For now can use `panoptes-utils tests run` for building and running tests.
+* A cli script for ``panoptes-utils``. This will eventually take over the ``panoptes-config-server`` and any other simple commands needed. For now can use ``panoptes-utils tests run`` for building and running tests.
 
 Changed
 ^^^^^^^
 
 * Updated testing to use specific docker image. Updated run script for more specific options on starting testing config server. (@wtgee #260)
-* Different `extras` install options: `config`, `docs`, `images`, `testing`, and `social`. (@wtgee #260)
-* Use `loguru` for logging directly in all files, rather than needless import. (@wtgee #260)
+* Different ``extras`` install options: ``config``, ``docs``, ``images``, ``testing``, and ``social``. (@wtgee #260)
+* Use ``loguru`` for logging directly in all files, rather than needless import. (@wtgee #260)
 * Make the ``CountdownTimer.sleep()`` less noisy. (#259)
 
 Fixed
@@ -35,10 +35,10 @@ Removed
   * Example data fetching notebook removed.
   * Hotspot script removed.
   * Data (astrometry index and IERS) download removed.
-  * `wait-for-it.sh` script removed.
+  * ``wait-for-it.sh`` script removed.
   * TheSkyX utils moving to POCS directly.
-  * Removed `moving_average`.
-  * Removed pipeline functions for getting `image_id` and `sequence_id`.
+  * Removed ``moving_average``.
+  * Removed pipeline functions for getting ``image_id`` and ``sequence_id``.
 
 
 0.2.29 - 2020-10-21
