@@ -13,7 +13,9 @@ def run(
         directory: str = typer.Argument('/var/panoptes/panoptes-utils/'),
         image_tag: str = typer.Argument('panoptes-utils:testing'),
         log_dir: str = typer.Option('logs',
-                                    help='Location to stir log files, relative to project root.')
+                                    help='Location to stir log files, relative to project root.'),
+        rebuild: bool = typer.Option(False,
+                                     help='Rebuild test image before running tests, default False')
 ):
     """Run the test suite."""
     client = docker.from_env()
@@ -24,6 +26,9 @@ def run(
         os.path.realpath(log_dir): {'bind': '/var/panoptes/logs', 'mode': 'rw'},
         os.path.realpath('.'): {'bind': '/var/panoptes/panoptes-utils', 'mode': 'rw'}
     }
+
+    if rebuild:
+        build_test_image(directory, image_tag, docker_client=client)
 
     try:
         client.images.get(image_tag)

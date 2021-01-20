@@ -45,7 +45,8 @@ class PanFileDB(AbstractPanDB):
             # Overwrite current collection file with obj.
             to_json(obj, filename=current_fn, append=False)
         except Exception as e:
-            raise error.InvalidSerialization(f"Problem serializing object for insertion: {e} {current_fn} {obj!r}")
+            raise error.InvalidSerialization(
+                f"Problem serializing object for insertion: {e} {current_fn} {obj!r}")
 
         if not store_permanently:
             return result
@@ -61,7 +62,8 @@ class PanFileDB(AbstractPanDB):
             to_json(obj, filename=collection_fn)
             return obj_id
         except Exception as e:
-            raise error.InvalidSerialization(f"Problem inserting object into collection: {e}, {obj!r}")
+            raise error.InvalidSerialization(
+                f"Problem inserting object into collection: {e}, {obj!r}")
 
     def get_current(self, collection):
         current_fn = self._get_file(collection, permanent=False)
@@ -108,8 +110,8 @@ class PanFileDB(AbstractPanDB):
         return str(uuid4())
 
     @classmethod
-    def permanently_erase_database(cls, db_name, storage_dir='json_store'):
+    def permanently_erase_database(cls, db_name, storage_dir=None):
         # Clear out any .json files.
-        storage_dir = os.path.join(os.environ['PANDIR'], storage_dir, db_name)
+        storage_dir = os.path.join(storage_dir, db_name)
         for f in glob(os.path.join(storage_dir, '*.json')):
             os.remove(f)

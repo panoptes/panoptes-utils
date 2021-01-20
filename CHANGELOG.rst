@@ -2,6 +2,11 @@
 Changelog
 =========
 
+0.2.31dev
+---------
+
+* Clean out the Contributing guide to point to POCS.
+
 0.2.30 - 2021-01-14
 -------------------
 
