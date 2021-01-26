@@ -5,7 +5,26 @@ Changelog
 0.2.31dev
 ---------
 
+Added
+^^^^^
+
+* Docker musical chairs:
+
+  * Add Dockerfile to be ``panoptes-utils`` but don't use for testing.
+  * Generic ``panoptes-utils`` with ``panoptes-config-server`` as default command example
+  * Move conda ``enviornment`` file into ``docker`` folder.
+
+Changed
+^^^^^^^
+
 * Clean out the Contributing guide to point to POCS.
+* Removing ``pillow<7`` requirement.
+
+Removed
+^^^^^^^
+
+* Removing unused new cli experiment.
+
 
 0.2.30 - 2021-01-14
 -------------------
