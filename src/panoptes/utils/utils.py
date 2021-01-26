@@ -77,14 +77,13 @@ def get_free_space(directory=None):
     <Quantity ... Gbyte>
 
     Args:
-        directory (str, optional): Path to directory. If None defaults to $PANDIR.
+        directory (str, optional): Path to directory. If None defaults to root.
 
     Returns:
         astropy.units.Quantity: The number of gigabytes avialable in folder.
 
     """
-    if directory is None:
-        directory = os.getenv('PANDIR')
+    directory = directory or os.path.abspath('/')
 
     _, _, free_space = shutil.disk_usage(directory)
     free_space = (free_space * u.byte).to(u.gigabyte)

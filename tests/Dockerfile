@@ -4,9 +4,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV SHELL /bin/bash
 
-ARG pan_dir=/var/panoptes
-ENV PANDIR $pan_dir
-
 ARG pip_extras="[config,images,testing,social]"
 
 WORKDIR /tmp
@@ -22,7 +19,7 @@ RUN apt-get update && \
 COPY environment.yaml .
 RUN conda env update -n base -f environment.yaml
 
-WORKDIR "${PANDIR}/panoptes-utils"
+WORKDIR /app
 COPY . .
 RUN pip install -e ".${pip_extras}" && \
     # Cleanup

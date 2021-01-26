@@ -25,8 +25,7 @@ log_fmt = "<lvl>{level:.1s}</lvl> " \
           "<lvl>{message}</lvl>"
 
 # Put the log file in the tmp dir.
-log_dir = os.getenv('PANLOG', '/var/panoptes/logs')
-log_file_path = os.path.realpath(f'{log_dir}/panoptes-testing.log')
+log_file_path = os.path.realpath(f'logs/panoptes-testing.log')
 startup_message = f' STARTING NEW PYTEST RUN - LOGS: {log_file_path} '
 logger.add(log_file_path,
            enqueue=True,  # multiprocessing

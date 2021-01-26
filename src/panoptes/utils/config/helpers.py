@@ -16,7 +16,7 @@ def load_config(config_files=None, parse=True, load_local=True):
         be via a running config server.
 
     This function supports loading of a number of different files. If no options
-    are passed to ``config_files`` then the default ``$PANDIR/conf_files/pocs.yaml``
+    are passed to ``config_files`` then the default ``$PANOPTES_CONFIG_FILE``
     will be loaded.
 
     ``config_files`` is a list and loaded in order, so the second entry will overwrite
@@ -166,7 +166,7 @@ def parse_config_directories(directories, must_exist=False):
     """
 
     # Try to get the base directory first.
-    base_dir = directories.get('base', os.environ['PANDIR'])
+    base_dir = directories.get('base', '.')
     if os.path.isdir(base_dir):
         logger.trace(f'Using  base_dir={base_dir!r} for setting config directories')
 

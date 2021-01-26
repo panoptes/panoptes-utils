@@ -15,8 +15,6 @@ services:
     configs:
       - config_file
     environment:
-      PANDIR: /app
-      PANLOG: /logs
       PANOPTES_CONFIG_HOST: 0.0.0.0
       PANOPTES_CONFIG_PORT: 6563
       PANOPTES_CONFIG_FILE:

@@ -11,12 +11,10 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 ARG panuser=pocs-user
 ARG userid=1000
-ARG pan_dir=/app
 ARG pip_install_extras="[config]"
 
 ENV PANUSER $panuser
 ENV USERID $userid
-ENV PANDIR $pan_dir
 
 # Install system dependencies.
 RUN echo "Building from ${image_name}:${image_tag}" && \
@@ -64,7 +62,7 @@ RUN echo "Installing panoptes-pocs module with ${pip_install_extras}" && \
     sudo apt-get --yes clean && \
     sudo rm -rf /var/lib/apt/lists/*
 
-WORKDIR "${PANDIR}"
+WORKDIR /app
 
 # We are still the PANUSER.
 ENTRYPOINT [ "/usr/bin/env", "bash", "-ic" ]

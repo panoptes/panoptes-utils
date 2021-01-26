@@ -24,6 +24,8 @@ Removed
 ^^^^^^^
 
 * Removing unused new cli experiment.
+* Removed all ``PANDIR`` and ``PANLOG`` references. Closes #263.
+
 
 
 0.2.30 - 2021-01-14

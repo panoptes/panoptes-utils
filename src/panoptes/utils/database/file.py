@@ -22,9 +22,9 @@ class PanFileDB(AbstractPanDB):
 
         Args:
             db_name (str, optional): Name of the database containing the collections.
-            storage_dir (str, optional): The name of the directory in $PANDIR where
-                the database files will be stored. Default is `json_store` for backwards
-                compatibility.
+            storage_dir (str, optional): The name of the directory where the
+                database files will be stored. Default is `json_store` in current
+                directory. Pass an absolute path for non-relative.
         """
 
         super().__init__(db_name=db_name, **kwargs)
@@ -32,7 +32,7 @@ class PanFileDB(AbstractPanDB):
         self.db_folder = db_name
 
         # Set up storage directory.
-        self.storage_dir = os.path.join(os.environ['PANDIR'], storage_dir, self.db_folder)
+        self.storage_dir = os.path.join(storage_dir, self.db_folder)
         os.makedirs(self.storage_dir, exist_ok=True)
 
     def insert_current(self, collection, obj, store_permanently=True):
