@@ -24,8 +24,7 @@ RUN echo "Building from ${image_name}:${image_tag}" && \
         dcraw exiftool \
         astrometry.net \
         libcfitsio-dev libcfitsio-bin \
-        libfreetype6-dev libpng-dev libjpeg-dev libffi-dev \
-        gphoto2 && \
+        libfreetype6-dev libpng-dev libjpeg-dev libffi-dev && \
     useradd -u ${USERID} -o -c "Captain POCS" \
         -p panoptes -m -G plugdev,dialout,users,sudo ${PANUSER} && \
     # Allow sudo without password.
