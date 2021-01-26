@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  config-server:
+    image: gcr.io/panoptes-exp/panoptes-utils:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    deploy:
+      mode: global
+    init: true
+    tty: true
+    container_name: config-server
+    hostname: config-server
+    network_mode: host
+    configs:
+      - config_file
+    environment:
+      PANDIR: /app
+      PANLOG: /logs
+      PANOPTES_CONFIG_HOST: 0.0.0.0
+      PANOPTES_CONFIG_PORT: 6563
+      PANOPTES_CONFIG_FILE:
+    restart: on-failure
+    command: [ "panoptes-config-server --verbose run --config-file /app/config.yaml" ]
+    volumes:
+      - type: bind
+        source: "${PANOPTES_CONFIG_FILE}"
+        target: /app/config.yaml
