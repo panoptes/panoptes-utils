@@ -12,7 +12,7 @@ Added
 
   * Add Dockerfile to be ``panoptes-utils`` but don't use for testing.
   * Generic ``panoptes-utils`` with ``panoptes-config-server`` as default command example
-  * Move conda ``enviornment`` file into ``docker`` folder.
+  * Move conda ``environment`` file into ``docker`` folder.
 
 Changed
 ^^^^^^^
