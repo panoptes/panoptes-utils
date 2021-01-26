@@ -16,7 +16,7 @@ RUN apt-get update && \
         dcraw exiftool libcfitsio-dev libcfitsio-bin \
         libfreetype6-dev libpng-dev libjpeg-dev libffi-dev
 
-COPY environment.yaml .
+COPY docker/environment.yaml .
 RUN conda env update -n base -f environment.yaml
 
 WORKDIR /app
