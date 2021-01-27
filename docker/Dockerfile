@@ -55,6 +55,7 @@ RUN /conda/bin/conda env update -n base -f environment.yaml
 RUN echo "Installing panoptes-pocs module with ${pip_install_extras}" && \
     /conda/bin/pip install "panoptes-utils${pip_install_extras}" && \
     # Cleanup
+    /conda/bin/pip cache purge && \
     /conda/bin/conda clean -tipy && \
     sudo apt-get autoremove --purge --yes && \
     sudo apt-get autoclean --yes && \
