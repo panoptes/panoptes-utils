@@ -2,7 +2,7 @@
 Changelog
 =========
 
-0.2.31dev
+0.2.dev31
 ---------
 
 Added
@@ -10,26 +10,27 @@ Added
 
 * Docker musical chairs:
 
-  * Add Dockerfile to be ``panoptes-utils`` but don't use for testing.
-  * Generic ``panoptes-utils`` with ``panoptes-config-server`` as default command example
-  * Move conda ``environment`` file into ``docker`` folder.
+  * Add Dockerfile to be ``panoptes-utils`` but don't use for testing. (#264)
+  * Generic ``panoptes-utils`` with ``panoptes-config-server`` as default command example. (#264)
+  * Move conda ``environment`` file into ``docker`` folder. (#264)
 
 Bugs Fixed
 ^^^^^^^^^^
 
-* `parse_config_directories` was modifying dictionary in place. (#264)
+* ``parse_config_directories`` no longer modifies dictionary in place. (#264)
 
 Changed
 ^^^^^^^
 
-* Clean out the Contributing guide to point to POCS.
-* Removing ``pillow<7`` requirement.
+* Clean out the Contributing guide to point to POCS. (#264)
+* Removing ``pillow<7`` requirement. (#264)
 
 Removed
 ^^^^^^^
 
-* Removing unused new cli experiment.
-* Removed all ``PANDIR`` and ``PANLOG`` references. Closes #263.
+* Removing unused new cli experiment. (#264)
+* Removed all ``PANDIR`` and ``PANLOG`` references. Closes #263. (#264)
+* Removed ``astroplan`` from dependencies. (#264)
 
 
 

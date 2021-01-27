@@ -18,5 +18,3 @@ dependencies:
   - ruamel
   - scipy
   - typer
-  - pip:
-      - -e git+https://github.com/astropy/astroplan.git#egg=astroplan
