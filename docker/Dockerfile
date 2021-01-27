@@ -49,7 +49,7 @@ RUN echo "Installing conda via miniforge" && \
 
 ENV PATH "/home/${PANUSER}/.local/bin:$PATH"
 
-COPY environment.yaml .
+COPY docker/environment.yaml .
 RUN /conda/bin/conda env update -n base -f environment.yaml
 
 RUN echo "Installing panoptes-pocs module with ${pip_install_extras}" && \
