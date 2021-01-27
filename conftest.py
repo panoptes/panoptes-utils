@@ -74,7 +74,7 @@ def pytest_addoption(parser):
 
 @pytest.fixture(scope='session')
 def config_path():
-    return os.getenv('PANOPTES_CONFIG_FILE', '/var/panoptes/panoptes-utils/tests/testing.yaml')
+    return os.getenv('PANOPTES_CONFIG_FILE', 'tests/testing.yaml')
 
 
 @pytest.fixture(scope='function', params=_all_databases)
@@ -105,7 +105,7 @@ def save_environ():
 
 @pytest.fixture(scope='session')
 def data_dir():
-    return os.path.expandvars('/var/panoptes/panoptes-utils/tests/data')
+    return os.path.expandvars('tests/data')
 
 
 @pytest.fixture(scope='function')
