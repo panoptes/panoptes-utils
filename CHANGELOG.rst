@@ -14,6 +14,11 @@ Added
   * Generic ``panoptes-utils`` with ``panoptes-config-server`` as default command example
   * Move conda ``environment`` file into ``docker`` folder.
 
+Bugs Fixed
+^^^^^^^^^^
+
+* `parse_config_directories` was modifying dictionary in place. (#264)
+
 Changed
 ^^^^^^^
 
