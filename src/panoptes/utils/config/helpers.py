@@ -164,14 +164,15 @@ def parse_config_directories(directories, must_exist=False):
     Returns:
         dict: The same directory but with relative directories resolved.
     """
+    resolved_dirs = directories.copy()
 
     # Try to get the base directory first.
-    base_dir = directories.get('base', '.')
+    base_dir = resolved_dirs.get('base', '.')
     if os.path.isdir(base_dir):
         logger.trace(f'Using  base_dir={base_dir!r} for setting config directories')
 
         # Add the base directory to any relative dir.
-        for dir_name, rel_dir in directories.items():
+        for dir_name, rel_dir in resolved_dirs.items():
             # Only want relative directories.
             if rel_dir.startswith('/') is False:
                 abs_dir = os.path.join(base_dir, rel_dir)
@@ -183,9 +184,9 @@ def parse_config_directories(directories, must_exist=False):
                         f'must_exist={must_exist!r} but  abs_dir={abs_dir!r} does not exist, skipping')
                 else:
                     logger.trace(f'Setting {dir_name} to {abs_dir}')
-                    directories[dir_name] = abs_dir
+                    resolved_dirs[dir_name] = abs_dir
 
-    return directories
+    return resolved_dirs
 
 
 def _add_to_conf(config, conf_fn, parse=False):
