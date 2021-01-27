@@ -12,10 +12,11 @@ dependencies:
   - matplotlib-base
   - numpy
   - pillow
-  - python-dateutil
   - pip
+  - python-dateutil
   - requests
   - ruamel
+  - scipy
   - typer
   - pip:
       - -e git+https://github.com/astropy/astroplan.git#egg=astroplan
