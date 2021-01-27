@@ -62,6 +62,7 @@ RUN echo "Installing panoptes-pocs module with ${pip_install_extras}" && \
     sudo rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
+COPY docker/docker-compose.yaml .
 
 # We are still the PANUSER.
 ENTRYPOINT [ "/usr/bin/env", "bash", "-ic" ]
