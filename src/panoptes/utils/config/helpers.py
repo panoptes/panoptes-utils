@@ -141,7 +141,7 @@ def parse_config_directories(directories, must_exist=False):
 
     .. doctest::
 
-        >>> dirs_config = dict(base='/var/panoptes', foo='bar', baz='bam')
+        >>> dirs_config = dict(base='/tmp', foo='bar', baz='bam')
         >>> # If the relative dir doesn't exist but is required, return as is.
         >>> parse_config_directories(dirs_config, must_exist=True)
         {'base': '/var/panoptes', 'foo': 'bar', 'baz': 'bam'}
