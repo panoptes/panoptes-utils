@@ -43,10 +43,36 @@ To install type:
 pip install panoptes-utils
 ```
 
-Full options for local install:
+Full options for install:
 
 ```bash
 pip install -e ".[config,docs,images,testing,social]"
 ```
 
 See the full documentation at: https://panoptes-utils.readthedocs.io
+
+Docker Service
+==============
+
+The `docker` folder defines an image that can be used as the base for other  
+PANOPTES services.
+
+The `Dockerfile` is built by the `cloudbuild.yaml` and stored in Google  
+Registry as `gcr.io/panoptes-exp/panoptes-utils:latest`.
+
+You can pull the image like any other docker image:
+
+```
+docker pull gcr.io/panoptes-exp/panoptes-utils:latest
+```
+
+Config Server
+-------------
+
+There is also a service defined in `docker-compose.yaml` that will run the
+`panoptes-config-server` cli tool.
+
+```bash
+PANOPTES_CONFIG_FILE=/path/to/config.yaml docker-compose \
+    -f docker/docker-compose.yaml up
+```

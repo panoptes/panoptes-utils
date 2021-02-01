@@ -16,7 +16,7 @@ def load_config(config_files=None, parse=True, load_local=True):
         be via a running config server.
 
     This function supports loading of a number of different files. If no options
-    are passed to ``config_files`` then the default ``$PANDIR/conf_files/pocs.yaml``
+    are passed to ``config_files`` then the default ``$PANOPTES_CONFIG_FILE``
     will be loaded.
 
     ``config_files`` is a list and loaded in order, so the second entry will overwrite
@@ -141,14 +141,14 @@ def parse_config_directories(directories, must_exist=False):
 
     .. doctest::
 
-        >>> dirs_config = dict(base='/var/panoptes', foo='bar', baz='bam')
+        >>> dirs_config = dict(base='/tmp', foo='bar', baz='bam')
         >>> # If the relative dir doesn't exist but is required, return as is.
         >>> parse_config_directories(dirs_config, must_exist=True)
-        {'base': '/var/panoptes', 'foo': 'bar', 'baz': 'bam'}
+        {'base': '/tmp', 'foo': 'bar', 'baz': 'bam'}
 
         >>> # Default is to return anyway.
         >>> parse_config_directories(dirs_config)
-        {'base': '/var/panoptes', 'foo': '/var/panoptes/bar', 'baz': '/var/panoptes/bam'}
+        {'base': '/tmp', 'foo': '/tmp/bar', 'baz': '/tmp/bam'}
 
         >>> # If 'base' is not a valid absolute directory, return all as is.
         >>> dirs_config = dict(base='panoptes', foo='bar', baz='bam')
@@ -164,14 +164,15 @@ def parse_config_directories(directories, must_exist=False):
     Returns:
         dict: The same directory but with relative directories resolved.
     """
+    resolved_dirs = directories.copy()
 
     # Try to get the base directory first.
-    base_dir = directories.get('base', os.environ['PANDIR'])
+    base_dir = resolved_dirs.get('base', '.')
     if os.path.isdir(base_dir):
         logger.trace(f'Using  base_dir={base_dir!r} for setting config directories')
 
         # Add the base directory to any relative dir.
-        for dir_name, rel_dir in directories.items():
+        for dir_name, rel_dir in resolved_dirs.items():
             # Only want relative directories.
             if rel_dir.startswith('/') is False:
                 abs_dir = os.path.join(base_dir, rel_dir)
@@ -183,9 +184,9 @@ def parse_config_directories(directories, must_exist=False):
                         f'must_exist={must_exist!r} but  abs_dir={abs_dir!r} does not exist, skipping')
                 else:
                     logger.trace(f'Setting {dir_name} to {abs_dir}')
-                    directories[dir_name] = abs_dir
+                    resolved_dirs[dir_name] = abs_dir
 
-    return directories
+    return resolved_dirs
 
 
 def _add_to_conf(config, conf_fn, parse=False):
