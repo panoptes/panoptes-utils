@@ -370,7 +370,7 @@ def get_rgb_background(fits_fn=None,
                        sigma=5,
                        iters=10,
                        exclude_percentile=100,
-                       return_separate=True,
+                       return_separate=False,
                        *args,
                        **kwargs
                        ):
