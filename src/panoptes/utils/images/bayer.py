@@ -396,7 +396,7 @@ def get_rgb_background(fits_fn=None,
 
     >>> rgb_back = get_rgb_background(fits_fn)
     >>> rgb_back.mean()
-    2202...
+    2184...
 
     >>> rgb_backs = get_rgb_background(fits_fn, return_separate=True)
     >>> rgb_backs[0]
