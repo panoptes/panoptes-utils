@@ -5,6 +5,19 @@ Changelog
 0.2.dev32
 ---------
 
+Added
+^^^^^
+
+* Added an ``RGB`` IntEnum for easy iterating and consistent array access of rgb data. #265
+* Added ``save_rgb_bg_fits`` that will save a FITS files with seven extensions: combined rgb map, and then the background and rms maps for each color. #265
+
+Changed
+^^^^^^^
+
+* ``get_rgb_background`` can accept ``fits_fn`` or ``data``. #265
+* ``get_stamp_slice`` has ``as_slices`` param added with default ``True`` for legacy behavior. If ``False`` then just the four points are returned. #265
+* Updated defaults for ``get_rgb_background``. #265
+
 
 0.2.31 - 2020-01-31
 -------------------
