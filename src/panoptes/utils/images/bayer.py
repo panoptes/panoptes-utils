@@ -361,8 +361,8 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False, as_slice
         return y_min, y_max, x_min, x_max
 
 
-def get_rgb_background(data=None,
-                       fits_fn=None,
+def get_rgb_background(fits_fn=None,
+                       data=None,
                        box_size=(79, 84),
                        filter_size=(11, 12),
                        estimator='mmm',
