@@ -363,14 +363,14 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False, as_slice
 
 def get_rgb_background(data=None,
                        fits_fn=None,
-                       box_size=(11, 12),
-                       filter_size=(3, 3),
+                       box_size=(79, 84),
+                       filter_size=(11, 12),
                        estimator='mmm',
                        interpolator='zoom',
                        sigma=5,
                        iters=10,
                        exclude_percentile=100,
-                       return_separate=False,
+                       return_separate=True,
                        *args,
                        **kwargs
                        ):
@@ -379,6 +379,10 @@ def get_rgb_background(data=None,
     Note: This funtion does not perform any additional calibration, such as flat, bias,
     or dark correction. Either pre-process and pass the appropriate `data` or make
     sure the `fits_fn` has been processed accordingly.
+
+    By default this uses a box size of (79, 84), which gives an integer number
+    of boxes. The size of the median filter box for the low resolution background
+    is on the order of the stamp size.
 
     Most of the options are described in the `photutils.Background2D` page:
     https://photutils.readthedocs.io/en/stable/background.html#d-background-and-noise-estimation
@@ -405,10 +409,9 @@ def get_rgb_background(data=None,
         fits_fn (str): The filename of the FITS image if no `data` is given.
         data (np.array): The data to use if no `fits_fn` is provided.
         box_size (tuple, optional): The box size over which to compute the
-            2D-Background, default (11, 12), which is on the order of the stamp
-            sizes.
+            2D-Background, default (79, 84).
         filter_size (tuple, optional): The filter size for determining the median,
-            default (3, 3).
+            default (11, 12).
         estimator (str, optional): The estimator object to use, default 'mmm'.
         interpolator (str, optional): The interpolater object to user, default 'zoom'.
         sigma (int, optional): The sigma on which to filter values, default 5.
