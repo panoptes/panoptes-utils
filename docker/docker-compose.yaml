@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   config-server:
-    image: gcr.io/panoptes-exp/panoptes-utils:latest
+    image: gcr.io/panoptes-exp/panoptes-utils:develop
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -12,8 +12,6 @@ services:
     container_name: config-server
     hostname: config-server
     network_mode: host
-    configs:
-      - config_file
     environment:
       PANOPTES_CONFIG_HOST: 0.0.0.0
       PANOPTES_CONFIG_PORT: 6563
