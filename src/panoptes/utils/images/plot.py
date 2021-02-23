@@ -1,17 +1,17 @@
 from copy import copy
-
 from warnings import warn
 
 from matplotlib import rc
+from matplotlib import pyplot as plt
 from matplotlib import animation
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib import cm
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-
 import numpy as np
-
-from astropy.visualization import LogStretch, ImageNormalize, LinearStretch, MinMaxInterval
+from astropy.visualization import ImageNormalize, LinearStretch, LogStretch, MinMaxInterval, \
+    simple_norm
+from panoptes.utils.images import bayer
 
 rc('animation', html='html5')
 
@@ -74,7 +74,6 @@ def add_colorbar(axes_image, size='5%', pad=0.05, orientation='vertical'):
 
 def add_pixel_grid(ax1, grid_height, grid_width, show_axis_labels=True, show_superpixel=False,
                    major_alpha=0.5, minor_alpha=0.25):
-
     # major ticks every 2, minor ticks every 1
     if show_superpixel:
         x_major_ticks = np.arange(-0.5, grid_width, 2)
@@ -102,7 +101,6 @@ def add_pixel_grid(ax1, grid_height, grid_width, show_axis_labels=True, show_sup
 
 
 def animate_stamp(d0):
-
     fig = Figure()
     FigureCanvas(fig)
 
@@ -139,7 +137,6 @@ def show_stamps(pscs,
                 show_max=False,
                 show_pixel_grid=False,
                 **kwargs):
-
     if aperture_position is None:
         midpoint = (stamp_size - 1) / 2
         aperture_position = (midpoint, midpoint)
@@ -226,4 +223,120 @@ def show_stamps(pscs,
         except Exception as e:
             warn("Can't save figure: {}".format(e))
 
+    return fig
+
+
+def plot_stamp(picid,
+               data,
+               metadata,
+               frame_idx=None,
+               show_mean=False,
+               show_all=False,
+               cmap=None,
+               stretch='sqrt',
+               ):
+    cmap = cmap or get_palette('viridis')
+
+    picid = metadata.picid.iloc[0]
+
+    fig = Figure()
+    FigureCanvas(fig)
+    fig.set_figheight(4)
+    fig.set_figwidth(4)
+
+    nrows = 1
+    ncols = 1
+    ax = fig.add_subplot(nrows, ncols, 1)
+
+    if frame_idx:
+        stamp = data.iloc[frame_idx]
+    else:
+        stamp = data
+
+    # Get the frame bounds on full image.
+    y0, y1, x0, x1 = metadata.filter(regex='stamp').iloc[frame_idx]
+
+    # Get peak location on stamp.
+    x_peak = metadata.catalog_wcs_x_int.iloc[frame_idx] - x0
+    y_peak = metadata.catalog_wcs_y_int.iloc[frame_idx] - y0
+
+    # Plot stamp.
+    norm = simple_norm(stamp, stretch)
+    im0 = ax.imshow(stamp, norm=norm, cmap=cmap, origin='lower')
+    add_colorbar(im0)
+
+    # Mean location
+    if show_mean:
+        ax.scatter(metadata.catalog_wcs_x_mean.astype('int') - x0,
+                   metadata.catalog_wcs_y_mean.astype('int') - y0,
+                   marker='x',
+                   color='lightgreen',
+                   edgecolors='red',
+                   s=250,
+                   label='Catalog - mean position')
+
+    if show_all:
+        ax.scatter(metadata.catalog_wcs_x_int - x0,
+                   metadata.catalog_wcs_y_int - y0,
+                   marker='x',
+                   color='orange',
+                   edgecolors='orange',
+                   s=100,
+                   label='Catalog - other frames')
+
+    # Star catalog location for current frame
+    ax.scatter(x_peak, y_peak, marker='*', color='yellow', edgecolors='black', s=200,
+               label='Catalog - current frame')
+
+    add_pixel_grid(ax,
+                   grid_height=data.shape[0],
+                   grid_width=data.shape[1],
+                   show_superpixel=True,
+                   major_alpha=0.3, minor_alpha=0.0, )
+    ax.set_xticklabels([t for t in range(int(x0), int(x1) + 2, 2)], rotation=45)
+    ax.set_yticklabels([t for t in range(int(y0), int(y1) + 2, 2)])
+
+    ax.legend(loc=3)
+
+    ax.set_title(f'PICID: {picid} Frame: {frame_idx} / {len(metadata)}')
+    return fig
+
+
+def plot_background(rgb_bg_data, title=None):
+    """ Plot the RGB backgrounds from `Background2d` objects.
+
+    Args:
+        rgb_bg_data (list[photutils.Background2D]): The RGB background data as
+            returned by calling `panoptes.utils.images.bayer.get_rgb_background`
+            with `return_separate=True`.
+        title (str): The title for the plot, default None.
+
+    """
+
+    nrows = 2
+    ncols = 3
+
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, sharex=True, sharey=True)
+    fig.set_facecolor('white')
+
+    for color in bayer.RGB:
+        d0 = rgb_bg_data[color]
+        ax0 = axes[0][color]
+        ax1 = axes[1][color]
+
+        ax0.set_title(f'{color.name.title()} (med {d0.background_median:.02f} ADU)')
+        im = ax0.imshow(d0.background, cmap=f'{color.name.title()}s_r', origin='lower')
+        add_colorbar(im)
+
+        ax1.set_title(f'{color.name.title()} rms (med {d0.background_rms_median:.02f} ADU)')
+        im = ax1.imshow(d0.background_rms, cmap=f'{color.name.title()}s_r', origin='lower')
+        add_colorbar(im)
+
+        ax0.set_axis_off()
+        ax1.set_axis_off()
+
+    if title:
+        fig.suptitle(title)
+
+    fig.set_size_inches(11, 5)
     return fig
