@@ -437,7 +437,7 @@ def get_rgb_background(data,
           them.
     """
     logger.debug("RGB background subtraction")
-    logger.debug(f"{estimator=} {interpolator=} {box_size=} {filter_size=} {sigma=} {iters=}")
+    logger.debug(f"{estimator} {interpolator} {box_size} {filter_size} {sigma} {iters}")
 
     estimators = {
         'sexb': SExtractorBackground,
