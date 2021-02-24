@@ -2,7 +2,6 @@ from copy import copy
 from warnings import warn
 
 from matplotlib import rc
-from matplotlib import pyplot as plt
 from matplotlib import animation
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -11,7 +10,6 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
 from astropy.visualization import ImageNormalize, LinearStretch, LogStretch, MinMaxInterval, \
     simple_norm
-from panoptes.utils.images import bayer
 
 rc('animation', html='html5')
 
@@ -299,44 +297,4 @@ def plot_stamp(picid,
     ax.legend(loc=3)
 
     ax.set_title(f'PICID: {picid} Frame: {frame_idx} / {len(metadata)}')
-    return fig
-
-
-def plot_background(rgb_bg_data, title=None):
-    """ Plot the RGB backgrounds from `Background2d` objects.
-
-    Args:
-        rgb_bg_data (list[photutils.Background2D]): The RGB background data as
-            returned by calling `panoptes.utils.images.bayer.get_rgb_background`
-            with `return_separate=True`.
-        title (str): The title for the plot, default None.
-
-    """
-
-    nrows = 2
-    ncols = 3
-
-    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, sharex=True, sharey=True)
-    fig.set_facecolor('white')
-
-    for color in bayer.RGB:
-        d0 = rgb_bg_data[color]
-        ax0 = axes[0][color]
-        ax1 = axes[1][color]
-
-        ax0.set_title(f'{color.name.title()} (med {d0.background_median:.02f} ADU)')
-        im = ax0.imshow(d0.background, cmap=f'{color.name.title()}s_r', origin='lower')
-        add_colorbar(im)
-
-        ax1.set_title(f'{color.name.title()} rms (med {d0.background_rms_median:.02f} ADU)')
-        im = ax1.imshow(d0.background_rms, cmap=f'{color.name.title()}s_r', origin='lower')
-        add_colorbar(im)
-
-        ax0.set_axis_off()
-        ax1.set_axis_off()
-
-    if title:
-        fig.suptitle(title)
-
-    fig.set_size_inches(11, 5)
     return fig
