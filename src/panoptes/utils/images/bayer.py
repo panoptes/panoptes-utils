@@ -390,23 +390,28 @@ def get_rgb_background(fits_fn=None,
     Most of the options are described in the `photutils.Background2D` page:
     https://photutils.readthedocs.io/en/stable/background.html#d-background-and-noise-estimation
 
+    >>> from panoptes.utils.images.bayer import RGB
     >>> from panoptes.utils.images import fits as fits_utils
     >>> fits_fn = getfixture('solved_fits_file')
+    >>> camera_bias = 2048
+    >>> data = fits_utils.getdata(fits_fn) - camera_bias
 
-    >>> data = fits_utils.getdata(fits_fn)
-    >>> data.mean()
-    2236...
-
-    >>> rgb_back = get_rgb_background(fits_fn)
+    >> The default is to return a single array for the background.
+    >>> rgb_back = get_rgb_background(data=data)
     >>> rgb_back.mean()
-    2184...
+    136...
+    >>> rgb_back.std()
+    36...
 
-    >>> rgb_backs = get_rgb_background(fits_fn, return_separate=True)
-    >>> rgb_backs[0]
-    <photutils.background.background_2d.Background2D...>
-    >>> {color:data.background_rms_median for color, data in zip('rgb', rgb_backs)}
-    {'r': 20..., 'g': 31..., 'b': 23...}
+    >>> # Can also return the Background2D objects, which is the input to save_rgb_bg_fits
+    >>> rgb_backs = get_rgb_background(data=data, return_separate=True)
+    >>> rgb_backs
+    [<photutils.background.background_2d.Background2D at ...>,
+     <photutils.background.background_2d.Background2D at ...>,
+     <photutils.background.background_2d.Background2D at ...>]
 
+    >>> {color.name:int(rgb_back[color].mean()) for color in RGB}
+    {'RED': 145, 'GREEN': 127, 'BLUE': 145}
 
     Args:
         fits_fn (str): The filename of the FITS image if no `data` is given.
