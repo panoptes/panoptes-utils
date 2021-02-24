@@ -8,8 +8,7 @@ from matplotlib.figure import Figure
 from matplotlib import cm
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
-from astropy.visualization import ImageNormalize, LinearStretch, LogStretch, MinMaxInterval, \
-    simple_norm
+from astropy.visualization import ImageNormalize, LinearStretch, LogStretch, MinMaxInterval
 
 rc('animation', html='html5')
 
@@ -221,80 +220,4 @@ def show_stamps(pscs,
         except Exception as e:
             warn("Can't save figure: {}".format(e))
 
-    return fig
-
-
-def plot_stamp(picid,
-               data,
-               metadata,
-               frame_idx=None,
-               show_mean=False,
-               show_all=False,
-               cmap=None,
-               stretch='sqrt',
-               ):
-    cmap = cmap or get_palette('viridis')
-
-    picid = metadata.picid.iloc[0]
-
-    fig = Figure()
-    FigureCanvas(fig)
-    fig.set_figheight(4)
-    fig.set_figwidth(4)
-
-    nrows = 1
-    ncols = 1
-    ax = fig.add_subplot(nrows, ncols, 1)
-
-    if frame_idx:
-        stamp = data.iloc[frame_idx]
-    else:
-        stamp = data
-
-    # Get the frame bounds on full image.
-    y0, y1, x0, x1 = metadata.filter(regex='stamp').iloc[frame_idx]
-
-    # Get peak location on stamp.
-    x_peak = metadata.catalog_wcs_x_int.iloc[frame_idx] - x0
-    y_peak = metadata.catalog_wcs_y_int.iloc[frame_idx] - y0
-
-    # Plot stamp.
-    norm = simple_norm(stamp, stretch)
-    im0 = ax.imshow(stamp, norm=norm, cmap=cmap, origin='lower')
-    add_colorbar(im0)
-
-    # Mean location
-    if show_mean:
-        ax.scatter(metadata.catalog_wcs_x_mean.astype('int') - x0,
-                   metadata.catalog_wcs_y_mean.astype('int') - y0,
-                   marker='x',
-                   color='lightgreen',
-                   edgecolors='red',
-                   s=250,
-                   label='Catalog - mean position')
-
-    if show_all:
-        ax.scatter(metadata.catalog_wcs_x_int - x0,
-                   metadata.catalog_wcs_y_int - y0,
-                   marker='x',
-                   color='orange',
-                   edgecolors='orange',
-                   s=100,
-                   label='Catalog - other frames')
-
-    # Star catalog location for current frame
-    ax.scatter(x_peak, y_peak, marker='*', color='yellow', edgecolors='black', s=200,
-               label='Catalog - current frame')
-
-    add_pixel_grid(ax,
-                   grid_height=data.shape[0],
-                   grid_width=data.shape[1],
-                   show_superpixel=True,
-                   major_alpha=0.3, minor_alpha=0.0, )
-    ax.set_xticklabels([t for t in range(int(x0), int(x1) + 2, 2)], rotation=45)
-    ax.set_yticklabels([t for t in range(int(y0), int(y1) + 2, 2)])
-
-    ax.legend(loc=3)
-
-    ax.set_title(f'PICID: {picid} Frame: {frame_idx} / {len(metadata)}')
     return fig
