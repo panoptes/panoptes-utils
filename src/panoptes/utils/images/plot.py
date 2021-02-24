@@ -1,5 +1,4 @@
 from copy import copy
-
 from warnings import warn
 
 from matplotlib import rc
@@ -8,10 +7,8 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib import cm
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-
 import numpy as np
-
-from astropy.visualization import LogStretch, ImageNormalize, LinearStretch, MinMaxInterval
+from astropy.visualization import ImageNormalize, LinearStretch, LogStretch, MinMaxInterval
 
 rc('animation', html='html5')
 
@@ -74,7 +71,6 @@ def add_colorbar(axes_image, size='5%', pad=0.05, orientation='vertical'):
 
 def add_pixel_grid(ax1, grid_height, grid_width, show_axis_labels=True, show_superpixel=False,
                    major_alpha=0.5, minor_alpha=0.25):
-
     # major ticks every 2, minor ticks every 1
     if show_superpixel:
         x_major_ticks = np.arange(-0.5, grid_width, 2)
@@ -102,7 +98,6 @@ def add_pixel_grid(ax1, grid_height, grid_width, show_axis_labels=True, show_sup
 
 
 def animate_stamp(d0):
-
     fig = Figure()
     FigureCanvas(fig)
 
@@ -139,7 +134,6 @@ def show_stamps(pscs,
                 show_max=False,
                 show_pixel_grid=False,
                 **kwargs):
-
     if aperture_position is None:
         midpoint = (stamp_size - 1) / 2
         aperture_position = (midpoint, midpoint)
