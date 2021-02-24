@@ -142,7 +142,8 @@ def test_save_rgb_bg_fits(solved_fits_file, tmpdir):
         bayer.save_rgb_bg_fits(rgb_data, output_filename=str(temp_fn), header=h0, fpack=False,
                                overwrite=False)
 
-    bayer.save_rgb_bg_fits(rgb_data, output_filename=str(temp_fn), fpack=False, overwrite=True)
+    temp_fn = bayer.save_rgb_bg_fits(rgb_data, output_filename=str(temp_fn), fpack=True,
+                                     overwrite=True)
 
     # Didn't use our header.
     with pytest.raises(KeyError):
