@@ -63,7 +63,7 @@ def test_get_rgb_4d_data():
 
 def test_rgb_bg_fail():
     with pytest.raises(ValueError):
-        bayer.get_rgb_data()
+        bayer.get_rgb_background()
 
 
 def test_get_pixel_color():
