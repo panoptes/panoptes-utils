@@ -128,7 +128,7 @@ def test_get_stamp_slice_fail():
 
 
 def test_save_rgb_fits(solved_fits_file, tmpdir):
-    d0, h0 = fits_utils.getdata(solved_fits_file)
+    d0, h0 = fits_utils.getdata(solved_fits_file, header=True)
 
     temp_fn = tmpdir / 'temp.fits'
 
