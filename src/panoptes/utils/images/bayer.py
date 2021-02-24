@@ -485,7 +485,7 @@ def get_rgb_background(data,
     return full_background
 
 
-def save_rgb_bg_fits(rgb_bg_data, output_filename, header=None, fpack=False, overwrite=True):
+def save_rgb_bg_fits(rgb_bg_data, output_filename, header=None, fpack=True, overwrite=True):
     """Save a FITS file containing a combined background as well as separate channels.
 
     Args:
