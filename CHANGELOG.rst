@@ -14,7 +14,7 @@ Added
 Changed
 ^^^^^^^
 
-* ``get_rgb_background`` can accept ``fits_fn`` or ``data``. #265
+* ``get_rgb_background`` only accepts a ``data`` argument and a filename can no longer be passed. #265
 * ``get_stamp_slice`` has ``as_slices`` param added with default ``True`` for legacy behavior. If ``False`` then just the four points are returned. #265
 * Updated defaults for ``get_rgb_background``. #265
 * Test coverage will skip `noqa` markers.  #265
