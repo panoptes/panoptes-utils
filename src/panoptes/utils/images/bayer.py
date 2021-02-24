@@ -402,7 +402,7 @@ def get_rgb_background(fits_fn=None,
     >>> rgb_backs[0]
     <photutils.background.background_2d.Background2D...>
     >>> {color:data.background_rms_median for color, data in zip('rgb', rgb_backs)}
-    {'r': 20..., 'g': 32..., 'b': 23...}
+    {'r': 20..., 'g': 31..., 'b': 23...}
 
 
     Args:
