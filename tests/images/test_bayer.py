@@ -136,7 +136,7 @@ def test_save_rgb_bg_fits(solved_fits_file, tmpdir):
 
     rgb_data = bayer.get_rgb_background(d0, return_separate=True)
     bayer.save_rgb_bg_fits(rgb_data, output_filename=str(temp_fn), header=h0, fpack=False)
-    assert fits_utils.getval(solved_fits_file, 'test') is True
+    assert fits_utils.getval(str(temp_fn), 'test') is True
 
     with pytest.raises(ValueError):
         bayer.save_rgb_bg_fits(rgb_data, output_filename=str(temp_fn), header=h0, fpack=False,
@@ -146,4 +146,4 @@ def test_save_rgb_bg_fits(solved_fits_file, tmpdir):
 
     # Didn't use our header.
     with pytest.raises(KeyError):
-        fits_utils.getval(solved_fits_file, 'test')
+        fits_utils.getval(str(temp_fn), 'test')
