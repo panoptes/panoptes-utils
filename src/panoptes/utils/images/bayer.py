@@ -364,8 +364,7 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False, as_slice
         return y_min, y_max, x_min, x_max
 
 
-def get_rgb_background(fits_fn=None,
-                       data=None,
+def get_rgb_background(data,
                        box_size=(79, 84),
                        filter_size=(11, 12),
                        estimator='mmm',
@@ -380,8 +379,8 @@ def get_rgb_background(fits_fn=None,
     """Get the background for each color channel.
 
     Note: This funtion does not perform any additional calibration, such as flat, bias,
-    or dark correction. Either pre-process and pass the appropriate `data` or make
-    sure the `fits_fn` has been processed accordingly.
+    or dark correction. It is expected you have performed any necessary pre-processing
+    to `data` before passing to this function.
 
     By default this uses a box size of (79, 84), which gives an integer number
     of boxes. The size of the median filter box for the low resolution background
@@ -392,19 +391,20 @@ def get_rgb_background(fits_fn=None,
 
     >>> from panoptes.utils.images.bayer import RGB
     >>> from panoptes.utils.images import fits as fits_utils
+    >>> # Get our data and pre-process (basic bias subtract here).
     >>> fits_fn = getfixture('solved_fits_file')
     >>> camera_bias = 2048
     >>> data = fits_utils.getdata(fits_fn) - camera_bias
 
     >> The default is to return a single array for the background.
-    >>> rgb_back = get_rgb_background(data=data)
+    >>> rgb_back = get_rgb_background(data)
     >>> rgb_back.mean()
     136...
     >>> rgb_back.std()
     36...
 
     >>> # Can also return the Background2D objects, which is the input to save_rgb_bg_fits
-    >>> rgb_backs = get_rgb_background(data=data, return_separate=True)
+    >>> rgb_backs = get_rgb_background(data, return_separate=True)
     >>> rgb_backs
     [<photutils.background.background_2d.Background2D at ...>,
      <photutils.background.background_2d.Background2D at ...>,
@@ -414,7 +414,6 @@ def get_rgb_background(fits_fn=None,
     {'RED': 145, 'GREEN': 127, 'BLUE': 145}
 
     Args:
-        fits_fn (str): The filename of the FITS image if no `data` is given.
         data (np.array): The data to use if no `fits_fn` is provided.
         box_size (tuple, optional): The box size over which to compute the
             2D-Background, default (79, 84).
@@ -437,8 +436,8 @@ def get_rgb_background(fits_fn=None,
           for each channel has full interploation across all pixels, but the mask covers
           them.
     """
-    logger.debug(f"Getting background for {fits_fn or data.shape}")
-    logger.debug(f"{estimator} {interpolator} {box_size} {filter_size} σ={sigma} n={iters}")
+    logger.debug("RGB background subtraction")
+    logger.debug(f"{estimator=} {interpolator=} {box_size=} {filter_size=} {sigma=} {iters=}")
 
     estimators = {
         'sexb': SExtractorBackground,
@@ -453,19 +452,8 @@ def get_rgb_background(fits_fn=None,
     bkg_estimator = estimators[estimator]()
     interp = interpolators[interpolator]()
 
-    # Use data if given, but warn if also given other options.
-    if data is not None:
-        if fits_fn:  # noqa
-            logger.warning(f'Both data and fits_fn given, using data.')
-    else:
-        # Data not given, ensure we have filename and set zero camera_bias if not given.
-        if fits_fn is None:
-            raise ValueError('Need either data or fits_fn')
-
-        data = fits_utils.getdata(fits_fn)
-
     # Get the data per color channel.
-    logger.debug(f'Getting RGB background data')
+    logger.debug(f'Getting RGB background data ({data.shape})')
     rgb_data = get_rgb_data(data)
 
     backgrounds = list()
