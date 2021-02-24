@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 
 from panoptes.utils.images import bayer
+from panoptes.utils.images import fits as fits_utils
 
 
 def test_get_rgb_2d_data():
@@ -58,6 +59,11 @@ def test_get_rgb_4d_data():
     data = np.ones((10, 10, 10, 10))
     with pytest.raises(TypeError):
         bayer.get_rgb_data(data)
+
+
+def test_rgb_bg_fail():
+    with pytest.raises(ValueError):
+        bayer.get_rgb_data()
 
 
 def test_get_pixel_color():
@@ -124,3 +130,25 @@ def test_get_stamp_slice_fail():
         bayer.get_stamp_slice(512, 514, stamp_size=(12, 12))
     with pytest.raises(RuntimeError):
         bayer.get_stamp_slice(512, 514, stamp_size=(100, 100))
+
+
+def test_save_rgb_fits(solved_fits_file, tmpdir):
+    d0, h0 = fits_utils.getdata(solved_fits_file)
+
+    temp_fn = tmpdir / 'temp.fits'
+
+    h0['test'] = True
+
+    rgb_data = bayer.get_rgb_data(data=d0)
+    bayer.save_rgb_bg_fits(rgb_data, output_filename=str(temp_fn), header=h0, fpack=False)
+    assert fits_utils.getval(solved_fits_file, 'test') is True
+
+    with pytest.raises(ValueError):
+        bayer.save_rgb_bg_fits(rgb_data, output_filename=str(temp_fn), header=h0, fpack=False,
+                               overwrite=False)
+
+    bayer.save_rgb_bg_fits(rgb_data, output_filename=str(temp_fn), fpack=False, overwrite=True)
+
+    # Didn't use our header.
+    with pytest.raises(KeyError):
+        fits_utils.getval(solved_fits_file, 'test')

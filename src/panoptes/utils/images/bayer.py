@@ -267,6 +267,9 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False, as_slice
                [54, 55, 56, 57, 58, 59],
                [64, 65, 66, 67, 68, 69],
                [74, 75, 76, 77, 78, 79]])
+        >>> # Return y_min, y_max, x_min, x_max
+        >>> bayer.get_stamp_slice(x, y, stamp_size=(6, 6), as_slices=False)
+        (2, 8, 4, 10)
 
     The original index had a value of `57`, which is within the center superpixel.
 
@@ -447,7 +450,7 @@ def get_rgb_background(fits_fn=None,
 
     # Use data if given, but warn if also given other options.
     if data is not None:
-        if fits_fn:
+        if fits_fn:  # noqa
             logger.warning(f'Both data and fits_fn given, using data.')
     else:
         # Data not given, ensure we have filename and set zero camera_bias if not given.
@@ -507,6 +510,8 @@ def save_rgb_bg_fits(rgb_bg_data, output_filename, header=None, fpack=True, over
     # Get combined data for Primary HDU
     combined_bg = np.array([np.ma.array(data=d.background, mask=d.mask).filled(0)
                             for d in rgb_bg_data]).sum(0)
+
+    header = header or fits.Header()
 
     # Save as ing16.
     header['BITPIX'] = 16
