@@ -127,14 +127,14 @@ def test_get_stamp_slice_fail():
         bayer.get_stamp_slice(512, 514, stamp_size=(100, 100))
 
 
-def test_save_rgb_fits(solved_fits_file, tmpdir):
+def test_save_rgb_bg_fits(solved_fits_file, tmpdir):
     d0, h0 = fits_utils.getdata(solved_fits_file, header=True)
 
     temp_fn = tmpdir / 'temp.fits'
 
     h0['test'] = True
 
-    rgb_data = bayer.get_rgb_data(data=d0)
+    rgb_data = bayer.get_rgb_background(d0, return_separate=True)
     bayer.save_rgb_bg_fits(rgb_data, output_filename=str(temp_fn), header=h0, fpack=False)
     assert fits_utils.getval(solved_fits_file, 'test') is True
 
