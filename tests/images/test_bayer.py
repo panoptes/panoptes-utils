@@ -138,7 +138,7 @@ def test_save_rgb_bg_fits(solved_fits_file, tmpdir):
     bayer.save_rgb_bg_fits(rgb_data, output_filename=str(temp_fn), header=h0, fpack=False)
     assert fits_utils.getval(str(temp_fn), 'test') is True
 
-    with pytest.raises(ValueError):
+    with pytest.raises(OSError):
         bayer.save_rgb_bg_fits(rgb_data, output_filename=str(temp_fn), header=h0, fpack=False,
                                overwrite=False)
 
