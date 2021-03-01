@@ -2,7 +2,7 @@
 Changelog
 =========
 
-0.2.dev32
+0.2.32dev
 ---------
 
 Added
@@ -19,6 +19,11 @@ Changed
 * ``get_stamp_slice`` has ``as_slices`` param added with default ``True`` for legacy behavior. If ``False`` then just the four points are returned. #265
 * Test coverage will skip `noqa` markers and pytest will run all tests.  #265
 * Added `ruamel.yaml` to base dependencies instead of just ``config`` extras. #265
+
+Fixed
+^^^^^
+
+* The `timeout` parameter is now passed from `get_solve_field` to `solve_field`. #266
 
 
 0.2.31 - 2020-01-31

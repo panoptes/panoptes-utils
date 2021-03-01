@@ -162,6 +162,7 @@ def get_solve_field(fname, replace=True, overwrite=True, timeout=30, **kwargs):
     logger.debug(f'Use solve arguments: {kwargs!r}')
     proc = solve_field(fname, timeout=timeout, **kwargs)
     try:
+        # Timeout plus a small buffer.
         output, errs = proc.communicate(timeout=(timeout + 5))
     except subprocess.TimeoutExpired:
         proc.kill()
