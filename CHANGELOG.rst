@@ -2,6 +2,30 @@
 Changelog
 =========
 
+0.2.32 - 2020-02-28
+-------------------
+
+Added
+^^^^^
+
+* Added an ``RGB`` IntEnum for easy iterating and consistent array access of rgb data. #265
+* Added ``save_rgb_bg_fits`` that will save a FITS files with seven extensions: combined rgb map, and then the background and rms maps for each color. #265
+
+Changed
+^^^^^^^
+
+* ``get_rgb_background`` only accepts a ``data`` argument and a filename can no longer be passed. #265
+* Updated defaults for ``get_rgb_background``. #265
+* ``get_stamp_slice`` has ``as_slices`` param added with default ``True`` for legacy behavior. If ``False`` then just the four points are returned. #265
+* Test coverage will skip `noqa` markers and pytest will run all tests.  #265
+* Added `ruamel.yaml` to base dependencies instead of just ``config`` extras. #265
+
+Fixed
+^^^^^
+
+* The `timeout` parameter is now passed from `get_solve_field` to `solve_field`. #266
+
+
 0.2.31 - 2020-01-31
 -------------------
 
