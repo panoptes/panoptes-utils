@@ -135,8 +135,6 @@ def get_solve_field(fname, replace=True, overwrite=True, timeout=30, **kwargs):
     skip_solved = kwargs.get('skip_solved', True)
 
     out_dict = {}
-    output = None
-    errs = None
 
     header = getheader(fname)
     wcs = WCS(header)
@@ -162,9 +160,9 @@ def get_solve_field(fname, replace=True, overwrite=True, timeout=30, **kwargs):
         was_compressed = True
 
     logger.debug(f'Use solve arguments: {kwargs!r}')
-    proc = solve_field(fname, **kwargs)
+    proc = solve_field(fname, timeout=timeout, **kwargs)
     try:
-        output, errs = proc.communicate(timeout=timeout)
+        output, errs = proc.communicate(timeout=(timeout + 5))
     except subprocess.TimeoutExpired:
         proc.kill()
         output, errs = proc.communicate()
