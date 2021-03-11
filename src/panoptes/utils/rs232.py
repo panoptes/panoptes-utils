@@ -41,7 +41,7 @@ def find_serial_port(vendor_id, product_id, return_all=False):
         return_all (bool): If more than one serial port matches, return all devices, default False.
 
     Returns:
-        str or list
+        str or list: Either the path to the detected port or a list of all comports that match.
     """
     # Get all serial ports.
     matched_ports = [p for p in get_serial_port_info() if
