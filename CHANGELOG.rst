@@ -8,8 +8,7 @@ Changelog
 Added
 ^^^^^
 
-* `panoptes.utils.rs232.find_serial_port` can be used to look up a serial port from the vendor and product hex ids.
-
+* `panoptes.utils.rs232.find_serial_port` can be used to look up a serial port from the vendor and product hex ids.  #269
 
 0.2.32 - 2020-02-28
 -------------------

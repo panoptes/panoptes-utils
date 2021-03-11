@@ -36,8 +36,8 @@ def find_serial_port(vendor_id, product_id, return_all=False):
         panoptes.utils.error.NotFound: NotFound: No serial ports for vendor_id=4660 and product_id=17185
 
     Args:
-        vendor_id (hex): The vendor id string in hex.
-        product_id (hex): The product id string in hex.
+        vendor_id (int): The vendor id, can be hex or int.
+        product_id (hex): The product id, can be hex or int.
         return_all (bool): If more than one serial port matches, return all devices, default False.
 
     Returns:
