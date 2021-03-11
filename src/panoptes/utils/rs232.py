@@ -26,7 +26,7 @@ def find_serial_port(vendor_id, product_id, return_all=False):
         >>> from panoptes.utils.rs232 import find_serial_port
         >>> vendor_id = 0x2a03  # arduino
         >>> product_id = 0x0043 # Uno Rev 3
-        >>> find_serial_port(vendor_id, product_id)  # pragma: no test
+        >>> find_serial_port(vendor_id, product_id)  # doctest: +SKIP
         '/dev/ttyACM0'
 
         >>> # Raises error when not found.
