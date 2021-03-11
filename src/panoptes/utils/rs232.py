@@ -37,7 +37,7 @@ def find_serial_port(vendor_id, product_id, return_all=False):
 
     Args:
         vendor_id (int): The vendor id, can be hex or int.
-        product_id (hex): The product id, can be hex or int.
+        product_id (int): The product id, can be hex or int.
         return_all (bool): If more than one serial port matches, return all devices, default False.
 
     Returns:
@@ -52,7 +52,8 @@ def find_serial_port(vendor_id, product_id, return_all=False):
     elif return_all:
         return matched_ports
     else:
-        raise error.NotFound(f'No serial ports for {vendor_id=:x} and {product_id=:x}')
+        raise error.NotFound(
+            f'No serial ports for vendor_id={vendor_id:x} and product_id={product_id:x}')
 
 
 class SerialData(object):
