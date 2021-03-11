@@ -18,7 +18,7 @@ def get_serial_port_info():
     return sorted(get_comports(), key=operator.attrgetter('device'))
 
 
-def find_serial_port(vendor_id, product_id, return_all=False):
+def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cover
     """Finds the serial port that matches the given vendor and product id.
 
     .. doctest::
