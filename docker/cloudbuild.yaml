@@ -2,7 +2,6 @@ options:
   substitutionOption: "ALLOW_LOOSE"
 timeout: 18000s  # 5 hours
 
-
 substitutions:
   _PLATFORM: linux/arm64,linux/amd64
 
