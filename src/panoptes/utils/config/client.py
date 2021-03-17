@@ -54,11 +54,11 @@ def get_config(key=None,
 
         >>> # But you can supply a default.
         >>> get_config(key='foobar', default='baz')
-        baz
+        'baz'
 
         >>> # key and default are first two parameters.
         >>> get_config('foobar', 'baz')
-        baz
+        'baz'
 
         >>> # Can use Quantities as well.
         >>> from astropy import units as u
