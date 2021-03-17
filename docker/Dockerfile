@@ -15,8 +15,9 @@ ARG pip_install_extras="[config]"
 
 ENV PANUSER $panuser
 ENV USERID $userid
+ENV PATH "/home/${PANUSER}/.local/bin:$PATH"
 
-# Install system dependencies.
+# Install system dependencies as root user.
 RUN echo "Building from ${image_name}:${image_tag}" && \
     apt-get update && apt-get install --no-install-recommends --yes \
         bzip2 ca-certificates \
@@ -33,6 +34,7 @@ RUN echo "Building from ${image_name}:${image_tag}" && \
     mkdir -p "/home/${panuser}/.ssh" && \
     echo "Host localhost\n\tStrictHostKeyChecking no\n" >> "/home/${panuser}/.ssh/config"
 
+# Change to our app user.
 USER "${userid}"
 
 # Miniconda
@@ -45,14 +47,18 @@ RUN echo "Installing conda via miniforge" && \
         -O install-miniforge.sh && \
     /bin/sh install-miniforge.sh -b -f -p /conda && \
     # Initialize conda for the shells.
-    /conda/bin/conda init bash
+    /conda/bin/conda init bash && \
+    rm install-miniforge.sh
 
-ENV PATH "/home/${PANUSER}/.local/bin:$PATH"
+ARG app_dir=/panoptes-utils
+ENV APP_DIR $app_dir
 
+WORKDIR "${APP_DIR}"
 COPY docker/environment.yaml .
-RUN /conda/bin/conda env update -n base -f environment.yaml
+COPY docker/docker-compose.yaml .
+RUN /conda/bin/conda-env update -n base -f environment.yaml
 
-RUN echo "Installing panoptes-pocs module with ${pip_install_extras}" && \
+RUN echo "Installing panoptes-utils module with ${pip_install_extras}" && \
     /conda/bin/pip install "panoptes-utils${pip_install_extras}" && \
     # Cleanup
     /conda/bin/pip cache purge && \
@@ -61,9 +67,6 @@ RUN echo "Installing panoptes-pocs module with ${pip_install_extras}" && \
     sudo apt-get autoclean --yes && \
     sudo apt-get --yes clean && \
     sudo rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-COPY docker/docker-compose.yaml .
 
 # We are still the PANUSER.
 ENTRYPOINT [ "/usr/bin/env", "bash", "-ic" ]
