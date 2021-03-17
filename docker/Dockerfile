@@ -12,11 +12,9 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ARG panuser=pocs-user
 ARG userid=1000
 ARG pip_install_extras="[config]"
-ARG panoptes_utils_dir="/panoptes"
 
 ENV PANUSER $panuser
 ENV USERID $userid
-ENV PANOPTES_UTILS_DIR $panoptes_utils_dir
 ENV PATH "/home/${PANUSER}/.local/bin:$PATH"
 
 # Install system dependencies as root user.
@@ -52,12 +50,15 @@ RUN echo "Installing conda via miniforge" && \
     /conda/bin/conda init bash && \
     rm install-miniforge.sh
 
-WORKDIR "${PANOPTES_UTILS_DIR}"
+ARG app_dir=/panoptes-utils
+ENV APP_DIR $app_dir
+
+WORKDIR "${APP_DIR}"
 COPY docker/environment.yaml .
 COPY docker/docker-compose.yaml .
 RUN /conda/bin/conda-env update -n base -f environment.yaml
 
-RUN echo "Installing panoptes-pocs module with ${pip_install_extras}" && \
+RUN echo "Installing panoptes-utils module with ${pip_install_extras}" && \
     /conda/bin/pip install "panoptes-utils${pip_install_extras}" && \
     # Cleanup
     /conda/bin/pip cache purge && \
@@ -67,6 +68,6 @@ RUN echo "Installing panoptes-pocs module with ${pip_install_extras}" && \
     sudo apt-get --yes clean && \
     sudo rm -rf /var/lib/apt/lists/*
 
-# We are still the PANUSER in the PANOPTES_UTILS_DIR.
+# We are still the PANUSER.
 ENTRYPOINT [ "/usr/bin/env", "bash", "-ic" ]
 CMD [ "panoptes-config-server", "--help" ]
