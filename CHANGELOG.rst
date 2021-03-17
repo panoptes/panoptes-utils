@@ -9,7 +9,16 @@ Added
 ^^^^^
 
 * ``panoptes.utils.rs232.find_serial_port()`` can be used to look up a serial port from the vendor and product hex ids.  #269
-* ``pnaoptes.utils.config.config.client.get_config()`` changed so ``default`` is the second parameter. #272
+
+Changed
+^^^^^^^
+
+* ``panoptes.utils.config.config.client.get_config()`` changed so ``default`` is the second parameter and function made less noisy overall. #272
+
+Removed
+^^^^^^^
+
+* ``panoptes.utils.logging`` which is just replaced by ``from loguru import logger``. # 272
 
 0.2.32 - 2020-02-28
 -------------------
