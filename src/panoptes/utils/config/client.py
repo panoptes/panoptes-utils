@@ -101,8 +101,7 @@ def get_config(key=None,
         logger.log(log_level, f'Calling get_config on url={url!r} with  key={key!r}')
         response = requests.post(url, json={'key': key, 'verbose': verbose})
         if not response.ok:  # pragma: no cover
-            raise InvalidConfig(
-                f'Config server returned invalid JSON:  response.content={response.content!r}')
+            raise InvalidConfig(f'Config server returned invalid JSON: {response.content!r}')
     except Exception as e:
         logger.warning(f'Problem with get_config: {e!r}')
     else:
