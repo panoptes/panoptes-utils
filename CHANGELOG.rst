@@ -14,6 +14,7 @@ Changed
 ^^^^^^^
 
 * ``panoptes.utils.config.config.client.get_config()`` changed so ``default`` is the second parameter and function made less noisy overall. #272
+* Updated to ``Pillow>=8.1.1`` for depandabot alert.  #273.
 
 Removed
 ^^^^^^^
