@@ -1,5 +1,3 @@
-"""Provides SerialData, a PySerial wrapper."""
-
 import operator
 import time
 from contextlib import suppress
@@ -11,8 +9,6 @@ from panoptes.utils import serializers
 from serial.tools.list_ports import comports as get_comports
 
 
-# Note: get_serial_port_info is replaced by tests to override the normal
-# behavior, so don't change the name without fixing the tests.
 def get_serial_port_info():
     """Returns the serial ports defined on the system.
 
@@ -20,6 +16,44 @@ def get_serial_port_info():
         https://github.com/pyserial/pyserial/blob/master/serial/tools/list_ports_common.py
     """
     return sorted(get_comports(), key=operator.attrgetter('device'))
+
+
+def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cover
+    """Finds the serial port that matches the given vendor and product id.
+
+    .. doctest::
+
+        >>> from panoptes.utils.rs232 import find_serial_port
+        >>> vendor_id = 0x2a03  # arduino
+        >>> product_id = 0x0043 # Uno Rev 3
+        >>> find_serial_port(vendor_id, product_id)  # doctest: +SKIP
+        '/dev/ttyACM0'
+
+        >>> # Raises error when not found.
+        >>> find_serial_port(0x1234, 0x4321)
+        Traceback (most recent call last):
+          ...
+        panoptes.utils.error.NotFound: NotFound: No serial ports for vendor_id=4660 and product_id=17185
+
+    Args:
+        vendor_id (int): The vendor id, can be hex or int.
+        product_id (int): The product id, can be hex or int.
+        return_all (bool): If more than one serial port matches, return all devices, default False.
+
+    Returns:
+        str or list: Either the path to the detected port or a list of all comports that match.
+    """
+    # Get all serial ports.
+    matched_ports = [p for p in get_serial_port_info() if
+                     p.vid == vendor_id and p.pid == product_id]
+
+    if len(matched_ports) == 1:
+        return matched_ports[0].device
+    elif return_all:
+        return matched_ports
+    else:
+        raise error.NotFound(
+            f'No serial ports for vendor_id={vendor_id:x} and product_id={product_id:x}')
 
 
 class SerialData(object):

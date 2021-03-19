@@ -163,7 +163,7 @@ def get_solve_field(fname, replace=True, overwrite=True, timeout=30, **kwargs):
     proc = solve_field(fname, timeout=timeout, **kwargs)
     try:
         # Timeout plus a small buffer.
-        output, errs = proc.communicate(timeout=(timeout + 5))
+        output, errs = proc.communicate(timeout=(timeout))
     except subprocess.TimeoutExpired:
         proc.kill()
         output, errs = proc.communicate()
