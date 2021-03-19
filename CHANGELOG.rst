@@ -2,8 +2,8 @@
 Changelog
 =========
 
-0.2.32dev
----------
+0.2.32 - 2020-03-19
+-------------------
 
 Added
 ^^^^^
@@ -20,6 +20,7 @@ Removed
 ^^^^^^^
 
 * ``panoptes.utils.logging`` which is just replaced by ``from loguru import logger``. # 272
+
 
 0.2.32 - 2020-02-28
 -------------------
