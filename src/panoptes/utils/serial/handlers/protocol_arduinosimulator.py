@@ -13,7 +13,7 @@ import threading
 import time
 import urllib.parse
 
-import panoptes.utils.serial_handlers.protocol_no_op
+import panoptes.utils.serial.handlers.protocol_no_op
 from loguru import logger
 from panoptes.utils.serializers import from_json
 from panoptes.utils.serializers import to_json

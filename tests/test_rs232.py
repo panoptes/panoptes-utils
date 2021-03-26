@@ -4,9 +4,8 @@ import pytest
 import serial
 from panoptes.utils import error
 from panoptes.utils import rs232
-from panoptes.utils.serial_handlers import protocol_buffers
-from panoptes.utils.serial_handlers import protocol_hooked
-from panoptes.utils.serial_handlers.protocol_no_op import NoOpSerial
+from panoptes.utils.serial.handlers import protocol_buffers, protocol_hooked
+from panoptes.utils.serial.handlers.protocol_no_op import NoOpSerial
 from serial.serialutil import PortNotOpenError
 
 
@@ -45,10 +44,10 @@ def test_detect_uninstalled_scheme():
 @pytest.fixture(scope='function')
 def handler():
     # Install our package that contain the test handlers.
-    serial.protocol_handler_packages.append('panoptes.utils.serial_handlers')
+    serial.protocol_handler_packages.append('panoptes.utils.serial')
     yield True
     # Remove that package.
-    serial.protocol_handler_packages.remove('panoptes.utils.serial_handlers')
+    serial.protocol_handler_packages.remove('panoptes.utils.serial')
 
 
 def test_detect_bogus_scheme(handler):

@@ -69,7 +69,7 @@ class SerialData(object):
     .. doctest::
 
         # Import our serial simulators
-        >>> from panoptes.utils.serial_handlers import protocol_buffers as pb
+        >>> from panoptes.utils.serial.handlers import protocol_buffers as pb
 
         # Import our serial utils
         >>> from panoptes.utils.rs232 import SerialData
@@ -100,7 +100,7 @@ class SerialData(object):
 
         # Remove custom handlers
         >>> import serial
-        >>> serial.protocol_handler_packages.remove('panoptes.utils.serial_handlers')
+        >>> serial.protocol_handler_packages.remove('panoptes.utils.serial')
     """
 
     def __init__(self,

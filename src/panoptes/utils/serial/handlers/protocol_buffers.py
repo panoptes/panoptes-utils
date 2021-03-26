@@ -4,7 +4,7 @@ import io
 import threading
 from typing import Optional
 
-from panoptes.utils.serial_handlers.protocol_no_op import NoOpSerial
+from panoptes.utils.serial.handlers.protocol_no_op import NoOpSerial
 from serial.serialutil import PortNotOpenError
 
 # r_buffer and w_buffer are binary I/O buffers. read(size=N) on an instance

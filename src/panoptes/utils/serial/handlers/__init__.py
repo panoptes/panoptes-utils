@@ -7,4 +7,4 @@ file named protocol_XYZ.py in this package (i.e. directory).
 import serial
 
 # Import this namespace automatically.
-serial.protocol_handler_packages.append('panoptes.utils.serial_handlers')
+serial.protocol_handler_packages.append('panoptes.utils.serial.handlers')
