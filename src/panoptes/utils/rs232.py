@@ -99,6 +99,7 @@ class SerialData(object):
         b'ack event'
 
         # Remove custom handlers
+        >>> import serial
         >>> serial.protocol_handler_packages.remove('panoptes.utils.serial_handlers')
     """
 
@@ -139,7 +140,7 @@ class SerialData(object):
         self.retry_limit = retry_limit
         self.retry_delay = retry_delay
 
-        self.ser = serial.serial_for_url(port, do_not_open=True)
+        self.ser: serial.Serial = serial.serial_for_url(port, do_not_open=True)
 
         # Configure the PySerial class.
         self.ser.baudrate = baudrate
@@ -152,21 +153,21 @@ class SerialData(object):
         self.ser.rtscts = False
         self.ser.dsrdtr = False
 
-        self.logger.debug('SerialData for {} created', self.name)
+        self.logger.debug(f'SerialData for {self.name} created')
 
         # Properties have been set to reasonable values, ready to open the port.
         try:
             self.ser.open()
         except serial.serialutil.SerialException as err:
-            self.logger.debug('Unable to open {}. Error: {}', self.name, err)
+            self.logger.debug(f'Unable to open {self.name}. Error: {err!r}')
             return
 
         open_delay = max(0.0, float(open_delay))
         if open_delay > 0.0:
-            self.logger.debug('Opened {}, sleeping for {} seconds', self.name, open_delay)
+            self.logger.debug(f'Opened {self.name}, sleeping for {open_delay} seconds')
             time.sleep(open_delay)
         else:
-            self.logger.debug('Opened {}', self.name)
+            self.logger.debug(f'Opened {self.name}')
 
     @property
     def port(self):
@@ -185,19 +186,18 @@ class SerialData(object):
             error.BadSerialConnection if unable to open the connection.
         """
         if self.is_connected:
-            self.logger.debug('Connection already open to {}', self.name)
+            self.logger.debug(f'Connection already open to {self.name}')
             return
-        self.logger.debug('SerialData.connect called for {}', self.name)
+        self.logger.debug(f'SerialData.connect called for {self.name}')
         try:
             # Note: we must not call open when it is already open, else an exception is thrown of
             # the same type thrown when open fails to actually open the device.
             self.ser.open()
             if not self.is_connected:
-                raise error.BadSerialConnection(
-                    msg="Serial connection {} is not open".format(self.name))
+                raise error.BadSerialConnection(msg=f'Serial connection {self.name} is not open')
         except serial.serialutil.SerialException as err:
             raise error.BadSerialConnection(msg=err)
-        self.logger.debug('Serial connection established to {}', self.name)
+        self.logger.debug(f'Serial connection established to {self.name}')
 
     def disconnect(self):
         """Closes the serial connection.
@@ -210,10 +210,10 @@ class SerialData(object):
         try:
             self.ser.close()
         except Exception as err:
-            raise error.BadSerialConnection(f"Disconnect failed for {self.name}; {err!r}")
+            raise error.BadSerialConnection(f'Disconnect failed for {self.name}; {err!r}')
 
         if self.is_connected:
-            raise error.BadSerialConnection(f"Disconnect failed for {self.name}")
+            raise error.BadSerialConnection(f'Disconnect failed for {self.name}')
 
     def write_bytes(self, data):
         """Write data of type bytes."""
@@ -249,16 +249,15 @@ class SerialData(object):
         if not self.is_connected:
             raise error.BadSerialConnection("Can't read serial device.")
 
-        if retry_limit is None:
-            retry_limit = self.retry_limit
-        if retry_delay is None:
-            retry_delay = self.retry_delay
+        retry_limit = retry_limit or self.retry_limit
+        retry_delay = retry_delay or self.retry_delay
 
         for _ in range(retry_limit):
-            data = self.ser.read(max(size, min(2048, self.ser.in_waiting)))
+            data = self.ser.read(max(1, min(size, self.ser.in_waiting)))
             if data:
                 return data.decode(encoding=encoding)
             time.sleep(retry_delay)
+
         return ''
 
     def get_reading(self):
