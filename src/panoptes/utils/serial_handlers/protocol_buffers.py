@@ -2,44 +2,45 @@
 
 import io
 import threading
+from typing import Optional
 
-from panoptes.utils.serial_handlers import NoOpSerial
-from serial import serialutil
+from panoptes.utils.serial_handlers.protocol_no_op import NoOpSerial
+from serial.serialutil import PortNotOpenError
 
 # r_buffer and w_buffer are binary I/O buffers. read(size=N) on an instance
 # of Serial reads the next N bytes from r_buffer, and write(data) appends the
 # bytes of data to w_buffer.
-# NOTE: The caller (a test) is responsible for resetting buffers before tests.
-_r_buffer = None
-_w_buffer = None
+# NOTE: The caller (a test) is responsible for resetting buffers before tests. See
+# the util functions below.
+SERIAL_READ_BUFFER: Optional[io.BytesIO] = None
+SERIAL_WRITE_BUFFER: Optional[io.BytesIO] = None
 
-# The above I/O buffers are not thread safe, so we need to lock them during
-# access.
-_r_lock = threading.Lock()
-_w_lock = threading.Lock()
-
-
-def ResetBuffers(read_data=None):
-    SetRBufferValue(read_data)
-    with _w_lock:
-        global _w_buffer
-        _w_buffer = io.BytesIO()
+# The above I/O buffers are not thread safe, so we need to lock them during access.
+SERIAL_READ_LOCK = threading.Lock()
+SERIAL_WRITE_LOCK = threading.Lock()
 
 
-def SetRBufferValue(data):
+def reset_serial_buffers(read_data=None):
+    set_serial_read_buffer(read_data)
+    with SERIAL_WRITE_LOCK:
+        global SERIAL_WRITE_BUFFER
+        SERIAL_WRITE_BUFFER = io.BytesIO()
+
+
+def set_serial_read_buffer(data):
     """Sets the r buffer to data (a bytes object)."""
     if data and not isinstance(data, (bytes, bytearray)):
-        raise TypeError("data must by a bytes or bytearray object.")
-    with _r_lock:
-        global _r_buffer
-        _r_buffer = io.BytesIO(data)
+        raise TypeError('data must by a bytes or bytearray object.')
+    with SERIAL_READ_LOCK:
+        global SERIAL_READ_BUFFER
+        SERIAL_READ_BUFFER = io.BytesIO(data)
 
 
-def GetWBufferValue():
+def get_serial_write_buffer():
     """Returns an immutable bytes object with the value of the w buffer."""
-    with _w_lock:
-        if _w_buffer:
-            return _w_buffer.getvalue()
+    with SERIAL_WRITE_LOCK:
+        if SERIAL_WRITE_BUFFER:
+            return SERIAL_WRITE_BUFFER.getvalue()
 
 
 class BuffersSerial(NoOpSerial):
@@ -49,9 +50,9 @@ class BuffersSerial(NoOpSerial):
     @property
     def in_waiting(self):
         if not self.is_open:
-            raise serialutil.portNotOpenError
-        with _r_lock:
-            return len(_r_buffer.getbuffer()) - _r_buffer.tell()
+            raise PortNotOpenError
+        with SERIAL_READ_LOCK:
+            return len(SERIAL_READ_BUFFER.getbuffer()) - SERIAL_READ_BUFFER.tell()
 
     def read(self, size=1):
         """Read size bytes.
@@ -71,13 +72,13 @@ class BuffersSerial(NoOpSerial):
                 the port and the time is exceeded.
         """
         if not self.is_open:
-            raise serialutil.portNotOpenError
-        with _r_lock:
+            raise PortNotOpenError
+        with SERIAL_READ_LOCK:
             # TODO(jamessynge): Figure out whether and how to handle timeout.
             # We might choose to generate a timeout if the caller asks for data
             # beyond the end of the buffer; or simply return what is left,
             # including nothing (i.e. bytes()) if there is nothing left.
-            return _r_buffer.read(size)
+            return SERIAL_READ_BUFFER.read(size)
 
     def write(self, data):
         """
@@ -94,9 +95,9 @@ class BuffersSerial(NoOpSerial):
         if not isinstance(data, (bytes, bytearray)):
             raise TypeError("data must by a bytes or bytearray object.")
         if not self.is_open:
-            raise serialutil.portNotOpenError
-        with _w_lock:
-            return _w_buffer.write(data)
+            raise PortNotOpenError
+        with SERIAL_WRITE_LOCK:
+            return SERIAL_WRITE_BUFFER.write(data)
 
 
 Serial = BuffersSerial

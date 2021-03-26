@@ -67,10 +67,7 @@ class SerialData(object):
 
     .. doctest::
 
-        >>> import serial
-
-        # Register our serial simulators
-        >>> serial.protocol_handler_packages.append('panoptes.utils.serial_handlers')
+        # Import our serial simulators
         >>> from panoptes.utils.serial_handlers import protocol_buffers as pb
 
         # Import our serial utils
@@ -81,7 +78,7 @@ class SerialData(object):
 
         # Note: A manual reset is currently required because implementation is not complete.
         # See https://github.com/panoptes/POCS/issues/758 for details.
-        >>> pb.ResetBuffers()
+        >>> pb.reset_serial_buffers()
         >>> device_listener.is_connected
         True
 
@@ -89,7 +86,7 @@ class SerialData(object):
         'buffers://'
 
         # Device sends event
-        >>> pb.SetRBufferValue(b'emit event')
+        >>> pb.set_serial_read_buffer(b'emit event')
 
         # Listen for event
         >>> device_listener.read()
@@ -97,7 +94,7 @@ class SerialData(object):
 
         >>> device_listener.write('ack event')
         9
-        >>> pb.GetWBufferValue()
+        >>> pb.get_serial_write_buffer()
         b'ack event'
 
         # Remove custom handlers

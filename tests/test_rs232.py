@@ -1,14 +1,13 @@
 import io
+
 import pytest
 import serial
-from serial import serialutil
-
 from panoptes.utils import error
 from panoptes.utils import rs232
-
-from panoptes.utils.serial_handlers import NoOpSerial
 from panoptes.utils.serial_handlers import protocol_buffers
 from panoptes.utils.serial_handlers import protocol_hooked
+from panoptes.utils.serial_handlers.protocol_no_op import NoOpSerial
+from serial.serialutil import PortNotOpenError
 
 
 def test_port_discovery():
@@ -107,9 +106,8 @@ def test_basic_no_op(handler):
 
 
 def test_basic_io(handler):
-    protocol_buffers.ResetBuffers(b'abc\r\ndef\n')
-    ser = rs232.SerialData(port='buffers://', open_delay=0.01, retry_delay=0.01,
-                           retry_limit=2)
+    protocol_buffers.reset_serial_buffers(b'abc\r\ndef\n')
+    ser = rs232.SerialData(port='buffers://', open_delay=0.01, retry_delay=0.01, retry_limit=2)
 
     # Peek inside, it should have a BuffersSerial instance as member ser.
     assert isinstance(ser.ser, protocol_buffers.BuffersSerial)
@@ -128,10 +126,10 @@ def test_basic_io(handler):
     assert 5 == ser.write('def\r\n')
     assert 6 == ser.write('done\r\n')
 
-    assert b'def\r\ndone\r\n' == protocol_buffers.GetWBufferValue()
+    assert b'def\r\ndone\r\n' == protocol_buffers.get_serial_write_buffer()
 
     # If we add more to the read buffer, we can read again.
-    protocol_buffers.SetRBufferValue(b'line1\r\nline2\r\ndangle')
+    protocol_buffers.set_serial_read_buffer(b'line1\r\nline2\r\ndangle')
     assert 'line1\r\n' == ser.read(retry_delay=10, retry_limit=20)
     assert 'line2\r\n' == ser.read(retry_delay=10, retry_limit=20)
     assert 'dangle' == ser.read(retry_delay=10, retry_limit=20)
@@ -145,14 +143,13 @@ class HookedSerialHandler(NoOpSerial):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.r_buffer = io.BytesIO(
-            b"{'a': 12, 'b': [1, 2, 3, 4], 'c': {'d': 'message'}}\r\n")
+        self.r_buffer = io.BytesIO(b"{'a': 12, 'b': [1, 2, 3, 4], 'c': {'d': 'message'}}\r\n")
 
     @property
     def in_waiting(self):
         """The number of input bytes available to read immediately."""
         if not self.is_open:
-            raise serialutil.portNotOpenError
+            raise PortNotOpenError
         total = len(self.r_buffer.getbuffer())
         avail = total - self.r_buffer.tell()
         # If at end of the stream, reset the stream.
@@ -162,11 +159,7 @@ class HookedSerialHandler(NoOpSerial):
         return avail
 
     def open(self):
-        """Open port.
-
-        Raises:
-            SerialException if the port cannot be opened.
-        """
+        """Open port."""
         self.is_open = True
 
     def close(self):
@@ -176,14 +169,14 @@ class HookedSerialHandler(NoOpSerial):
     def read(self, size=1):
         """Read until the end of self.r_buffer, then seek to beginning of self.r_buffer."""
         if not self.is_open:
-            raise serialutil.portNotOpenError
+            raise PortNotOpenError
         # If at end of the stream, reset the stream.
         return self.r_buffer.read(min(size, self.in_waiting))
 
     def write(self, data):
-        """Write data to bitbucket."""
+        """Write noop."""
         if not self.is_open:
-            raise serialutil.portNotOpenError
+            raise PortNotOpenError
         return len(data)
 
 
@@ -212,8 +205,7 @@ def test_hooked_io(handler):
         assert reading[1] == line
 
     # Can write to the "device" many times.
-    line = 'abcdefghijklmnop' * 30
-    line = line + '\r\n'
+    line = f'{"foobar" * 30}\r\n'
     for n in range(20):
         assert len(line) == ser.write(line)
 
