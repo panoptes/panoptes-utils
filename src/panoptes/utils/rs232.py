@@ -205,23 +205,25 @@ class SerialData(object):
             error.BadSerialConnection if unable to close the connection.
         """
         # Fortunately, close() doesn't throw an exception if already closed.
-        self.logger.debug('SerialData.disconnect called for {}', self.name)
+        self.logger.debug(f'SerialData.disconnect called for {self.name}')
         try:
             self.ser.close()
         except Exception as err:
-            raise error.BadSerialConnection(
-                msg="SerialData.disconnect failed for {}; underlying error: {}".format(
-                    self.name, err))
+            raise error.BadSerialConnection(f"Disconnect failed for {self.name}; {err!r}")
+
         if self.is_connected:
-            raise error.BadSerialConnection(
-                msg="SerialData.disconnect failed for {}".format(self.name))
+            raise error.BadSerialConnection(f"Disconnect failed for {self.name}")
 
     def write_bytes(self, data):
         """Write data of type bytes."""
+        if not self.is_connected:
+            raise error.BadSerialConnection("Can't write to serial device")
         return self.ser.write(data)
 
     def write(self, value):
         """Write value (a string) after encoding as bytes."""
+        if not self.is_connected:
+            raise error.BadSerialConnection("Can't read from serial device")
         return self.write_bytes(value.encode())
 
     def read_bytes(self, size=1):
@@ -243,6 +245,9 @@ class SerialData(object):
         If no response is given, delay for retry_delay and then try to read
         again. Fail after retry_limit attempts.
         """
+        if not self.is_connected:
+            raise error.BadSerialConnection("Can't read serial device.")
+
         if retry_limit is None:
             retry_limit = self.retry_limit
         if retry_delay is None:
