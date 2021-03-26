@@ -6,6 +6,7 @@ import serial
 from loguru import logger
 from panoptes.utils import error
 from panoptes.utils import serializers
+from panoptes.utils.time import current_time
 from serial.tools.list_ports import comports as get_comports
 
 
@@ -265,14 +266,12 @@ class SerialData(object):
 
         Returns:
             A pair (tuple) of (timestamp, line). The timestamp is the time of completion of the
-            readline operation.
+                readline operation.
         """
         # Get the timestamp after the read so that a long delay on reading doesn't make it
         # appear that the read happened much earlier than it did.
         line = self.read()
-        ts = time.strftime('%Y-%m-%dT%H:%M:%S %Z', time.gmtime())
-        info = (ts, line)
-        return info
+        return current_time(), line
 
     def get_and_parse_reading(self, retry_limit=5):
         """Reads a line of JSON text and returns the decoded value, along with the current time.
@@ -285,7 +284,7 @@ class SerialData(object):
             completion of the readline operation.
         """
         for _ in range(max(1, retry_limit)):
-            (ts, line) = self.get_reading()
+            ts, line = self.get_reading()
             if not line:
                 continue
 
