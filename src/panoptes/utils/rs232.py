@@ -107,8 +107,8 @@ class SerialData(object):
                  name=None,
                  timeout=2.0,
                  open_delay=0.0,
-                 retry_limit=5,
-                 retry_delay=0.5,
+                 retry_limit=1,
+                 retry_delay=0.01,
                  **kwargs
                  ):
         """Create a SerialData instance and attempt to open a connection.
@@ -133,9 +133,6 @@ class SerialData(object):
 
         """
         self.logger = logger
-
-        if not port:
-            raise ValueError('Must specify port for SerialData')
 
         self.name = name or port
         self.retry_limit = retry_limit
@@ -221,8 +218,6 @@ class SerialData(object):
 
     def write_bytes(self, data):
         """Write data of type bytes."""
-        assert self.ser
-        assert self.ser.isOpen()
         return self.ser.write(data)
 
     def write(self, value):
@@ -240,28 +235,23 @@ class SerialData(object):
         Returns:
             Bytes read from the port.
         """
-        assert self.ser
-        assert self.ser.isOpen()
         return self.ser.read(size=size)
 
-    def read(self, retry_limit=None, retry_delay=None):
+    def read(self, retry_limit=None, retry_delay=None, size=1, encoding='utf-8'):
         """Reads next line of input using readline.
 
         If no response is given, delay for retry_delay and then try to read
         again. Fail after retry_limit attempts.
         """
-        assert self.ser
-        assert self.ser.isOpen()
-
         if retry_limit is None:
             retry_limit = self.retry_limit
         if retry_delay is None:
             retry_delay = self.retry_delay
 
         for _ in range(retry_limit):
-            data = self.ser.readline()
+            data = self.ser.read(max(size, min(2048, self.ser.in_waiting)))
             if data:
-                return data.decode(encoding='ascii')
+                return data.decode(encoding=encoding)
             time.sleep(retry_delay)
         return ''
 
@@ -297,7 +287,7 @@ class SerialData(object):
             with suppress(error.InvalidDeserialization):
                 data = serializers.from_json(line)
                 if data:
-                    return (ts, data)
+                    return ts, data
         return None
 
     def reset_input_buffer(self):
