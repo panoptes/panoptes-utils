@@ -64,8 +64,7 @@ class ArduinoSimulator:
         # Interval between outputing chunks of bytes.
         chunks_per_second = 1000.0 / self.chunk_size
         chunk_interval = 1.0 / chunks_per_second
-        self.logger.debug('chunks_per_second={}   chunk_interval={}', chunks_per_second,
-                          chunk_interval)
+        self.logger.debug(f'chunks_per_second={chunks_per_second} chunk_interval={chunk_interval}')
         self.chunk_delta = datetime.timedelta(seconds=chunk_interval)
         self.next_chunk_time = None
         self.pending_json_bytes = bytearray()
@@ -90,7 +89,7 @@ class ArduinoSimulator:
         b = self.generate_next_message_bytes(now)
         cut = random.randrange(len(b))
         if cut > 0:
-            self.logger.info('Cutting off the leading {} bytes of the first message', cut)
+            self.logger.info(f'Cutting off the leading {cut} bytes of the first message')
             b = b[cut:]
         self.pending_json_bytes.extend(b)
         # Now two interleaved loops:
@@ -138,7 +137,7 @@ class ArduinoSimulator:
                 return
             remaining = (next_time - now).total_seconds()
             assert remaining > 0
-            self.logger.info('ArduinoSimulator.read_relay_queue_until remaining={}', remaining)
+            self.logger.info(f'ArduinoSimulator.read_relay_queue_until remaining={remaining}')
             try:
                 b = self.relay_queue.get(block=True, timeout=remaining)
                 assert isinstance(b, (bytes, bytearray))
@@ -192,7 +191,7 @@ class ArduinoSimulator:
         return b
 
 
-class FakeArduinoSerialHandler(panoptes.utils.serial_handlers.protocol_no_op.NoOpSerial):
+class FakeArduinoSerialHandler(panoptes.utils.serial.handlers.protocol_no_op.NoOpSerial):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.logger = logger
