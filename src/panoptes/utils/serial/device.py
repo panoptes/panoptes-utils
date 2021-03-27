@@ -165,7 +165,8 @@ class SerialDevice(object):
             >>> dev1.write(to_json(dict(message='Hello JSON World!')))
             >>> len(dev0.readings)
             1
-            >>> dev0.readings[0] == dict(message='Hello JSON World!')
+            >>> dev0.readings[0]
+            '{"message": "Hello JSON World!"}'
 
 
         Args:
