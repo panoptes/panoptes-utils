@@ -10,7 +10,6 @@ import numpy as np
 import pytest
 from _pytest.logging import caplog as _caplog  # noqa
 from loguru import logger
-from matplotlib import pyplot as plt
 from panoptes.utils.config.server import config_server
 from panoptes.utils.database import PanDB
 
@@ -159,7 +158,6 @@ def cr2_file(data_dir):
 @pytest.fixture(autouse=True)
 def add_doctest_dependencies(doctest_namespace):
     doctest_namespace['np'] = np
-    doctest_namespace['plt'] = plt
 
 
 @pytest.fixture
