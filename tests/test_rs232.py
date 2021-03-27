@@ -31,23 +31,13 @@ def test_non_existent_device():
     assert not ser.is_connected
 
 
-def test_detect_uninstalled_scheme():
-    """If our handlers aren't installed, will detect unknown scheme."""
-    # See https://pythonhosted.org/pyserial/url_handlers.html#urls for info on the
-    # standard schemes that are supported by PySerial.
-    with pytest.raises(ValueError):
-        # The no_op scheme references one of our test handlers, but it shouldn't be
-        # accessible unless we've added our package to the list to be searched.
-        rs232.SerialData(port='no_op://')
-
-
 @pytest.fixture(scope='function')
 def handler():
     # Install our package that contain the test handlers.
-    serial.protocol_handler_packages.append('panoptes.utils.serial')
+    serial.protocol_handler_packages.append('panoptes.utils.serial.handlers')
     yield True
     # Remove that package.
-    serial.protocol_handler_packages.remove('panoptes.utils.serial')
+    serial.protocol_handler_packages.remove('panoptes.utils.serial.handlers')
 
 
 def test_detect_bogus_scheme(handler):
