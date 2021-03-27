@@ -80,11 +80,11 @@ def test_basic_no_op(handler):
         assert not ser.is_connected
 
         # Should no longer be able to read or write.
-        with pytest.raises(error.BadSerialConnection):
+        with pytest.raises(AssertionError):
             ser.read(retry_delay=0.01, retry_limit=1)
-        with pytest.raises(error.BadSerialConnection):
+        with pytest.raises(AssertionError):
             ser.read_bytes(size=1)
-        with pytest.raises(error.BadSerialConnection):
+        with pytest.raises(AssertionError):
             ser.write('a')
         ser.reset_input_buffer()
 
