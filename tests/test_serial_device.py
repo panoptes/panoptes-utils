@@ -16,7 +16,7 @@ def test_device():
     del s0
 
     s1 = SerialDevice(port='loop://')
-    assert str(s1) == 'loop:// [9600/8-N-1]'
+    assert str(s1) == 'SerialDevice loop:// [9600/8-N-1]'
     del s1
 
 
