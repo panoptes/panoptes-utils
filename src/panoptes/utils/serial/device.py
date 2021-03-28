@@ -165,10 +165,10 @@ class SerialDevice(object):
             >>> dev1 = SerialDevice(port='loop://', reader_callback=from_json)
             >>> str(dev1)
             'SerialDevice loop:// [9600/8-N-1]'
-            >>> dev1.write(to_json(dict(message='Hello JSON World!')))
-            >>> len(dev0.readings)
+            >>> dev1.write(to_json(dict(message='Hello JSON World!')))  # doctest: +SKIP
+            >>> len(dev0.readings)  # doctest: +SKIP
             1
-            >>> dev0.readings[0]
+            >>> dev0.readings[0]  # doctest: +SKIP
             '{"message": "Hello JSON World!"}'
 
         Args:
