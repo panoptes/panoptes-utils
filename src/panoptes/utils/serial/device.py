@@ -33,13 +33,16 @@ class SerialDeviceDefaults:
         >>> serial_settings = SerialDeviceDefaults(baudrate=115200)
         >>> serial_settings
         SerialDeviceDefaults(baudrate=115200, timeout=1.0, write_timeout=1.0, bytesize=8, parity='N', stopbits=1, xonxoff=False, rtscts=False, dsrdtr=False)
-        >>> serial_settings.write_timeout = 2.5
 
-        >>> # Create a serial device and apply settings.
+        >>> # Create a serial device and apply changed settings.
         >>> ser0 = serial.Serial()
+        >>> serial_settings.write_timeout = 2.5
+        >>> serial_settings.baudrate = 9600
         >>> ser0.apply_settings(serial_settings.to_dict())
-        >>> ser0.timeout
+        >>> ser0.write_timeout
         2.5
+        >>> ser0.baudrate
+        9600
 
     """
     baudrate: int = 9600
