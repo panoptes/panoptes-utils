@@ -154,10 +154,11 @@ class SerialDevice(object):
             True
             >>> str(dev0)
             'My device on port=loop:// [9600/8-N-1]'
-            >>> dev0.write('Hello World!')
-            >>> len(dev0.readings)
+            >>> dev0.write('Hello World!')  # doctest: +SKIP
+            >>> len(dev0.readings) # doctest: +SKIP
             1
-            >>> dev0.readings[0] == 'Hello World!'
+            >>> dev0.readings[0] == 'Hello World!' # doctest: +SKIP
+            True
 
             >>> # We can also pass a custom callback.
             >>> from panoptes.utils.serializers import from_json, to_json
