@@ -3,7 +3,7 @@ import operator
 import traceback
 from collections import deque
 from contextlib import suppress
-from typing import Optional, Callable, Union
+from typing import Optional, Union
 
 import serial
 from loguru import logger
@@ -12,6 +12,7 @@ from pydantic.dataclasses import dataclass
 from pydantic.json import pydantic_encoder
 from serial.threaded import LineReader, ReaderThread
 from serial.tools.list_ports import comports as get_comports
+from streamz import Stream
 
 
 @dataclass
@@ -132,7 +133,7 @@ class SerialDevice(object):
     def __init__(self,
                  port: str = None,
                  name: str = None,
-                 reader_callback: Callable = None,
+                 reader_stream: Stream = None,
                  serial_settings: Optional[Union[SerialDeviceDefaults, dict]] = None,
                  retry_limit: int = 1,
                  retry_delay: float = 0.01,
@@ -192,18 +193,23 @@ class SerialDevice(object):
         self.retry_delay = retry_delay
         self.readings = deque(maxlen=reader_queue_size)
         self.reader_thread = None
-        self._reader_callback = reader_callback
 
         self.serial: serial.Serial = serial.serial_for_url(port)
-        logger.info(f'SerialDevice for {self.name} created. Connected={self.is_connected}')
+        logger.debug(f'SerialDevice for {self.name} created. Connected={self.is_connected}')
 
         serial_settings = serial_settings or SerialDeviceDefaults()
         if isinstance(serial_settings, SerialDeviceDefaults):
             serial_settings = serial_settings.to_dict()
-        logger.info(f'Applying settings to serial class: {serial_settings!r}')
+        logger.debug(f'Applying settings to serial class: {serial_settings!r}')
         self.serial.apply_settings(serial_settings)
 
-        self.add_reader(reader_callback=reader_callback)
+        if reader_stream is None:
+            self._reader_stream = Stream()
+        else:
+            self._reader_stream = reader_stream
+
+        self._reader_stream.sink(self.readings.append)
+        self._add_stream_reader()
 
     @property
     def port(self):
@@ -219,30 +225,13 @@ class SerialDevice(object):
         """Connect to device and add default reader."""
         if not self.is_connected:
             self.serial.open()
-            self.add_reader(self._reader_callback)
+            self._add_stream_reader()
 
     def disconnect(self):
         """Disconnect from the device and reset the reader thread."""
         with suppress(AttributeError):
             self.serial.close()
             self.reader_thread = None
-
-    def add_reader(self, reader_callback: Callable = None):
-        """Add a reader to the device."""
-
-        # Set up a custom threaded reader class.
-        class CustomReader(BaseSerialReader):
-            def handle_line(this, data):
-                if callable(reader_callback):
-                    try:
-                        data = reader_callback(data)
-                    except Exception as e:
-                        logger.warning(f'Callback for serial reader error: {e!r}')
-
-                self.readings.append(data)
-
-        self.reader_thread = ReaderThread(self.serial, CustomReader)
-        self.reader_thread.start()
 
     def write(self, line):
         """Write to the serial device.
@@ -251,6 +240,18 @@ class SerialDevice(object):
         end.
         """
         return self.reader_thread.protocol.write_line(line)
+
+    def _add_stream_reader(self):
+        """Add a reader to the device."""
+
+        # Set up a custom threaded reader class.
+        class CustomReader(BaseSerialReader):
+            # Use `this` so `self` still refers to device instance.
+            def handle_line(this, data):
+                self._reader_stream.emit(data)
+
+        self.reader_thread = ReaderThread(self.serial, CustomReader)
+        self.reader_thread.start()
 
     def __str__(self):
         if self.name == self.port:
