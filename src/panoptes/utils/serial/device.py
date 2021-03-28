@@ -159,11 +159,9 @@ class SerialDevice(object):
             1
             >>> dev0.readings[0] == 'Hello World!'
 
-            >>> # We can also pass a custom stream.
+            >>> # We can also pass a custom callback.
             >>> from panoptes.utils.serializers import from_json, to_json
-            >>> from streamz import Stream
-            >>> json_stream = Stream().sink(to_json)
-            >>> dev1 = SerialDevice(port='loop://', reader_stream=json_stream)
+            >>> dev1 = SerialDevice(port='loop://', reader_callback=from_json)
             >>> str(dev1)
             'SerialDevice loop:// [9600/8-N-1]"
             >>> dev1.write(to_json(dict(message='Hello JSON World!')))
