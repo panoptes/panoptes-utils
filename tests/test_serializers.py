@@ -23,12 +23,12 @@ def obj():
             "gmt_offset": -600,
         },
         "directories": {
-            "base": "/var/panoptes",
+            "base": "/panoptes-pocs",
             "images": "images",
             "data": "data",
-            "resources": "POCS/resources/",
-            "targets": "POCS/resources/targets",
-            "mounts": "POCS/resources/mounts",
+            "resources": "resources/",
+            "targets": "resources/targets",
+            "mounts": "resources/mounts",
         },
         "db": {
             "name": "panoptes",

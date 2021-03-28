@@ -5,6 +5,15 @@ Changelog
 0.2.33dev
 ---------
 
+Added
+^^^^^
+
+* New ``panoptes.utils.serial.device.SerialDevice`` that will replace the ``rs232.SerialData``. New class uses the threaded reader with optional callback for better asynchronous reading from a serial device. Example notebook included. #274
+
+Changed
+^^^^^^^
+
+* The serial protocol handlers were moved to the ``panoptes.utils.serial.handlers`` namespace. #274
 
 0.2.32 - 2020-03-19
 -------------------

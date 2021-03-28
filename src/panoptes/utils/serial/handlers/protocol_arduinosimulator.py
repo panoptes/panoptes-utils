@@ -11,13 +11,14 @@ import queue
 import random
 import threading
 import time
-import urllib
+import urllib.parse
 
+import panoptes.utils.serial.handlers.protocol_no_op
 from loguru import logger
-from panoptes.utils import serial_handlers
 from panoptes.utils.serializers import from_json
 from panoptes.utils.serializers import to_json
 from serial import serialutil
+from serial.serialutil import PortNotOpenError
 
 
 def _drain_queue(q):
@@ -63,8 +64,7 @@ class ArduinoSimulator:
         # Interval between outputing chunks of bytes.
         chunks_per_second = 1000.0 / self.chunk_size
         chunk_interval = 1.0 / chunks_per_second
-        self.logger.debug('chunks_per_second={}   chunk_interval={}', chunks_per_second,
-                          chunk_interval)
+        self.logger.debug(f'chunks_per_second={chunks_per_second} chunk_interval={chunk_interval}')
         self.chunk_delta = datetime.timedelta(seconds=chunk_interval)
         self.next_chunk_time = None
         self.pending_json_bytes = bytearray()
@@ -89,7 +89,7 @@ class ArduinoSimulator:
         b = self.generate_next_message_bytes(now)
         cut = random.randrange(len(b))
         if cut > 0:
-            self.logger.info('Cutting off the leading {} bytes of the first message', cut)
+            self.logger.info(f'Cutting off the leading {cut} bytes of the first message')
             b = b[cut:]
         self.pending_json_bytes.extend(b)
         # Now two interleaved loops:
@@ -137,7 +137,7 @@ class ArduinoSimulator:
                 return
             remaining = (next_time - now).total_seconds()
             assert remaining > 0
-            self.logger.info('ArduinoSimulator.read_relay_queue_until remaining={}', remaining)
+            self.logger.info(f'ArduinoSimulator.read_relay_queue_until remaining={remaining}')
             try:
                 b = self.relay_queue.get(block=True, timeout=remaining)
                 assert isinstance(b, (bytes, bytearray))
@@ -191,7 +191,7 @@ class ArduinoSimulator:
         return b
 
 
-class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
+class FakeArduinoSerialHandler(panoptes.utils.serial.handlers.protocol_no_op.NoOpSerial):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.logger = logger
@@ -228,7 +228,7 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
     def in_waiting(self):
         """The number of input bytes available to read immediately."""
         if not self.is_open:
-            raise serialutil.portNotOpenError
+            raise PortNotOpenError
         # Not an accurate count because the elements of self.json_queue are arrays, not individual
         # bytes.
         return len(self.json_bytes) + self.json_queue.qsize()
@@ -252,7 +252,7 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
             Bytes read from the port, of type 'bytes'.
         """
         if not self.is_open:
-            raise serialutil.portNotOpenError
+            raise PortNotOpenError
 
         # Not checking if the config is OK, so will try to read from a possibly
         # empty queue if using the wrong baudrate, etc. This is deliberate.
@@ -279,14 +279,14 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
         This override exists just to support logging of the line.
         """
         line = super().readline()
-        self.logger.debug('FakeArduinoSerialHandler.readline -> {!r}', line)
+        self.logger.debug(f'FakeArduinoSerialHandler.readline -> {line!r}')
         return line
 
     @property
     def out_waiting(self):
         """The number of bytes in the output buffer."""
         if not self.is_open:
-            raise serialutil.portNotOpenError
+            raise PortNotOpenError
         # Not an accurate count because the elements of self.relay_queue are arrays, not individual
         # bytes.
         return self.relay_queue.qsize()
@@ -297,7 +297,7 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
         Aborts the current output, discarding all that is in the output buffer.
         """
         if not self.is_open:
-            raise serialutil.portNotOpenError
+            raise PortNotOpenError
         _drain_queue(self.relay_queue)
 
     def flush(self):
@@ -307,7 +307,7 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
         entries from the queue.
         """
         if not self.is_open:
-            raise serialutil.portNotOpenError
+            raise PortNotOpenError
         while not self.relay_queue.empty():
             time.sleep(0.01)
 
@@ -335,7 +335,7 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
             return len(data)
         except queue.Full:  # pragma: no cover
             # This exception is "lossy" in that the caller can't tell how much was written.
-            raise serialutil.writeTimeoutError
+            raise serialutil.Timeout
 
     # --------------------------------------------------------------------------
 
@@ -348,7 +348,7 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
 
         # All existing tests ensure the config is OK, so we never log here.
         if not v:  # pragma: no cover
-            self.logger.critical('Serial config is not OK: {!r}', (self.get_settings(),))
+            self.logger.critical(f'Serial config is not OK: {self.get_settings()!r}')
 
         return v
 
@@ -358,7 +358,7 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
         # _read1 is currently called only from read(), which checks that the
         # serial device is open, so is_open is always true.
         if not self.is_open:  # pragma: no cover
-            raise serialutil.portNotOpenError
+            raise PortNotOpenError
 
         if not self.json_bytes:
             try:
@@ -404,7 +404,7 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
             self.simulator_thread.join(timeout=30.0)
             if self.simulator_thread.is_alive():
                 # Not a SerialException, but a test infrastructure error.
-                raise Exception(self.simulator_thread.name + ' thread did not stop!')  # pragma: no cover
+                raise Exception(f'{self.simulator_thread.name} did not stop!')  # pragma: no cover
             self.simulator_thread = None
             self.device_simulator = None
             _drain_queue(self.relay_queue)
@@ -450,7 +450,7 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
         # Unless we force things (break the normal protocol), scheme will always
         # be 'arduinosimulator'.
         if parts.scheme != 'arduinosimulator':
-            raise Exception(expected + ': got scheme {!r}'.format(parts.scheme))  # pragma: no cover
+            raise Exception(f'{expected}: got scheme {parts.scheme!r}')  # pragma: no cover
         int_param_names = {'chunk_size', 'read_buffer_size', 'write_buffer_size'}
         params = {}
         for option, values in urllib.parse.parse_qs(parts.query, True).items():
@@ -463,7 +463,7 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
             elif option in int_param_names and len(values) == 1:
                 params[option] = int(values[0])
             else:
-                raise Exception(expected + ': unknown param {!r}'.format(option))  # pragma: no cover
+                raise Exception(f'{expected}: unknown param {option!r}')  # pragma: no cover
         return params
 
     def _create_simulator(self, params):
@@ -505,7 +505,7 @@ class FakeArduinoSerialHandler(serial_handlers.NoOpSerial):
             # Produce an output that is json, but not what we expect
             message = {}
         else:
-            raise Exception('Unknown board: {}'.format(board))  # pragma: no cover
+            raise Exception(f'Unknown board: {board}')  # pragma: no cover
 
         # The elements of these queues are of type bytes. This means we aren't fully controlling
         # the baudrate unless the chunk_size is 1, but that should be OK.

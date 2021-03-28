@@ -1,9 +1,6 @@
-"""The protocol_*.py files in this package are based on PySerial's file
-test/handlers/protocol_test.py, modified for different behaviors.
-The call serial.serial_for_url("XYZ://") looks for a class Serial in a
-file named protocol_XYZ.py in this package (i.e. directory).
-"""
+# This module implements a handler for serial_for_url("no_op://").
 
+# Export it as Serial so that it will be picked up by PySerial's serial_for_url.
 from serial import serialutil
 
 
@@ -53,7 +50,7 @@ class NoOpSerial(serialutil.SerialBase):
                 the port and the time is exceeded.
         """
         if not self.is_open:
-            raise serialutil.portNotOpenError
+            raise serialutil.PortNotOpenError
         return bytes()
 
     def write(self, data):
@@ -69,7 +66,7 @@ class NoOpSerial(serialutil.SerialBase):
                 the port and the time is exceeded.
         """
         if not self.is_open:
-            raise serialutil.portNotOpenError
+            raise serialutil.PortNotOpenError
         return 0
 
     def reset_input_buffer(self):
@@ -118,3 +115,6 @@ class NoOpSerial(serialutil.SerialBase):
         Note that break_condition is set and then cleared by send_break().
         """
         pass
+
+
+Serial = NoOpSerial
