@@ -74,8 +74,8 @@ class SerialData(object):
         >>> import serial
 
         # Register our serial simulators
-        >>> serial.protocol_handler_packages.append('panoptes.utils.serial_handlers')
-        >>> from panoptes.utils.serial_handlers import protocol_buffers as pb
+        >>> serial.protocol_handler_packages.append('panoptes.utils.serial.handlers')
+        >>> from panoptes.utils.serial.handlers import protocol_buffers as pb
 
         # Import our serial utils
         >>> from panoptes.utils.rs232 import SerialData
@@ -85,7 +85,7 @@ class SerialData(object):
 
         # Note: A manual reset is currently required because implementation is not complete.
         # See https://github.com/panoptes/POCS/issues/758 for details.
-        >>> pb.ResetBuffers()
+        >>> pb.reset_serial_buffers()
         >>> device_listener.is_connected
         True
 
@@ -93,7 +93,7 @@ class SerialData(object):
         'buffers://'
 
         # Device sends event
-        >>> pb.SetRBufferValue(b'emit event')
+        >>> pb.set_serial_read_buffer(b'emit event')
 
         # Listen for event
         >>> device_listener.read()
@@ -101,11 +101,11 @@ class SerialData(object):
 
         >>> device_listener.write('ack event')
         9
-        >>> pb.GetWBufferValue()
+        >>> pb.get_serial_write_buffer()
         b'ack event'
 
         # Remove custom handlers
-        >>> serial.protocol_handler_packages.remove('panoptes.utils.serial_handlers')
+        >>> serial.protocol_handler_packages.remove('panoptes.utils.serial.handlers')
     """
 
     def __init__(self,
