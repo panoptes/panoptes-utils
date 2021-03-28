@@ -164,7 +164,7 @@ class SerialDevice(object):
             >>> from panoptes.utils.serializers import from_json, to_json
             >>> dev1 = SerialDevice(port='loop://', reader_callback=from_json)
             >>> str(dev1)
-            'SerialDevice loop:// [9600/8-N-1]"
+            'SerialDevice loop:// [9600/8-N-1]'
             >>> dev1.write(to_json(dict(message='Hello JSON World!')))
             >>> len(dev0.readings)
             1
