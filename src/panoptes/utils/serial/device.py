@@ -3,7 +3,7 @@ import operator
 import traceback
 from collections import deque
 from contextlib import suppress
-from typing import Optional, Union
+from typing import Optional, Union, Callable
 
 import serial
 from loguru import logger
@@ -12,7 +12,6 @@ from pydantic.dataclasses import dataclass
 from pydantic.json import pydantic_encoder
 from serial.threaded import LineReader, ReaderThread
 from serial.tools.list_ports import comports as get_comports
-from streamz import Stream
 
 
 @dataclass
@@ -133,7 +132,7 @@ class SerialDevice(object):
     def __init__(self,
                  port: str = None,
                  name: str = None,
-                 reader_stream: Stream = None,
+                 reader_callback: Callable = None,
                  serial_settings: Optional[Union[SerialDeviceDefaults, dict]] = None,
                  retry_limit: int = 1,
                  retry_delay: float = 0.01,
@@ -158,9 +157,11 @@ class SerialDevice(object):
             1
             >>> dev0.readings[0] == 'Hello World!'
 
-            >>> # We can also pass a callback for the reader.
+            >>> # We can also pass a custom stream.
             >>> from panoptes.utils.serializers import from_json, to_json
-            >>> dev1 = SerialDevice(port='loop://', reader_callback=from_json)
+            >>> from streamz import Stream
+            >>> json_stream = Stream().sink(to_json)
+            >>> dev1 = SerialDevice(port='loop://', reader_stream=json_stream)
             >>> str(dev1)
             'SerialDevice loop:// [9600/8-N-1]"
             >>> dev1.write(to_json(dict(message='Hello JSON World!')))
@@ -173,7 +174,9 @@ class SerialDevice(object):
             port (str): The port (e.g. /dev/tty123 or socket://host:port) to which to
                 open a connection.
             name (str): Name of this object. Defaults to the name of the port.
-            reader_stream (streamz.Stream): A custom processing Stream.
+            reader_callback (Callable): A callback from the reader thread. This should
+                accept and return a single parameter. The return item will get appended
+                to the `readings` deque.
             serial_settings (dict): The settings to apply to the serial device. See
                 docstring for details.
             retry_limit (int, optional): Number of times to try serial `read`.
@@ -190,6 +193,7 @@ class SerialDevice(object):
         self.retry_delay = retry_delay
         self.readings = deque(maxlen=reader_queue_size)
         self.reader_thread = None
+        self._reader_callback = reader_callback
 
         self.serial: serial.Serial = serial.serial_for_url(port)
         logger.debug(f'SerialDevice for {self.name} created. Connected={self.is_connected}')
@@ -200,12 +204,6 @@ class SerialDevice(object):
         logger.debug(f'Applying settings to serial class: {serial_settings!r}')
         self.serial.apply_settings(serial_settings)
 
-        if reader_stream is None:
-            self._reader_stream = Stream()
-        else:
-            self._reader_stream = reader_stream
-
-        self._reader_stream.sink(self.readings.append)
         self._add_stream_reader()
 
     @property
@@ -238,14 +236,21 @@ class SerialDevice(object):
         """
         return self.reader_thread.protocol.write_line(line)
 
-    def _add_stream_reader(self):
+    def _add_stream_reader(self, callback=None):
         """Add a reader to the device."""
+
+        callback = callback or self._reader_callback
 
         # Set up a custom threaded reader class.
         class CustomReader(BaseSerialReader):
             # Use `this` so `self` still refers to device instance.
             def handle_line(this, data):
-                self._reader_stream.emit(data)
+                if callable(callback):
+                    try:
+                        data = callback(data)
+                    except Exception as e:
+                        logger.warning(f'Error with callback: {e!r}')
+                self.readings.append(data)
 
         self.reader_thread = ReaderThread(self.serial, CustomReader)
         self.reader_thread.start()
