@@ -169,14 +169,11 @@ class SerialDevice(object):
             >>> dev0.readings[0]
             '{"message": "Hello JSON World!"}'
 
-
         Args:
             port (str): The port (e.g. /dev/tty123 or socket://host:port) to which to
                 open a connection.
             name (str): Name of this object. Defaults to the name of the port.
-            reader_callback (Callable): A callback function that should take a single
-                string parameter, process it in some manner, and then return a single
-                entry, which is stored in the `readings` deque.
+            reader_stream (streamz.Stream): A custom processing Stream.
             serial_settings (dict): The settings to apply to the serial device. See
                 docstring for details.
             retry_limit (int, optional): Number of times to try serial `read`.
