@@ -1,15 +1,13 @@
-import json
 import operator
 import traceback
 from collections import deque
 from contextlib import suppress
+from dataclasses import dataclass
 from typing import Optional, Union, Callable
 
 import serial
 from loguru import logger
 from panoptes.utils import error
-from pydantic.dataclasses import dataclass
-from pydantic.json import pydantic_encoder
 from serial.threaded import LineReader, ReaderThread
 from serial.tools.list_ports import comports as get_comports
 
@@ -30,15 +28,18 @@ class SerialDeviceDefaults:
 
     .. doctest:
 
+        >>> import serial
         >>> from panoptes.utils.serial.device import SerialDeviceDefaults
-        >>> serial_defaults = SerialDeviceDefaults(baudrate=115200)
-        >>> serial_defaults
+        >>> serial_settings = SerialDeviceDefaults(baudrate=115200)
+        >>> serial_settings
         SerialDeviceDefaults(baudrate=115200, timeout=1.0, write_timeout=1.0, bytesize=8, parity='N', stopbits=1, xonxoff=False, rtscts=False, dsrdtr=False)
-        >>> serial_defaults.write_timeout = 2.5
-        >>> serial_defaults.to_dict()
-        {'baudrate': 115200, 'timeout': 1.0, 'write_timeout': 2.5, 'bytesize': 8, 'parity': 'N', 'stopbits': 1, 'xonxoff': False, 'rtscts': False, 'dsrdtr': False}
-        >>> serial_defaults.to_json()
-        '{"baudrate": 115200, "timeout": 1.0, "write_timeout": 2.5, "bytesize": 8, "parity": "N", "stopbits": 1, "xonxoff": false, "rtscts": false, "dsrdtr": false}'
+        >>> serial_settings.write_timeout = 2.5
+
+        >>> # Create a serial device and apply settings.
+        >>> ser0 = serial.Serial()
+        >>> ser0.apply_settings(serial_settings.to_dict())
+        >>> ser0.timeout
+        2.5
 
     """
     baudrate: int = 9600
@@ -53,11 +54,8 @@ class SerialDeviceDefaults:
 
     def to_dict(self):
         """Return fields as dict."""
-        return {field: getattr(self, field) for field in self.__dataclass_fields__.keys()}
-
-    def to_json(self):
-        """Return fields as serialized json."""
-        return json.dumps(self, default=pydantic_encoder)
+        return {field: getattr(self, field)
+                for field in self.__dataclass_fields__.keys()}
 
 
 def get_serial_port_info():
