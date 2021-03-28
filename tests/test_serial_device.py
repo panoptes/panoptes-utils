@@ -11,13 +11,16 @@ def test_device():
 
     assert str(s0) == 'My loop device on port=loop:// [9600/8-N-1]'
 
-    s0.serial.close()
+    s0.disconnect()
     assert s0.is_connected is False
+    s0.connect()
+    assert s0.is_connected is True
     del s0
 
     s1 = SerialDevice(port='loop://')
     assert str(s1) == 'SerialDevice loop:// [9600/8-N-1]'
-    del s1
+    s1.serial = False
+    s1.disconnect()
 
 
 def test_settings():

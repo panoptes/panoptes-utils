@@ -192,6 +192,7 @@ class SerialDevice(object):
         self.retry_delay = retry_delay
         self.readings = deque(maxlen=reader_queue_size)
         self.reader_thread = None
+        self._reader_callback = reader_callback
 
         self.serial: serial.Serial = serial.serial_for_url(port)
         logger.info(f'SerialDevice for {self.name} created. Connected={self.is_connected}')
@@ -201,6 +202,33 @@ class SerialDevice(object):
             serial_settings = serial_settings.to_dict()
         logger.info(f'Applying settings to serial class: {serial_settings!r}')
         self.serial.apply_settings(serial_settings)
+
+        self.add_reader(reader_callback=reader_callback)
+
+    @property
+    def port(self):
+        """Name of the port."""
+        return self.serial.port
+
+    @property
+    def is_connected(self):
+        """True if serial port is open, False otherwise."""
+        return self.serial.is_open
+
+    def connect(self):
+        """Connect to device and add default reader."""
+        if not self.is_connected:
+            self.serial.open()
+            self.add_reader(self._reader_callback)
+
+    def disconnect(self):
+        """Disconnect from the device and reset the reader thread."""
+        with suppress(AttributeError):
+            self.serial.close()
+            self.reader_thread = None
+
+    def add_reader(self, reader_callback: Callable = None):
+        """Add a reader to the device."""
 
         # Set up a custom threaded reader class.
         class CustomReader(BaseSerialReader):
@@ -215,16 +243,6 @@ class SerialDevice(object):
 
         self.reader_thread = ReaderThread(self.serial, CustomReader)
         self.reader_thread.start()
-
-    @property
-    def port(self):
-        """Name of the port."""
-        return self.serial.port
-
-    @property
-    def is_connected(self):
-        """True if serial port is open, False otherwise."""
-        return self.serial.is_open
 
     def write(self, line):
         """Write to the serial device.
