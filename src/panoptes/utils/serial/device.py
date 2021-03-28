@@ -117,6 +117,12 @@ def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cov
 
 
 class BaseSerialReader(LineReader):  # pragma: no cover
+    """A basic override of the serial.threaded.LineReader.
+
+    The `handle_line` method in turn gets overwritten in an enclosed class in
+    `SerialDevice`.
+    """
+
     def connection_made(self, transport):
         super(BaseSerialReader, self).connection_made(transport)
 
