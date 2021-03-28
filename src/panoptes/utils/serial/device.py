@@ -150,6 +150,8 @@ class SerialDevice(object):
 
             >>> from panoptes.utils.serial.device import SerialDevice
             >>> dev0 = SerialDevice(port='loop://', name='My device')
+            >>> dev0.is_connected
+            True
             >>> str(dev0)
             'My device on port=loop:// [9600/8-N-1]'
             >>> dev0.write('Hello World!')
