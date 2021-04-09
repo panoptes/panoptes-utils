@@ -1,5 +1,4 @@
 import operator
-import traceback
 from collections import deque
 from contextlib import suppress
 from dataclasses import dataclass
@@ -132,7 +131,7 @@ class BaseSerialReader(LineReader):  # pragma: no cover
 
     def connection_lost(self, exc):
         if exc:
-            traceback.print_exc(exc)
+            logger.error(exc)
 
 
 class SerialDevice(object):
@@ -141,8 +140,6 @@ class SerialDevice(object):
                  name: str = None,
                  reader_callback: Callable = None,
                  serial_settings: Optional[Union[SerialDeviceDefaults, dict]] = None,
-                 retry_limit: int = 1,
-                 retry_delay: float = 0.01,
                  reader_queue_size: int = 50,
                  ):
         """A SerialDevice class with helper methods for serial communications.
@@ -187,8 +184,6 @@ class SerialDevice(object):
                 to the `readings` deque.
             serial_settings (dict): The settings to apply to the serial device. See
                 docstring for details.
-            retry_limit (int, optional): Number of times to try serial `read`.
-            retry_delay (float, optional): Delay between calls to serial `read`.
             reader_queue_size (int, optional): The size of the deque for readings,
                 default 50.
 
@@ -197,8 +192,6 @@ class SerialDevice(object):
 
         """
         self.name = name or port
-        self.retry_limit = retry_limit
-        self.retry_delay = retry_delay
         self.readings = deque(maxlen=reader_queue_size)
         self.reader_thread = None
         self._reader_callback = reader_callback
@@ -256,9 +249,10 @@ class SerialDevice(object):
                 if callable(callback):
                     try:
                         data = callback(data)
+                        if data is not None:
+                            self.readings.append(data)
                     except Exception as e:
-                        logger.warning(f'Error with callback: {e!r}')
-                self.readings.append(data)
+                        logger.trace(f'Error with callback: {e!r}')
 
         self.reader_thread = ReaderThread(self.serial, CustomReader)
         self.reader_thread.start()
