@@ -53,6 +53,6 @@ def test_write_raise_exception(caplog):
     assert len(s0.readings) == 0
     s0.write('not a json message')
     time.sleep(0.5)
-    assert caplog.records[-1].message.startswith('Error with callback')
+    assert 'InvalidDeserialization' in caplog.records[-1].message
     assert caplog.records[-1].levelname == 'WARNING'
     assert s0.readings[0] == 'not a json message'
