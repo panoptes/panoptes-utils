@@ -14,6 +14,7 @@ Changed
 ^^^^^^^
 
 * The serial protocol handlers were moved to the ``panoptes.utils.serial.handlers`` namespace. #274
+* Testing Dockerfile has `privileged` permission to get device `loop`. #275
 
 0.2.32 - 2020-03-19
 -------------------
