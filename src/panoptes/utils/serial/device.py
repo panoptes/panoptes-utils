@@ -235,7 +235,8 @@ class SerialDevice(object):
 
             def handle_line(this, data):
                 try:
-                    data = callback(data)
+                    if callback and callable(callback):
+                        data = callback(data)
                     if data is not None:
                         self.readings.append(data)
                 except Exception as e:
