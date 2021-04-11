@@ -1,5 +1,4 @@
 import operator
-import traceback
 from collections import deque
 from contextlib import suppress
 from dataclasses import dataclass
@@ -117,32 +116,12 @@ def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cov
             f'No serial ports for vendor_id={vendor_id:x} and product_id={product_id:x}')
 
 
-class BaseSerialReader(LineReader):  # pragma: no cover
-    """A basic override of the serial.threaded.LineReader.
-
-    The `handle_line` method in turn gets overwritten in an enclosed class in
-    `SerialDevice`.
-    """
-
-    def connection_made(self, transport):
-        super(BaseSerialReader, self).connection_made(transport)
-
-    def handle_line(self, data):
-        logger.debug(f"line received: {data!r}")
-
-    def connection_lost(self, exc):
-        if exc:
-            traceback.print_exc(exc)
-
-
 class SerialDevice(object):
     def __init__(self,
                  port: str = None,
                  name: str = None,
                  reader_callback: Callable = None,
                  serial_settings: Optional[Union[SerialDeviceDefaults, dict]] = None,
-                 retry_limit: int = 1,
-                 retry_delay: float = 0.01,
                  reader_queue_size: int = 50,
                  ):
         """A SerialDevice class with helper methods for serial communications.
@@ -187,8 +166,6 @@ class SerialDevice(object):
                 to the `readings` deque.
             serial_settings (dict): The settings to apply to the serial device. See
                 docstring for details.
-            retry_limit (int, optional): Number of times to try serial `read`.
-            retry_delay (float, optional): Delay between calls to serial `read`.
             reader_queue_size (int, optional): The size of the deque for readings,
                 default 50.
 
@@ -197,8 +174,6 @@ class SerialDevice(object):
 
         """
         self.name = name or port
-        self.retry_limit = retry_limit
-        self.retry_delay = retry_delay
         self.readings = deque(maxlen=reader_queue_size)
         self.reader_thread = None
         self._reader_callback = reader_callback
@@ -249,16 +224,23 @@ class SerialDevice(object):
 
         callback = callback or self._reader_callback
 
-        # Set up a custom threaded reader class.
-        class CustomReader(BaseSerialReader):
+        # Set up a custom threaded reader class that calls user callback.
+        class CustomReader(LineReader):
             # Use `this` so `self` still refers to device instance.
+            def connection_made(this, transport):
+                super(LineReader, this).connection_made(transport)
+
+            def connection_lost(this, exc):
+                logger.warning(f'Disconnected from {self}')
+
             def handle_line(this, data):
-                if callable(callback):
-                    try:
+                try:
+                    if callback and callable(callback):
                         data = callback(data)
-                    except Exception as e:
-                        logger.warning(f'Error with callback: {e!r}')
-                self.readings.append(data)
+                    if data is not None:
+                        self.readings.append(data)
+                except Exception as e:
+                    logger.trace(f'Error with callback: {e!r}')
 
         self.reader_thread = ReaderThread(self.serial, CustomReader)
         self.reader_thread.start()
