@@ -56,7 +56,7 @@ ENV APP_DIR $app_dir
 WORKDIR "${APP_DIR}"
 COPY docker/environment.yaml .
 RUN echo "Updating conda." && \
-    /conda/bin/conda-env update -n base --update-all && \
+    /conda/bin/conda update -n base --update-all && \
     echo "Installing environment" && \
     /conda/bin/conda-env update -n base -f environment.yaml
 
