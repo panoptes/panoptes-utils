@@ -62,7 +62,7 @@ RUN echo "Updating conda." && \
 
 COPY docker/docker-compose.yaml .
 RUN echo "Installing panoptes-utils module with ${pip_install_extras}" && \
-    /conda/bin/pip install -e "panoptes-utils${pip_install_extras}" && \
+    /conda/bin/pip install "panoptes-utils${pip_install_extras}" && \
     # Cleanup
     /conda/bin/pip cache purge && \
     /conda/bin/conda clean -tipy && \
