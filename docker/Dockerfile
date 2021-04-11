@@ -55,11 +55,14 @@ ENV APP_DIR $app_dir
 
 WORKDIR "${APP_DIR}"
 COPY docker/environment.yaml .
-COPY docker/docker-compose.yaml .
-RUN /conda/bin/conda-env update -n base -f environment.yaml
+RUN echo "Updating conda." && \
+    /conda/bin/conda update -n base conda && \
+    echo "Installing environment" && \
+    /conda/bin/conda-env update -n base -f environment.yaml
 
+COPY docker/docker-compose.yaml .
 RUN echo "Installing panoptes-utils module with ${pip_install_extras}" && \
-    /conda/bin/pip install "panoptes-utils${pip_install_extras}" && \
+    /conda/bin/pip install -e "panoptes-utils${pip_install_extras}" && \
     # Cleanup
     /conda/bin/pip cache purge && \
     /conda/bin/conda clean -tipy && \
