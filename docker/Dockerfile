@@ -11,7 +11,6 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 ARG panuser=pocs-user
 ARG userid=1000
-ARG pip_install_extras="[config]"
 
 ENV PANUSER $panuser
 ENV USERID $userid
