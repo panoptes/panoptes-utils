@@ -37,21 +37,20 @@ class PanFileDB(AbstractPanDB):
 
     def insert_current(self, collection, obj, store_permanently=True):
         obj_id = self._make_id()
-        obj = create_storage_obj(collection, obj, obj_id)
-        current_fn = self._get_file(collection, permanent=False)
         result = obj_id
+        storage_obj = create_storage_obj(collection, obj, obj_id)
+        current_fn = self._get_file(collection, permanent=False)
 
         try:
             # Overwrite current collection file with obj.
-            to_json(obj, filename=current_fn, append=False)
+            to_json(storage_obj, filename=current_fn, append=False)
         except Exception as e:
-            raise error.InvalidSerialization(
-                f"Problem serializing object for insertion: {e} {current_fn} {obj!r}")
+            raise error.InvalidSerialization(f"Problem serializing before insert: {e!r} {obj!r}")
 
-        if not store_permanently:
-            return result
-        else:
-            return self.insert(collection, obj)
+        if store_permanently:
+            result = self.insert(collection, obj)
+
+        return result
 
     def insert(self, collection, obj):
         obj_id = self._make_id()
@@ -62,8 +61,7 @@ class PanFileDB(AbstractPanDB):
             to_json(obj, filename=collection_fn)
             return obj_id
         except Exception as e:
-            raise error.InvalidSerialization(
-                f"Problem inserting object into collection: {e}, {obj!r}")
+            raise error.InvalidSerialization(f"Problem serializing before insert: {e!r} {obj!r}")
 
     def get_current(self, collection):
         current_fn = self._get_file(collection, permanent=False)
