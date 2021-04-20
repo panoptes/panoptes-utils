@@ -17,6 +17,12 @@ Changed
 * Testing Dockerfile has `privileged` permission to get device `loop`. #275
 * Dockerfile: update `conda` in Dockerfile before installing environment; install `panoptes-utils` module in user-editable mode. #277.
 * Dockerfile: use ``condaforge/miniforge3`` as the base, which reduces image size. Push multi-stage builds for better caching. #278, #279
+* Consistent multi-stage names in Dockerfile; added `jupyter_console`. #280
+
+Fixed
+^^^^^
+
+* Don't nest storage objects for the `PanFileDB`. #280
 
 0.2.32 - 2020-03-19
 -------------------
