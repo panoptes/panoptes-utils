@@ -4,7 +4,7 @@ options:
 timeout: 18000s  # 5 hours; arm is slow
 
 substitutions:
-  _DEPS_NAME: pocs-utils-conda
+  _DEPS_NAME: pan-utils-conda
   _IMAGE_NAME: panoptes-utils
   _PLATFORM: linux/arm64,linux/amd64
 
