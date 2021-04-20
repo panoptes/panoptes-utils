@@ -1,6 +1,6 @@
 ARG image_url=condaforge/miniforge3
 ARG image_tag=latest
-FROM ${image_url}:${image_tag} AS pan-utils-base
+FROM ${image_url}:${image_tag} AS panoptes-utils-base
 
 LABEL description="Installs the dependencies for panoptes-utils."
 LABEL maintainers="developers@projectpanoptes.org"
@@ -38,7 +38,7 @@ RUN echo "Building from ${image_url}:${image_tag}" && \
     mkdir -p "/home/${panuser}/.ssh" && \
     echo "Host localhost\n\tStrictHostKeyChecking no\n" >> "/home/${panuser}/.ssh/config"
 
-FROM pan-utils-base AS pan-utils-conda
+FROM panoptes-utils-base AS panoptes-utils-conda
 
 COPY docker/environment.yaml .
 RUN echo "Updating conda." && \
@@ -49,7 +49,7 @@ RUN echo "Updating conda." && \
     conda clean -y --force-pkgs-dirs && \
     chown -R "${USERID}:${USERID}" /opt/conda    
 
-FROM pan-utils-conda AS pan-utils
+FROM panoptes-utils-conda AS panoptes-utils
 
 ARG app_dir=/panoptes-utils
 ENV APP_DIR $app_dir

@@ -9,6 +9,7 @@ dependencies:
   - colorama
   - gevent
   - loguru
+  - jupyter_console
   - matplotlib-base
   - numpy
   - photutils
