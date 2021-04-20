@@ -1,6 +1,6 @@
 ARG image_url=ubuntu
 ARG image_tag=latest
-FROM ${image_url}:${image_tag} AS pocs-utils
+FROM ${image_url}:${image_tag} AS pocs-utils-base
 
 LABEL description="Installs the dependencies for panoptes-utils."
 LABEL maintainers="developers@projectpanoptes.org"
@@ -23,9 +23,14 @@ RUN echo "Building from ${image_name}:${image_tag}" && \
         bzip2 ca-certificates \
         wget gcc git pkg-config sudo less udev wait-for-it \
         dcraw exiftool \
+        nano neovim ncdu \
         astrometry.net \
         libcfitsio-dev libcfitsio-bin \
         libfreetype6-dev libpng-dev libjpeg-dev libffi-dev && \
+    apt-get autoremove --purge --yes && \
+    apt-get autoclean --yes && \
+    apt-get --yes clean && \
+    rm -rf /var/lib/apt/lists/* && \
     useradd -u ${USERID} -o -c "Captain POCS" \
         -p panoptes -m -G plugdev,dialout,users,sudo ${PANUSER} && \
     # Allow sudo without password.
@@ -34,8 +39,10 @@ RUN echo "Building from ${image_name}:${image_tag}" && \
     mkdir -p "/home/${panuser}/.ssh" && \
     echo "Host localhost\n\tStrictHostKeyChecking no\n" >> "/home/${panuser}/.ssh/config"
 
+FROM pocs-utils-base AS pocs-utils-conda
+
 # Change to our app user.
-USER "${userid}"
+USER "${USERID}"
 
 # Miniconda
 WORKDIR /tmp
@@ -60,12 +67,18 @@ RUN echo "Updating conda." && \
     echo "Installing environment" && \
     /conda/bin/conda-env update -n base -f environment.yaml
 
+FROM pocs-utils-conda AS pocs-utils
+
+ARG pip_install_name="panoptes-utils"
+ARG pip_install_extras=""
+
 COPY docker/docker-compose.yaml .
 RUN echo "Installing panoptes-utils module with ${pip_install_extras}" && \
-    /conda/bin/pip install -e "panoptes-utils${pip_install_extras}" && \
+    /conda/bin/pip install "${pip_install_name}${pip_install_extras}" && \
     # Cleanup
     /conda/bin/pip cache purge && \
-    /conda/bin/conda clean -tipy && \
+    /conda/bin/conda clean -tipsy && \
+    /conda/bin/conda clean -y --force-pkgs-dirs && \
     sudo apt-get autoremove --purge --yes && \
     sudo apt-get autoclean --yes && \
     sudo apt-get --yes clean && \
