@@ -46,7 +46,8 @@ RUN echo "Updating conda." && \
     echo "Installing environment" && \
     conda-env update -n base -f environment.yaml && \
     conda clean -tipsy && \
-    conda clean -y --force-pkgs-dirs
+    conda clean -y --force-pkgs-dirs && \
+    chown -R "${USERID}:${USERID}" /opt/conda    
 
 FROM pan-utils-conda AS pan-utils
 
