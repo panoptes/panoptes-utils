@@ -64,7 +64,7 @@ COPY docker/docker-compose.yaml .
 RUN echo "Installing panoptes-utils module with ${pip_install_extras}" && \
     /conda/bin/pip install "${pip_install_name}${pip_install_extras}" && \
     # Cleanup
-    /conda/bin/pip cache purge && \
+    pip cache purge && \
     sudo apt-get autoremove --purge --yes && \
     sudo apt-get autoclean --yes && \
     sudo apt-get --yes clean && \
