@@ -1,6 +1,6 @@
 ARG image_url=ubuntu
 ARG image_tag=latest
-FROM ${image_url}:${image_tag} AS pocs-utils-base
+FROM ${image_url}:${image_tag} AS pan-utils-base
 
 LABEL description="Installs the dependencies for panoptes-utils."
 LABEL maintainers="developers@projectpanoptes.org"
@@ -39,7 +39,7 @@ RUN echo "Building from ${image_name}:${image_tag}" && \
     mkdir -p "/home/${panuser}/.ssh" && \
     echo "Host localhost\n\tStrictHostKeyChecking no\n" >> "/home/${panuser}/.ssh/config"
 
-FROM pocs-utils-base AS pocs-utils-conda
+FROM pan-utils-base AS pan-utils-conda
 
 # Change to our app user.
 USER "${USERID}"
@@ -67,7 +67,7 @@ RUN echo "Updating conda." && \
     echo "Installing environment" && \
     /conda/bin/conda-env update -n base -f environment.yaml
 
-FROM pocs-utils-conda AS pocs-utils
+FROM pan-utils-conda AS pan-utils
 
 ARG pip_install_name="panoptes-utils"
 ARG pip_install_extras=""
