@@ -1,4 +1,4 @@
-ARG image_url=ubuntu
+ARG image_url=condaforge/miniforge3
 ARG image_tag=latest
 FROM ${image_url}:${image_tag} AS pan-utils-base
 
@@ -11,17 +11,16 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 ARG panuser=pocs-user
 ARG userid=1000
-ARG pip_install_extras="[config]"
 
 ENV PANUSER $panuser
 ENV USERID $userid
 ENV PATH "/home/${PANUSER}/.local/bin:$PATH"
 
 # Install system dependencies as root user.
-RUN echo "Building from ${image_name}:${image_tag}" && \
+RUN echo "Building from ${image_url}:${image_tag}" && \
     apt-get update && apt-get install --no-install-recommends --yes \
         bzip2 ca-certificates \
-        wget gcc git pkg-config sudo less udev wait-for-it \
+        wget gcc pkg-config sudo less udev wait-for-it \
         dcraw exiftool \
         nano neovim ncdu \
         astrometry.net \
@@ -41,33 +40,21 @@ RUN echo "Building from ${image_name}:${image_tag}" && \
 
 FROM pan-utils-base AS pan-utils-conda
 
-# Change to our app user.
-USER "${USERID}"
+COPY docker/environment.yaml .
+RUN echo "Updating conda." && \
+    conda update -n base conda && \
+    echo "Installing environment" && \
+    conda-env update -n base -f environment.yaml && \
+    conda clean -tipsy && \
+    conda clean -y --force-pkgs-dirs
 
-# Miniconda
-WORKDIR /tmp
-RUN echo "Installing conda via miniforge" && \
-    sudo mkdir -p /conda && \
-    sudo chown -R "${PANUSER}:${PANUSER}" /conda && \
-    # Miniforge
-    wget "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-$(uname -m).sh" \
-        -O install-miniforge.sh && \
-    /bin/sh install-miniforge.sh -b -f -p /conda && \
-    # Initialize conda for the shells.
-    /conda/bin/conda init bash && \
-    rm install-miniforge.sh
+FROM pan-utils-conda AS pan-utils
 
 ARG app_dir=/panoptes-utils
 ENV APP_DIR $app_dir
 
 WORKDIR "${APP_DIR}"
-COPY docker/environment.yaml .
-RUN echo "Updating conda." && \
-    /conda/bin/conda update -n base conda && \
-    echo "Installing environment" && \
-    /conda/bin/conda-env update -n base -f environment.yaml
-
-FROM pan-utils-conda AS pan-utils
+USER "${USERID}"
 
 ARG pip_install_name="panoptes-utils"
 ARG pip_install_extras=""
@@ -76,9 +63,7 @@ COPY docker/docker-compose.yaml .
 RUN echo "Installing panoptes-utils module with ${pip_install_extras}" && \
     /conda/bin/pip install "${pip_install_name}${pip_install_extras}" && \
     # Cleanup
-    /conda/bin/pip cache purge && \
-    /conda/bin/conda clean -tipsy && \
-    /conda/bin/conda clean -y --force-pkgs-dirs && \
+    pip cache purge && \
     sudo apt-get autoremove --purge --yes && \
     sudo apt-get autoclean --yes && \
     sudo apt-get --yes clean && \
