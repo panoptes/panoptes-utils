@@ -21,34 +21,29 @@ def test_normal():
 
 
 def test_bad_length_tuple():
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         Horizon(obstructions=[
             [[20], [40, 70]]
         ])
 
 
 def test_bad_length_list():
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         Horizon(obstructions=[
             [[40, 70]]
         ])
 
 
 def test_bad_string():
-    with pytest.raises(AssertionError):
+    with pytest.raises(TypeError):
         Horizon(obstructions=[
             [["x", 10], [40, 70]]
         ])
 
 
 def test_too_many_points():
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         Horizon(obstructions=[[[120, 60, 300]]])
-
-
-def test_wrong_bool():
-    with pytest.raises(AssertionError):
-        Horizon(obstructions=[[[20, 200], [30, False]]])
 
 
 def test_numpy_ints():
@@ -61,13 +56,6 @@ def test_numpy_ints():
     assert isinstance(Horizon(points), Horizon)
 
 
-def test_negative_alt():
-    with pytest.raises(AssertionError):
-        Horizon(obstructions=[
-            [[10, 20], [-1, 30]]
-        ])
-
-
 def test_good_negative_az():
     hp = Horizon(obstructions=[
         [[50, -10], [45, -20]]
@@ -78,22 +66,3 @@ def test_good_negative_az():
         [[10, -181], [20, -190]]
     ])
     assert isinstance(hp2, Horizon)
-
-
-def test_bad_negative_az():
-    with pytest.raises(AssertionError):
-        Horizon(obstructions=[
-            [[10, -361], [20, -350]]
-        ])
-
-
-def test_sorting():
-    points = [
-        [[10., 10.], [20., 20.]],
-        [[30., 190.], [10., 180.]],
-        [[10., 50.], [30., 60.]],
-    ]
-    hp = Horizon(obstructions=points)
-    assert hp.obstructions == [[(10.0, 10.0), (20.0, 20.0)],
-                               [(10.0, 50.0), (30.0, 60.0)],
-                               [(10.0, 180.0), (30.0, 190.0)]]
