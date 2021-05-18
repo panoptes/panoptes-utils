@@ -114,6 +114,12 @@ class Horizon(object):
         # Add default horizon
         self._default_horizon = get_quantity_value(default_horizon, "deg") * u.deg
 
+        # Calculate horizon at each integer azimuth
+        # This is included for backwards compatibility with POCS
+        self.horizon_line = np.zeros(360, dtype="float")
+        for i, az in enumerate(self.horizon_line):
+            self.horizon_line[i] = self.get_horizon(az).to_value(u.deg)
+
     def get_horizon(self, az):
         """ Get the horizon level in degrees at a given azimuth.
         Args:
