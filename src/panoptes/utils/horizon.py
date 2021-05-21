@@ -29,6 +29,9 @@ class Obstruction(object):
             alt = get_quantity_value(p[0], u.deg)
             az = get_quantity_value(p[1], u.deg)
 
+            if az < 0:
+                az += 360
+
             if abs(alt) > 90:
                 raise ValueError("Altitudes must be between ±90 deg.")
 
