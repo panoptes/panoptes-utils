@@ -1,6 +1,8 @@
 import pytest
-import numpy as np
 import random
+
+import numpy as np
+from astropy import units as u
 
 from panoptes.utils.horizon import Horizon
 
@@ -66,3 +68,16 @@ def test_good_negative_az():
         [[10, -181], [20, -190]]
     ])
     assert isinstance(hp2, Horizon)
+
+
+def test_get_horizon():
+    """ Test get_horizon for normal, negative and overlapping obstructions. """
+
+    obstructions = [[[355, 10], [5, 10]],
+                    [[4, -5], [10, 15]]]
+    h = Horizon(obstructions=obstructions)
+
+    assert h.get_horizon(0) == 10 * u.deg
+    assert h.get_horizon(20) == h._default_horizon
+    assert h.get_horizon(4) == -5 * u.deg
+    assert h.get_horizon(10) == 15

@@ -1,9 +1,9 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.interpolate import interp1d
 from astropy import units as u
 
 from panoptes.utils.utils import get_quantity_value
+
+NO_HORIZON = float(np.nan)
 
 
 class Obstruction(object):
@@ -15,31 +15,36 @@ class Obstruction(object):
         """
         super().__init__()
 
-        if any([len(p) != 2 for p in points_list]):
-            raise ValueError("points_list must be provided as alt/az pairs.")
+        alt_list = []
+        az_list = []
 
-        alt_array = np.array([get_quantity_value(p[0], u.deg) for p in points_list])
+        for p in points_list:
+            if len(p) != 2:
+                raise ValueError("points_list must be provided as alt/az pairs.")
 
-        if any([abs(_) > 90 for _ in alt_array]):
-            raise ValueError("Alititudes must be between ±90 deg.")
+            alt = get_quantity_value(p[0], u.deg)
+            az = get_quantity_value(p[1], u.deg)
 
-        # The az array is defined as being clockwise
-        az_array = np.array([get_quantity_value(p[1], u.deg) for p in points_list])
-        az_array[az_array < 0] += 360
+            if abs(alt) > 90 * u.deg:
+                raise ValueError("Altitudes must be between ±90 deg.")
 
-        if any([abs(_) < 0 for _ in az_array]):
-            raise ValueError("Azimuths must be >=0 deg.")
-        if any([abs(_) > 360 for _ in az_array]):
-            raise ValueError("Azimuths must be <360 deg.")
+            if (az < 0 * u.deg) or (az > 360 * u.deg):
+                raise ValueError("Azimuths must be between 0 and 360 deg.")
 
-        self._az0 = az_array[0]
+            alt_list.append(alt)
+            az_list.append(az)
 
-        # Get angles between first point and all other points
-        az_normed = self._normalise_az(az_array)
+        self._alt_array = np.array(alt_list)
 
-        # Linearly interpolate altitude over angles
-        self._interp = interp1d(az_normed, alt_array, kind="linear", bounds_error=False,
-                                fill_value=0)
+        # Get clockwise angles between first point and all other points
+        self._az0 = az_list[0]
+        self._az_offset = self._get_az_offsets(np.array(az_list))
+
+        # Ensure azimuths are ordered clockwise
+        # We could sort the azimuth offsets to enforce this automatically, but safer to make user
+        # explicitly provide ordered points
+        if not (np.diff(self._az_offset) > 0).all():
+            raise ValueError("Azimuths must be in ordered clockwise.")
 
     def get_horizon(self, az):
         """ Get the horizon level in degrees at a given azimuth.
@@ -48,20 +53,28 @@ class Obstruction(object):
         Returns:
             astropy.Quantity: The angular horizon level.
         """
+        # Get azimuth offset from first point of obstruction
         az = get_quantity_value(az, u.deg)
-        az_normed = self._normalise_az(np.array([az]))[0]
-        return self._interp(az_normed) * u.deg
+        az_offset = self._get_az_offsets(np.array([az]))[0]
 
-    def _normalise_az(self, az_array):
+        # Return NO_HORIZON if no intersection with obstruction
+        if az_offset < self._az_offset.min() or az_offset > self._az_offset.max():
+            return NO_HORIZON
+
+        alt = np.interp(az_offset, xp=self._az_offset, fp=self._alt_array) * u.deg
+
+        return alt
+
+    def _get_az_offsets(self, az_array):
         """ Return the angular offset between az_array and first point in obstruction.
         Args:
             az_array (np.array): The array of azimuths in degrees.
         Returns:
             np.array: The array of azimuth offsets in degrees.
         """
-        az_normed = az_array - self._az0
-        az_normed[az_normed < 0] += 360
-        return az_normed
+        az_offset = az_array - self._az0
+        az_offset[az_offset < 0] += 360
+        return az_offset
 
 
 class Horizon(object):
@@ -109,7 +122,7 @@ class Horizon(object):
         # Parse obstruction list
         if obstructions is None:
             obstructions = []
-        self.obstructions = [Obstruction(_) for _ in obstructions]
+        self.obstructions = [Obstruction(obs) for obs in obstructions]
 
         # Add default horizon
         self._default_horizon = get_quantity_value(default_horizon, "deg") * u.deg
@@ -117,8 +130,8 @@ class Horizon(object):
         # Calculate horizon at each integer azimuth
         # This is included for backwards compatibility with POCS
         self.horizon_line = np.zeros(360, dtype="float")
-        for i, az in enumerate(self.horizon_line):
-            self.horizon_line[i] = self.get_horizon(az).to_value(u.deg)
+        for i in range(360):
+            self.horizon_line[i] = self.get_horizon(i).to_value(u.deg)
 
     def get_horizon(self, az):
         """ Get the horizon level in degrees at a given azimuth.
@@ -129,22 +142,19 @@ class Horizon(object):
         """
         az = get_quantity_value(az, "deg") * u.deg
 
+        # If there are no obstructions at this az, use the default horizon
         horizon = self._default_horizon
 
-        for obstruction in self.obstructions:
-            horizon = max(horizon, obstruction.get_horizon(az))
+        ob_horizons = []
+
+        # Find obstruction horizons at this az if any exist
+        for ob in self.obstructions:
+            hor = ob.get_horizon(az)
+            if hor != NO_HORIZON:
+                ob_horizons.append(hor)
+
+        # If there are any obstructions specified at this Az, used the one with the highest altitude
+        if ob_horizons:
+            horizon = max(ob_horizons)
 
         return horizon
-
-    def make_plot(self):
-        """ Make plot of horizon in alt / az coordinates. """
-        xx = np.linspace(0, 360, 360)
-        yy = [self.get_horizon(x).to_value(u.deg) for x in xx]
-
-        fig, ax = plt.subplots()
-        ax.plot(xx, yy, "k-")
-
-        ax.set_xlabel("Az [deg]")
-        ax.set_ylabel("Alt [deg]")
-
-        return fig, ax
