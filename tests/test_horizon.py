@@ -73,11 +73,12 @@ def test_good_negative_az():
 def test_get_horizon():
     """ Test get_horizon for normal, negative and overlapping obstructions. """
 
-    obstructions = [[[355, 10], [5, 10]],
-                    [[4, -5], [10, 15]]]
+    obstructions = [[[10, 355], [10, 5]],
+                    [[-5, 4], [15, 10]]]
     h = Horizon(obstructions=obstructions)
 
     assert h.get_horizon(0) == 10 * u.deg
     assert h.get_horizon(20) == h._default_horizon
-    assert h.get_horizon(4) == -5 * u.deg
-    assert h.get_horizon(10) == 15
+    assert h.get_horizon(4) != -5 * u.deg
+    assert h.get_horizon(5.1) < 0 * u.deg
+    assert h.get_horizon(9.9) > 0 * u.deg

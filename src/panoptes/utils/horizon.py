@@ -3,7 +3,8 @@ from astropy import units as u
 
 from panoptes.utils.utils import get_quantity_value
 
-NO_HORIZON = float(np.nan)
+# Implicit variable used to indicate no obstruction at a given az
+NO_HORIZON = None
 
 
 class Obstruction(object):
@@ -25,20 +26,20 @@ class Obstruction(object):
             alt = get_quantity_value(p[0], u.deg)
             az = get_quantity_value(p[1], u.deg)
 
-            if abs(alt) > 90 * u.deg:
+            if abs(alt) > 90:
                 raise ValueError("Altitudes must be between ±90 deg.")
 
-            if (az < 0 * u.deg) or (az > 360 * u.deg):
+            if (az < 0) or (az > 360):
                 raise ValueError("Azimuths must be between 0 and 360 deg.")
 
             alt_list.append(alt)
             az_list.append(az)
 
-        self._alt_array = np.array(alt_list)
+        self._alt_list = alt_list
 
         # Get clockwise angles between first point and all other points
         self._az0 = az_list[0]
-        self._az_offset = self._get_az_offsets(np.array(az_list))
+        self._az_offset = self._get_az_offsets(az_list)
 
         # Ensure azimuths are ordered clockwise
         # We could sort the azimuth offsets to enforce this automatically, but safer to make user
@@ -61,17 +62,18 @@ class Obstruction(object):
         if az_offset < self._az_offset.min() or az_offset > self._az_offset.max():
             return NO_HORIZON
 
-        alt = np.interp(az_offset, xp=self._az_offset, fp=self._alt_array) * u.deg
+        alt = np.interp(az_offset, xp=self._az_offset, fp=self._alt_list) * u.deg
 
         return alt
 
-    def _get_az_offsets(self, az_array):
+    def _get_az_offsets(self, az_list):
         """ Return the angular offset between az_array and first point in obstruction.
         Args:
             az_array (np.array): The array of azimuths in degrees.
         Returns:
             np.array: The array of azimuth offsets in degrees.
         """
+        az_array = np.array([get_quantity_value(az, u.deg) for az in az_list])
         az_offset = az_array - self._az0
         az_offset[az_offset < 0] += 360
         return az_offset
@@ -149,7 +151,9 @@ class Horizon(object):
 
         # Find obstruction horizons at this az if any exist
         for ob in self.obstructions:
+
             hor = ob.get_horizon(az)
+
             if hor != NO_HORIZON:
                 ob_horizons.append(hor)
 
