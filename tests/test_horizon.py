@@ -70,6 +70,26 @@ def test_good_negative_az():
     assert isinstance(hp2, Horizon)
 
 
+def test_bad_alt():
+    obstructions = [[[95, 5], [10, 10]]]
+    with pytest.raises(ValueError):
+        Horizon(obstructions=obstructions)
+
+    obstructions = [[[-95, 5], [10, 10]]]
+    with pytest.raises(ValueError):
+        Horizon(obstructions=obstructions)
+
+
+def test_bad_az():
+    obstructions = [[[50, -370], [10, 10]]]
+    with pytest.raises(ValueError):
+        Horizon(obstructions=obstructions)
+
+    obstructions = [[[50, 370], [10, 10]]]
+    with pytest.raises(ValueError):
+        Horizon(obstructions=obstructions)
+
+
 def test_not_clockwise():
 
     obstructions = [[[10, 5], [10, 355], [10, 10]]]
