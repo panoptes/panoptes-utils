@@ -70,6 +70,13 @@ def test_good_negative_az():
     assert isinstance(hp2, Horizon)
 
 
+def test_not_clockwise():
+
+    obstructions = [[[10, 5], [10, 355], [10, 10]]]
+    with pytest.raises(ValueError):
+        Horizon(obstructions=obstructions)
+
+
 def test_get_horizon():
     """ Test get_horizon for normal, negative and overlapping obstructions. """
 

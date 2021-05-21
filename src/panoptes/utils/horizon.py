@@ -45,7 +45,7 @@ class Obstruction(object):
         # We could sort the azimuth offsets to enforce this automatically, but safer to make user
         # explicitly provide ordered points
         if not (np.diff(self._az_offset) > 0).all():
-            raise ValueError("Azimuths must be in ordered clockwise.")
+            raise ValueError("Azimuths must be ordered clockwise.")
 
     def get_horizon(self, az):
         """ Get the horizon level in degrees at a given azimuth.
