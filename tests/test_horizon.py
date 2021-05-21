@@ -14,7 +14,7 @@ def test_normal():
     assert isinstance(hp, Horizon)
 
     hp2 = Horizon(obstructions=[
-        [[40, 45], [50, 50], [60, 45]]
+        [[40, 45], [50, 50], [60, 60]]
     ])
     assert isinstance(hp2, Horizon)
 
@@ -60,12 +60,12 @@ def test_numpy_ints():
 
 def test_good_negative_az():
     hp = Horizon(obstructions=[
-        [[50, -10], [45, -20]]
+        [[50, -10], [45, -5]]
     ])
     assert isinstance(hp, Horizon)
 
     hp2 = Horizon(obstructions=[
-        [[10, -181], [20, -190]]
+        [[10, -181], [20, -170]]
     ])
     assert isinstance(hp2, Horizon)
 

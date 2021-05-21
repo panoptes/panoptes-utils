@@ -19,6 +19,9 @@ class Obstruction(object):
         alt_list = []
         az_list = []
 
+        if len(points_list) < 2:
+            raise ValueError("Need at least two points for obstruction.")
+
         for p in points_list:
             if len(p) != 2:
                 raise ValueError("points_list must be provided as alt/az pairs.")
