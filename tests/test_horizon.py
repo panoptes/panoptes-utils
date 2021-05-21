@@ -1,6 +1,8 @@
 import pytest
-import numpy as np
 import random
+
+import numpy as np
+from astropy import units as u
 
 from panoptes.utils.horizon import Horizon
 
@@ -12,7 +14,7 @@ def test_normal():
     assert isinstance(hp, Horizon)
 
     hp2 = Horizon(obstructions=[
-        [[40, 45], [50, 50], [60, 45]]
+        [[40, 45], [50, 50], [60, 60]]
     ])
     assert isinstance(hp2, Horizon)
 
@@ -21,34 +23,29 @@ def test_normal():
 
 
 def test_bad_length_tuple():
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         Horizon(obstructions=[
             [[20], [40, 70]]
         ])
 
 
 def test_bad_length_list():
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         Horizon(obstructions=[
             [[40, 70]]
         ])
 
 
 def test_bad_string():
-    with pytest.raises(AssertionError):
+    with pytest.raises(TypeError):
         Horizon(obstructions=[
             [["x", 10], [40, 70]]
         ])
 
 
 def test_too_many_points():
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         Horizon(obstructions=[[[120, 60, 300]]])
-
-
-def test_wrong_bool():
-    with pytest.raises(AssertionError):
-        Horizon(obstructions=[[[20, 200], [30, False]]])
 
 
 def test_numpy_ints():
@@ -61,39 +58,54 @@ def test_numpy_ints():
     assert isinstance(Horizon(points), Horizon)
 
 
-def test_negative_alt():
-    with pytest.raises(AssertionError):
-        Horizon(obstructions=[
-            [[10, 20], [-1, 30]]
-        ])
-
-
 def test_good_negative_az():
     hp = Horizon(obstructions=[
-        [[50, -10], [45, -20]]
+        [[50, -10], [45, -5]]
     ])
     assert isinstance(hp, Horizon)
 
     hp2 = Horizon(obstructions=[
-        [[10, -181], [20, -190]]
+        [[10, -181], [20, -170]]
     ])
     assert isinstance(hp2, Horizon)
 
 
-def test_bad_negative_az():
-    with pytest.raises(AssertionError):
-        Horizon(obstructions=[
-            [[10, -361], [20, -350]]
-        ])
+def test_bad_alt():
+    obstructions = [[[95, 5], [10, 10]]]
+    with pytest.raises(ValueError):
+        Horizon(obstructions=obstructions)
+
+    obstructions = [[[-95, 5], [10, 10]]]
+    with pytest.raises(ValueError):
+        Horizon(obstructions=obstructions)
 
 
-def test_sorting():
-    points = [
-        [[10., 10.], [20., 20.]],
-        [[30., 190.], [10., 180.]],
-        [[10., 50.], [30., 60.]],
-    ]
-    hp = Horizon(obstructions=points)
-    assert hp.obstructions == [[(10.0, 10.0), (20.0, 20.0)],
-                               [(10.0, 50.0), (30.0, 60.0)],
-                               [(10.0, 180.0), (30.0, 190.0)]]
+def test_bad_az():
+    obstructions = [[[50, -370], [10, 10]]]
+    with pytest.raises(ValueError):
+        Horizon(obstructions=obstructions)
+
+    obstructions = [[[50, 370], [10, 10]]]
+    with pytest.raises(ValueError):
+        Horizon(obstructions=obstructions)
+
+
+def test_not_clockwise():
+
+    obstructions = [[[10, 5], [10, 355], [10, 10]]]
+    with pytest.raises(ValueError):
+        Horizon(obstructions=obstructions)
+
+
+def test_get_horizon():
+    """ Test get_horizon for normal, negative and overlapping obstructions. """
+
+    obstructions = [[[10, 355], [10, 5]],
+                    [[-5, 4], [15, 10]]]
+    h = Horizon(obstructions=obstructions)
+
+    assert h.get_horizon(0) == 10 * u.deg
+    assert h.get_horizon(20) == h._default_horizon
+    assert h.get_horizon(4) != -5 * u.deg
+    assert h.get_horizon(5.1) < 0 * u.deg
+    assert h.get_horizon(9.9) > 0 * u.deg
