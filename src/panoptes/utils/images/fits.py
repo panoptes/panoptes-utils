@@ -77,7 +77,7 @@ class ObservationPathInfo:
         if self.path is not None:
             path_match = PATH_MATCHER.match(self.path)
             if path_match is None:
-                raise ValueError(f'Invalid path received: {self.path=}')
+                raise ValueError(f'Invalid path received: {self.path}')
 
             self.unit_id = path_match.group('unit_id')
             self.camera_id = path_match.group('camera_id')
