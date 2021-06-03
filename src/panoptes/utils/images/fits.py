@@ -57,8 +57,9 @@ class ObservationPathInfo:
         >>> path_info.image_id
         'PAN012_358d0f_20180824T040118'
 
-        >>> path_info.as_path(base='/tmp', ext='.jpg')
-        PosixPath('/tmp/PAN012/358d0f/20180824T035917/20180824T040118.jpg')
+        >>> my_path = path_info.as_path(base='/tmp', ext='.jpg')
+        >>> str(my_path)
+        '/tmp/PAN012/358d0f/20180824T035917/20180824T040118.jpg'
 
         >>> ObservationPathInfo(path='foobar')
         Traceback (most recent call last):
