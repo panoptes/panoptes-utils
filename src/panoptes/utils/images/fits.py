@@ -123,11 +123,6 @@ class ObservationPathInfo:
         ])
 
     @classmethod
-    def from_fits(cls, fits_file):
-        header = getheader(fits_file)
-        return cls.from_fits_header(header)
-
-    @classmethod
     def from_fits_header(cls, header):
         try:
             new_instance = cls(path=header['FILENAME'])
@@ -143,6 +138,10 @@ class ObservationPathInfo:
                                image_time=Time(parse_date(image_time)))
 
         return new_instance
+
+    @classmethod
+    def from_fits(cls, fits_file):  # pragma: no cover
+        return cls.from_fits_header(getheader(fits_file))
 
 
 def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
@@ -674,8 +673,7 @@ def extract_metadata(header: fits.Header) -> dict:
         )
 
     except Exception as e:
-        logger.error(f'Error in adding record: {e!r}')
-        raise e
+        raise error.PanError(f'Error in extracting metadata: {e!r}')
 
     logger.success('Metadata extracted from header')
     return metadata
