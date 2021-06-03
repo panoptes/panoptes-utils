@@ -9,6 +9,8 @@ Added
 ^^^^^
 
 * New ``panoptes.utils.serial.device.SerialDevice`` that will replace the ``rs232.SerialData``. New class uses the threaded reader with optional callback for better asynchronous reading from a serial device. Example notebook included. #274
+* `ObservationPathInfo` allows for easy parsing of the standard PANOPTES file name scheme, as provided by `PATH_MATCHER`. #282
+* `extract_metadata` pulls FITS headers into a common dictionary structure. #282
 
 Changed
 ^^^^^^^
