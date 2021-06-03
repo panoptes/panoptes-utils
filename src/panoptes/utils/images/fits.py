@@ -164,7 +164,7 @@ def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
     solve_field_script = shutil.which('solve-field')
 
     if solve_field_script is None:  # pragma: no cover
-        raise error.InvalidSystemCommand(f"Can't find solve-field, is astrometry.net installed?")
+        raise error.InvalidSystemCommand("Can't find solve-field, is astrometry.net installed?")
 
     # Add the options for solving the field
     if solve_opts is not None:
@@ -464,8 +464,7 @@ def fpack(fits_fname, unpack=False, overwrite=True):
 
     if os.path.exists(out_file):
         if overwrite is False:
-            raise FileExistsError(
-                f'Destination file already exists at location and overwrite=False')
+            raise FileExistsError('Destination file already exists at location and overwrite=False')
         else:
             os.remove(out_file)
 
@@ -681,7 +680,7 @@ def extract_metadata(header: fits.Header) -> dict:
         logger.error(f'Error in adding record: {e!r}')
         raise e
 
-    logger.success(f'Metadata extracted from header')
+    logger.success('Metadata extracted from header')
     return metadata
 
 
