@@ -39,31 +39,29 @@ class ObservationPathInfo:
 
     This would usually be instantiated via `path`:
 
-    ..doctest::
+    >>> from panoptes.utils.images.fits import ObservationPathInfo  # noqa
+    >>> bucket_path = 'gs://panoptes-images-background/PAN012/Hd189733/358d0f/20180824T035917/20180824T040118.fits'
+    >>> path_info = ObservationPathInfo(path=bucket_path)
 
-        >>> from panoptes.utils.images.fits import ObservationPathInfo  # noqa
-        >>> bucket_path = 'gs://panoptes-images-background/PAN012/Hd189733/358d0f/20180824T035917/20180824T040118.fits'
-        >>> path_info = ObservationPathInfo(path=bucket_path)
+    >>> path_info.id
+    'PAN012_358d0f_20180824T035917_20180824T040118'
 
-        >>> path_info.id
-        'PAN012_358d0f_20180824T035917_20180824T040118'
+    >>> path_info.unit_id
+    'PAN012'
 
-        >>> path_info.unit_id
-        'PAN012'
+    >>> path_info.sequence_id
+    'PAN012_358d0f_20180824T035917'
 
-        >>> path_info.sequence_id
-        'PAN012_358d0f_20180824T035917'
+    >>> path_info.image_id
+    'PAN012_358d0f_20180824T040118'
 
-        >>> path_info.image_id
-        'PAN012_358d0f_20180824T040118'
+    >>> path_info.as_path(base='/tmp', ext='jpg')
+    PosixPath('/tmp/PAN012/358d0f/20180824T035917/20180824T040118.jpg')
 
-        >>> path_info.as_path(base='/tmp', ext='jpg')
-        PosixPath('/tmp/PAN012/358d0f/20180824T035917/20180824T040118.jpg')
-
-        >>> ObservationPathInfo(path='foobar')
-        Traceback (most recent call last):
-          ...
-        ValueError: Invalid path received: self.path='foobar'
+    >>> ObservationPathInfo(path='foobar')
+    Traceback (most recent call last):
+      ...
+    ValueError: Invalid path received: self.path='foobar'
 
 
     """
