@@ -58,7 +58,7 @@ class ObservationPathInfo:
         'PAN012_358d0f_20180824T040118'
 
         >>> path_info.as_path(base='/tmp', ext='.jpg')
-        '/tmp/PAN012/358d0f/20180824T035917/20180824T040118.jpg'
+        PosixPath('/tmp/PAN012/358d0f/20180824T035917/20180824T040118.jpg')
 
         >>> ObservationPathInfo(path='foobar')
         Traceback (most recent call last):
@@ -608,6 +608,8 @@ def extract_metadata(header: fits.Header) -> dict:
     >>> metadata['unit']['name']
     'PAN001'
 
+    Args:
+        header (astropy.io.fits.Header): The Header object from a FITS file.
     """
     path_info = ObservationPathInfo.from_fits_header(header)
 
