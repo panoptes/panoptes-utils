@@ -63,6 +63,11 @@ class ObservationPathInfo:
       ...
     ValueError: Invalid path received: self.path='foobar'
 
+    >>> # Works from a fits file directly, which reads header.
+    >>> fits_fn = getfixture('unsolved_fits_file')
+    >>> path_info = ObservationPathInfo.from_fits(fits_fn)
+    >>> path_info.unit_id
+    'PAN001'
 
     """
     unit_id: str = None
@@ -140,7 +145,7 @@ class ObservationPathInfo:
         return new_instance
 
     @classmethod
-    def from_fits(cls, fits_file):  # pragma: no cover
+    def from_fits(cls, fits_file):
         return cls.from_fits_header(getheader(fits_file))
 
 
