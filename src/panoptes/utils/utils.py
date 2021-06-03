@@ -1,7 +1,6 @@
 import collections.abc
 import contextlib
 import os
-import re
 import shutil
 import signal
 
@@ -10,15 +9,6 @@ from astropy.coordinates import AltAz
 from astropy.coordinates import ICRS
 from astropy.coordinates import SkyCoord
 from panoptes.utils.time import current_time
-
-PATH_MATCHER = re.compile(r'''
-    .*?
-    (?P<unit_id>PAN\d{3})[/_]{1}
-    (?P<camera_id>[a-gA-G0-9]{6})[/_]{1}
-    (?P<sequence_id>[0-9]{8}T[0-9]{6})[/_]{1}
-    (?P<image_id>[0-9]{8}T[0-9]{6})
-    .*?
-''', re.VERBOSE)
 
 
 def listify(obj):

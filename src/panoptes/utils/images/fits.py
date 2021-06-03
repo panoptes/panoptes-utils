@@ -1,13 +1,152 @@
 import os
+import re
 import shutil
 import subprocess
+from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
+from typing import Pattern, Union
 from warnings import warn
 
 from astropy import units as u
 from astropy.io import fits
+from astropy.time import Time
 from astropy.wcs import WCS
+from dateutil.parser import parse as parse_date
+from dateutil.tz import UTC
 from loguru import logger
 from panoptes.utils import error
+from panoptes.utils.time import flatten_time
+
+PATH_MATCHER: Pattern[str] = re.compile(r"""^
+                                (?P<pre_info>.*)?                       # Anything before unit_id
+                                (?P<unit_id>PAN\d{3})                   # unit_id   - PAN + 3 digits
+                                /?(?P<field_name>.*)?                   # Legacy field name - any
+                                /(?P<camera_id>[a-gA-G0-9]{6})          # camera_id - 6 digits
+                                /(?P<sequence_time>[0-9]{8}T[0-9]{6})   # Observation start time
+                                /(?P<image_time>[0-9]{8}T[0-9]{6})      # Image start time
+                                (?P<post_info>.*)?                      # Anything after (file ext)
+                                $""",
+                                        re.VERBOSE)
+
+
+@dataclass
+class ObservationPathInfo:
+    """Parse the location path for an image.
+
+    This is a small dataclass that offers some convenience methods for dealing
+    with a path based on the image id.
+
+    This would usually be instantiated via `path`:
+
+    >>> from panoptes.utils.images.fits import ObservationPathInfo  # noqa
+    >>> bucket_path = 'gs://panoptes-images-background/PAN012/Hd189733/358d0f/20180824T035917/20180824T040118.fits'
+    >>> path_info = ObservationPathInfo(path=bucket_path)
+
+    >>> path_info.id
+    'PAN012_358d0f_20180824T035917_20180824T040118'
+
+    >>> path_info.unit_id
+    'PAN012'
+
+    >>> path_info.sequence_id
+    'PAN012_358d0f_20180824T035917'
+
+    >>> path_info.image_id
+    'PAN012_358d0f_20180824T040118'
+
+    >>> path_info.as_path(base='/tmp', ext='jpg')
+    PosixPath('/tmp/PAN012/358d0f/20180824T035917/20180824T040118.jpg')
+
+    >>> ObservationPathInfo(path='foobar')
+    Traceback (most recent call last):
+      ...
+    ValueError: Invalid path received: self.path='foobar'
+
+    >>> # Works from a fits file directly, which reads header.
+    >>> fits_fn = getfixture('unsolved_fits_file')
+    >>> path_info = ObservationPathInfo.from_fits(fits_fn)
+    >>> path_info.unit_id
+    'PAN001'
+
+    """
+    unit_id: str = None
+    camera_id: str = None
+    field_name: str = None
+    sequence_time: Union[str, datetime, Time] = None
+    image_time: Union[str, datetime, Time] = None
+    path: Union[str, Path] = None
+
+    def __post_init__(self):
+        """Parse the path when provided upon initialization."""
+        if self.path is not None:
+            path_match = PATH_MATCHER.match(self.path)
+            if path_match is None:
+                raise ValueError(f'Invalid path received: {self.path}')
+
+            self.unit_id = path_match.group('unit_id')
+            self.camera_id = path_match.group('camera_id')
+            self.field_name = path_match.group('field_name')
+            self.sequence_time = Time(parse_date(path_match.group('sequence_time')))
+            self.image_time = Time(parse_date(path_match.group('image_time')))
+
+    @property
+    def id(self):
+        """Full path info joined with underscores"""
+        return self.get_full_id()
+
+    @property
+    def sequence_id(self) -> str:
+        """The sequence id."""
+        return f'{self.unit_id}_{self.camera_id}_{flatten_time(self.sequence_time)}'
+
+    @property
+    def image_id(self) -> str:
+        """The matched image id."""
+        return f'{self.unit_id}_{self.camera_id}_{flatten_time(self.image_time)}'
+
+    def as_path(self, base: Union[Path, str] = None, ext: str = None) -> Path:
+        """Return a Path object."""
+        image_str = flatten_time(self.image_time)
+        if ext is not None:
+            image_str = f'{image_str}.{ext}'
+
+        full_path = Path(self.unit_id, self.camera_id, flatten_time(self.sequence_time), image_str)
+
+        if base is not None:
+            full_path = base / full_path
+
+        return full_path
+
+    def get_full_id(self, sep='_') -> str:
+        """Returns the full path id with the given separator."""
+        return f'{sep}'.join([
+            self.unit_id,
+            self.camera_id,
+            flatten_time(self.sequence_time),
+            flatten_time(self.image_time)
+        ])
+
+    @classmethod
+    def from_fits_header(cls, header):
+        try:
+            new_instance = cls(path=header['FILENAME'])
+        except ValueError:
+            sequence_id = header['SEQID']
+            image_id = header['IMAGEID']
+            unit_id, camera_id, sequence_time = sequence_id.split('_')
+            _, _, image_time = image_id.split('_')
+
+            new_instance = cls(unit_id=unit_id,
+                               camera_id=camera_id,
+                               sequence_time=Time(parse_date(sequence_time)),
+                               image_time=Time(parse_date(image_time)))
+
+        return new_instance
+
+    @classmethod
+    def from_fits(cls, fits_file):
+        return cls.from_fits_header(getheader(fits_file))
 
 
 def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
@@ -26,7 +165,7 @@ def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
     solve_field_script = shutil.which('solve-field')
 
     if solve_field_script is None:  # pragma: no cover
-        raise error.InvalidSystemCommand(f"Can't find solve-field, is astrometry.net installed?")
+        raise error.InvalidSystemCommand("Can't find solve-field, is astrometry.net installed?")
 
     # Add the options for solving the field
     if solve_opts is not None:
@@ -326,8 +465,7 @@ def fpack(fits_fname, unpack=False, overwrite=True):
 
     if os.path.exists(out_file):
         if overwrite is False:
-            raise FileExistsError(
-                f'Destination file already exists at location and overwrite=False')
+            raise FileExistsError('Destination file already exists at location and overwrite=False')
         else:
             os.remove(out_file)
 
@@ -454,6 +592,96 @@ def update_observation_headers(file_path, info):
         hdu.header.set('OBSERVER', info.get('observer', ''), 'PANOPTES Unit ID')
         hdu.header.set('ORIGIN', info.get('origin', ''))
         hdu.header.set('RA-RATE', info.get('tracking_rate_ra', ''), 'RA Tracking Rate')
+
+
+def extract_metadata(header: fits.Header) -> dict:
+    """Get the metadata from a FITS image.
+
+    This function parses some of the more common headers (some from the
+    `update_observation_headers` but others as well) and puts them into a dict
+    with the obvious data types converted into objects (e.g. dates and times).
+
+    >>> # Check the headers
+    >>> from panoptes.utils.images import fits as fits_utils
+    >>> fits_fn = getfixture('unsolved_fits_file')
+    >>> header = fits_utils.getheader(fits_fn)
+    >>> metadata = extract_metadata(header)
+    >>> metadata['unit']['name']
+    'PAN001'
+
+    Args:
+        header (astropy.io.fits.Header): The Header object from a FITS file.
+    """
+    path_info = ObservationPathInfo.from_fits_header(header)
+
+    try:
+        # Add a units doc if it doesn't exist.
+        unit_info = dict(
+            name=header.get('OBSERVER'),
+            latitude=header.get('LAT-OBS'),
+            longitude=header.get('LONG-OBS'),
+            elevation=float(header.get('ELEV-OBS')),
+        )
+
+        sequence_info = dict(
+            time=path_info.sequence_time.to_datetime(timezone=UTC),
+            exptime=float(header.get('EXPTIME')),
+            software_version=header.get('CREATOR', ''),
+            field_name=header.get('FIELD', ''),
+            iso=header.get('ISO'),
+            ra=header.get('CRVAL1'),
+            dec=header.get('CRVAL2'),
+            camera_id=path_info.camera_id,
+            camera_serial_number=str(header.get('CAMSN')),
+            lens_serial_number=header.get('INTSN'),
+        )
+
+        measured_rggb = header.get('MEASRGGB', '0 0 0 0').split(' ')
+        if 'DATE' in header:
+            file_date = parse_date(header.get('DATE')).replace(tzinfo=UTC)
+        else:
+            file_date = path_info.image_time.to_datetime(timezone=UTC)
+        camera_date = parse_date(header.get('DATE-OBS', path_info.image_time)).replace(tzinfo=UTC)
+
+        image_info = dict(
+            airmass=header.get('AIRMASS'),
+            camera=dict(
+                dateobs=camera_date,
+                blue_balance=float(header.get('BLUEBAL')),
+                circconf=float(header.get('CIRCCONF', '0.').split(' ')[0]),
+                colortemp=float(header.get('COLORTMP')),
+                measured_ev=float(header.get('MEASEV')),
+                measured_ev2=float(header.get('MEASEV2')),
+                measured_r=float(measured_rggb[0]),
+                measured_g1=float(measured_rggb[1]),
+                measured_g2=float(measured_rggb[2]),
+                measured_b=float(measured_rggb[3]),
+                red_balance=float(header.get('REDBAL')),
+                temperature=float(header.get('CAMTEMP', 0).split(' ')[0]),
+                white_lvln=header.get('WHTLVLN'),
+                white_lvls=header.get('WHTLVLS'),
+            ),
+            exptime=float(header.get('EXPTIME')),
+            file_creation_date=file_date,
+            moonfrac=float(header.get('MOONFRAC')),
+            moonsep=float(header.get('MOONSEP')),
+            mount_dec=header.get('DEC-MNT'),
+            mount_ha=header.get('HA-MNT'),
+            mount_ra=header.get('RA-MNT'),
+            time=path_info.image_time.to_datetime(timezone=UTC),
+        )
+
+        metadata = dict(
+            unit=unit_info,
+            sequence=sequence_info,
+            image=image_info,
+        )
+
+    except Exception as e:
+        raise error.PanError(f'Error in extracting metadata: {e!r}')
+
+    logger.success('Metadata extracted from header')
+    return metadata
 
 
 def getdata(fn, *args, **kwargs):
