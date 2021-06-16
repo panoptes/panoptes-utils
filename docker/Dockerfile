@@ -14,7 +14,7 @@ ARG userid=1000
 
 ENV PANUSER $panuser
 ENV USERID $userid
-ENV PATH "/home/${PANUSER}/.local/bin:$PATH"
+ENV PATH "$PATH:/home/${PANUSER}/.local/bin"
 
 # Install system dependencies as root user.
 RUN echo "Building from ${image_url}:${image_tag}" && \
