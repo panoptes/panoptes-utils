@@ -3,6 +3,7 @@ FROM condaforge/miniforge3:latest
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV SHELL /bin/bash
+ENV PYTHONUNBUFFERED 1
 
 ARG pip_extras="[config,images,testing,social]"
 

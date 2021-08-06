@@ -1,12 +1,9 @@
-version: '3.7'
 services:
   config-server:
     image: gcr.io/panoptes-exp/panoptes-utils:develop
     build:
       context: .
       dockerfile: ./Dockerfile
-    deploy:
-      mode: global
     init: true
     tty: true
     container_name: config-server
