@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, List, Union
 
 from loguru import logger
+from panoptes.utils import error
 from panoptes.utils.serializers import from_yaml
 from panoptes.utils.serializers import to_yaml
 from panoptes.utils.utils import listify
@@ -178,16 +179,16 @@ def parse_config_directories(directories: Dict[str, str], must_exist: bool = Fal
 
     # Warn if base directory does not exist.
     if must_exist and base_dir.is_dir() is False:
-        logger.warning(f'Base directory does not exist:{base_dir}')
+        raise error.NotFound(f'Base directory does not exist: {base_dir}')
 
     # Add back absolute path for base directory.
     resolved_dirs['base'] = str(base_dir)
     logger.trace(f'Using base_dir={base_dir!r} for setting config directories')
 
     # Add the base directory to any relative dir.
-    for dir_name, rel_dir in resolved_dirs.items():
-        if rel_dir.startswith('/') is False:
-            sub_dir = (base_dir / rel_dir).absolute()
+    for dir_name, dir_path in resolved_dirs.items():
+        if dir_path.startswith('/') is False:
+            sub_dir = (base_dir / dir_path).absolute()
 
             if must_exist and not sub_dir.exists():
                 logger.warning(f'{sub_dir!r} does not exist, skipping (must_exist=True)')
