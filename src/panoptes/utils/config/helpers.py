@@ -133,44 +133,38 @@ def save_config(path: Path, config: dict, overwrite: bool = True):
     return True
 
 
-def parse_config_directories(directories: Dict[str, str], must_exist: bool = False):
+def parse_config_directories(directories: Dict[str, str]):
     """Parse the config dictionary for common objects.
 
     Given a `base` entry that corresponds to the absolute path of a directory,
     prepend the `base` to all other relative directory entries.
 
-    If `must_exist=True`, then only update entry if the corresponding
-    directory exists on the filesystem.
+    The `base` directory must exist or an exception is rasied.
+
+    If the `base` entry is not given the current working directory is used.
 
     .. doctest::
 
-        >>> dirs_config = dict(base='/tmp', foo='bar', baz='bam')
-        >>> # If the relative dir doesn't exist but is required, return as is.
-        >>> parse_config_directories(dirs_config, must_exist=True)
-        {'base': '/tmp', 'foo': 'bar', 'baz': 'bam'}
-
-        >>> # Default is to return anyway.
+        >>> dirs_config = dict(base='/tmp', foo='bar', baz='bam', app='/app')
         >>> parse_config_directories(dirs_config)
-        {'base': '/tmp', 'foo': '/tmp/bar', 'baz': '/tmp/bam'}
+        {'base': '/tmp', 'foo': '/tmp/bar', 'baz': '/tmp/bam', 'app': '/app'}
 
-        >>> # If 'base' is not a valid absolute directory, return all as is.
-        >>> dirs_config = dict(base='panoptes', foo='bar', baz='bam')
-        >>> parse_config_directories(dirs_config, must_exist=False)
-        {'base': 'panoptes', 'foo': 'bar', 'baz': 'bam'}
-
-        >>> # Unless 'base' is set to current directory.
-        >>> dirs_config = dict(base='.', foo='bar', baz='bam')
-        >>> parse_config_directories(dirs_config, must_exist=False)
-        {'base': './', 'foo': '...bar', 'baz': '...bam'}
+        >>> # If base doesn't exist an exception is raised.
+        >>> dirs_config = dict(base='/panoptes', foo='bar', baz='bam', app='/app')
+        >>> parse_config_directories(dirs_config)
+        Traceback (most recent call last):
+        ...
+        panoptes.utils.error.NotFound: NotFound: Base directory does not exist: /panoptes
 
     Args:
         directories (dict): The dictionary of directory information. Usually comes
             from the "directories" entry in the config.
-        must_exist (bool): Only parse directory if it exists on the filesystem,
-            default False.
 
     Returns:
         dict: The same directory but with relative directories resolved.
+
+    Raises:
+        panoptes.utils.error.NotFound: if the 'base' entry is given but does not exist.
     """
     resolved_dirs = directories.copy()
 
@@ -178,7 +172,7 @@ def parse_config_directories(directories: Dict[str, str], must_exist: bool = Fal
     base_dir = Path(resolved_dirs.get('base', '.')).absolute()
 
     # Warn if base directory does not exist.
-    if must_exist and base_dir.is_dir() is False:
+    if base_dir.is_dir() is False:
         raise error.NotFound(f'Base directory does not exist: {base_dir}')
 
     # Add back absolute path for base directory.
@@ -187,12 +181,11 @@ def parse_config_directories(directories: Dict[str, str], must_exist: bool = Fal
 
     # Add the base directory to any relative dir.
     for dir_name, dir_path in resolved_dirs.items():
-        if dir_path.startswith('/') is False:
+        if dir_path.startswith('/') is False and dir_name != 'base':
             sub_dir = (base_dir / dir_path).absolute()
 
-            if must_exist and not sub_dir.exists():
-                logger.warning(f'{sub_dir!r} does not exist, skipping (must_exist=True)')
-                continue
+            if sub_dir.exists() is False:
+                logger.warning(f'{sub_dir!r} does not exist.')
 
             logger.trace(f'Setting {dir_name} to {sub_dir}')
             resolved_dirs[dir_name] = str(sub_dir)
