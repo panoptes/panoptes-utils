@@ -1,5 +1,6 @@
 import os
 from contextlib import suppress
+from pathlib import Path
 
 from loguru import logger
 from panoptes.utils.serializers import from_yaml
@@ -155,6 +156,11 @@ def parse_config_directories(directories, must_exist=False):
         >>> parse_config_directories(dirs_config, must_exist=False)
         {'base': 'panoptes', 'foo': 'bar', 'baz': 'bam'}
 
+        >>> # Unless 'base' is set to current directory.
+        >>> dirs_config = dict(base='.', foo='bar', baz='bam')
+        >>> parse_config_directories(dirs_config, must_exist=False)
+        {'base': './', 'foo': '...bar', 'baz': '...bam'}
+
     Args:
         directories (dict): The dictionary of directory information. Usually comes
             from the "directories" entry in the config.
@@ -167,24 +173,20 @@ def parse_config_directories(directories, must_exist=False):
     resolved_dirs = directories.copy()
 
     # Try to get the base directory first.
-    base_dir = resolved_dirs.get('base', '.')
-    if os.path.isdir(base_dir):
-        logger.trace(f'Using  base_dir={base_dir!r} for setting config directories')
+    base_dir = Path(resolved_dirs.pop('base'))
+    resolved_dirs['base'] = str(base_dir)
+    if base_dir.is_dir():
+        logger.trace(f'Using base_dir={base_dir!r} for setting config directories')
 
         # Add the base directory to any relative dir.
         for dir_name, rel_dir in resolved_dirs.items():
-            # Only want relative directories.
             if rel_dir.startswith('/') is False:
-                abs_dir = os.path.join(base_dir, rel_dir)
-                logger.trace(
-                    f'base_dir={base_dir!r} rel_dir={rel_dir!r} abs_dir={abs_dir!r}  must_exist={must_exist!r}')
-
-                if must_exist and not os.path.exists(abs_dir):
-                    logger.warning(
-                        f'must_exist={must_exist!r} but  abs_dir={abs_dir!r} does not exist, skipping')
+                abs_dir = base_dir / rel_dir
+                if must_exist and not abs_dir.exists():
+                    logger.warning(f'{abs_dir!r} does not exist, skipping (must_exist=True)')
                 else:
                     logger.trace(f'Setting {dir_name} to {abs_dir}')
-                    resolved_dirs[dir_name] = abs_dir
+                    resolved_dirs[dir_name] = str(abs_dir.absolute())
 
     return resolved_dirs
 
