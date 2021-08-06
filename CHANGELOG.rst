@@ -9,22 +9,24 @@ Added
 ^^^^^
 
 * New ``panoptes.utils.serial.device.SerialDevice`` that will replace the ``rs232.SerialData``. New class uses the threaded reader with optional callback for better asynchronous reading from a serial device. Example notebook included. #274
-* `ObservationPathInfo` allows for easy parsing of the standard PANOPTES file name scheme, as provided by `PATH_MATCHER`. #282
-* `extract_metadata` pulls FITS headers into a common dictionary structure. #282
+* ``ObservationPathInfo`` allows for easy parsing of the standard PANOPTES file name scheme, as provided by ``PATH_MATCHER``. #282
+* ``extract_metadata`` pulls FITS headers into a common dictionary structure. #282
 
 Changed
 ^^^^^^^
 
 * The serial protocol handlers were moved to the ``panoptes.utils.serial.handlers`` namespace. #274
-* Testing Dockerfile has `privileged` permission to get device `loop`. #275
-* Dockerfile: update `conda` in Dockerfile before installing environment; install `panoptes-utils` module in user-editable mode. #277.
+* Testing Dockerfile has ``privileged`` permission to get device ``loop``. #275
+* Dockerfile: update ``conda`` in Dockerfile before installing environment; install `panoptes-utils` module in user-editable mode. #277
 * Dockerfile: use ``condaforge/miniforge3`` as the base, which reduces image size. Push multi-stage builds for better caching. #278, #279
-* Consistent multi-stage names in Dockerfile; added `jupyter_console`. #280
+* Consistent multi-stage names in Dockerfile; added ``jupyter_console``. #280
+* Change behavior of ``parse_config_directories`` so the ``base`` entry must always exist or be missing (in which case the cwd is used). Remove the ``must_exist`` param. #283
+
 
 Fixed
 ^^^^^
 
-* Don't nest storage objects for the `PanFileDB`. #280
+* Don't nest storage objects for the ``PanFileDB``. #280
 
 0.2.32 - 2020-03-19
 -------------------
@@ -38,7 +40,7 @@ Changed
 ^^^^^^^
 
 * ``panoptes.utils.config.config.client.get_config()`` changed so ``default`` is the second parameter and function made less noisy overall. #272
-* Updated to ``Pillow>=8.1.1`` for depandabot alert.  #273.
+* Updated to ``Pillow>=8.1.1`` for dependabot alert.  #273.
 
 Removed
 ^^^^^^^
