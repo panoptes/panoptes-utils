@@ -8,6 +8,7 @@ LABEL repo="github.com/panoptes/panoptes-utils"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
+ENV PYTHONUNBUFFERED 1
 
 ARG panuser=pocs-user
 ARG userid=1000
