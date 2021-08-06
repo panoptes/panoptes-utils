@@ -1,7 +1,7 @@
 import os
 from contextlib import suppress
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List, Union
 
 from loguru import logger
 from panoptes.utils.serializers import from_yaml
@@ -9,7 +9,8 @@ from panoptes.utils.serializers import to_yaml
 from panoptes.utils.utils import listify
 
 
-def load_config(config_files=None, parse=True, load_local=True):
+def load_config(config_files: Union[Path, List] = None, parse: bool = True,
+                load_local: bool = True):
     """Load configuration information.
 
     .. note::
@@ -90,7 +91,7 @@ def load_config(config_files=None, parse=True, load_local=True):
     return config
 
 
-def save_config(path, config, overwrite=True):
+def save_config(path: Path, config: dict, overwrite: bool = True):
     """Save config to local yaml file.
 
     Args:
@@ -198,7 +199,7 @@ def parse_config_directories(directories: Dict[str, str], must_exist: bool = Fal
     return resolved_dirs
 
 
-def _add_to_conf(config, conf_fn, parse=False):
+def _add_to_conf(config: dict, conf_fn: Path, parse: bool = False):
     with suppress(IOError, TypeError):
         with open(conf_fn, 'r') as fn:
             config.update(from_yaml(fn.read(), parse=parse))
