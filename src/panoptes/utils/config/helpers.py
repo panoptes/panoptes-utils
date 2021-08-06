@@ -1,6 +1,7 @@
 import os
 from contextlib import suppress
 from pathlib import Path
+from typing import Dict
 
 from loguru import logger
 from panoptes.utils.serializers import from_yaml
@@ -62,13 +63,13 @@ def load_config(config_files=None, parse=True, load_local=True):
     config = dict()
 
     config_files = listify(config_files)
-    logger.debug(f'Loading config files:  config_files={config_files!r}')
+    logger.debug(f'Loading config files: config_files={config_files!r}')
     for config_file in config_files:
         try:
-            logger.debug(f'Adding  config_file={config_file!r} to config dict')
+            logger.debug(f'Adding config_file={config_file!r} to config dict')
             _add_to_conf(config, config_file, parse=parse)
         except Exception as e:  # pragma: no cover
-            logger.warning(f"Problem with  config_file={config_file!r}, skipping. {e!r}")
+            logger.warning(f"Problem with config_file={config_file!r}, skipping. {e!r}")
 
         # Load local version of config
         if load_local:
@@ -77,15 +78,14 @@ def load_config(config_files=None, parse=True, load_local=True):
                 try:
                     _add_to_conf(config, local_version, parse=parse)
                 except Exception as e:  # pragma: no cover
-                    logger.warning(
-                        f"Problem with  local_version={local_version!r}, skipping: {e!r}")
+                    logger.warning(f"Problem with local_version={local_version!r}, skipping: {e!r}")
 
     # parse_config_directories currently only corrects directory names.
     if parse:
-        logger.trace(f'Parsing  config={config!r}')
+        logger.trace(f'Parsing config={config!r}')
         with suppress(KeyError):
             config['directories'] = parse_config_directories(config['directories'])
-            logger.trace(f'Config directories parsed:  config={config!r}')
+            logger.trace(f'Config directories parsed: config={config!r}')
 
     return config
 
@@ -131,7 +131,7 @@ def save_config(path, config, overwrite=True):
     return True
 
 
-def parse_config_directories(directories, must_exist=False):
+def parse_config_directories(directories: Dict[str, str], must_exist: bool = False):
     """Parse the config dictionary for common objects.
 
     Given a `base` entry that corresponds to the absolute path of a directory,
@@ -173,20 +173,27 @@ def parse_config_directories(directories, must_exist=False):
     resolved_dirs = directories.copy()
 
     # Try to get the base directory first.
-    base_dir = Path(resolved_dirs.pop('base'))
-    resolved_dirs['base'] = str(base_dir)
-    if base_dir.is_dir():
-        logger.trace(f'Using base_dir={base_dir!r} for setting config directories')
+    base_dir = Path(resolved_dirs.get('base', '.')).absolute()
 
-        # Add the base directory to any relative dir.
-        for dir_name, rel_dir in resolved_dirs.items():
-            if rel_dir.startswith('/') is False:
-                abs_dir = base_dir / rel_dir
-                if must_exist and not abs_dir.exists():
-                    logger.warning(f'{abs_dir!r} does not exist, skipping (must_exist=True)')
-                else:
-                    logger.trace(f'Setting {dir_name} to {abs_dir}')
-                    resolved_dirs[dir_name] = str(abs_dir.absolute())
+    # Warn if base directory does not exist.
+    if must_exist and base_dir.is_dir() is False:
+        logger.warning(f'Base directory does not exist:{base_dir}')
+
+    # Add back absolute path for base directory.
+    resolved_dirs['base'] = str(base_dir)
+    logger.trace(f'Using base_dir={base_dir!r} for setting config directories')
+
+    # Add the base directory to any relative dir.
+    for dir_name, rel_dir in resolved_dirs.items():
+        if rel_dir.startswith('/') is False:
+            sub_dir = (base_dir / rel_dir).absolute()
+
+            if must_exist and not sub_dir.exists():
+                logger.warning(f'{sub_dir!r} does not exist, skipping (must_exist=True)')
+                continue
+
+            logger.trace(f'Setting {dir_name} to {sub_dir}')
+            resolved_dirs[dir_name] = str(sub_dir)
 
     return resolved_dirs
 
