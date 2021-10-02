@@ -43,11 +43,11 @@ FROM panoptes-utils-base AS panoptes-utils-conda
 
 COPY docker/environment.yaml .
 RUN echo "Updating conda." && \
-    conda update -n base conda && \
+    conda install mamba && \
     echo "Installing environment" && \
-    conda-env update -n base -f environment.yaml && \
-    conda clean -tipsy && \
-    conda clean -y --force-pkgs-dirs && \
+    mamba env update -n base -f environment.yaml && \
+    mamba clean -tipsy && \
+    mamba clean -y --force-pkgs-dirs && \
     chown -R "${USERID}:${USERID}" /opt/conda    
 
 FROM panoptes-utils-conda AS panoptes-utils
