@@ -1,4 +1,4 @@
-ARG image_url=condaforge/miniforge3
+ARG image_url=condaforge/mambaforge
 ARG image_tag=latest
 FROM ${image_url}:${image_tag} AS panoptes-utils-base
 
@@ -42,13 +42,10 @@ RUN echo "Building from ${image_url}:${image_tag}" && \
 FROM panoptes-utils-base AS panoptes-utils-conda
 
 COPY docker/environment.yaml .
-RUN echo "Updating conda." && \
-    conda install mamba && \
-    echo "Installing environment" && \
-    mamba env update -n base -f environment.yaml && \
-    mamba clean -tipsy && \
-    mamba clean -y --force-pkgs-dirs && \
-    chown -R "${USERID}:${USERID}" /opt/conda    
+RUN echo "Updating python environment." && \
+    mamba env update --name base --file environment.yaml && \
+    mamba clean --all --force-pkgs-dirs --yes && \
+    chown -R "${USERID}:${USERID}" /opt/conda
 
 FROM panoptes-utils-conda AS panoptes-utils
 
