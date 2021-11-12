@@ -12,7 +12,11 @@ ENV PYTHONUNBUFFERED 1
 
 ARG panuser=pocs-user
 ARG userid=1000
+ARG app_dir=/panoptes-utils
+ARG pip_install_name="."
+ARG pip_install_extras=""
 
+ENV APP_DIR $app_dir
 ENV PANUSER $panuser
 ENV USERID $userid
 ENV PATH "/home/${PANUSER}/.local/bin:$PATH"
@@ -24,7 +28,7 @@ RUN echo "Building from ${image_url}:${image_tag}" && \
         bzip2 ca-certificates \
         wget gcc pkg-config sudo less udev wait-for-it \
         dcraw exiftool \
-        nano neovim ncdu \
+        nano \
         astrometry.net \
         libcfitsio-dev libcfitsio-bin \
         libfreetype6-dev libpng-dev libjpeg-dev libffi-dev && \
@@ -32,37 +36,26 @@ RUN echo "Building from ${image_url}:${image_tag}" && \
     apt-get autoclean --yes && \
     apt-get --yes clean && \
     rm -rf /var/lib/apt/lists/* && \
-    useradd -u ${USERID} -o -c "Captain POCS" \
-        -p panoptes -m -G plugdev,dialout,users,sudo ${PANUSER} && \
+    # Change username.
+    usermod -l ${panuser} micromamba && \
+    usermod -aG plugdev,dialout,users,sudo ${panuser} && \
     # Allow sudo without password.
     echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
-    # Setup SSH so localhost works without password
+    # Setup SSH so localhost works without password.
     mkdir -p "/home/${panuser}/.ssh" && \
     echo "Host localhost\n\tStrictHostKeyChecking no\n" >> "/home/${panuser}/.ssh/config"
 
-FROM panoptes-utils-base AS panoptes-utils-conda
-
-USER "${PANUSER}"
+USER "${panuser}"
 COPY docker/environment.yaml /tmp/environment.yaml
 RUN echo "Updating python environment." && \
     micromamba install -y -n base -f /tmp/environment.yaml && \
     micromamba clean --all --yes
 
-FROM panoptes-utils-conda AS panoptes-utils
-
-ARG app_dir=/panoptes-utils
-ENV APP_DIR $app_dir
-
 WORKDIR "${APP_DIR}"
-USER "${USERID}"
-
-ARG pip_install_name="panoptes-utils"
-ARG pip_install_extras=""
-
-COPY docker/docker-compose.yaml .
+COPY --chown="${userid}:${userid}" . .
 RUN echo "Installing panoptes-utils module with ${pip_install_extras}" && \
     pip install "${pip_install_name}${pip_install_extras}" && \
-    # Cleanup
+    # Cleanup.
     pip cache purge
 
 # We are still the PANUSER.
