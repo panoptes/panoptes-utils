@@ -1,4 +1,4 @@
-ARG image_url=condaforge/mambaforge
+ARG image_url=mambaorg/micromamba
 ARG image_tag=latest
 FROM ${image_url}:${image_tag} AS panoptes-utils-base
 
@@ -18,6 +18,7 @@ ENV USERID $userid
 ENV PATH "/home/${PANUSER}/.local/bin:$PATH"
 
 # Install system dependencies as root user.
+USER root
 RUN echo "Building from ${image_url}:${image_tag}" && \
     apt-get update && apt-get install --no-install-recommends --yes \
         bzip2 ca-certificates \
@@ -41,11 +42,11 @@ RUN echo "Building from ${image_url}:${image_tag}" && \
 
 FROM panoptes-utils-base AS panoptes-utils-conda
 
-COPY docker/environment.yaml .
+USER "${PANUSER}"
+COPY docker/environment.yaml /tmp/environment.yaml
 RUN echo "Updating python environment." && \
-    mamba env update --name base --file environment.yaml && \
-    mamba clean --all --force-pkgs-dirs --yes && \
-    chown -R "${USERID}:${USERID}" /opt/conda
+    micromamba install -y -n base -f /tmp/environment.yaml && \
+    micromamba clean --all --yes
 
 FROM panoptes-utils-conda AS panoptes-utils
 
@@ -62,11 +63,7 @@ COPY docker/docker-compose.yaml .
 RUN echo "Installing panoptes-utils module with ${pip_install_extras}" && \
     pip install "${pip_install_name}${pip_install_extras}" && \
     # Cleanup
-    pip cache purge && \
-    sudo apt-get autoremove --purge --yes && \
-    sudo apt-get autoclean --yes && \
-    sudo apt-get --yes clean && \
-    sudo rm -rf /var/lib/apt/lists/*
+    pip cache purge
 
 # We are still the PANUSER.
 ENTRYPOINT [ "/usr/bin/env", "bash", "-ic" ]
