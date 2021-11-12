@@ -6,6 +6,7 @@ from datetime import timezone as tz
 
 import pytest
 from astropy import units as u
+
 from panoptes.utils import error
 from panoptes.utils.time import CountdownTimer
 from panoptes.utils.time import current_time
@@ -94,12 +95,12 @@ def test_countdown_timer_sleep_log(caplog):
     # Default is a debug level
     timer.sleep()
     assert caplog.records[-1].levelname == 'DEBUG'
-    assert caplog.records[-1].message.startswith('Sleeping for')
+    assert caplog.records[-1].message.startswith('Sleeping Timer for')
 
     timer.restart()
     timer.sleep(log_level='info')
     assert caplog.records[-1].levelname == 'INFO'
-    assert caplog.records[-1].message.startswith('Sleeping for')
+    assert caplog.records[-1].message.startswith('Sleeping Timer for')
 
 
 @pytest.mark.slow
