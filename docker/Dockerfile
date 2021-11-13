@@ -57,7 +57,7 @@ RUN echo "Installing panoptes-utils module with ${pip_install_extras}" && \
     pip install "${pip_install_name}${pip_install_extras}" && \
     # Cleanup.
     pip cache purge && \
-    sudo apt purge git
+    sudo apt purge -y git
 
 # We are still the PANUSER.
 ENTRYPOINT [ "/usr/bin/env", "bash", "-ic" ]
