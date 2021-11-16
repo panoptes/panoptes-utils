@@ -3,7 +3,7 @@ services:
     image: gcr.io/panoptes-exp/panoptes-utils:develop
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./docker/Dockerfile
     init: true
     tty: true
     container_name: config-server

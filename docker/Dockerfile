@@ -14,7 +14,7 @@ ARG panuser=pocs-user
 ARG userid=1000
 ARG app_dir=/panoptes-utils
 ARG pip_install_name="."
-ARG pip_install_extras=""
+ARG pip_install_extras="[config]"
 
 ENV APP_DIR $app_dir
 ENV PANUSER $panuser
@@ -43,7 +43,8 @@ RUN echo "Building from ${image_url}:${image_tag}" && \
     echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
     # Setup SSH so localhost works without password.
     mkdir -p "/home/${panuser}/.ssh" && \
-    echo "Host localhost\n\tStrictHostKeyChecking no\n" >> "/home/${panuser}/.ssh/config"
+    echo "Host localhost\n\tStrictHostKeyChecking no\n" >> "/home/${panuser}/.ssh/config" && \
+    chown -R "${userid}:${userid}" "${app_dir}"
 
 USER "${panuser}"
 COPY docker/environment.yaml /tmp/environment.yaml
@@ -51,7 +52,7 @@ RUN echo "Updating python environment." && \
     micromamba install -y -n base -f /tmp/environment.yaml && \
     micromamba clean --all --yes
 
-WORKDIR "${APP_DIR}"
+WORKDIR "${app_dir}"
 COPY --chown="${userid}:${userid}" . .
 RUN echo "Installing panoptes-utils module with ${pip_install_extras}" && \
     pip install "${pip_install_name}${pip_install_extras}" && \
