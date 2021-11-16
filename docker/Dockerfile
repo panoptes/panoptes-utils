@@ -44,7 +44,7 @@ RUN echo "Building from ${image_url}:${image_tag}" && \
     # Setup SSH so localhost works without password.
     mkdir -p "/home/${panuser}/.ssh" && \
     echo "Host localhost\n\tStrictHostKeyChecking no\n" >> "/home/${panuser}/.ssh/config" && \
-    chown -R "${userid}:${userid}" "${app_dir}"
+    mkdir -p "${app_dir}" && chown -R "${userid}:${userid}" "${app_dir}"
 
 USER "${panuser}"
 COPY docker/environment.yaml /tmp/environment.yaml
