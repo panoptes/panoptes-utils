@@ -55,7 +55,7 @@ RUN echo "Updating python environment." && \
 WORKDIR "${app_dir}"
 COPY --chown="${userid}:${userid}" . .
 RUN echo "Installing panoptes-utils module with ${pip_install_extras}" && \
-    pip install "${pip_install_name}${pip_install_extras}" && \
+    pip install -e "${pip_install_name}${pip_install_extras}" && \
     # Cleanup.
     pip cache purge && \
     sudo apt purge -y git
