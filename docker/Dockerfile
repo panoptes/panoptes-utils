@@ -27,7 +27,7 @@ RUN echo "Building from ${image_url}:${image_tag}" && \
     apt-get update && apt-get install --no-install-recommends --yes \
         bzip2 ca-certificates \
         wget gcc pkg-config sudo less udev wait-for-it \
-        dcraw exiftool \
+        dcraw exiftool git \
         nano \
         astrometry.net \
         libcfitsio-dev libcfitsio-bin \
@@ -56,7 +56,8 @@ COPY --chown="${userid}:${userid}" . .
 RUN echo "Installing panoptes-utils module with ${pip_install_extras}" && \
     pip install "${pip_install_name}${pip_install_extras}" && \
     # Cleanup.
-    pip cache purge
+    pip cache purge && \
+    sudo apt purge -y git
 
 # We are still the PANUSER.
 ENTRYPOINT [ "/usr/bin/env", "bash", "-ic" ]
