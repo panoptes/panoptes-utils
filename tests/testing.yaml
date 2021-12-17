@@ -25,7 +25,7 @@ location:
   timezone: US/Hawaii
   gmt_offset: -600 # Offset in minutes from GMT during.
 directories:
-  base: /app
+  base: /panoptes-utils
   images: images
   data: data
   resources: POCS/resources/
