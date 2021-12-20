@@ -11,6 +11,7 @@ import pytest
 from _pytest.logging import caplog as _caplog  # noqa
 from loguru import logger
 from matplotlib import pyplot as plt
+
 from panoptes.utils.config.server import config_server
 from panoptes.utils.database import PanDB
 
@@ -55,12 +56,14 @@ def pytest_configure(config):
     config_server(config_file, host='localhost', port=8765, load_local=False, save_local=False)
     logger.success('Config server set up')
 
+    config.addinivalue_line('markers', 'plate_solve: Tests that require astrometry.net')
+
 
 def pytest_addoption(parser):
     db_names = ",".join(_all_databases) + ' (or all for all databases)'
     group = parser.getgroup("PANOPTES pytest options")
     group.addoption(
-        "--astrometry",
+        "--test-solve",
         action="store_true",
         default=False,
         help="If tests that require solving should be run")
@@ -70,6 +73,15 @@ def pytest_addoption(parser):
         default=['file'],
         help=("Test databases in the list. List items can include: " + db_names +
               ". Note that travis-ci will test all of them by default."))
+
+
+def pytest_collection_modifyitems(config, items):
+    if config.getoption('--test-solve'):
+        return
+    skip_solve = pytest.mark.skip(reason='No plate solving requested')
+    for item in items:
+        if 'plate_solve' in item.keywords:
+            item.add_marker(skip_solve)
 
 
 @pytest.fixture(scope='session')
