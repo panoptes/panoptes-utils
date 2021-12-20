@@ -15,6 +15,7 @@ from astropy.wcs import WCS
 from dateutil.parser import parse as parse_date
 from dateutil.tz import UTC
 from loguru import logger
+
 from panoptes.utils import error
 from panoptes.utils.time import flatten_time
 
@@ -243,22 +244,22 @@ def get_solve_field(fname, replace=True, overwrite=True, timeout=30, **kwargs):
     >>> fits_fn = getfixture('unsolved_fits_file')
 
     >>> # Perform the solve.
-    >>> solve_info = fits_utils.get_solve_field(fits_fn)
+    >>> solve_info = fits_utils.get_solve_field(fits_fn)  # doctest: +SKIP
 
     >>> # Show solved filename.
-    >>> solve_info['solved_fits_file']
+    >>> solve_info['solved_fits_file']  # doctest: +SKIP
     '.../unsolved.fits'
 
     >>> # Pass a suggested location.
     >>> ra = 15.23
     >>> dec = 90
     >>> radius = 5 # deg
-    >>> solve_info = fits_utils.solve_field(fits_fn, ra=ra, dec=dec, radius=radius)
+    >>> solve_info = fits_utils.solve_field(fits_fn, ra=ra, dec=dec, radius=radius)  # doctest: +SKIP
 
     >>> # Pass kwargs to `solve-field` program.
     >>> solve_kwargs = {'--pnm': '/tmp/awesome.bmp'}
-    >>> solve_info = fits_utils.get_solve_field(fits_fn, skip_solved=False, **solve_kwargs)
-    >>> assert os.path.exists('/tmp/awesome.bmp')
+    >>> solve_info = fits_utils.get_solve_field(fits_fn, skip_solved=False, **solve_kwargs) # doctest: +SKIP
+    >>> assert os.path.exists('/tmp/awesome.bmp') # doctest: +SKIP
 
     Args:
         fname ({str}): Name of FITS file to be solved.
