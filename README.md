@@ -12,28 +12,6 @@ Utility functions for use within the [Project PANOPTES](https://projectpanoptes.
 
 This library defines a number of modules that contain useful functions as well as a few services.
 
-Dependencies
-------------
-
-There are a few system dependencies depending on what functionality you will be using.
-
-In particular, the plate solving requires `astrometry.net` and the appropriate index files.
-
-Use the following on a debian-based system (e.g. Ubuntu) to install all dependencies:
-
-```bash
-apt-get update
-
-apt-get install --no-install-recommends --yes \
-  wait-for-it \
-  bzip2 ca-certificates gcc pkg-config \
-  libffi-dev libssl-dev \
-  astrometry.net astrometry-data-tycho2-08 astrometry-data-tycho2 \
-  dcraw exiftool libcfitsio-dev libcfitsio-bin \
-  libfreetype6-dev libpng-dev libjpeg-dev libffi-dev \
-  git
-```
-
 Install
 -------
 
@@ -51,28 +29,30 @@ pip install -e ".[config,docs,images,testing,social]"
 
 See the full documentation at: https://panoptes-utils.readthedocs.io
 
-Docker Service
-==============
-
-The `docker` folder defines an image that can be used as the base for other  
-PANOPTES services.
-
-The `Dockerfile` is built by the `cloudbuild.yaml` and stored in Google  
-Registry as `gcr.io/panoptes-exp/panoptes-utils:latest`.
-
-You can pull the image like any other docker image:
-
-```
-docker pull gcr.io/panoptes-exp/panoptes-utils:latest
-```
-
 Config Server
 -------------
 
-There is also a service defined in `docker-compose.yaml` that will run the
-`panoptes-config-server` cli tool.
+There is a simple key-value configuration server available as part of the module.
+
+After installing with the `config` option as above, type:
 
 ```bash
-PANOPTES_CONFIG_FILE=/path/to/config.yaml docker-compose \
-    -f docker/docker-compose.yaml up
+panoptes-config-server run --config-file <path-to-file.yaml>
+```
+
+Dependencies
+------------
+
+There are a few system dependencies depending on what functionality you will be using.
+
+In particular, the plate solving requires `astrometry.net` and the appropriate index files.
+
+Use the following on a debian-based system (e.g. Ubuntu) to install all dependencies:
+
+```bash
+apt-get update && apt-get install --no-install-recommends --yes \
+  libffi-dev libssl-dev \
+  astrometry.net astrometry-data-tycho2 \
+  dcraw exiftool libcfitsio-dev libcfitsio-bin \
+  libfreetype6-dev libpng-dev libjpeg-dev libffi-dev
 ```
