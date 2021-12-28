@@ -1,10 +1,8 @@
 import pytest
-
 from astropy import units as u
-
-from panoptes.utils import current_time
-from panoptes.utils import serializers
 from panoptes.utils import error
+from panoptes.utils import serializers
+from panoptes.utils.time import current_time
 
 
 @pytest.fixture(scope='function')
@@ -25,12 +23,12 @@ def obj():
             "gmt_offset": -600,
         },
         "directories": {
-            "base": "/var/panoptes",
+            "base": "/panoptes-pocs",
             "images": "images",
             "data": "data",
-            "resources": "POCS/resources/",
-            "targets": "POCS/resources/targets",
-            "mounts": "POCS/resources/mounts",
+            "resources": "resources/",
+            "targets": "resources/targets",
+            "mounts": "resources/mounts",
         },
         "db": {
             "name": "panoptes",

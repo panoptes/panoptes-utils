@@ -9,9 +9,11 @@ from contextlib import suppress
 import numpy as np
 import pytest
 from _pytest.logging import caplog as _caplog  # noqa
+from loguru import logger
 from matplotlib import pyplot as plt
+
+from panoptes.utils.config.server import config_server
 from panoptes.utils.database import PanDB
-from panoptes.utils.logging import logger
 
 _all_databases = ['file', 'memory']
 
@@ -21,10 +23,10 @@ log_fmt = "<lvl>{level:.1s}</lvl> " \
           "<light-blue>{time:MM-DD HH:mm:ss.ss!UTC}</>" \
           "<blue>({time:HH:mm:ss.ss})</> " \
           "| <c>{name} {function}:{line}</c> | " \
-          "<lvl>{message}</lvl>\n"
+          "<lvl>{message}</lvl>"
 
 # Put the log file in the tmp dir.
-log_file_path = os.path.expandvars('${PANLOG}/panoptes-testing.log')
+log_file_path = os.path.realpath('logs/panoptes-testing.log')
 startup_message = f' STARTING NEW PYTEST RUN - LOGS: {log_file_path} '
 logger.add(log_file_path,
            enqueue=True,  # multiprocessing
@@ -40,19 +42,31 @@ logger.add(log_file_path,
 logger.log('testing', '*' * 25 + startup_message + '*' * 25)
 
 
+def pytest_configure(config):
+    """Set up the testing."""
+    logger.info('Setting up the config server.')
+    config_file = 'tests/testing.yaml'
+
+    host = 'localhost'
+    port = '8765'
+
+    os.environ['PANOPTES_CONFIG_HOST'] = host
+    os.environ['PANOPTES_CONFIG_PORT'] = port
+
+    config_server(config_file, host='localhost', port=8765, load_local=False, save_local=False)
+    logger.success('Config server set up')
+
+    config.addinivalue_line('markers', 'plate_solve: Tests that require astrometry.net')
+
+
 def pytest_addoption(parser):
     db_names = ",".join(_all_databases) + ' (or all for all databases)'
     group = parser.getgroup("PANOPTES pytest options")
     group.addoption(
-        "--astrometry",
+        "--test-solve",
         action="store_true",
         default=False,
         help="If tests that require solving should be run")
-    group.addoption(
-        "--theskyx",
-        action="store_true",
-        default=False,
-        help="If running tests alongside a running TheSkyX program.")
     group.addoption(
         "--test-databases",
         nargs="+",
@@ -61,19 +75,18 @@ def pytest_addoption(parser):
               ". Note that travis-ci will test all of them by default."))
 
 
-@pytest.fixture(scope='session')
-def config_host():
-    return os.getenv('PANOPTES_CONFIG_HOST', 'localhost')
-
-
-@pytest.fixture(scope='session')
-def config_port():
-    return os.getenv('PANOPTES_CONFIG_PORT', 6563)
+def pytest_collection_modifyitems(config, items):
+    if config.getoption('--test-solve'):
+        return
+    skip_solve = pytest.mark.skip(reason='No plate solving requested')
+    for item in items:
+        if 'plate_solve' in item.keywords:
+            item.add_marker(skip_solve)
 
 
 @pytest.fixture(scope='session')
 def config_path():
-    return os.getenv('PANOPTES_CONFIG_FILE', '/var/panoptes/panoptes-utils/tests/testing.yaml')
+    return os.getenv('PANOPTES_CONFIG_FILE', 'tests/testing.yaml')
 
 
 @pytest.fixture(scope='function', params=_all_databases)
@@ -92,7 +105,6 @@ def db_type(request):
 
 @pytest.fixture(scope='function')
 def db(db_type):
-    # TODO don't hardcode the db name.
     return PanDB(db_type=db_type, db_name='panoptes_testing', storage_dir='testing', connect=True)
 
 
@@ -105,7 +117,7 @@ def save_environ():
 
 @pytest.fixture(scope='session')
 def data_dir():
-    return os.path.expandvars('/var/panoptes/panoptes-utils/tests/data')
+    return os.path.expandvars('tests/data')
 
 
 @pytest.fixture(scope='function')

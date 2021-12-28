@@ -7,11 +7,11 @@ import pytest
 from astropy import units as u
 from astropy.io.fits import Header
 
-from panoptes.utils.images import fits as fits_utils
 from panoptes.utils import error
+from panoptes.utils.images import fits as fits_utils
 
 
-@pytest.mark.astrometry
+@pytest.mark.plate_solve
 def test_wcsinfo(solved_fits_file):
     wcsinfo = fits_utils.get_wcsinfo(solved_fits_file)
 
@@ -19,7 +19,7 @@ def test_wcsinfo(solved_fits_file):
     assert wcsinfo['ra_center'].value == pytest.approx(303.20, rel=1e-2)
 
 
-@pytest.mark.astrometry
+@pytest.mark.plate_solve
 def test_fpack(solved_fits_file):
     new_file = solved_fits_file.replace('solved', 'solved_copy')
     copy_file = shutil.copyfile(solved_fits_file, new_file)
@@ -35,7 +35,7 @@ def test_fpack(solved_fits_file):
     os.remove(copy_file)
 
 
-@pytest.mark.astrometry
+@pytest.mark.plate_solve
 def test_no_overwrite_fpack(solved_fits_file):
     new_file = solved_fits_file.replace('solved', 'solved_copy')
     copy_file = shutil.copyfile(solved_fits_file, new_file)
@@ -70,7 +70,7 @@ def test_getval(solved_fits_file):
     assert img_id == 'PAN001_XXXXXX_20160909T081152'
 
 
-@pytest.mark.astrometry
+@pytest.mark.plate_solve
 def test_solve_field_unsolved(unsolved_fits_file):
     with pytest.raises(KeyError):
         fits_utils.getval(unsolved_fits_file, 'WCSAXES')
@@ -93,7 +93,7 @@ def test_solve_field_unsolved(unsolved_fits_file):
             os.remove(unsolved_fits_file.replace('.fits', ext))
 
 
-@pytest.mark.astrometry
+@pytest.mark.plate_solve
 def test_get_solve_field_solved(solved_fits_file):
     orig_wcs = fits_utils.get_wcsinfo(solved_fits_file)
     assert 'crpix0' in orig_wcs
@@ -104,13 +104,13 @@ def test_get_solve_field_solved(solved_fits_file):
     assert 'CRPIX1' in solve_info
 
 
-@pytest.mark.astrometry
+@pytest.mark.plate_solve
 def test_get_solve_field_timeout(unsolved_fits_file):
     with pytest.raises(error.Timeout):
         solve_info = fits_utils.get_solve_field(unsolved_fits_file, timeout=1)
 
 
-@pytest.mark.astrometry
+@pytest.mark.plate_solve
 def test_solve_bad_field():
     proc = fits_utils.solve_field('Foo.fits')
     outs, errs = proc.communicate()

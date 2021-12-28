@@ -7,12 +7,11 @@ from flask import jsonify
 from flask import request
 from flask.json import JSONEncoder
 from gevent.pywsgi import WSGIServer
+from loguru import logger
+from panoptes.utils.config.helpers import load_config
+from panoptes.utils.config.helpers import save_config
+from panoptes.utils.serializers import serialize_object
 from scalpl import Cut
-
-from .helpers import load_config
-from .helpers import save_config
-from ..logging import logger
-from ..serializers import serialize_object
 
 # Turn off noisy logging for Flask wsgi server.
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
@@ -73,7 +72,7 @@ def config_server(config_file,
         multiprocessing.Process: The process running the config server.
     """
     config_file = config_file or os.environ['PANOPTES_CONFIG_FILE']
-    logger.info(f'Starting panoptes-config-server with {config_file=}')
+    logger.info(f'Starting panoptes-config-server with  config_file={config_file!r}')
     config = load_config(config_files=config_file, load_local=load_local)
     logger.success(f'Config server Loaded {len(config)} top-level items')
 
@@ -109,7 +108,7 @@ def config_server(config_file,
     host = host or os.getenv('PANOPTES_CONFIG_HOST', 'localhost')
     port = port or os.getenv('PANOPTES_CONFIG_PORT', 6563)
     cmd_kwargs = dict(host=host, port=port)
-    logger.debug(f'Setting up config server process with {cmd_kwargs=}')
+    logger.debug(f'Setting up config server process with  cmd_kwargs={cmd_kwargs!r}')
     server_process = Process(target=start_server,
                              daemon=True,
                              kwargs=cmd_kwargs)
@@ -187,12 +186,12 @@ def get_config_entry():
     log_level = 'DEBUG' if verbose else 'TRACE'
 
     # If requesting specific key
-    logger.log(log_level, f'Received {params=}')
+    logger.log(log_level, f'Received  params={params!r}')
 
     if request.is_json:
         try:
             key = params['key']
-            logger.log(log_level, f'Request contains {key=}')
+            logger.log(log_level, f'Request contains  key={key!r}')
         except KeyError:
             return jsonify({
                 'success': False,
@@ -205,7 +204,7 @@ def get_config_entry():
             show_config = app.config['POCS']
         else:
             try:
-                logger.log(log_level, f'Looking for {key=} in config')
+                logger.log(log_level, f'Looking for  key={key!r} in config')
                 show_config = app.config['POCS_cut'].get(key, None)
             except Exception as e:
                 logger.error(f'Error while getting config item: {e!r}')
@@ -215,7 +214,7 @@ def get_config_entry():
         logger.log(log_level, 'No valid key given, returning entire config')
         show_config = app.config['POCS']
 
-    logger.log(log_level, f'Returning {show_config=}')
+    logger.log(log_level, f'Returning  show_config={show_config!r}')
     logger.log(log_level, f'Returning {show_config!r}')
     return jsonify(show_config)
 
@@ -278,7 +277,7 @@ def set_config_entry():
 
     # Config has been modified so save to file.
     save_local = app.config['save_local']
-    logger.info(f'Setting config {save_local=}')
+    logger.info(f'Setting config  save_local={save_local!r}')
     if save_local and app.config['config_file'] is not None:
         save_config(app.config['config_file'], app.config['POCS_cut'].copy())
 

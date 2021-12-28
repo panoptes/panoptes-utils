@@ -1,14 +1,14 @@
 import os
 from contextlib import suppress
-from uuid import uuid4
 from glob import glob
+from uuid import uuid4
 
-from .. import error
-from ..serializers import to_json
-from ..serializers import from_json
-from ..database import AbstractPanDB
-from ..database.base import create_storage_obj
-from ..logging import logger
+from loguru import logger
+from panoptes.utils import error
+from panoptes.utils.database import AbstractPanDB
+from panoptes.utils.database.base import create_storage_obj
+from panoptes.utils.serializers import from_json
+from panoptes.utils.serializers import to_json
 
 
 class PanFileDB(AbstractPanDB):
@@ -22,9 +22,9 @@ class PanFileDB(AbstractPanDB):
 
         Args:
             db_name (str, optional): Name of the database containing the collections.
-            storage_dir (str, optional): The name of the directory in $PANDIR where
-                the database files will be stored. Default is `json_store` for backwards
-                compatibility.
+            storage_dir (str, optional): The name of the directory where the
+                database files will be stored. Default is `json_store` in current
+                directory. Pass an absolute path for non-relative.
         """
 
         super().__init__(db_name=db_name, **kwargs)
@@ -32,25 +32,25 @@ class PanFileDB(AbstractPanDB):
         self.db_folder = db_name
 
         # Set up storage directory.
-        self.storage_dir = os.path.join(os.environ['PANDIR'], storage_dir, self.db_folder)
+        self.storage_dir = os.path.join(storage_dir, self.db_folder)
         os.makedirs(self.storage_dir, exist_ok=True)
 
     def insert_current(self, collection, obj, store_permanently=True):
         obj_id = self._make_id()
-        obj = create_storage_obj(collection, obj, obj_id)
-        current_fn = self._get_file(collection, permanent=False)
         result = obj_id
+        storage_obj = create_storage_obj(collection, obj, obj_id)
+        current_fn = self._get_file(collection, permanent=False)
 
         try:
             # Overwrite current collection file with obj.
-            to_json(obj, filename=current_fn, append=False)
+            to_json(storage_obj, filename=current_fn, append=False)
         except Exception as e:
-            raise error.InvalidSerialization(f"Problem serializing object for insertion: {e} {current_fn} {obj!r}")
+            raise error.InvalidSerialization(f"Problem serializing before insert: {e!r} {obj!r}")
 
-        if not store_permanently:
-            return result
-        else:
-            return self.insert(collection, obj)
+        if store_permanently:
+            result = self.insert(collection, obj)
+
+        return result
 
     def insert(self, collection, obj):
         obj_id = self._make_id()
@@ -61,7 +61,7 @@ class PanFileDB(AbstractPanDB):
             to_json(obj, filename=collection_fn)
             return obj_id
         except Exception as e:
-            raise error.InvalidSerialization(f"Problem inserting object into collection: {e}, {obj!r}")
+            raise error.InvalidSerialization(f"Problem serializing before insert: {e!r} {obj!r}")
 
     def get_current(self, collection):
         current_fn = self._get_file(collection, permanent=False)
@@ -108,8 +108,8 @@ class PanFileDB(AbstractPanDB):
         return str(uuid4())
 
     @classmethod
-    def permanently_erase_database(cls, db_name, storage_dir='json_store'):
+    def permanently_erase_database(cls, db_name, storage_dir=None):
         # Clear out any .json files.
-        storage_dir = os.path.join(os.environ['PANDIR'], storage_dir, db_name)
+        storage_dir = os.path.join(storage_dir, db_name)
         for f in glob(os.path.join(storage_dir, '*.json')):
             os.remove(f)

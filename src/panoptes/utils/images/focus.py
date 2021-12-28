@@ -1,3 +1,4 @@
+import numpy as np
 
 
 def focus_metric(data, merit_function='vollath_F4', **kwargs):
@@ -42,6 +43,10 @@ def vollath_F4(data, axis=None):
     Returns:
         float64: Calculated F4 value for y, x axis or both
     """
+    # This calculation is prone to integer overflow if data is an integer type
+    # so convert to float64 before doing anything else.
+    data = data.astype(np.float64)
+
     def _vollath_F4_y():
         A1 = (data[1:] * data[:-1]).mean()
         A2 = (data[2:] * data[:-2]).mean()

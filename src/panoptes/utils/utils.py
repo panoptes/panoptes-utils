@@ -1,27 +1,14 @@
+import collections.abc
 import contextlib
 import os
-import re
 import shutil
 import signal
-import collections.abc
-from urllib.parse import unquote as unquote_url
 
-import numpy as np
 from astropy import units as u
 from astropy.coordinates import AltAz
 from astropy.coordinates import ICRS
 from astropy.coordinates import SkyCoord
-
-from .time import current_time
-
-PATH_MATCHER = re.compile(r'''
-    .*?
-    (?P<unit_id>PAN\d{3})[/_]{1}
-    (?P<camera_id>[a-gA-G0-9]{6})[/_]{1}
-    (?P<sequence_id>[0-9]{8}T[0-9]{6})[/_]{1}
-    (?P<image_id>[0-9]{8}T[0-9]{6})
-    .*?
-''', re.VERBOSE)
+from panoptes.utils.time import current_time
 
 
 def listify(obj):
@@ -72,7 +59,7 @@ def listify(obj):
 def get_free_space(directory=None):
     """Return the amoung of freespace in gigabytes for given directory.
 
-    >>> from panoptes.utils import get_free_space
+    >>> from panoptes.utils.utils import get_free_space
     >>> get_free_space()
     <Quantity ... Gbyte>
 
@@ -80,14 +67,13 @@ def get_free_space(directory=None):
     <Quantity ... Gbyte>
 
     Args:
-        directory (str, optional): Path to directory. If None defaults to $PANDIR.
+        directory (str, optional): Path to directory. If None defaults to root.
 
     Returns:
         astropy.units.Quantity: The number of gigabytes avialable in folder.
 
     """
-    if directory is None:
-        directory = os.getenv('PANDIR')
+    directory = directory or os.path.abspath('/')
 
     _, _, free_space = shutil.disk_usage(directory)
     free_space = (free_space * u.byte).to(u.gigabyte)
@@ -114,7 +100,7 @@ def string_to_params(opts):
         `param='42'` will keep the value as the string `'42'`.
 
 
-    >>> from panoptes.utils import string_to_params
+    >>> from panoptes.utils.utils import string_to_params
     >>> args, kwargs = string_to_params("parg1 parg2 key1=a_str key2=2 key2='2' key3=03")
     >>> args
     ['parg1', 'parg2']
@@ -168,11 +154,12 @@ def string_to_params(opts):
     return args, kwargs
 
 
-def altaz_to_radec(alt=35, az=90, location=None, obstime=None, **kwargs):
+def altaz_to_radec(alt=None, az=None, location=None, obstime=None, **kwargs):
     """Convert alt/az degrees to RA/Dec SkyCoord.
 
-    >>> from panoptes.utils import altaz_to_radec
+    >>> from panoptes.utils.utils import altaz_to_radec
     >>> from astropy.coordinates import EarthLocation
+    >>> from astropy import units as u
     >>> keck = EarthLocation.of_site('Keck Observatory')
     ...
 
@@ -180,14 +167,17 @@ def altaz_to_radec(alt=35, az=90, location=None, obstime=None, **kwargs):
     <SkyCoord (ICRS): (ra, dec) in deg
         (281.78..., 4.807...)>
 
-    >>> # Will use current time if none given
-    >>> altaz_to_radec(location=keck)
+    >>> # Can use quantities or not.
+    >>> alt = 4500 * u.arcmin
+    >>> az = 180 * u.degree
+    >>> altaz_to_radec(alt=alt, az=az, location=keck, obstime='2020-02-02T20:20:02.02')
+    <SkyCoord (ICRS): (ra, dec) in deg
+        (281.78..., 4.807...)>
+
+    >>> # Will use current time if none given.
+    >>> altaz_to_radec(alt=35, az=90, location=keck)
     <SkyCoord (ICRS): (ra, dec) in deg
         (..., ...)>
-
-    >>> altaz_to_radec(location=keck, obstime='2020-02-02T20:20:02.02')
-    <SkyCoord (ICRS): (ra, dec) in deg
-        (338.4096..., 11.1175...)>
 
     >>> # Must pass a `location` instance.
     >>> altaz_to_radec()
@@ -198,9 +188,9 @@ def altaz_to_radec(alt=35, az=90, location=None, obstime=None, **kwargs):
     AssertionError
 
     Args:
-        alt (int, optional): Altitude, defaults to 35
-        az (int, optional): Azimute, defaults to 90 (east)
-        location (None|astropy.coordinates.EarthLocation, required): A valid location.
+        alt (astropy.units.Quantity or scalar): Altitude.
+        az (astropy.units.Quantity or scalar): Azimuth.
+        location (astropy.coordinates.EarthLocation, required): A valid location.
         obstime (None, optional): Time for object, defaults to `current_time`
 
     Returns:
@@ -210,7 +200,10 @@ def altaz_to_radec(alt=35, az=90, location=None, obstime=None, **kwargs):
     if obstime is None:
         obstime = current_time()
 
-    altaz = AltAz(obstime=obstime, location=location, alt=alt * u.deg, az=az * u.deg)
+    alt = get_quantity_value(alt, 'degree') * u.degree
+    az = get_quantity_value(az, 'degree') * u.degree
+
+    altaz = AltAz(obstime=obstime, location=location, alt=alt, az=az)
     return SkyCoord(altaz.transform_to(ICRS))
 
 
@@ -269,7 +262,7 @@ def get_quantity_value(quantity, unit=None):
     If passed something other than a Quantity will simply return the original object.
 
     >>> from astropy import units as u
-    >>> from panoptes.utils import get_quantity_value
+    >>> from panoptes.utils.utils import get_quantity_value
 
     >>> get_quantity_value(60 * u.second)
     60.0
@@ -285,7 +278,7 @@ def get_quantity_value(quantity, unit=None):
     60
 
     Args:
-        quantity (astropy.units.Quantity): Quantity to extract numerical value from.
+        quantity (astropy.units.Quantity or scalar): Quantity to extract numerical value from.
         unit (astropy.units.Unit, optional): unit to convert to.
 
     Returns:
@@ -295,79 +288,3 @@ def get_quantity_value(quantity, unit=None):
         return quantity.to_value(unit)
     except AttributeError:
         return quantity
-
-
-def moving_average(data_set, periods=3):
-    """Moving average.
-
-    Args:
-        data_set (`numpy.array`): An array of values over which to perform the moving average.
-        periods (int, optional): Number of periods.
-
-    Returns:
-        `numpy.array`: An array of the computed averages.
-    """
-    weights = np.ones(periods) / periods
-    return np.convolve(data_set, weights, mode='same')
-
-
-def image_id_from_path(path):
-    """Return the `image_id` from the given path or uri.
-
-    >>> from panoptes.utils import image_id_from_path
-    >>> path = 'gs://panoptes-raw-images/PAN012/ee04d1/20190820T111638/20190820T122447.fits'
-    >>> image_id_from_path(path)
-    'PAN012_ee04d1_20190820T122447'
-
-    >>> path = 'nothing/to/match'
-    >>> image_id_from_path(path)
-
-
-    Args:
-        path (str): A path or uri for a file.
-
-    Returns:
-        str: The image id in the form "<unit_id>_<camera_id>_<image_id>"
-    """
-    result = PATH_MATCHER.match(unquote_url(path))
-
-    with contextlib.suppress(AttributeError):
-        match = '{}_{}_{}'.format(
-            result.group('unit_id'),
-            result.group('camera_id'),
-            result.group('image_id')
-        )
-        return match
-
-    return None
-
-
-def sequence_id_from_path(path):
-    """Return the `sequence_id` from the given path or uri.
-
-    >>> from panoptes.utils import sequence_id_from_path
-    >>> path = 'gs://panoptes-raw-images/PAN012/ee04d1/20190820T111638/20190820T122447.fits'
-    >>> sequence_id_from_path(path)
-    'PAN012_ee04d1_20190820T111638'
-
-    >>> path = 'nothing/to/match'
-    >>> sequence_id_from_path(path)
-
-
-    Args:
-        path (str): A path or uri for a file.
-
-    Returns:
-        str: The image id in the form "<unit_id>_<camera_id>_<sequence_id>"
-    """
-    result = PATH_MATCHER.match(unquote_url(path))
-
-    with contextlib.suppress(AttributeError):
-        match = '{}_{}_{}'.format(
-            result.group('unit_id'),
-            result.group('camera_id'),
-            result.group('sequence_id')
-        )
-        return match
-
-    return None

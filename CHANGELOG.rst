@@ -2,6 +2,213 @@
 Changelog
 =========
 
+0.2.33dev
+---------
+
+Added
+^^^^^
+
+* New ``panoptes.utils.serial.device.SerialDevice`` that will replace the ``rs232.SerialData``. New class uses the threaded reader with optional callback for better asynchronous reading from a serial device. Example notebook included. #274
+* ``ObservationPathInfo`` allows for easy parsing of the standard PANOPTES file name scheme, as provided by ``PATH_MATCHER``. #282
+* ``extract_metadata`` pulls FITS headers into a common dictionary structure. #282
+* Docker updates: Add ``PYTHONUNBUFFERED`` to docker files; Remove ``version`` and ``deploy`` keys from docker compose files. #284
+
+Changed
+^^^^^^^
+
+* The serial protocol handlers were moved to the ``panoptes.utils.serial.handlers`` namespace. #274
+* Testing Dockerfile has ``privileged`` permission to get device ``loop``. #275
+* Dockerfile: update ``conda`` in Dockerfile before installing environment; install `panoptes-utils` module in user-editable mode. #277
+* Dockerfile: use ``condaforge/miniforge3`` as the base, which reduces image size. Push multi-stage builds for better caching. #278, #279
+* Consistent multi-stage names in Dockerfile; added ``jupyter_console``. #280
+* Change behavior of ``parse_config_directories`` so the ``base`` entry must always exist or be missing (in which case the cwd is used). Remove the ``must_exist`` param. #283
+
+
+Fixed
+^^^^^
+
+* Don't nest storage objects for the ``PanFileDB``. #280
+
+0.2.32 - 2020-03-19
+-------------------
+
+Added
+^^^^^
+
+* ``panoptes.utils.rs232.find_serial_port()`` can be used to look up a serial port from the vendor and product hex ids.  #269
+
+Changed
+^^^^^^^
+
+* ``panoptes.utils.config.config.client.get_config()`` changed so ``default`` is the second parameter and function made less noisy overall. #272
+* Updated to ``Pillow>=8.1.1`` for dependabot alert.  #273.
+
+Removed
+^^^^^^^
+
+* ``panoptes.utils.logging`` which is just replaced by ``from loguru import logger``. # 272
+
+0.2.32 - 2020-02-28
+-------------------
+
+Added
+^^^^^
+
+* Added an ``RGB`` IntEnum for easy iterating and consistent array access of rgb data. #265
+* Added ``save_rgb_bg_fits`` that will save a FITS files with seven extensions: combined rgb map, and then the background and rms maps for each color. #265
+
+Changed
+^^^^^^^
+
+* ``get_rgb_background`` only accepts a ``data`` argument and a filename can no longer be passed. #265
+* Updated defaults for ``get_rgb_background``. #265
+* ``get_stamp_slice`` has ``as_slices`` param added with default ``True`` for legacy behavior. If ``False`` then just the four points are returned. #265
+* Test coverage will skip `noqa` markers and pytest will run all tests.  #265
+* Added `ruamel.yaml` to base dependencies instead of just ``config`` extras. #265
+
+Fixed
+^^^^^
+
+* The `timeout` parameter is now passed from `get_solve_field` to `solve_field`. #266
+
+
+0.2.31 - 2020-01-31
+-------------------
+
+Added
+^^^^^
+
+* Docker musical chairs:
+
+  * Add Dockerfile to be ``panoptes-utils`` but don't use for testing. (#264)
+  * Generic ``panoptes-utils`` with ``panoptes-config-server`` as default command example. (#264)
+  * Move conda ``environment`` file into ``docker`` folder. (#264)
+
+Bugs Fixed
+^^^^^^^^^^
+
+* ``parse_config_directories`` no longer modifies dictionary in place. (#264)
+
+Changed
+^^^^^^^
+
+* Clean out the Contributing guide to point to POCS. (#264)
+* Removing ``pillow<7`` requirement. (#264)
+
+Removed
+^^^^^^^
+
+* Removing unused new cli experiment. (#264)
+* Removed all ``PANDIR`` and ``PANLOG`` references. Closes #263. (#264)
+* Removed ``astroplan`` from dependencies. (#264)
+
+
+
+0.2.30 - 2021-01-14
+-------------------
+
+Added
+^^^^^
+
+* Conda environment file (@wtgee #260)
+* A cli script for ``panoptes-utils``. This will eventually take over the ``panoptes-config-server`` and any other simple commands needed. For now can use ``panoptes-utils tests run`` for building and running tests.
+
+Changed
+^^^^^^^
+
+* Updated testing to use specific docker image. Updated run script for more specific options on starting testing config server. (@wtgee #260)
+* Different ``extras`` install options: ``config``, ``docs``, ``images``, ``testing``, and ``social``. (@wtgee #260)
+* Use ``loguru`` for logging directly in all files, rather than needless import. (@wtgee #260)
+* Make the ``CountdownTimer.sleep()`` less noisy. (#259)
+
+Fixed
+^^^^^
+
+* Plate solving extras option parsing correctly. (@wtgee #260)
+* Explicit imports for some of the utils. (@wtgee #260)
+
+Removed
+^^^^^^^
+
+* Remove Docker services except for testing. (@wtgee #260)
+* Removed unused files: (@wtgee #260)
+
+
+  * Example data fetching notebook removed.
+  * Hotspot script removed.
+  * Data (astrometry index and IERS) download removed.
+  * ``wait-for-it.sh`` script removed.
+  * TheSkyX utils moving to POCS directly.
+  * Removed ``moving_average``.
+  * Removed pipeline functions for getting ``image_id`` and ``sequence_id``.
+
+
+0.2.29 - 2020-10-21
+-------------------
+
+Added
+^^^^^
+
+* Added ``oh-my-zsh`` install file directly to ease some issues with GCP builds. (@wtgee #257)
+* Added ``source-extractor`` to dependencies but with no custom config files. (@wtgee #257)
+* Config Server:
+
+  * Option to start a heartbeat or not. (@wtgee #248)
+
+Changed
+^^^^^^^
+
+* Reverting back to ``python=3.7`` for compatibility w/ GCP notebooks. (@wtgee #255)
+* Freezing ``astropy<=4.0.1`` while we wait for ``astroplan`` to get pushed. (@wtgee #255)
+* Changed the horizon module to use numpy interpolation so we don't need to explicitly install scipy. (@wtgee #248)
+* ``altaz_to_radec`` accepts astropy quantities. (@wtgee #250)
+* Downloaded helper script doesn't have ``python3`` hardcoded. (@wtgee #250)
+* Docker Tools (@wtgee #248):
+
+  * Conda environment built from ``resources/environment.yaml``. (@wtgee #252)
+  * Adds a "developer" dockerfile and compose file to install things for developers. (@wtgee #248)
+  * Docker CMD will run ipython. (@wtgee #248)
+  * docker-compose file will start a jupyter-lab instance. (@wtgee #248)
+
+Fixed
+^^^^^
+
+* Fixed the ``oh-my-zsh`` path for Docker install. (@wtgee #256)
+* Return testing output from docker container, passint exit status. (@wtgee #256)
+
+Removed
+^^^^^^^
+
+* The ``stars`` module, which has been moved to ``panoptes-pipeline``. (@wtgee #251)
+* The ``metadata`` module, which has been moved to ``panoptes-pipeline``. (@wtgee #252)
+* Docker Tools (@wtgee #248):
+
+  * Remove ``source-extractor`` from ``panoptes-utils`` and move to ``panoptes-pipeline``. (@wtgee #252)
+  * Remove ``imagemagick`` from ``panoptes-utils``. This is used for adding titles to JPGs. (@wtgee #252)
+  * Don't install a separate conda environment, just use the base to help reduce image size, complexity. (@wtgee #252)
+  * Cleanup unused dependencies. (@wtgee @252)
+
+* Testing:
+
+  * Adios travis! (@wtgee #252)
+
+
+0.2.28 - 2020-09-15
+-------------------
+
+Added
+^^^^^
+
+* Add bit_depth argument to mask_saturated, no longer convert to float64 by default (@AnthonyHorton #244)
+
+Changed
+^^^^^^^
+
+* Single cloudbuild file for both ``panoptes-base`` and ``panoptes-utils``. (#242)
+* Add ``astropy`` channel.
+* Remove the miniforge installer from the docker image and clean up build args. (@wtgee #245)
+* Changed relative to absolute imports. (@wtgee #246)
+
 0.2.27 - 2020-09-12
 -------------------
 
@@ -27,7 +234,7 @@ Changed
   * ``stop`` command added that sets ``config_server.running=False`` to break loop.
 
 
-* Testing  (@wtgee #241): 
+* Testing  (@wtgee #241):
 
   * All testing is started from ``scripts/test-software.sh``.
   * The ``panoptes-config-server`` is started as an external service, not in the pytest conf.
@@ -53,7 +260,7 @@ This release is mostly cleanup and testing of our autobuild features.
 Changed
 ^^^^^^^
 
-* Splitting the `panoptes-base` files into separate folder. (#238)
+* Splitting the ``panoptes-base`` files into separate folder. (#238)
 * Consolidate the GitHub Actions for building and publishing a release package. (#239)
 
 Fixed
@@ -77,7 +284,7 @@ Added
   * If a semantically tagged branch is pushed to GH, a release will automatically be generated and a package will be built and sent to PyPi. (#237)
 
 Changed
--------
+^^^^^^^
 
 * Changelog fixes. (#237)
 * Changed git branch `master` to `main`.
@@ -283,7 +490,7 @@ Changed
   * Allow for different RA/Dec column names.
   * Better catalog match function.
 * ``sextractor`` param changes. (#194)
-* **Breaking** ``panoptes.utils.logger`` -> ``panoptes.utils.logger`` so we can ``from panoptes.utils.logging import logger`` (#197)
+* **Breaking** ``panoptes.utils.logger`` -> ``panoptes.utils.logger`` so we can ``from panoptes.utils import logger`` (#197)
 * **Breaking** The ``panoptes.utils.data.assets`` module was removed and the
     ``Downloader`` class is placed directly within the ``scripts/download-data.py`` file. (#197)
 * The ``panopes-utils`` module is not installed in editable mode in the ``latest`` docker image. (#197)

@@ -1,9 +1,9 @@
 import ctypes
 import ctypes.util
-from panoptes.utils.logging import logger
 
 from astropy.utils import resolve_name
-from . import error
+from loguru import logger
+from panoptes.utils import error
 
 
 def load_c_library(name, path=None, mode=ctypes.DEFAULT_MODE, **kwargs):

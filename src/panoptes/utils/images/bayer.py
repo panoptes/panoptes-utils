@@ -1,18 +1,28 @@
-import numpy as np
-
-from astropy.stats import SigmaClip
-
-from photutils import Background2D
-from photutils import MeanBackground
-from photutils import MMMBackground
-from photutils import MedianBackground
-from photutils import SExtractorBackground
-from photutils import BkgZoomInterpolator
-
 from decimal import Decimal
+from enum import IntEnum
 
-from ..logging import logger
-from . import fits as fits_utils
+import numpy as np
+from astropy.io import fits
+from astropy.stats import SigmaClip
+from loguru import logger
+from panoptes.utils.images import fits as fits_utils
+from photutils import Background2D
+from photutils import BkgZoomInterpolator
+from photutils import MeanBackground
+from photutils import MedianBackground
+from photutils import MMMBackground
+from photutils import SExtractorBackground
+
+
+class RGB(IntEnum):
+    """Helper class for array index access."""
+    RED = 0
+    R = 0
+    GREEN = 1
+    G = 1
+    G1 = 1
+    BLUE = 2
+    B = 2
 
 
 def get_rgb_data(data, separate_green=False):
@@ -192,7 +202,7 @@ def get_pixel_color(x, y):
             return 'G1'
 
 
-def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False):
+def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False, as_slices=True):
     """Get the slice around a given position with fixed Bayer pattern.
 
     Given an x,y pixel position, get the slice object for a stamp of a given size
@@ -257,6 +267,9 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False):
                [54, 55, 56, 57, 58, 59],
                [64, 65, 66, 67, 68, 69],
                [74, 75, 76, 77, 78, 79]])
+        >>> # Return y_min, y_max, x_min, x_max
+        >>> bayer.get_stamp_slice(x, y, stamp_size=(6, 6), as_slices=False)
+        (2, 8, 4, 10)
 
     The original index had a value of `57`, which is within the center superpixel.
 
@@ -283,15 +296,21 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False):
                [65, 66, 67, 68, 69],
                [75, 76, 77, 78, 79]])
 
-    This puts the requested pixel in the center but does not offer any guarantees about the RGGB pattern.
+    This puts the requested pixel in the center but does not offer any
+    guarantees about the RGGB pattern.
 
     Args:
         x (float): X pixel position.
         y (float): Y pixel position.
         stamp_size (tuple, optional): The size of the cutout, default (14, 14).
         ignore_superpixel (bool): If superpixels should be ignored, default False.
+        as_slices (bool): Return slice objects, default True. Otherwise returns:
+            y_min, y_max, x_min, x_max
     Returns:
-        `slice`: A slice object for the data.
+        `list(slice, slice)` or `list(int, int, int, int)`: A list of row and
+            column slice objects or a list defining the bounding box:
+            y_min, y_max, x_min, x_max. Return type depends on the `as_slices`
+            parameter and defaults to a list of two slices.
     """
     # Make sure requested size can have superpixels on each side.
     if not ignore_superpixel:
@@ -339,17 +358,19 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False):
 
     logger.debug(f'x_min={x_min}, x_max={x_max}, y_min={y_min}, y_max={y_max}')
 
-    return (slice(y_min, y_max), slice(x_min, x_max))
+    if as_slices:
+        return slice(y_min, y_max), slice(x_min, x_max)
+    else:
+        return y_min, y_max, x_min, x_max
 
 
-def get_rgb_background(fits_fn,
-                       box_size=(84, 84),
-                       filter_size=(3, 3),
-                       camera_bias=0,
-                       estimator='mean',
+def get_rgb_background(data,
+                       box_size=(79, 84),
+                       filter_size=(11, 12),
+                       estimator='mmm',
                        interpolator='zoom',
                        sigma=5,
-                       iters=5,
+                       iters=10,
                        exclude_percentile=100,
                        return_separate=False,
                        *args,
@@ -357,39 +378,49 @@ def get_rgb_background(fits_fn,
                        ):
     """Get the background for each color channel.
 
+    Note: This funtion does not perform any additional calibration, such as flat, bias,
+    or dark correction. It is expected you have performed any necessary pre-processing
+    to `data` before passing to this function.
+
+    By default this uses a box size of (79, 84), which gives an integer number
+    of boxes. The size of the median filter box for the low resolution background
+    is on the order of the stamp size.
+
     Most of the options are described in the `photutils.Background2D` page:
     https://photutils.readthedocs.io/en/stable/background.html#d-background-and-noise-estimation
 
+    >>> from panoptes.utils.images.bayer import RGB
     >>> from panoptes.utils.images import fits as fits_utils
+    >>> # Get our data and pre-process (basic bias subtract here).
     >>> fits_fn = getfixture('solved_fits_file')
+    >>> camera_bias = 2048
+    >>> data = fits_utils.getdata(fits_fn) - camera_bias
 
-    >>> data = fits_utils.getdata(fits_fn)
-    >>> data.mean()
-    2236.816...
-
-    >>> rgb_back = get_rgb_background(fits_fn)
+    >> The default is to return a single array for the background.
+    >>> rgb_back = get_rgb_background(data)
     >>> rgb_back.mean()
-    2202.392...
+    136...
+    >>> rgb_back.std()
+    36...
 
-    >>> rgb_backs = get_rgb_background(fits_fn, return_separate=True)
-    >>> rgb_backs[0]
+    >>> # Can also return the Background2D objects, which is the input to save_rgb_bg_fits
+    >>> rgb_backs = get_rgb_background(data, return_separate=True)
+    >>> rgb_backs[RGB.RED]
     <photutils.background.background_2d.Background2D...>
-    >>> {color:data.background_rms_median for color, data in zip('rgb', rgb_backs)}
-    {'r': 20.566..., 'g': 32.787..., 'b': 23.820...}
 
+    >>> {color.name:int(rgb_back[color].mean()) for color in RGB}
+    {'RED': 145, 'GREEN': 127, 'BLUE': 145}
 
     Args:
-        fits_fn (str): The filename of the FITS image.
+        data (np.array): The data to use if no `fits_fn` is provided.
         box_size (tuple, optional): The box size over which to compute the
-            2D-Background, default (84, 84).
+            2D-Background, default (79, 84).
         filter_size (tuple, optional): The filter size for determining the median,
-            default (3, 3).
-        camera_bias (int, optional): The built-in camera bias, default 0. A zero camera
-            bias means the bias will be considered as part of the background.
-        estimator (str, optional): The estimator object to use, default 'median'.
+            default (11, 12).
+        estimator (str, optional): The estimator object to use, default 'mmm'.
         interpolator (str, optional): The interpolater object to user, default 'zoom'.
         sigma (int, optional): The sigma on which to filter values, default 5.
-        iters (int, optional): The number of iterations to sigma filter, default 5.
+        iters (int, optional): The number of iterations to sigma filter, default 10.
         exclude_percentile (int, optional): The percentage of the data (per channel)
             that can be masked, default 100 (i.e. all).
         return_separate (bool, optional): If the function should return a separate array
@@ -398,14 +429,13 @@ def get_rgb_background(fits_fn,
         **kwargs: Description
 
     Returns:
-        `numpy.array`|list: Either a single numpy array representing the entire
+        `numpy.array`|list(Background2D): Either a single numpy array representing the entire
           background, or a list of masked numpy arrays in RGB order. The background
           for each channel has full interploation across all pixels, but the mask covers
           them.
     """
-    logger.info(f"Getting background for {fits_fn}")
-    logger.debug(
-        f"{estimator} {interpolator} {box_size} {filter_size} {camera_bias} σ={sigma} n={iters}")
+    logger.debug("RGB background subtraction")
+    logger.debug(f"{estimator} {interpolator} {box_size} {filter_size} {sigma} {iters}")
 
     estimators = {
         'sexb': SExtractorBackground,
@@ -420,14 +450,13 @@ def get_rgb_background(fits_fn,
     bkg_estimator = estimators[estimator]()
     interp = interpolators[interpolator]()
 
-    data = fits_utils.getdata(fits_fn) - camera_bias
-
     # Get the data per color channel.
+    logger.debug(f'Getting RGB background data ({data.shape})')
     rgb_data = get_rgb_data(data)
 
     backgrounds = list()
-    for color, color_data in zip(['R', 'G', 'B'], rgb_data):
-        logger.debug(f'Performing background {color} for {fits_fn}')
+    for color, color_data in zip(RGB, rgb_data):
+        logger.debug(f'Calculating background for {color.name.lower()} pixels')
 
         bkg = Background2D(color_data,
                            box_size,
@@ -438,13 +467,14 @@ def get_rgb_background(fits_fn,
                            mask=color_data.mask,
                            interpolator=interp)
 
-        # Create a masked array for the background
+        logger.debug(f"{color.name.lower()}: {bkg.background_median:.02f} "
+                     f"RMS: {bkg.background_rms_median:.02f}")
+
         if return_separate:
             backgrounds.append(bkg)
         else:
+            # Create a masked array for the background
             backgrounds.append(np.ma.array(data=bkg.background, mask=color_data.mask))
-        logger.debug(
-            f"{color} Value: {bkg.background_median:.02f} RMS: {bkg.background_rms_median:.02f}")
 
     if return_separate:
         return backgrounds
@@ -453,3 +483,53 @@ def get_rgb_background(fits_fn,
     full_background = np.ma.array(backgrounds).sum(0).filled(0)
 
     return full_background
+
+
+def save_rgb_bg_fits(rgb_bg_data, output_filename, header=None, fpack=True, overwrite=True):
+    """Save a FITS file containing a combined background as well as separate channels.
+
+    Args:
+        rgb_bg_data (list[photutils.Background2D]): The RGB background data as
+            returned by calling `panoptes.utils.images.bayer.get_rgb_background`
+            with `return_separate=True`.
+        output_filename (str): The output name for the FITS file.
+        header (astropy.io.fits.Header): FITS header to be saved with the file.
+        fpack (bool): If the FITS file should be compressed, default True.
+        overwrite (bool): If FITS file should be overwritten, default True.
+    """
+
+    # Get combined data for Primary HDU
+    combined_bg = np.array([np.ma.array(data=d.background, mask=d.mask).filled(0)
+                            for d in rgb_bg_data]).sum(0)
+
+    header = header or fits.Header()
+
+    # Save as ing16.
+    header['BITPIX'] = 16
+
+    # Combined background is primary hdu.
+    primary = fits.PrimaryHDU(combined_bg, header=header)
+    primary.scale('int16')
+    hdu_list = [primary]
+
+    for color, bg in zip(RGB, rgb_bg_data):
+        h0 = fits.Header()
+        h0['COLOR'] = f'{color.name.lower()}'
+
+        h0['IMGTYPE'] = 'background'
+        img0 = fits.ImageHDU(bg.background, header=h0)
+        img0.scale('int16')
+        hdu_list.append(img0)
+
+        h0['IMGTYPE'] = 'background_rms'
+        img1 = fits.ImageHDU(bg.background_rms, header=h0)
+        img1.scale('int16')
+        hdu_list.append(img1)
+
+    hdul = fits.HDUList(hdu_list)
+    hdul.writeto(output_filename, overwrite=overwrite)
+
+    if fpack:
+        output_filename = fits_utils.fpack(output_filename)
+
+    return output_filename

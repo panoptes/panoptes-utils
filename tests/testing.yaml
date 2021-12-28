@@ -25,7 +25,7 @@ location:
   timezone: US/Hawaii
   gmt_offset: -600 # Offset in minutes from GMT during.
 directories:
-  base: /var/panoptes
+  base: .
   images: images
   data: data
   resources: POCS/resources/
@@ -66,7 +66,7 @@ cameras:
 #
 # An example folder structure would be:
 #
-#   $PANDIR/images/fields/Hd189733/14d3bd/20180901T120001/
+#   /images/fields/Hd189733/14d3bd/20180901T120001/
 #
 # In this folder will be stored JPG and FITS images. A timelapse of the
 # observation can be made (one per camera) and the JPGs optionally removed

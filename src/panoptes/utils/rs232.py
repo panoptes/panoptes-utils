@@ -1,18 +1,16 @@
-"""Provides SerialData, a PySerial wrapper."""
-
 import operator
-import serial
-from serial.tools.list_ports import comports as get_comports
 import time
 from contextlib import suppress
 
-from . import error
-from .logging import logger
-from .serializers import from_json
+import serial
+from deprecated import deprecated
+from loguru import logger
+from panoptes.utils import error
+from panoptes.utils import serializers
+from serial.tools.list_ports import comports as get_comports
 
 
-# Note: get_serial_port_info is replaced by tests to override the normal
-# behavior, so don't change the name without fixing the tests.
+@deprecated(reason='Use panoptes.utils.serial.device')
 def get_serial_port_info():
     """Returns the serial ports defined on the system.
 
@@ -22,6 +20,46 @@ def get_serial_port_info():
     return sorted(get_comports(), key=operator.attrgetter('device'))
 
 
+@deprecated(reason='Use panoptes.utils.serial.device')
+def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cover
+    """Finds the serial port that matches the given vendor and product id.
+
+    .. doctest::
+
+        >>> from panoptes.utils.rs232 import find_serial_port
+        >>> vendor_id = 0x2a03  # arduino
+        >>> product_id = 0x0043 # Uno Rev 3
+        >>> find_serial_port(vendor_id, product_id)  # doctest: +SKIP
+        '/dev/ttyACM0'
+
+        >>> # Raises error when not found.
+        >>> find_serial_port(0x1234, 0x4321)
+        Traceback (most recent call last):
+          ...
+        panoptes.utils.error.NotFound: NotFound: No serial ports for vendor_id=4660 and product_id=17185
+
+    Args:
+        vendor_id (int): The vendor id, can be hex or int.
+        product_id (int): The product id, can be hex or int.
+        return_all (bool): If more than one serial port matches, return all devices, default False.
+
+    Returns:
+        str or list: Either the path to the detected port or a list of all comports that match.
+    """
+    # Get all serial ports.
+    matched_ports = [p for p in get_serial_port_info() if
+                     p.vid == vendor_id and p.pid == product_id]
+
+    if len(matched_ports) == 1:
+        return matched_ports[0].device
+    elif return_all:
+        return matched_ports
+    else:
+        raise error.NotFound(
+            f'No serial ports for vendor_id={vendor_id:x} and product_id={product_id:x}')
+
+
+@deprecated(reason='Use panoptes.utils.serial.device')
 class SerialData(object):
     """SerialData wraps a PySerial instance for reading from and writing to a serial device.
 
@@ -33,13 +71,10 @@ class SerialData(object):
 
     .. doctest::
 
-        >>> import serial
+        # Register our serial simulators by importing protocol.
+        >>> from panoptes.utils.serial.handlers import protocol_buffers
 
-        # Register our serial simulators
-        >>> serial.protocol_handler_packages.append('panoptes.utils.serial_handlers')
-        >>> from panoptes.utils.serial_handlers import protocol_buffers as pb
-
-        # Import our serial utils
+        # Import our serial utils.
         >>> from panoptes.utils.rs232 import SerialData
 
         # Connect to our fake buffered device
@@ -47,7 +82,7 @@ class SerialData(object):
 
         # Note: A manual reset is currently required because implementation is not complete.
         # See https://github.com/panoptes/POCS/issues/758 for details.
-        >>> pb.ResetBuffers()
+        >>> protocol_buffers.reset_serial_buffers()
         >>> device_listener.is_connected
         True
 
@@ -55,7 +90,7 @@ class SerialData(object):
         'buffers://'
 
         # Device sends event
-        >>> pb.SetRBufferValue(b'emit event')
+        >>> protocol_buffers.set_serial_read_buffer(b'emit event')
 
         # Listen for event
         >>> device_listener.read()
@@ -63,11 +98,12 @@ class SerialData(object):
 
         >>> device_listener.write('ack event')
         9
-        >>> pb.GetWBufferValue()
+        >>> protocol_buffers.get_serial_write_buffer()
         b'ack event'
 
         # Remove custom handlers
-        >>> serial.protocol_handler_packages.remove('panoptes.utils.serial_handlers')
+        >>> import serial
+        >>> serial.protocol_handler_packages.remove('panoptes.utils.serial.handlers')
     """
 
     def __init__(self,
@@ -264,7 +300,7 @@ class SerialData(object):
                 continue
 
             with suppress(error.InvalidDeserialization):
-                data = from_json(line)
+                data = serializers.from_json(line)
                 if data:
                     return (ts, data)
         return None

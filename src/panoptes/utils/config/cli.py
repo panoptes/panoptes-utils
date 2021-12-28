@@ -1,10 +1,11 @@
 import time
 
 import click
-
-from .client import get_config, set_config, server_is_running
-from .server import config_server
-from ..logging import logger
+from loguru import logger
+from panoptes.utils.config import server
+from panoptes.utils.config.client import get_config
+from panoptes.utils.config.client import server_is_running
+from panoptes.utils.config.client import set_config
 
 
 @click.group()
@@ -43,8 +44,11 @@ def config_server_cli(context, host='localhost', port=6563, verbose=False):
 @click.option('--save-local/--no-save-local',
               default=True,
               help='If the set values should be saved to the local file, default True.')
+@click.option('--heartbeat',
+              default=2,
+              help='Heartbeat interval, default 2 seconds.')
 @click.pass_context
-def run(context, config_file=None, save_local=True, load_local=False):
+def run(context, config_file=None, save_local=True, load_local=False, heartbeat=True):
     """Runs the config server with command line options.
 
     This function is installed as an entry_point for the module, accessible
@@ -52,7 +56,7 @@ def run(context, config_file=None, save_local=True, load_local=False):
     """
     host = context.obj.get('host')
     port = context.obj.get('port')
-    server_process = config_server(
+    server_process = server.config_server(
         config_file,
         host=host,
         port=port,
@@ -64,12 +68,12 @@ def run(context, config_file=None, save_local=True, load_local=False):
     try:
         print(f'Starting config server. Ctrl-c to stop')
         server_process.start()
-        print(f'Config server started on {server_process.pid=}. '
+        print(f'Config server started on  server_process.pid={server_process.pid!r}. '
               f'Set "config_server.running=False" or Ctrl-c to stop')
 
         # Loop until config told to stop.
         while server_is_running():
-            time.sleep(1)
+            time.sleep(heartbeat)
 
         server_process.terminate()
         server_process.join(30)
@@ -86,7 +90,7 @@ def stop(context):
     """Stops the config server by setting a flag in the server itself."""
     host = context.obj.get('host')
     port = context.obj.get('port')
-    logger.info('Shutting down config server on {host}:{port}')
+    logger.info(f'Shutting down config server on {host}:{port}')
     set_config('config_server.running', False, host=host, port=port)
 
 
@@ -109,14 +113,14 @@ def config_getter(context, key, parse=True, default=None):
         key = key[0]
     except IndexError:
         key = None
-    logger.debug(f'Getting config {key=}')
+    logger.debug(f'Getting config  key={key!r}')
     try:
         config_entry = get_config(key=key, host=host, port=port, parse=parse, default=default)
     except Exception as e:
         logger.error(f'Error while trying to get config: {e!r}')
         click.secho(f'Error while trying to get config: {e!r}', fg='red')
     else:
-        logger.debug(f'Config server response: {config_entry=}')
+        logger.debug(f'Config server response:  config_entry={config_entry!r}')
         click.echo(config_entry)
 
 
@@ -132,7 +136,7 @@ def config_setter(context, key, new_value, parse=True):
     host = context.obj.get('host')
     port = context.obj.get('port')
 
-    logger.debug(f'Setting config {key=} {new_value=} on {host}:{port}')
+    logger.debug(f'Setting config key={key!r}  new_value={new_value!r} on {host}:{port}')
     config_entry = set_config(key, new_value, host=host, port=port, parse=parse)
     click.echo(config_entry)
 

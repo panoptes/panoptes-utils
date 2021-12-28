@@ -1,11 +1,9 @@
 import os
-import numpy as np
-import pytest
-import shutil
 import tempfile
 
+import numpy as np
+import pytest
 from astropy.nddata import Cutout2D
-
 from panoptes.utils import images as img_utils
 from panoptes.utils import error
 
@@ -49,9 +47,8 @@ def test_make_pretty_image(solved_fits_file, tiny_fits_file, save_environ):
         imgdir = os.path.join(tmpdir, 'images')
         assert not os.path.isdir(imgdir)
         os.makedirs(imgdir, exist_ok=True)
-        os.environ['PANDIR'] = tmpdir
 
-        link_path = os.path.expandvars('$PANDIR/latest.jpg')
+        link_path = os.path.join(tmpdir, 'latest.jpg')
         pretty = img_utils.make_pretty_image(solved_fits_file, link_path=link_path)
         assert pretty
         assert os.path.isfile(pretty)
@@ -82,8 +79,8 @@ def test_make_pretty_image_cr2_fail():
             img_utils.make_pretty_image(tmpfile)
 
 
-def test_make_pretty_image_cr2(cr2_file):
-    link_path = os.path.expandvars('$PANDIR/images/latest.jpg')
+def test_make_pretty_image_cr2(cr2_file, tmpdir):
+    link_path = str(tmpdir.mkdir('images').join('latest.jpg'))
     pretty_path = img_utils.make_pretty_image(cr2_file,
                                               title='CR2 Test',
                                               image_type='cr2',

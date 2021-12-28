@@ -1,28 +1,28 @@
 import os
 
 import requests
-from dotenv import load_dotenv
-
-from ..error import InvalidConfig
-from ..logging import logger
-from ..serializers import from_json
-from ..serializers import to_json
-
-load_dotenv()
+from loguru import logger
+from panoptes.utils.error import InvalidConfig
+from panoptes.utils.serializers import from_json
+from panoptes.utils.serializers import to_json
 
 
-def server_is_running():
+def server_is_running():  # pragma: no cover
     """Thin-wrapper to check server."""
-    return get_config(endpoint='heartbeat', verbose=False)
+    try:
+        return get_config(endpoint='heartbeat', verbose=False)
+    except Exception as e:
+        logger.warning(f'server_is_running error (ignore if just starting server): {e!r}')
+        return False
 
 
 def get_config(key=None,
+               default=None,
                host=None,
                port=None,
                endpoint='get-config',
                parse=True,
-               default=None,
-               verbose=True
+               verbose=False
                ):
     """Get a config item from the config server.
 
@@ -56,10 +56,15 @@ def get_config(key=None,
         >>> get_config(key='foobar', default='baz')
         'baz'
 
-        >>> # Can use Quantities as well
+        >>> # key and default are first two parameters.
+        >>> get_config('foobar', 'baz')
+        'baz'
+
+        >>> # Can use Quantities as well.
         >>> from astropy import units as u
-        >>> get_config(key='foobar', default=42 * u.meter)
+        >>> get_config('foobar', 42 * u.meter)
         <Quantity 42. m>
+
 
     Notes:
         By default all calls to this function will log at the `trace` level because
@@ -70,6 +75,7 @@ def get_config(key=None,
 
     Args:
         key (str): The key to update, see Examples in :func:`get_config` for details.
+        default (str, optional): The config server port, defaults to 6563.
         host (str, optional): The config server host. First checks for PANOPTES_CONFIG_HOST
             env var, defaults to 'localhost'.
         port (str or int, optional): The config server port. First checks for PANOPTES_CONFIG_HOST
@@ -79,7 +85,6 @@ def get_config(key=None,
             for example of usage.
         parse (bool, optional): If response should be parsed by
             :func:`panoptes.utils.serializers.from_json`, default True.
-        default (str, optional): The config server port, defaults to 6563.
         verbose (bool, optional): Determines the output log level, defaults to
             True (i.e. `debug` log level). See notes for details.
     Returns:
@@ -98,28 +103,28 @@ def get_config(key=None,
     config_entry = default
 
     try:
-        logger.log(log_level, f'Calling get_config on {url=} with {key=}')
+        logger.log(log_level, f'Calling get_config on url={url!r} with  key={key!r}')
         response = requests.post(url, json={'key': key, 'verbose': verbose})
         if not response.ok:  # pragma: no cover
-            raise InvalidConfig(f'Config server returned invalid JSON: {response.content=}')
+            raise InvalidConfig(f'Config server returned invalid JSON: {response.content!r}')
     except Exception as e:
         logger.warning(f'Problem with get_config: {e!r}')
     else:
         response_text = response.text.strip()
-        logger.log(log_level, f'Decoded {response_text=}')
+        logger.log(log_level, f'Decoded  response_text={response_text!r}')
         if response_text != 'null':
-            logger.log(log_level, f'Received config {key=} {response_text=}')
+            logger.log(log_level, f'Received config key={key!r}  response_text={response_text!r}')
             if parse:
-                logger.log(log_level, f'Parsing config results: {response_text=}')
+                logger.log(log_level, f'Parsing config results:  response_text={response_text!r}')
                 config_entry = from_json(response_text)
             else:
                 config_entry = response_text
 
     if config_entry is None:
-        logger.log(log_level, f'No config entry found, returning {default=}')
+        logger.log(log_level, f'No config entry found, returning  default={default!r}')
         config_entry = default
 
-    logger.log(log_level, f'Config {key=}: {config_entry=}')
+    logger.log(log_level, f'Config key={key!r}:  config_entry={config_entry!r}')
     return config_entry
 
 
@@ -172,7 +177,7 @@ def set_config(key, new_value, host=None, port=None, parse=True):
     config_entry = None
     try:
         # We use our own serializer so pass as `data` instead of `json`.
-        logger.info(f'Calling set_config on {url=}')
+        logger.debug(f'Calling set_config on  url={url!r}')
         response = requests.post(url,
                                  data=json_str,
                                  headers={'Content-Type': 'application/json'}
