@@ -2,6 +2,15 @@
 Changelog
 =========
 
+0.2.35
+------
+
+Fixed
+^^^^^
+
+* Fixes to support 420 namespaces and pyscaffold.
+
+
 0.2.34
 ------
 
