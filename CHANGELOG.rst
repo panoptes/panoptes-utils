@@ -2,8 +2,18 @@
 Changelog
 =========
 
-0.2.33dev
----------
+0.2.34
+------
+
+Breaking
+^^^^^^^^
+
+* This release removes the Docker components from the repository, pushing some of the dependencies to ``POCS``. This is an attempt to make this module slimmer and more useful. 
+* The ``astrometry.net`` plate solving tests have been removed since we no longer build and test against a Docker image. The plate solving will continue to transition to the self-contained ``plate-solver`` repository.
+
+
+0.2.33
+------
 
 Added
 ^^^^^
@@ -18,7 +28,7 @@ Changed
 
 * The serial protocol handlers were moved to the ``panoptes.utils.serial.handlers`` namespace. #274
 * Testing Dockerfile has ``privileged`` permission to get device ``loop``. #275
-* Dockerfile: update ``conda`` in Dockerfile before installing environment; install `panoptes-utils` module in user-editable mode. #277
+* Dockerfile: update ``conda`` in Dockerfile before installing environment; install ``panoptes-utils`` module in user-editable mode. #277
 * Dockerfile: use ``condaforge/miniforge3`` as the base, which reduces image size. Push multi-stage builds for better caching. #278, #279
 * Consistent multi-stage names in Dockerfile; added ``jupyter_console``. #280
 * Change behavior of ``parse_config_directories`` so the ``base`` entry must always exist or be missing (in which case the cwd is used). Remove the ``must_exist`` param. #283
