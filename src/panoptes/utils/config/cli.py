@@ -2,6 +2,7 @@ import time
 
 import click
 from loguru import logger
+
 from panoptes.utils.config import server
 from panoptes.utils.config.client import get_config
 from panoptes.utils.config.client import server_is_running
@@ -48,7 +49,7 @@ def config_server_cli(context, host='localhost', port=6563, verbose=False):
               default=2,
               help='Heartbeat interval, default 2 seconds.')
 @click.pass_context
-def run(context, config_file=None, save_local=True, load_local=False, heartbeat=True):
+def run(context, config_file=None, save_local=True, load_local=False, heartbeat=2):
     """Runs the config server with command line options.
 
     This function is installed as an entry_point for the module, accessible
@@ -72,7 +73,7 @@ def run(context, config_file=None, save_local=True, load_local=False, heartbeat=
               f'Set "config_server.running=False" or Ctrl-c to stop')
 
         # Loop until config told to stop.
-        while server_is_running():
+        while server_is_running(host=host, port=port):
             time.sleep(heartbeat)
 
         server_process.terminate()
