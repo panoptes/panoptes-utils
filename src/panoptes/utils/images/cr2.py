@@ -52,10 +52,10 @@ def cr2_to_fits(
 
     # Convert path to just a str.
     if isinstance(cr2_fname, Path):
-        cr2_fname = str(Path)
+        cr2_fname = str(cr2_fname)
 
     if isinstance(fits_fname, Path):
-        fits_fname = str(Path)
+        fits_fname = str(fits_fname)
 
     if fits_fname is None:
         fits_fname = cr2_fname.replace('.cr2', '.fits')
