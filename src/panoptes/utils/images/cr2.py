@@ -2,25 +2,28 @@ import os
 import shutil
 import subprocess
 from json import loads
+from pathlib import Path
+from typing import Union
 from warnings import warn
 
 import numpy as np
 from astropy.io import fits
 from dateutil.parser import parse as date_parse
 from loguru import logger
+
 from panoptes.utils import error
 from panoptes.utils.images import fits as fits_utils
 
 
 def cr2_to_fits(
-        cr2_fname,
-        fits_fname=None,
-        overwrite=False,
-        headers={},
-        fits_headers={},
-        remove_cr2=False,
-        **kwargs):  # pragma: no cover
-    """Convert a CR2 file to FITS
+        cr2_fname: Union[str, Path],
+        fits_fname: str = None,
+        overwrite: bool = False,
+        headers: dict = None,
+        fits_headers: dict = None,
+        remove_cr2: bool = False,
+        **kwargs) -> Union[Path, None]:  # pragma: no cover
+    """Convert a CR2 file to FITS.
 
     This is a convenience function that first converts the CR2 to PGM via ~cr2_to_pgm.
     Also adds keyword headers to the FITS file.
@@ -42,14 +45,30 @@ def cr2_to_fits(
         str: The full path to the generated FITS file.
 
     """
+    if fits_headers is None:
+        fits_headers = {}
+    if headers is None:
+        headers = {}
+
+    # Convert path to just a str.
+    if isinstance(cr2_fname, Path):
+        cr2_fname = str(cr2_fname)
+
+    if isinstance(fits_fname, Path):
+        fits_fname = str(fits_fname)
+
     if fits_fname is None:
         fits_fname = cr2_fname.replace('.cr2', '.fits')
 
     if not os.path.exists(fits_fname) or overwrite:
-        logger.debug("Converting CR2 to PGM: {}".format(cr2_fname))
+        logger.debug(f'Converting CR2 to PGM: {cr2_fname}')
 
         # Convert the CR2 to a PGM file then delete PGM
-        pgm = read_pgm(cr2_to_pgm(cr2_fname), remove_after=True)
+        try:
+            pgm = read_pgm(cr2_to_pgm(cr2_fname), remove_after=True)
+        except error.InvalidSystemCommand:
+            logger.warning(f'No dcraw on the system, cannot proceed.')
+            return None
 
         # Add the EXIF information from the CR2 file
         exif = read_exif(cr2_fname)
@@ -86,18 +105,18 @@ def cr2_to_fits(
                 pass
 
         try:
-            logger.debug("Saving fits file to: {}".format(fits_fname))
+            logger.debug(f'Saving fits file to: {fits_fname}')
 
             hdu.writeto(fits_fname, output_verify='silentfix', overwrite=overwrite)
         except Exception as e:
-            warn("Problem writing FITS file: {}".format(e))
+            warn(f'Problem writing FITS file: {e}')
         else:
             if remove_cr2:
                 os.unlink(cr2_fname)
 
         fits_utils.update_observation_headers(fits_fname, headers)
 
-    return fits_fname
+    return Path(fits_fname)
 
 
 def cr2_to_pgm(
@@ -136,20 +155,20 @@ def cr2_to_pgm(
         pgm_fname = cr2_fname.replace('.cr2', '.pgm')
 
     if os.path.exists(pgm_fname) and not overwrite:
-        logger.warning(f"PGM file exists, returning existing file: {pgm_fname}")
+        logger.warning(f'PGM file exists, returning existing file: {pgm_fname}')
     else:
         try:
             # Build the command for this file
-            command = '{} -t 0 -D -4 {}'.format(dcraw, cr2_fname)
+            command = f'{dcraw} -t 0 -D -4 {cr2_fname}'
             cmd_list = command.split()
-            logger.debug("PGM Conversion command: \n {}".format(cmd_list))
+            logger.debug(f'PGM Conversion command: \n {cmd_list}')
 
             # Run the command
             if subprocess.check_call(cmd_list) == 0:
-                logger.debug("PGM Conversion command successful")
+                logger.debug('PGM Conversion command successful')
 
         except subprocess.CalledProcessError as err:
-            raise error.InvalidSystemCommand(msg="File: {} \n err: {}".format(cr2_fname, err))
+            raise error.InvalidSystemCommand(msg=f"File: {cr2_fname} \n err: {err}")
 
     return pgm_fname
 
@@ -169,22 +188,21 @@ def read_exif(fname, exiftool='exiftool'):  # pragma: no cover
         exiftool {str} -- Location of exiftool (default: {'/usr/bin/exiftool'})
 
     Returns:
-        dict -- Dictonary of EXIF information
+        dict -- Dictionary of EXIF information
 
     """
-    assert os.path.exists(fname), warn("File does not exist: {}".format(fname))
+    assert os.path.exists(fname), warn(f"File does not exist: {fname}")
     exif = {}
 
     try:
         # Build the command for this file
-        command = '{} -j {}'.format(exiftool, fname)
+        command = f'{exiftool} -j {fname}'
         cmd_list = command.split()
 
         # Run the command
         exif = loads(subprocess.check_output(cmd_list).decode('utf-8'))
     except subprocess.CalledProcessError as err:
-        raise error.InvalidSystemCommand(
-            msg="File: {} \n err: {}".format(fname, err))
+        raise error.InvalidSystemCommand(msg=f"File: {fname} \n err: {err}")
 
     return exif[0]
 
@@ -219,9 +237,9 @@ def read_pgm(fname, byteorder='>', remove_after=False):  # pragma: no cover
     header_offset = 19
 
     img_type, img_size, img_max_value, _ = buffer[
-        0:header_offset].decode().split('\n')
+                                           0:header_offset].decode().split('\n')
 
-    assert img_type == 'P5', warn("No a PGM file")
+    assert img_type == 'P5', warn("Not a PGM file")
 
     # Get the width and height (as strings)
     width, height = img_size.split(' ')

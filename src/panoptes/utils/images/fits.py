@@ -5,7 +5,7 @@ import subprocess
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Pattern, Union
+from typing import Pattern, Union, Dict
 from warnings import warn
 
 from astropy import units as u
@@ -228,7 +228,10 @@ def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
     return proc
 
 
-def get_solve_field(fname, replace=True, overwrite=True, timeout=30, **kwargs):
+def get_solve_field(fname: Union[str, Path],
+                    replace: bool = True,
+                    overwrite: bool = True,
+                    timeout: float = 30, **kwargs) -> Dict:
     """Convenience function to wait for `solve_field` to finish.
 
     This function merely passes the `fname` of the image to be solved along to `solve_field`,
@@ -273,6 +276,9 @@ def get_solve_field(fname, replace=True, overwrite=True, timeout=30, **kwargs):
         dict: Keyword information from the solved field.
     """
     skip_solved = kwargs.get('skip_solved', True)
+
+    if isinstance(fname, Path):
+        fname = str(fname)
 
     out_dict = {}
 
