@@ -22,7 +22,7 @@ def cr2_to_fits(
         headers: dict = None,
         fits_headers: dict = None,
         remove_cr2: bool = False,
-        **kwargs) -> str:  # pragma: no cover
+        **kwargs) -> Union[Path, None]:  # pragma: no cover
     """Convert a CR2 file to FITS.
 
     This is a convenience function that first converts the CR2 to PGM via ~cr2_to_pgm.
@@ -51,6 +51,9 @@ def cr2_to_fits(
         headers = {}
 
     # Convert path to just a str.
+    if isinstance(cr2_fname, Path):
+        cr2_fname = str(Path)
+
     if isinstance(fits_fname, Path):
         fits_fname = str(Path)
 
@@ -61,7 +64,11 @@ def cr2_to_fits(
         logger.debug(f'Converting CR2 to PGM: {cr2_fname}')
 
         # Convert the CR2 to a PGM file then delete PGM
-        pgm = read_pgm(cr2_to_pgm(cr2_fname), remove_after=True)
+        try:
+            pgm = read_pgm(cr2_to_pgm(cr2_fname), remove_after=True)
+        except error.InvalidSystemCommand:
+            logger.warning(f'No dcraw on the system, cannot proceed.')
+            return None
 
         # Add the EXIF information from the CR2 file
         exif = read_exif(cr2_fname)
@@ -109,7 +116,7 @@ def cr2_to_fits(
 
         fits_utils.update_observation_headers(fits_fname, headers)
 
-    return fits_fname
+    return Path(fits_fname)
 
 
 def cr2_to_pgm(
