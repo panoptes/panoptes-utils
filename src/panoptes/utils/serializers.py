@@ -310,7 +310,7 @@ def deserialize_all_objects(obj):
                     return u.Quantity(obj)
 
     # Try to parse a ISO-8061 datetime string.
-    with suppress(ValueError):
+    with suppress(TypeError, ValueError):
         return date_parse(obj)
 
     return obj
