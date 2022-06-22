@@ -2,6 +2,7 @@ import os
 
 import requests
 from loguru import logger
+from requests.exceptions import ConnectionError
 
 from panoptes.utils.error import InvalidConfig
 from panoptes.utils.serializers import from_json
@@ -108,6 +109,8 @@ def get_config(key=None,
         response = requests.post(url, json={'key': key, 'verbose': verbose})
         if not response.ok:  # pragma: no cover
             raise InvalidConfig(f'Config server returned invalid JSON: {response.content!r}')
+    except ConnectionError:
+        logger.debug('Bad connection to config-server. Check to make sure it is running.')
     except Exception as e:
         logger.warning(f'Problem with get_config: {e!r}')
     else:
