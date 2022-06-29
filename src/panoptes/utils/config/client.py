@@ -111,7 +111,7 @@ def get_config(key=None,
             raise InvalidConfig(f'Config server returned invalid JSON: {response.content!r}')
     except ConnectionError:
         logger.debug('Bad connection to config-server. Check to make sure it is running.')
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
         logger.warning(f'Problem with get_config: {e!r}')
     else:
         response_text = response.text.strip()

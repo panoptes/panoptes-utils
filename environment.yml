@@ -1,0 +1,25 @@
+name: panoptes-utils
+channels:
+  - conda-forge
+dependencies:
+  - astroplan
+  - astropy
+  - flask
+  - libffi
+  - loguru
+  - matplotlib-base
+  - numpy>=1.19
+  - photutils
+  - pillow>=9.1.1
+  - pip
+  - pyserial
+  - pytest
+  - python>=3.7
+  - readline
+  - scipy
+  - tox
+  - typer
+  - tweepy
+  - pip:
+      - -e .
+      - scalpl

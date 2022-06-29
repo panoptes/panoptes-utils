@@ -2,6 +2,15 @@
 Changelog
 =========
 
+0.2.36dev
+---------
+
+Changed
+^^^^^^^
+
+* Updating ``pyscaffold`` to ``4.2.3``, which allows for ``pyproject.toml`` and ``tox`` usage.
+
+
 0.2.35
 ------
 
