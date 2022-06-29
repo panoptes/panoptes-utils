@@ -19,6 +19,7 @@ dependencies:
   - scipy
   - tox
   - typer
+  - tweepy
   - pip:
       - -e .
       - scalpl
