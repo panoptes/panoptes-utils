@@ -1,6 +1,7 @@
 import pytest
 import requests
 from astropy import units as u
+
 from panoptes.utils import serializers
 from panoptes.utils.config.client import get_config
 from panoptes.utils.config.client import set_config
@@ -41,7 +42,7 @@ def test_config_client_bad(caplog):
     assert get_config('foo', host='foobaz') is None
     found_log = False
     for rec in caplog.records[-5:]:
-        if rec.levelname == 'WARNING' and rec.message.startswith('Problem with get_config'):
+        if rec.levelname == 'DEBUG' and rec.message.startswith('Bad connection to config-server'):
             found_log = True
 
     assert found_log
