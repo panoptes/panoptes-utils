@@ -1,8 +1,6 @@
 import collections.abc
-import contextlib
 import os
 import shutil
-import signal
 
 from astropy import units as u
 from astropy.coordinates import AltAz
@@ -132,55 +130,6 @@ def altaz_to_radec(alt=None, az=None, location=None, obstime=None, **kwargs):
 
     altaz = AltAz(obstime=obstime, location=location, alt=alt, az=az)
     return SkyCoord(altaz.transform_to(ICRS))
-
-
-class DelaySigTerm(contextlib.ContextDecorator):
-    """Supports delaying SIGTERM during a critical section.
-
-    This allows one to avoid having SIGTERM interrupt a
-    critical block of code, such as saving to a database.
-
-    Example:
-
-        ..
-        with DelaySigTerm():
-            db.WriteCurrentRecord(record)
-
-    """
-
-    # TODO(jamessynge): Consider generalizing as DelaySignal(signum).
-
-    def __enter__(self, callback=None):
-        """
-        Args:
-            callback: If not None, called when SIGTERM is handled,
-                with kwargs previously_caught and frame.
-        """
-        self.caught = False
-        self.old_handler = signal.getsignal(signal.SIGTERM)
-        if callback:
-            assert callable(callback)
-            self.callback = callback
-        else:
-            self.callback = None
-
-        def handler(signum, frame):
-            previously_caught = self.caught
-            self.caught = True
-            if self.callback:
-                self.callback(previously_caught=previously_caught, frame=frame)
-
-        signal.signal(signal.SIGTERM, handler)
-        return self
-
-    def __exit__(self, *exc):
-        signal.signal(signal.SIGTERM, self.old_handler)
-        if self.caught:
-            # Send SIGTERM to this process.
-            os.kill(os.getpid(), signal.SIGTERM)
-            # Suppress any exception caught while the context was running.
-            return True
-        return False
 
 
 def get_quantity_value(quantity, unit=None):
