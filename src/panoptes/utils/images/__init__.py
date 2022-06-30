@@ -16,6 +16,7 @@ from dateutil.parser import parse as date_parse
 from loguru import logger
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
+
 from panoptes.utils import error
 from panoptes.utils.images import fits as fits_utils
 from panoptes.utils.images.plot import add_colorbar
@@ -262,12 +263,12 @@ def mask_saturated(data, saturation_level=None, threshold=0.9, bit_depth=None, d
 
             bit_depth = int(bit_depth)
             logger.trace(f"Using bit depth {bit_depth!r}")
-            saturation_level = threshold * (2**bit_depth - 1)
+            saturation_level = threshold * (2 ** bit_depth - 1)
         else:
             # No bit depth specified, try to guess.
             logger.trace(f"Inferring bit_depth from data type, {data.dtype!r}")
             try:
-            # Try to use np.iinfo to compute machine limits. Will work for integer types.
+                # Try to use np.iinfo to compute machine limits. Will work for integer types.
                 saturation_level = threshold * np.iinfo(data.dtype).max
             except ValueError:
                 # ValueError from np.iinfo means not an integer type.
