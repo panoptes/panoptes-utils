@@ -9,6 +9,7 @@ dependencies:
   - loguru
   - matplotlib-base
   - numpy>=1.19
+  - pandas
   - photutils
   - pillow>=9.1.1
   - pip
@@ -17,9 +18,11 @@ dependencies:
   - python>=3.7
   - readline
   - scipy
+  - seaborn
+  - streamz
   - tox
-  - typer
   - tweepy
+  - typer
   - pip:
       - -e .
       - scalpl
