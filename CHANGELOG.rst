@@ -2,14 +2,25 @@
 Changelog
 =========
 
-0.2.36dev
----------
+
+0.2.36
+------
+
+Added
+^^^^^
+
+* ``panoptes-utils`` cli with sub-commands for converting CR2 to FITS and for plate-solving FITS.
 
 Changed
 ^^^^^^^
 
 * Updating ``pyscaffold`` to ``4.2.3``, which allows for ``pyproject.toml`` and ``tox`` usage.
 * Updating example SerialDevice notebook and fixing deps.
+
+Fixed
+^^^^^
+
+* Config server can now run on arbitrary ports better.
 
 Removed
 ^^^^^^^
@@ -24,6 +35,7 @@ Fixed
 ^^^^^
 
 * Fixes to support 420 namespaces and pyscaffold.
+* Don't deserialize all strings as dates unless they actually look like a date.
 
 
 0.2.34
