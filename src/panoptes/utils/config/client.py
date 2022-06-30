@@ -2,15 +2,17 @@ import os
 
 import requests
 from loguru import logger
+from requests.exceptions import ConnectionError
+
 from panoptes.utils.error import InvalidConfig
 from panoptes.utils.serializers import from_json
 from panoptes.utils.serializers import to_json
 
 
-def server_is_running():  # pragma: no cover
+def server_is_running(*args, **kwargs):  # pragma: no cover
     """Thin-wrapper to check server."""
     try:
-        return get_config(endpoint='heartbeat', verbose=False)
+        return get_config(endpoint='heartbeat', verbose=False, *args, **kwargs)
     except Exception as e:
         logger.warning(f'server_is_running error (ignore if just starting server): {e!r}')
         return False
@@ -107,7 +109,9 @@ def get_config(key=None,
         response = requests.post(url, json={'key': key, 'verbose': verbose})
         if not response.ok:  # pragma: no cover
             raise InvalidConfig(f'Config server returned invalid JSON: {response.content!r}')
-    except Exception as e:
+    except ConnectionError:
+        logger.debug('Bad connection to config-server. Check to make sure it is running.')
+    except Exception as e:  # pragma: no cover
         logger.warning(f'Problem with get_config: {e!r}')
     else:
         response_text = response.text.strip()

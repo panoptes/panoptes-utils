@@ -2,6 +2,21 @@
 Changelog
 =========
 
+0.2.36dev
+---------
+
+Changed
+^^^^^^^
+
+* Updating ``pyscaffold`` to ``4.2.3``, which allows for ``pyproject.toml`` and ``tox`` usage.
+* Updating example SerialDevice notebook and fixing deps.
+
+Removed
+^^^^^^^
+
+* Removing unused functions: `DelaySigTerm`, `strings_to_params`.
+
+
 0.2.35
 ------
 

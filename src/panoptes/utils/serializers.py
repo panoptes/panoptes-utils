@@ -6,7 +6,7 @@ from copy import deepcopy
 import numpy as np
 from astropy import units as u
 from astropy.time import Time
-from dateutil.parser import parse as date_parse
+from dateutil.parser import isoparse as date_parse
 from panoptes.utils import error
 from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
@@ -309,8 +309,8 @@ def deserialize_all_objects(obj):
                 with suppress(Exception):
                     return u.Quantity(obj)
 
-    # Try to turn into a time
-    with suppress(Exception):
+    # Try to parse a ISO-8061 datetime string.
+    with suppress(TypeError, ValueError):
         return date_parse(obj)
 
     return obj

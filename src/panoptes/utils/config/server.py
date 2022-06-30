@@ -8,10 +8,11 @@ from flask import request
 from flask.json import JSONEncoder
 from gevent.pywsgi import WSGIServer
 from loguru import logger
+from scalpl import Cut
+
 from panoptes.utils.config.helpers import load_config
 from panoptes.utils.config.helpers import save_config
 from panoptes.utils.serializers import serialize_object
-from scalpl import Cut
 
 # Turn off noisy logging for Flask wsgi server.
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
@@ -52,8 +53,7 @@ def config_server(config_file,
     A convenience function to start the config server.
 
     Args:
-        config_file (str or None): The absolute path to the config file to load. Checks for
-            PANOPTES_CONFIG_FILE env var and fails if not provided.
+        config_file (str or None): The absolute path to the config file to load.
         host (str, optional): The config server host. First checks for PANOPTES_CONFIG_HOST
             env var, defaults to 'localhost'.
         port (str or int, optional): The config server port. First checks for PANOPTES_CONFIG_HOST
@@ -71,7 +71,6 @@ def config_server(config_file,
     Returns:
         multiprocessing.Process: The process running the config server.
     """
-    config_file = config_file or os.environ['PANOPTES_CONFIG_FILE']
     logger.info(f'Starting panoptes-config-server with  config_file={config_file!r}')
     config = load_config(config_files=config_file, load_local=load_local)
     logger.success(f'Config server Loaded {len(config)} top-level items')
