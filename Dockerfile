@@ -7,7 +7,7 @@ RUN apt-get update && \
     apt-get install --no-install-recommends -y \
       dcraw exiftool libcfitsio-bin astrometry.net \
       python3-scipy python3-matplotlib python3-numpy \
-      python3-ruamel \
+      python3-ruamel.yaml \
       && \
     # Add user.
     useradd -ms /bin/bash ${username} && \
