@@ -1,13 +1,13 @@
-FROM python:slim-buster
+FROM debian:buster-slim
 ARG DEBIAN_FRONTEND=noninteractive
 
 ARG username=panoptes
 
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
+      wget ca-certificates bzip2 \
       dcraw exiftool libcfitsio-bin astrometry.net \
       python3-scipy python3-matplotlib python3-numpy \
-      python3-ruamel.yaml \
       && \
     # Add user.
     useradd -ms /bin/bash ${username} && \
@@ -20,5 +20,5 @@ RUN apt-get update && \
 
 USER ${username}
 ENV PATH=/home/${username}/.local/bin:$PATH
-RUN pip3 install --no-cache -U pip && pip3 install --no-cache "panoptes-utils[images]"
+RUN python3 -m pip install --no-cache -U pip && python3 -m pip install --no-cache "panoptes-utils[images]"
 ENTRYPOINT ["panoptes-utils"]
