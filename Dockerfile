@@ -7,7 +7,7 @@ RUN apt-get update && \
     apt-get install --no-install-recommends -y \
       wget ca-certificates bzip2 \
       dcraw exiftool libcfitsio-bin astrometry.net \
-      python3-scipy python3-matplotlib python3-numpy \
+      python3-pip python3-scipy python3-matplotlib python3-numpy \
       && \
     # Add user.
     useradd -ms /bin/bash ${username} && \
