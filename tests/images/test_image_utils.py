@@ -4,8 +4,9 @@ import tempfile
 import numpy as np
 import pytest
 from astropy.nddata import Cutout2D
-from panoptes.utils import images as img_utils
+
 from panoptes.utils import error
+from panoptes.utils import images as img_utils
 
 
 def test_crop_data():
@@ -64,19 +65,13 @@ def test_make_pretty_image(solved_fits_file, tiny_fits_file, save_environ):
         assert not os.path.isdir(imgdir)
 
 
-@pytest.mark.skipif(
-    "TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-    reason="Skipping this test on Travis CI.")
 def test_make_pretty_image_cr2_fail():
     with tempfile.TemporaryDirectory() as tmpdir:
         tmpfile = os.path.join(tmpdir, 'bad.cr2')
         with open(tmpfile, 'w') as f:
             f.write('not an image file')
-        with pytest.raises(error.InvalidCommand):
-            img_utils.make_pretty_image(tmpfile,
-                                        title='some text')
-        with pytest.raises(error.InvalidCommand):
-            img_utils.make_pretty_image(tmpfile)
+        with pytest.raises(error.InvalidSystemCommand):
+            img_utils.make_pretty_image(tmpfile, title='some text')
 
 
 def test_make_pretty_image_cr2(cr2_file, tmpdir):

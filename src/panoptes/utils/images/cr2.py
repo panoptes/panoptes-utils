@@ -265,12 +265,12 @@ def cr2_to_jpg(
     """Extract a JPG image from a CR2, return the new path name."""
     exiftool = shutil.which('exiftool')
     if not exiftool:
-        raise error.InvalidCommand('exiftool not found')
+        raise error.InvalidSystemCommand('exiftool not found')
 
     jpg_fname = Path(jpg_fname) if jpg_fname else cr2_fname.with_suffix('.jpg')
 
-    if jpg_fname.exists() and not overwrite:
-        print(f'{jpg_fname} already exists and {overwrite=}, skipping')
+    if jpg_fname.exists() and overwrite is False:
+        raise error.AlreadyExists(f'{jpg_fname} already exists and overwrite is False')
 
     cmd = [exiftool, '-b', '-PreviewImage', cr2_fname.as_posix()]
     comp_proc = subprocess.run(cmd, check=True, stdout=jpg_fname.open('wb'))
@@ -278,7 +278,7 @@ def cr2_to_jpg(
     if comp_proc.returncode != 0:
         raise error.InvalidSystemCommand(f'{comp_proc.returncode}')
 
-    if title > '':
+    if title and title > '':
         try:
             im = Image.open(jpg_fname)
             id = ImageDraw.Draw(im)
@@ -293,7 +293,7 @@ def cr2_to_jpg(
             print(f'Adding {title=} to {jpg_fname.as_posix()=}')
             im.save(jpg_fname)
         except Exception:
-            print(f'Pillow not available, cannot add title to {jpg_fname}')
+            raise error.InvalidSystemCommand(f'Error adding title to {jpg_fname.as_posix()}')
 
     if remove_cr2:
         print(f'Removing {cr2_fname}')
