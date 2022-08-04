@@ -3,6 +3,7 @@ import re
 import shutil
 import subprocess
 from contextlib import suppress
+from pathlib import Path
 from warnings import warn
 
 import numpy as np
@@ -19,6 +20,7 @@ from matplotlib.figure import Figure
 
 from panoptes.utils import error
 from panoptes.utils.images import fits as fits_utils
+from panoptes.utils.images.cr2 import cr2_to_jpg
 from panoptes.utils.images.plot import add_colorbar
 from panoptes.utils.images.plot import get_palette
 from panoptes.utils.time import current_time
@@ -67,7 +69,6 @@ def crop_data(data, box_width=200, center=None, data_only=True, wcs=None, **kwar
 
 def make_pretty_image(fname,
                       title=None,
-                      timeout=15,
                       img_type=None,
                       link_path=None,
                       **kwargs):
@@ -75,13 +76,9 @@ def make_pretty_image(fname,
 
     This will create a jpg file from either a CR2 (Canon) or FITS file.
 
-    Notes:
-        See ``scripts/cr2_to_jpg.sh`` for CR2 process.
-
     Arguments:
         fname (str): The path to the raw image.
         title (None|str, optional): Title to be placed on image, default None.
-        timeout (int, optional): Timeout for conversion, default 15 seconds.
         img_type (None|str, optional): Image type of fname, one of '.cr2' or '.fits'.
             The default is `None`, in which case the file extension of fname is used.
         link_path (None|str, optional): Path to location that image should be symlinked.
@@ -102,7 +99,7 @@ def make_pretty_image(fname,
         warn(f"File doesn't exist, can't make pretty: {fname}")
         return None
     elif img_type == '.cr2':
-        pretty_path = _make_pretty_from_cr2(fname, title=title, timeout=timeout, **kwargs)
+        pretty_path = cr2_to_jpg(Path(fname), title=title, **kwargs)
     elif img_type in ['.fits', '.fz']:
         pretty_path = _make_pretty_from_fits(fname, title=title, **kwargs)
     else:
@@ -203,24 +200,6 @@ def _make_pretty_from_fits(fname=None,
     del fig
 
     return new_filename
-
-
-def _make_pretty_from_cr2(fname, title=None, **kwargs):
-    script_name = shutil.which('cr2-to-jpg')
-    cmd = [script_name, fname]
-
-    if title:
-        cmd.append(title)
-
-    logger.debug(f'Pretty cr2 command: {cmd!r}')
-
-    try:
-        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        logger.debug(f'Pretty CR2  output={output!r}')
-    except subprocess.CalledProcessError as e:
-        raise error.InvalidCommand(f"Error executing {script_name}: {e.output!r}\nCommand: {cmd}")
-
-    return fname.replace('cr2', 'jpg')
 
 
 def mask_saturated(data, saturation_level=None, threshold=0.9, bit_depth=None, dtype=None):

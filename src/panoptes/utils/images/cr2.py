@@ -3,10 +3,11 @@ import shutil
 import subprocess
 from json import loads
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional
 from warnings import warn
 
 import numpy as np
+from PIL import Image, ImageDraw, ImageFont
 from astropy.io import fits
 from dateutil.parser import parse as date_parse
 from loguru import logger
@@ -252,3 +253,50 @@ def read_pgm(fname, byteorder='>', remove_after=False):  # pragma: no cover
         os.remove(fname)
 
     return data
+
+
+def cr2_to_jpg(
+        cr2_fname: Path,
+        jpg_fname: str = None,
+        title: str = '',
+        overwrite: bool = False,
+        remove_cr2: bool = False,
+) -> Optional[Path]:
+    """Extract a JPG image from a CR2, return the new path name."""
+    exiftool = shutil.which('exiftool')
+    if not exiftool:
+        raise error.InvalidCommand('exiftool not found')
+
+    jpg_fname = Path(jpg_fname) if jpg_fname else cr2_fname.with_suffix('.jpg')
+
+    if jpg_fname.exists() and not overwrite:
+        print(f'{jpg_fname} already exists and {overwrite=}, skipping')
+
+    cmd = [exiftool, '-b', '-PreviewImage', cr2_fname.as_posix()]
+    comp_proc = subprocess.run(cmd, check=True, stdout=jpg_fname.open('wb'))
+
+    if comp_proc.returncode != 0:
+        raise error.InvalidSystemCommand(f'{comp_proc.returncode}')
+
+    if title > '':
+        try:
+            im = Image.open(jpg_fname)
+            id = ImageDraw.Draw(im)
+
+            im.info['title'] = title
+
+            fnt = ImageFont.truetype('FreeMonoBold.ttf', 120)
+            bottom_padding = 25
+            position = (im.size[0] / 2, im.size[1] - bottom_padding)
+            id.text(position, title, font=fnt, fill=(255, 0, 0), anchor='ms')
+
+            print(f'Adding {title=} to {jpg_fname.as_posix()=}')
+            im.save(jpg_fname)
+        except Exception:
+            print(f'Pillow not available, cannot add title to {jpg_fname}')
+
+    if remove_cr2:
+        print(f'Removing {cr2_fname}')
+        cr2_fname.unlink()
+
+    return jpg_fname

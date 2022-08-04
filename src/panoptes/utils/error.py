@@ -73,6 +73,11 @@ class NotFound(PanError):
     pass
 
 
+class AlreadyExists(PanError):
+    """ Generic already exists class """
+    pass
+
+
 class InvalidConfig(PanError):
     """ PanError raised if config file is invalid """
     pass
