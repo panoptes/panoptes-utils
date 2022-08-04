@@ -6,9 +6,10 @@ from typing import Optional, Union, Callable
 
 import serial
 from loguru import logger
-from panoptes.utils import error
 from serial.threaded import LineReader, ReaderThread
 from serial.tools.list_ports import comports as get_comports
+
+from panoptes.utils import error
 
 
 @dataclass
@@ -148,8 +149,8 @@ class SerialDevice(object):
 
             >>> # We can also pass a custom callback.
             >>> from panoptes.utils.serializers import from_json, to_json
-            >>> dev1 = SerialDevice(port='loop://', reader_callback=from_json)
-            >>> str(dev1)
+            >>> dev1 = SerialDevice(port='loop://', reader_callback=from_json)  # doctest: +SKIP
+            >>> str(dev1)  # doctest: +SKIP
             'SerialDevice loop:// [9600/8-N-1]'
             >>> dev1.write(to_json(dict(message='Hello JSON World!')))  # doctest: +SKIP
             >>> len(dev0.readings)  # doctest: +SKIP
@@ -231,7 +232,7 @@ class SerialDevice(object):
                 super(LineReader, this).connection_made(transport)
 
             def connection_lost(this, exc):
-                logger.warning(f'Disconnected from {self}')
+                print(f'Disconnected from {self}')
 
             def handle_line(this, data):
                 try:
@@ -240,7 +241,7 @@ class SerialDevice(object):
                     if data is not None:
                         self.readings.append(data)
                 except Exception as e:
-                    logger.trace(f'Error with callback: {e!r}')
+                    print(f'Error with callback: {e!r}')
 
         self.reader_thread = ReaderThread(self.serial, CustomReader)
         self.reader_thread.start()

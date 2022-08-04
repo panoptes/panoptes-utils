@@ -19,7 +19,6 @@ def test_device():
 
     s1 = SerialDevice(port='loop://')
     assert str(s1) == 'SerialDevice loop:// [9600/8-N-1]'
-    s1.serial = False
     s1.disconnect()
 
 
