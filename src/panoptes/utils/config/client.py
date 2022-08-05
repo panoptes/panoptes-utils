@@ -36,7 +36,6 @@ def get_config(key=None,
     Examples:
 
     .. doctest::
-        :skip:
 
         >>> get_config(key='name')
         'Testing PANOPTES Unit'
@@ -143,7 +142,6 @@ def set_config(key, new_value, host=None, port=None, parse=True):
     Examples:
 
     .. doctest::
-        :skip:
 
         >>> from astropy import units as u
 

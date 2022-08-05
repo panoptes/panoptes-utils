@@ -36,7 +36,7 @@ class CustomJSONEncoder(JSONEncoder):
         return serialize_object(obj)
 
 
-# app.json_provider_class = CustomJSONEncoder
+app.json_provider_class = CustomJSONEncoder
 
 
 def config_server(config_file,
@@ -81,12 +81,13 @@ def config_server(config_file,
     logger.success(f'{config!r}')
     cut_config = Cut(config)
 
-    app.config['config_file'] = config_file
-    app.config['save_local'] = save_local
-    app.config['load_local'] = load_local
-    app.config['POCS'] = config
-    app.config['POCS_cut'] = cut_config
-    logger.info(f'Config items saved to flask config-server')
+    with app.app_context():
+        app.config['config_file'] = config_file
+        app.config['save_local'] = save_local
+        app.config['load_local'] = load_local
+        app.config['POCS'] = config
+        app.config['POCS_cut'] = cut_config
+        logger.info(f'Config items saved to flask config-server')
 
     # Set up access and error logs for server.
     access_logs = logger if access_logs == 'logger' else access_logs
