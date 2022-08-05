@@ -264,7 +264,7 @@ def cr2_to_jpg(
 ) -> Optional[Path]:
     """Extract a JPG image from a CR2, return the new path name."""
     exiftool = shutil.which('exiftool')
-    if not exiftool:
+    if not exiftool:  # pragma: no cover
         raise error.InvalidSystemCommand('exiftool not found')
 
     jpg_fname = Path(jpg_fname) if jpg_fname else cr2_fname.with_suffix('.jpg')
@@ -275,7 +275,7 @@ def cr2_to_jpg(
     cmd = [exiftool, '-b', '-PreviewImage', cr2_fname.as_posix()]
     comp_proc = subprocess.run(cmd, check=True, stdout=jpg_fname.open('wb'))
 
-    if comp_proc.returncode != 0:
+    if comp_proc.returncode != 0:  # pragma: no cover
         raise error.InvalidSystemCommand(f'{comp_proc.returncode}')
 
     if title and title > '':
@@ -287,7 +287,7 @@ def cr2_to_jpg(
 
             try:
                 fnt = ImageFont.truetype('FreeMono.ttf', 120)
-            except Exception:
+            except Exception:  # pragma: no cover
                 fnt = ImageFont.load_default()
             bottom_padding = 25
             position = (im.size[0] / 2, im.size[1] - bottom_padding)

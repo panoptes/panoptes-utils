@@ -81,7 +81,9 @@ def test_make_pretty_image_cr2(cr2_file, tmpdir):
     print(f'link_path: {link_path} cr2_file: {cr2_file}')
     pretty_path = img_utils.make_pretty_image(cr2_file,
                                               title='CR2 Test',
-                                              link_path=link_path)
+                                              link_path=link_path,
+                                              remove_cr2=True)
 
     assert pretty_path.exists()
     assert pretty_path.as_posix() == link_path
+    assert os.path.exists(cr2_file) is False
