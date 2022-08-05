@@ -51,17 +51,17 @@ def test_make_pretty_image(solved_fits_file, tiny_fits_file, save_environ):
 
         link_path = os.path.join(tmpdir, 'latest.jpg')
         pretty = img_utils.make_pretty_image(solved_fits_file, link_path=link_path)
-        assert pretty
-        assert os.path.isfile(pretty)
+        assert pretty.exists()
+        assert pretty.is_file()
         assert os.path.isdir(imgdir)
-        assert link_path == pretty
+        assert link_path == pretty.as_posix()
         os.remove(link_path)
         os.rmdir(imgdir)
 
         # Try again, but without link_path.
         pretty = img_utils.make_pretty_image(tiny_fits_file, title='some text')
-        assert pretty
-        assert os.path.isfile(pretty)
+        assert pretty.exists()
+        assert pretty.is_file()
         assert not os.path.isdir(imgdir)
 
 
