@@ -65,7 +65,7 @@ def get_serial_port_info():
     """Returns the serial ports defined on the system sorted by device name.
 
     .. doctest::
-        :skip:
+        :options: +SKIP
 
         >>> from panoptes.utils.serial.device import get_serial_port_info
         >>> devices = get_serial_port_info()
@@ -84,7 +84,7 @@ def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cov
     """Finds the serial port that matches the given vendor and product id.
 
     .. doctest::
-        :skip:
+        :options: +SKIP
 
         >>> from panoptes.utils.serial.device import find_serial_port
         >>> vendor_id = 0x2a03  # arduino
@@ -136,7 +136,7 @@ class SerialDevice(object):
         for possible values.
 
         .. doctest::
-            :skip:
+            :options: +SKIP
 
             >>> from panoptes.utils.serial.device import SerialDevice
             >>> dev0 = SerialDevice(port='loop://', name='My device')
