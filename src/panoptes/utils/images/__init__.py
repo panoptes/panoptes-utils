@@ -88,9 +88,6 @@ def make_pretty_image(fname,
     Returns:
         str -- Filename of image that was created.
 
-    Deleted Parameters:
-        link_latest (bool, optional): If the pretty picture should be linked to
-            ``link_path``, default False.
     """
     if img_type is None:
         img_type = os.path.splitext(fname)[-1]

@@ -78,6 +78,7 @@ def test_make_pretty_image_cr2_fail():
 
 def test_make_pretty_image_cr2(cr2_file, tmpdir):
     link_path = str(tmpdir.mkdir('images').join('latest.jpg'))
+    print(f'link_path: {link_path} cr2_file: {cr2_file}')
     pretty_path = img_utils.make_pretty_image(cr2_file,
                                               title='CR2 Test',
                                               img_type='cr2',
