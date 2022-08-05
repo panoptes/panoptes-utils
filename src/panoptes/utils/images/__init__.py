@@ -4,6 +4,7 @@ import shutil
 import subprocess
 from contextlib import suppress
 from pathlib import Path
+from typing import Optional
 from warnings import warn
 
 import numpy as np
@@ -71,7 +72,7 @@ def make_pretty_image(fname,
                       title=None,
                       img_type=None,
                       link_path=None,
-                      **kwargs):
+                      **kwargs) -> Optional[Path]:
     """Make a pretty image.
 
     This will create a jpg file from either a CR2 (Canon) or FITS file.
@@ -104,7 +105,7 @@ def make_pretty_image(fname,
         return None
 
     if link_path is None or not os.path.exists(os.path.dirname(link_path)):
-        return pretty_path
+        return Path(pretty_path)
 
     # Remove existing symlink
     with suppress(FileNotFoundError):
@@ -115,7 +116,7 @@ def make_pretty_image(fname,
     except Exception as e:  # pragma: no cover
         warn(f"Can't link latest image: {e!r}")
 
-    return link_path
+    return Path(link_path)
 
 
 def _make_pretty_from_fits(fname=None,
