@@ -80,7 +80,7 @@ def test_make_pretty_image_cr2(cr2_file, tmpdir):
     link_path = str(tmpdir.mkdir('images').join('latest.jpg'))
     pretty_path = img_utils.make_pretty_image(cr2_file,
                                               title='CR2 Test',
-                                              image_type='cr2',
+                                              img_type='cr2',
                                               link_path=link_path)
 
     assert os.path.exists(pretty_path)
