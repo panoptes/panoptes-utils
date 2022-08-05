@@ -43,7 +43,7 @@ jobs:
       - name: Install and test panoptes-utils on ${{ matrix.python-version }}
         run: |
           pip install -e ".[config,images,testing,social]"
-          pytest
+          pytest --test-solve --ignore=tests/config --ignore=src/panoptes/utils/config
       - name: Upload coverage report to codecov.io
         uses: codecov/codecov-action@v1
         if: success()
