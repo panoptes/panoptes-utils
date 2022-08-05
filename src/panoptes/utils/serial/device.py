@@ -1,4 +1,3 @@
-import logging
 import operator
 from collections import deque
 from contextlib import suppress
@@ -6,12 +5,11 @@ from dataclasses import dataclass
 from typing import Optional, Union, Callable
 
 import serial
+from loguru import logger
 from serial.threaded import LineReader, ReaderThread
 from serial.tools.list_ports import comports as get_comports
 
 from panoptes.utils import error
-
-logger = logging.getLogger()
 
 
 @dataclass
@@ -70,9 +68,9 @@ def get_serial_port_info():
 
         >>> from panoptes.utils.serial.device import get_serial_port_info
         >>> devices = get_serial_port_info()
-        >>> devices   # doctest: +SKIP
+        >>> devices             # doctest: +SKIP
         [<serial.tools.list_ports_linux.SysFS object at 0x7f6c9cbd9460>]
-        >>> devices[0].hwid   # doctest: +SKIP
+        >>> devices[0].hwid     # doctest: +SKIP
         'USB VID:PID=2886:802D SER=3C788B875337433838202020FF122204 LOCATION=3-5:1.0'
 
     Returns: a list of PySerial's ListPortInfo objects. See:
@@ -93,7 +91,7 @@ def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cov
         '/dev/ttyACM0'
 
         >>> # Raises error when not found.
-        >>> find_serial_port(0x1234, 0x4321)  # doctest: +SKIP
+        >>> find_serial_port(0x1234, 0x4321)
         Traceback (most recent call last):
           ...
         panoptes.utils.error.NotFound: NotFound: No serial ports...
@@ -139,25 +137,25 @@ class SerialDevice(object):
 
             >>> from panoptes.utils.serial.device import SerialDevice
             >>> dev0 = SerialDevice(port='loop://', name='My device')
-            >>> dev0.is_connected  # doctest: +SKIP
+            >>> dev0.is_connected
             True
             >>> str(dev0)
             'My device on port=loop:// [9600/8-N-1]'
-            >>> dev0.write('Hello World!')
-            >>> len(dev0.readings)  # doctest: +SKIP
+            >>> dev0.write('Hello World!')  # doctest: +SKIP
+            >>> len(dev0.readings) # doctest: +SKIP
             1
-            >>> dev0.readings[0] == 'Hello World!'  # doctest: +SKIP
+            >>> dev0.readings[0] == 'Hello World!' # doctest: +SKIP
             True
 
             >>> # We can also pass a custom callback.
             >>> from panoptes.utils.serializers import from_json, to_json
             >>> dev1 = SerialDevice(port='loop://', reader_callback=from_json)
-            >>> str(dev1)  # doctest: +SKIP
+            >>> str(dev1)
             'SerialDevice loop:// [9600/8-N-1]'
-            >>> dev1.write(to_json(dict(message='Hello JSON World!')))
+            >>> dev1.write(to_json(dict(message='Hello JSON World!')))  # doctest: +SKIP
             >>> len(dev0.readings)  # doctest: +SKIP
             1
-            >>> dev0.readings[0]
+            >>> dev0.readings[0]  # doctest: +SKIP
             '{"message": "Hello JSON World!"}'
 
         Args:
@@ -234,7 +232,7 @@ class SerialDevice(object):
                 super(LineReader, this).connection_made(transport)
 
             def connection_lost(this, exc):
-                logger.debug(f'Disconnected from {self}')
+                logger.warning(f'Disconnected from {self}')
 
             def handle_line(this, data):
                 try:
@@ -243,7 +241,7 @@ class SerialDevice(object):
                     if data is not None:
                         self.readings.append(data)
                 except Exception as e:
-                    logger.debug(f'Error with callback: {e!r}')
+                    logger.trace(f'Error with callback: {e!r}')
 
         self.reader_thread = ReaderThread(self.serial, CustomReader)
         self.reader_thread.start()
