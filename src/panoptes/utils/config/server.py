@@ -36,9 +36,6 @@ class CustomJSONEncoder(JSONEncoder):
         return serialize_object(obj)
 
 
-app.json_provider_class = CustomJSONEncoder
-
-
 def config_server(config_file,
                   host=None,
                   port=None,
@@ -81,6 +78,7 @@ def config_server(config_file,
     logger.success(f'{config!r}')
     cut_config = Cut(config)
 
+    app.json_provider_class = CustomJSONEncoder
     app.config['config_file'] = config_file
     app.config['save_local'] = save_local
     app.config['load_local'] = load_local
@@ -176,6 +174,7 @@ def get_config_entry():
         str: The json string for the requested object if object is found in config.
         Otherwise a json string with ``status`` and ``msg`` keys will be returned.
     """
+    app.json_provider_class = CustomJSONEncoder
     params = dict()
     if request.method == 'GET':
         params = request.args
@@ -257,6 +256,7 @@ def set_config_entry():
         str: If method is successful, returned json string will be a copy of the set values.
         On failure, a json string with ``status`` and ``msg`` keys will be returned.
     """
+    app.json_provider_class = CustomJSONEncoder
     params = dict()
     if request.method == 'GET':
         params = request.args
@@ -304,6 +304,7 @@ def reset_config():
         str: A json string object containing the keys ``success`` and ``msg`` that indicate
         success or failure.
     """
+    app.json_provider_class = CustomJSONEncoder
     params = dict()
     if request.method == 'GET':
         params = request.args
