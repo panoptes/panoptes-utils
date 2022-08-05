@@ -23,7 +23,6 @@ def cr2_to_jpg(
         title: str = '',
         overwrite: bool = False,
         remove_cr2: bool = False,
-        verbose: bool = False,
 ) -> Optional[Path]:
     """Extract a JPG image from a CR2, return the new path name.
 
@@ -33,7 +32,6 @@ def cr2_to_jpg(
         title (str): Title to use for the JPG file.
         overwrite (bool): Overwrite existing JPG file.
         remove_cr2 (bool): Remove the CR2 file after conversion.
-        verbose (bool): Print verbose output.
     """
     jpg_fname = cr2.cr2_to_jpg(
         cr2_fname,
@@ -43,7 +41,7 @@ def cr2_to_jpg(
         remove_cr2=remove_cr2,
     )
 
-    if jpg_fname.exists() and verbose:
+    if jpg_fname.exists():
         typer.secho(f'Wrote {jpg_fname}', fg='green')
 
     return jpg_fname
@@ -75,6 +73,7 @@ def solve_fits(fits_fname: Path) -> Optional[Path]:
     try:
         solve_info = fits_utils.get_solve_field(fits_fname)
     except error.InvalidSystemCommand as e:
+        typer.secho(f'Error while trying to solve {fits_fname}: {e!r}', fg='red')
         return None
 
     solve_fn = solve_info['solved_fits_file']
