@@ -285,7 +285,7 @@ def cr2_to_jpg(
 
             im.info['title'] = title
 
-            fnt = ImageFont.truetype('FreeMonoBold.ttf', 120)
+            fnt = ImageFont.truetype('UbuntuMono.ttf', 120)
             bottom_padding = 25
             position = (im.size[0] / 2, im.size[1] - bottom_padding)
             id.text(position, title, font=fnt, fill=(255, 0, 0), anchor='ms')
