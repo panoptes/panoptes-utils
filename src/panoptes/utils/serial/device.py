@@ -1,3 +1,4 @@
+import logging
 import operator
 from collections import deque
 from contextlib import suppress
@@ -5,11 +6,12 @@ from dataclasses import dataclass
 from typing import Optional, Union, Callable
 
 import serial
-from loguru import logger
 from serial.threaded import LineReader, ReaderThread
 from serial.tools.list_ports import comports as get_comports
 
 from panoptes.utils import error
+
+logger = logging.getLogger()
 
 
 @dataclass
@@ -232,7 +234,7 @@ class SerialDevice(object):
                 super(LineReader, this).connection_made(transport)
 
             def connection_lost(this, exc):
-                print(f'Disconnected from {self}')
+                logger.debug(f'Disconnected from {self}')
 
             def handle_line(this, data):
                 try:
@@ -241,7 +243,7 @@ class SerialDevice(object):
                     if data is not None:
                         self.readings.append(data)
                 except Exception as e:
-                    print(f'Error with callback: {e!r}')
+                    logger.debug(f'Error with callback: {e!r}')
 
         self.reader_thread = ReaderThread(self.serial, CustomReader)
         self.reader_thread.start()
