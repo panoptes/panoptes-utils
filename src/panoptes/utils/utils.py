@@ -129,7 +129,7 @@ def altaz_to_radec(alt=None, az=None, location=None, obstime=None, **kwargs):
     az = get_quantity_value(az, 'degree') * u.degree
 
     altaz = AltAz(obstime=obstime, location=location, alt=alt, az=az)
-    return SkyCoord(altaz.transform_to(ICRS))
+    return SkyCoord(altaz.transform_to(ICRS()))
 
 
 def get_quantity_value(quantity, unit=None):
