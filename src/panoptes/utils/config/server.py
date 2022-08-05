@@ -36,7 +36,7 @@ class CustomJSONEncoder(JSONEncoder):
         return serialize_object(obj)
 
 
-app.json_encoder = CustomJSONEncoder
+app.json_provider_class = CustomJSONEncoder
 
 
 def config_server(config_file,
@@ -98,7 +98,8 @@ def config_server(config_file,
             http_server = WSGIServer((host, int(port)), app, log=access_logs, error_log=error_logs)
             http_server.serve_forever()
         except OSError:
-            logger.warning(f'Problem starting config server, is another config server already running?')
+            logger.warning(
+                f'Problem starting config server, is another config server already running?')
             return None
         except Exception as e:
             logger.warning(f'Problem starting config server: {e!r}')
