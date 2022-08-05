@@ -84,16 +84,15 @@ def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cov
     """Finds the serial port that matches the given vendor and product id.
 
     .. doctest::
-        :options: +SKIP
 
         >>> from panoptes.utils.serial.device import find_serial_port
         >>> vendor_id = 0x2a03  # arduino
         >>> product_id = 0x0043 # Uno Rev 3
-        >>> find_serial_port(vendor_id, product_id)
+        >>> find_serial_port(vendor_id, product_id)  # doctest: +SKIP
         '/dev/ttyACM0'
 
         >>> # Raises error when not found.
-        >>> find_serial_port(0x1234, 0x4321)
+        >>> find_serial_port(0x1234, 0x4321)  # doctest: +SKIP
         Traceback (most recent call last):
           ...
         panoptes.utils.error.NotFound: NotFound: No serial ports...
@@ -136,27 +135,26 @@ class SerialDevice(object):
         for possible values.
 
         .. doctest::
-            :options: +SKIP
 
             >>> from panoptes.utils.serial.device import SerialDevice
             >>> dev0 = SerialDevice(port='loop://', name='My device')
-            >>> dev0.is_connected
+            >>> dev0.is_connected  # doctest: +SKIP
             True
             >>> str(dev0)
             'My device on port=loop:// [9600/8-N-1]'
             >>> dev0.write('Hello World!')
-            >>> len(dev0.readings)
+            >>> len(dev0.readings)  # doctest: +SKIP
             1
-            >>> dev0.readings[0] == 'Hello World!'
+            >>> dev0.readings[0] == 'Hello World!'  # doctest: +SKIP
             True
 
             >>> # We can also pass a custom callback.
             >>> from panoptes.utils.serializers import from_json, to_json
             >>> dev1 = SerialDevice(port='loop://', reader_callback=from_json)
-            >>> str(dev1)
+            >>> str(dev1)  # doctest: +SKIP
             'SerialDevice loop:// [9600/8-N-1]'
             >>> dev1.write(to_json(dict(message='Hello JSON World!')))
-            >>> len(dev0.readings)
+            >>> len(dev0.readings)  # doctest: +SKIP
             1
             >>> dev0.readings[0]
             '{"message": "Hello JSON World!"}'
