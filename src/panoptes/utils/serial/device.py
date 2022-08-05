@@ -65,12 +65,13 @@ def get_serial_port_info():
     """Returns the serial ports defined on the system sorted by device name.
 
     .. doctest::
+        :skip:
 
         >>> from panoptes.utils.serial.device import get_serial_port_info
         >>> devices = get_serial_port_info()
-        >>> devices             # doctest: +SKIP
+        >>> devices
         [<serial.tools.list_ports_linux.SysFS object at 0x7f6c9cbd9460>]
-        >>> devices[0].hwid     # doctest: +SKIP
+        >>> devices[0].hwid
         'USB VID:PID=2886:802D SER=3C788B875337433838202020FF122204 LOCATION=3-5:1.0'
 
     Returns: a list of PySerial's ListPortInfo objects. See:
@@ -83,11 +84,12 @@ def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cov
     """Finds the serial port that matches the given vendor and product id.
 
     .. doctest::
+        :skip:
 
         >>> from panoptes.utils.serial.device import find_serial_port
         >>> vendor_id = 0x2a03  # arduino
         >>> product_id = 0x0043 # Uno Rev 3
-        >>> find_serial_port(vendor_id, product_id)  # doctest: +SKIP
+        >>> find_serial_port(vendor_id, product_id)
         '/dev/ttyACM0'
 
         >>> # Raises error when not found.
@@ -134,6 +136,7 @@ class SerialDevice(object):
         for possible values.
 
         .. doctest::
+            :skip:
 
             >>> from panoptes.utils.serial.device import SerialDevice
             >>> dev0 = SerialDevice(port='loop://', name='My device')
@@ -141,21 +144,21 @@ class SerialDevice(object):
             True
             >>> str(dev0)
             'My device on port=loop:// [9600/8-N-1]'
-            >>> dev0.write('Hello World!')  # doctest: +SKIP
-            >>> len(dev0.readings) # doctest: +SKIP
+            >>> dev0.write('Hello World!')
+            >>> len(dev0.readings)
             1
-            >>> dev0.readings[0] == 'Hello World!' # doctest: +SKIP
+            >>> dev0.readings[0] == 'Hello World!'
             True
 
             >>> # We can also pass a custom callback.
             >>> from panoptes.utils.serializers import from_json, to_json
-            >>> dev1 = SerialDevice(port='loop://', reader_callback=from_json)  # doctest: +SKIP
-            >>> str(dev1)  # doctest: +SKIP
+            >>> dev1 = SerialDevice(port='loop://', reader_callback=from_json)
+            >>> str(dev1)
             'SerialDevice loop:// [9600/8-N-1]'
-            >>> dev1.write(to_json(dict(message='Hello JSON World!')))  # doctest: +SKIP
-            >>> len(dev0.readings)  # doctest: +SKIP
+            >>> dev1.write(to_json(dict(message='Hello JSON World!')))
+            >>> len(dev0.readings)
             1
-            >>> dev0.readings[0]  # doctest: +SKIP
+            >>> dev0.readings[0]
             '{"message": "Hello JSON World!"}'
 
         Args:
