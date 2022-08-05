@@ -77,11 +77,11 @@ def test_make_pretty_image_cr2_fail():
 
 
 def test_make_pretty_image_cr2(cr2_file, tmpdir):
-    link_path = str(tmpdir.mkdir('images').join('latest.jpg'))
+    link_path = tmpdir.mkdir('images').join('latest.jpg')
     pretty_path = img_utils.make_pretty_image(cr2_file,
                                               title='CR2 Test',
                                               img_type='cr2',
-                                              link_path=link_path)
+                                              link_path=link_path.as_posix())
 
-    assert os.path.exists(pretty_path)
+    assert pretty_path.exists()
     assert pretty_path == link_path
