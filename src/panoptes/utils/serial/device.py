@@ -6,9 +6,10 @@ from typing import Optional, Union, Callable
 
 import serial
 from loguru import logger
-from panoptes.utils import error
 from serial.threaded import LineReader, ReaderThread
 from serial.tools.list_ports import comports as get_comports
+
+from panoptes.utils import error
 
 
 @dataclass

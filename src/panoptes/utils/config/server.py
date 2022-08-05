@@ -36,7 +36,7 @@ class CustomJSONEncoder(JSONEncoder):
         return serialize_object(obj)
 
 
-app.json_encoder = CustomJSONEncoder
+app.json_provider_class = CustomJSONEncoder
 
 
 def config_server(config_file,
@@ -81,41 +81,44 @@ def config_server(config_file,
     logger.success(f'{config!r}')
     cut_config = Cut(config)
 
-    app.config['config_file'] = config_file
-    app.config['save_local'] = save_local
-    app.config['load_local'] = load_local
-    app.config['POCS'] = config
-    app.config['POCS_cut'] = cut_config
-    logger.info(f'Config items saved to flask config-server')
+    with app.app_context():
+        app.config['config_file'] = config_file
+        app.config['save_local'] = save_local
+        app.config['load_local'] = load_local
+        app.config['POCS'] = config
+        app.config['POCS_cut'] = cut_config
+        logger.info(f'Config items saved to flask config-server')
 
-    # Set up access and error logs for server.
-    access_logs = logger if access_logs == 'logger' else access_logs
-    error_logs = logger if error_logs == 'logger' else error_logs
+        # Set up access and error logs for server.
+        access_logs = logger if access_logs == 'logger' else access_logs
+        error_logs = logger if error_logs == 'logger' else error_logs
 
-    def start_server(host='localhost', port=6563):
-        try:
-            logger.info(f'Starting panoptes config server with {host}:{port}')
-            http_server = WSGIServer((host, int(port)), app, log=access_logs, error_log=error_logs)
-            http_server.serve_forever()
-        except OSError:
-            logger.warning(f'Problem starting config server, is another config server already running?')
-            return None
-        except Exception as e:
-            logger.warning(f'Problem starting config server: {e!r}')
-            return None
+        def start_server(host='localhost', port=6563):
+            try:
+                logger.info(f'Starting panoptes config server with {host}:{port}')
+                http_server = WSGIServer((host, int(port)), app, log=access_logs,
+                                         error_log=error_logs)
+                http_server.serve_forever()
+            except OSError:
+                logger.warning(
+                    f'Problem starting config server, is another config server already running?')
+                return None
+            except Exception as e:
+                logger.warning(f'Problem starting config server: {e!r}')
+                return None
 
-    host = host or os.getenv('PANOPTES_CONFIG_HOST', 'localhost')
-    port = port or os.getenv('PANOPTES_CONFIG_PORT', 6563)
-    cmd_kwargs = dict(host=host, port=port)
-    logger.debug(f'Setting up config server process with  cmd_kwargs={cmd_kwargs!r}')
-    server_process = Process(target=start_server,
-                             daemon=True,
-                             kwargs=cmd_kwargs)
+        host = host or os.getenv('PANOPTES_CONFIG_HOST', 'localhost')
+        port = port or os.getenv('PANOPTES_CONFIG_PORT', 6563)
+        cmd_kwargs = dict(host=host, port=port)
+        logger.debug(f'Setting up config server process with  cmd_kwargs={cmd_kwargs!r}')
+        server_process = Process(target=start_server,
+                                 daemon=True,
+                                 kwargs=cmd_kwargs)
 
-    if auto_start:
-        server_process.start()
+        if auto_start:
+            server_process.start()
 
-    return server_process
+        return server_process
 
 
 @app.route('/heartbeat', methods=['GET', 'POST'])

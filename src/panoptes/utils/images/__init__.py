@@ -170,20 +170,14 @@ def _make_pretty_from_fits(fname=None,
         ra_axis = ax.coords['ra']
         ra_axis.set_axislabel('Right Ascension')
         ra_axis.set_major_formatter('hh:mm')
-        ra_axis.set_ticks(
-            number=number_ticks,
-            color='white',
-            exclude_overlapping=True
-        )
+        ra_axis.set_ticks(number=number_ticks, color='white')
+        ra_axis.set_ticklabel(color='white', exclude_overlapping=True)
 
         dec_axis = ax.coords['dec']
         dec_axis.set_axislabel('Declination')
         dec_axis.set_major_formatter('dd:mm')
-        dec_axis.set_ticks(
-            number=number_ticks,
-            color='white',
-            exclude_overlapping=True
-        )
+        dec_axis.set_ticks(number=number_ticks, color='white')
+        dec_axis.set_ticklabel(color='white', exclude_overlapping=True)
     else:
         ax = fig.add_subplot(111)
         ax.grid(True, color='white', ls='-', alpha=alpha)
