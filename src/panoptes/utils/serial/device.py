@@ -65,13 +65,12 @@ def get_serial_port_info():
     """Returns the serial ports defined on the system sorted by device name.
 
     .. doctest::
-        :options: +SKIP
 
         >>> from panoptes.utils.serial.device import get_serial_port_info
         >>> devices = get_serial_port_info()
-        >>> devices
+        >>> devices   # doctest: +SKIP
         [<serial.tools.list_ports_linux.SysFS object at 0x7f6c9cbd9460>]
-        >>> devices[0].hwid
+        >>> devices[0].hwid   # doctest: +SKIP
         'USB VID:PID=2886:802D SER=3C788B875337433838202020FF122204 LOCATION=3-5:1.0'
 
     Returns: a list of PySerial's ListPortInfo objects. See:
