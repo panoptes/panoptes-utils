@@ -37,6 +37,9 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get install -y exiftool
+      - name: Download CR2 file
+        run: |
+          curl https://storage.googleapis.com/panoptes-resources/test-data/canon.cr2 --output ./tests/data/canon.cr2
       - name: Install and test panoptes-utils on ${{ matrix.python-version }}
         run: |
           pip install -e ".[config,images,testing,social]"

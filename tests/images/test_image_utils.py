@@ -72,6 +72,8 @@ def test_make_pretty_image_cr2_fail():
             f.write('not an image file')
         with pytest.raises(error.InvalidSystemCommand):
             img_utils.make_pretty_image(tmpfile, title='some text')
+        with pytest.raises(error.AlreadyExists):
+            img_utils.make_pretty_image(tmpfile)
 
 
 def test_make_pretty_image_cr2(cr2_file, tmpdir):

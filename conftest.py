@@ -176,12 +176,12 @@ def add_doctest_dependencies(doctest_namespace):
 
 @pytest.fixture
 def caplog(_caplog):
-    class PropogateHandler(logging.Handler):
+    class PropagateHandler(logging.Handler):
         def emit(self, record):
             logging.getLogger(record.name).handle(record)
 
     logger.enable('panoptes')
-    handler_id = logger.add(PropogateHandler(), format="{message}")
+    handler_id = logger.add(PropagateHandler(), format="{message}")
     yield _caplog
     with suppress(ValueError):
         logger.remove(handler_id)
