@@ -11,12 +11,17 @@ from warnings import warn
 from astropy import units as u
 from astropy.io import fits
 from astropy.time import Time
+from astropy.visualization import ImageNormalize, PercentileInterval, LogStretch
 from astropy.wcs import WCS
-from dateutil.parser import parse as parse_date
+from dateutil.parser import parse as parse_date, parse as date_parse
 from dateutil.tz import UTC
 from loguru import logger
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 from panoptes.utils import error
+from panoptes.utils.images import get_palette, add_colorbar
+from panoptes.utils.images.misc import mask_saturated
 from panoptes.utils.time import flatten_time
 
 PATH_MATCHER: Pattern[str] = re.compile(r"""^
@@ -810,3 +815,74 @@ def getval(fn, *args, **kwargs):
     if fn.endswith('.fz'):
         ext = 1
     return fits.getval(fn, *args, ext=ext, **kwargs)
+
+
+def fits_to_jpg(fname=None,
+                title=None,
+                figsize=(10, 10 / 1.325),
+                dpi=150,
+                alpha=0.2,
+                number_ticks=7,
+                clip_percent=99.9,
+                **kwargs):
+    data = mask_saturated(getdata(fname))
+    header = getheader(fname)
+    wcs = WCS(header)
+
+    if not title:
+        field = header.get('FIELD', 'Unknown field')
+        exptime = header.get('EXPTIME', 'Unknown exptime')
+        filter_type = header.get('FILTER', 'Unknown filter')
+
+        try:
+            date_time = header['DATE-OBS']
+        except KeyError:
+            # If we don't have DATE-OBS, check filename for date.
+            basename = os.path.splitext(os.path.basename(fname))[0]
+            date_time = date_parse(basename).isoformat()
+
+        date_time = date_time.replace('T', ' ', 1)
+
+        title = f'{field} ({exptime}s {filter_type}) {date_time}'
+
+    norm = ImageNormalize(interval=PercentileInterval(clip_percent), stretch=LogStretch())
+
+    fig = Figure()
+    FigureCanvas(fig)
+    fig.set_size_inches(*figsize)
+    fig.dpi = dpi
+
+    if wcs.is_celestial:
+        ax = fig.add_subplot(1, 1, 1, projection=wcs)
+        ax.coords.grid(True, color='white', ls='-', alpha=alpha)
+
+        ra_axis = ax.coords['ra']
+        ra_axis.set_axislabel('Right Ascension')
+        ra_axis.set_major_formatter('hh:mm')
+        ra_axis.set_ticks(number=number_ticks, color='white')
+        ra_axis.set_ticklabel(color='white', exclude_overlapping=True)
+
+        dec_axis = ax.coords['dec']
+        dec_axis.set_axislabel('Declination')
+        dec_axis.set_major_formatter('dd:mm')
+        dec_axis.set_ticks(number=number_ticks, color='white')
+        dec_axis.set_ticklabel(color='white', exclude_overlapping=True)
+    else:
+        ax = fig.add_subplot(111)
+        ax.grid(True, color='white', ls='-', alpha=alpha)
+
+        ax.set_xlabel('X / pixels')
+        ax.set_ylabel('Y / pixels')
+
+    im = ax.imshow(data, norm=norm, cmap=get_palette(), origin='lower')
+    add_colorbar(im)
+    fig.suptitle(title)
+
+    new_filename = re.sub(r'.fits(.fz)?', '.jpg', fname)
+    fig.savefig(new_filename, bbox_inches='tight')
+
+    # explicitly close and delete figure
+    fig.clf()
+    del fig
+
+    return new_filename
