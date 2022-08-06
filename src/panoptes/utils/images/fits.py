@@ -20,8 +20,8 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 from panoptes.utils import error
-from panoptes.utils.images import get_palette, add_colorbar
 from panoptes.utils.images.misc import mask_saturated
+from panoptes.utils.images.plot import get_palette, add_colorbar
 from panoptes.utils.time import flatten_time
 
 PATH_MATCHER: Pattern[str] = re.compile(r"""^

@@ -12,7 +12,8 @@ from astropy.nddata import Cutout2D
 from loguru import logger
 
 from panoptes.utils import error
-from panoptes.utils.images import cr2_to_jpg, fits_to_jpg
+from panoptes.utils.images.cr2 import cr2_to_jpg
+from panoptes.utils.images.fits import fits_to_jpg
 
 
 def make_timelapse(
