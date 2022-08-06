@@ -17,7 +17,7 @@ def make_timelapse(
         glob_pattern='20[1-9][0-9]*T[0-9]*.jpg',
         overwrite=False,
         timeout=60,
-        **kwargs):
+        **kwargs):  # pragma: no cover
     """Create a timelapse.
 
     A timelapse is created from all the images in given ``directory``
