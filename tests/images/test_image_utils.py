@@ -6,7 +6,8 @@ import pytest
 from astropy.nddata import Cutout2D
 
 from panoptes.utils import error
-from panoptes.utils.images.misc import crop_data, make_pretty_image
+from panoptes.utils.images import make_pretty_image
+from panoptes.utils.images.misc import crop_data
 
 
 def test_crop_data():
