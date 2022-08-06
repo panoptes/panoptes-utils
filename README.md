@@ -30,6 +30,20 @@ pip install -e ".[config,docs,images,testing,social]"
 
 See the full documentation at: https://panoptes-utils.readthedocs.io
 
+Command Line
+------------
+
+The `panoptes-utils` command line tool is available for use with subcommands
+corresponding to the modules in this library. Currently, the only implemented
+subcommand is `image`, which includes commands for converting `cr2` files into
+`jpg` and/or `fits` files as well as for plate-solving `fits` images.
+
+The `panoptes-utils image watch <path>` command will watch the given path for
+new files and convert them to `jpg` and/or `fits` files as they are added.
+
+See `panoptes-utils --help` and `panoptes-utils image --help` for details.
+
+
 Config Server
 -------------
 
