@@ -36,7 +36,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          sudo apt-get install -y exiftool fonts-freefont-ttf libcfitsio-bin
+          # TODO don't get all the indexes.
+          sudo apt-get install -y exiftool fonts-freefont-ttf libcfitsio-bin astrometry.net astrometry-data-tycho2
       - name: Download CR2 file
         run: |
           curl https://storage.googleapis.com/panoptes-resources/test-data/canon.cr2 --output ./tests/data/canon.cr2
