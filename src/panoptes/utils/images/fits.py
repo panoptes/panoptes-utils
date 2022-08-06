@@ -13,7 +13,7 @@ from astropy.io import fits
 from astropy.time import Time
 from astropy.visualization import ImageNormalize, PercentileInterval, LogStretch
 from astropy.wcs import WCS
-from dateutil.parser import parse as parse_date, parse as date_parse
+from dateutil.parser import parse as parse_date
 from dateutil.tz import UTC
 from loguru import logger
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -839,7 +839,7 @@ def fits_to_jpg(fname=None,
         except KeyError:
             # If we don't have DATE-OBS, check filename for date.
             basename = os.path.splitext(os.path.basename(fname))[0]
-            date_time = date_parse(basename).isoformat()
+            date_time = parse_date(basename).isoformat()
 
         date_time = date_time.replace('T', ' ', 1)
 
