@@ -24,7 +24,6 @@ from panoptes.utils.images import fits as fits_utils
 from panoptes.utils.images.cr2 import cr2_to_jpg
 from panoptes.utils.images.plot import add_colorbar
 from panoptes.utils.images.plot import get_palette
-from panoptes.utils.time import current_time
 
 
 def crop_data(data, box_width=200, center=None, data_only=True, wcs=None, **kwargs):
@@ -139,13 +138,9 @@ def _make_pretty_from_fits(fname=None,
         try:
             date_time = header['DATE-OBS']
         except KeyError:
-            # If we don't have DATE-OBS, check filename for date
-            try:
-                basename = os.path.splitext(os.path.basename(fname))[0]
-                date_time = date_parse(basename).isoformat()
-            except Exception:  # pragma: no cover
-                # Otherwise use now
-                date_time = current_time(pretty=True)
+            # If we don't have DATE-OBS, check filename for date.
+            basename = os.path.splitext(os.path.basename(fname))[0]
+            date_time = date_parse(basename).isoformat()
 
         date_time = date_time.replace('T', ' ', 1)
 

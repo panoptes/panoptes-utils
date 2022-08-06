@@ -75,6 +75,9 @@ def test_make_pretty_image_cr2_fail():
         with pytest.raises(error.AlreadyExists):
             img_utils.make_pretty_image(tmpfile)
 
+        no_image = img_utils.make_pretty_image('not-a-file')
+        assert no_image is None
+
 
 def test_make_pretty_image_cr2(cr2_file, tmpdir):
     link_path = str(tmpdir.mkdir('images').join('latest.jpg'))
