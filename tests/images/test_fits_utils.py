@@ -81,7 +81,6 @@ def test_solve_field_unsolved(unsolved_fits_file):
     assert isinstance(proc, subprocess.Popen)
     proc.wait()
     outs, errs = proc.communicate(timeout=15)
-    print(outs, errs)
 
     assert proc.returncode == 0, f'{outs}\n{errs}'
 
