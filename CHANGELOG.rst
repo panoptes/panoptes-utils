@@ -23,6 +23,7 @@ Removed
 
 * Unused stamp plotting functions.
 * Testing of config servers on GHA.
+* `CountdownTimer.is_non_blocking` predicate that wasn't being used.
 
 
 

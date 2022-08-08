@@ -7,6 +7,7 @@ from typing import Union
 from astropy import units as u
 from astropy.time import Time
 from loguru import logger
+
 from panoptes.utils import error
 
 
@@ -101,25 +102,41 @@ def flatten_time(t):
     return t.isot.replace('-', '').replace(':', '').split('.')[0]
 
 
-# This is a streamlined variant of PySerial's serialutil.Timeout.
 class CountdownTimer(object):
-    """Simple timer object for tracking whether a time duration has elapsed.
-
-
-    Args:
-        duration (int or float or astropy.units.Quantity): Amount of time to before time expires.
-            May be numeric seconds or an Astropy time duration (e.g. 1 * u.minute).
-    """
 
     def __init__(self, duration: Union[int, float], name: str = ''):
+        """Simple timer object for tracking whether a time duration has elapsed.
+
+        Examples:
+
+            >>> timer = CountdownTimer(1)
+            >>> timer.time_left() > 0
+            True
+            >>> timer.expired()
+            False
+            >>> # Sleep less than the duration returns True.
+            >>> timer.sleep(max_sleep=0.1)
+            True
+            >>> # Sleep more than the duration returns False.
+            >>> timer.sleep()
+            False
+            >>> timer.time_left() == 0
+            True
+            >>> timer.expired()
+            True
+            >>> print(timer)
+            EXPIRED Timer 0.00/1.00
+
+        Args:
+            duration (int or float or astropy.units.Quantity): Amount of time to before time expires.
+                May be numeric seconds or an Astropy time duration (e.g. 1 * u.minute).
+        """
         if isinstance(duration, u.Quantity):
             duration = duration.to(u.second).value
         elif not isinstance(duration, (int, float)):
             raise ValueError(f'duration ({duration}) is not a supported type: {type(duration)}')
 
-        #: bool: True IFF the duration is zero.
         assert duration >= 0, "Duration must be non-negative."
-        self.is_non_blocking = (duration == 0)
 
         self.name = f'{name}Timer'
         self.target_time = None
@@ -127,13 +144,10 @@ class CountdownTimer(object):
         self.restart()
 
     def __str__(self):
-        is_blocking = ''
-        if self.is_non_blocking is False:
-            is_blocking = '(blocking)'
         is_expired = ''
         if self.expired():
             is_expired = 'EXPIRED'
-        return f'{is_expired} {self.name} {is_blocking} {self.time_left():.02f}/{self.duration:.02f}'
+        return f'{is_expired} {self.name} {self.time_left():.02f}/{self.duration:.02f}'
 
     def expired(self):
         """Return a boolean, telling if the timeout has expired.
@@ -149,23 +163,20 @@ class CountdownTimer(object):
         Returns:
             int: Number of seconds remaining in timer, zero if ``is_non_blocking=True``.
         """
-        if self.is_non_blocking:
-            return 0
+        delta = self.target_time - time.monotonic()
+        if delta > self.duration:  # pragma: no cover
+            # clock jumped, recalculate
+            self.restart()
+            return self.duration
         else:
-            delta = self.target_time - time.monotonic()
-            if delta > self.duration:
-                # clock jumped, recalculate
-                self.restart()
-                return self.duration
-            else:
-                return max(0.0, delta)
+            return max(0.0, delta)
 
     def restart(self):
         """Restart the timed duration."""
         self.target_time = time.monotonic() + self.duration
         logger.debug(f'Restarting {self.name}')
 
-    def sleep(self, max_sleep: Union[int, float, None] = None, log_level:str='DEBUG'):
+    def sleep(self, max_sleep: Union[int, float, None] = None, log_level: str = 'DEBUG'):
         """Sleep until the timer expires, or for max_sleep, whichever is sooner.
 
         Args:
@@ -197,7 +208,7 @@ def wait_for_events(events,
                     ):
     """Wait for event(s) to be set.
 
-    This method will wait for a maximum of `timeout` seconds for all of the `events`
+    This method will wait for a maximum of `timeout` seconds for all the `events`
     to complete.
 
     Checks every `sleep_delay` seconds for the events to be set.
