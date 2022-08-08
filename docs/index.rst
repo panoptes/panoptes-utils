@@ -11,6 +11,7 @@ Contents
 .. toctree::
     :maxdepth: 1
 
+    CLI <cli>
     Config Server <config-server>
     Module Reference <api/modules>
     Changelog <changelog>
