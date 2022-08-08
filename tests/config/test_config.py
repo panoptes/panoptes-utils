@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 from astropy import units as u
 
@@ -52,8 +54,7 @@ def test_save_config_custom_file(tmp_path):
 
     save_config(temp_conf_file, dict(foo=1, bar=2), overwrite=False)
 
-    temp_local = temp_conf_file.with_suffix('_local.yaml')
-    assert temp_local.exists()
+    assert Path(tmp_path / 'temp_conf_local.yaml').exists()
 
     temp_config = load_config(temp_conf_file, load_local=True)
     assert temp_config['foo'] == 1
