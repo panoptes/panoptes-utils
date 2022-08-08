@@ -1,10 +1,10 @@
 import os
-import pytest
 
+import pytest
 from astropy.io import fits
 
-from panoptes.utils.images import mask_saturated
 from panoptes.utils.images import focus as focus_utils
+from panoptes.utils.images.misc import mask_saturated
 
 
 def test_vollath_f4(data_dir):

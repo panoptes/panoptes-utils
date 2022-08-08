@@ -21,8 +21,7 @@ def focus_metric(data, merit_function='vollath_F4', **kwargs):
         try:
             merit_function = globals()[merit_function]
         except KeyError:
-            raise KeyError(
-                "Focus merit function '{}' not found in panoptes.utils.images!".format(merit_function))
+            raise KeyError(f'Focus merit function {merit_function} not found.')
 
     return merit_function(data, **kwargs)
 

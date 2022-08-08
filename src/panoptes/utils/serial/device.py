@@ -232,7 +232,7 @@ class SerialDevice(object):
                 super(LineReader, this).connection_made(transport)
 
             def connection_lost(this, exc):
-                logger.warning(f'Disconnected from {self}')
+                logger.trace(f'Disconnected from {self}')
 
             def handle_line(this, data):
                 try:

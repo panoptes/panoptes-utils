@@ -1,9 +1,9 @@
-import os
 from contextlib import suppress
 from pathlib import Path
 from typing import Dict, List, Union
 
 from loguru import logger
+
 from panoptes.utils import error
 from panoptes.utils.serializers import from_yaml
 from panoptes.utils.serializers import to_yaml
@@ -67,6 +67,7 @@ def load_config(config_files: Union[Path, List] = None, parse: bool = True,
     config_files = listify(config_files)
     logger.debug(f'Loading config files: config_files={config_files!r}')
     for config_file in config_files:
+        config_file = Path(config_file)
         try:
             logger.debug(f'Adding config_file={config_file!r} to config dict')
             _add_to_conf(config, config_file, parse=parse)
@@ -75,8 +76,8 @@ def load_config(config_files: Union[Path, List] = None, parse: bool = True,
 
         # Load local version of config
         if load_local:
-            local_version = config_file.replace('.', '_local.')
-            if os.path.exists(local_version):
+            local_version = config_file.parent / Path(config_file.stem + '_local.yaml')
+            if local_version.exists():
                 try:
                     _add_to_conf(config, local_version, parse=parse)
                 except Exception as e:  # pragma: no cover
@@ -92,11 +93,12 @@ def load_config(config_files: Union[Path, List] = None, parse: bool = True,
     return config
 
 
-def save_config(path: Path, config: dict, overwrite: bool = True):
+def save_config(save_path: Path, config: dict, overwrite: bool = True):
     """Save config to local yaml file.
 
     Args:
-        path (str): Path to save, can be relative or absolute. See Notes in ``load_config``.
+        save_path (str): Path to save, can be relative or absolute. See Notes in
+            ``load_config``.
         config (dict): Config to save.
         overwrite (bool, optional): True if file should be updated, False
             to generate a warning for existing config. Defaults to True
@@ -108,27 +110,19 @@ def save_config(path: Path, config: dict, overwrite: bool = True):
     Raises:
          FileExistsError: If the local path already exists and ``overwrite=False``.
     """
-    # Make sure ends with '_local.yaml'
-    base, ext = os.path.splitext(path)
+    # Make sure ends with '_local.yaml'.
+    if save_path.stem.endswith('_local') is False:
+        save_path = save_path.with_name(save_path.stem + '_local.yaml')
 
-    # Always want .yaml (although not actually used).
-    ext = '.yaml'
-
-    # Check for _local name.
-    if not base.endswith('_local'):
-        base = f'{base}_local'
-
-    full_path = f'{base}{ext}'
-
-    if os.path.exists(full_path) and overwrite is False:
-        raise FileExistsError(f"Path exists and overwrite=False: {full_path}")
+    if save_path.exists() and overwrite is False:
+        raise FileExistsError(f"Path exists and overwrite=False: {save_path}")
     else:
-        # Create directory if does not exist
-        os.makedirs(os.path.dirname(full_path), exist_ok=True)
-        logger.info(f'Saving config to {full_path}')
-        with open(full_path, 'w') as f:
-            to_yaml(config, stream=f)
-        logger.success(f'Config info saved to {full_path}')
+        # Create directory if it does not exist.
+        save_path.parent.mkdir(parents=True, exist_ok=True)
+        logger.info(f'Saving config to {save_path}')
+        with save_path.open('w') as fn:
+            to_yaml(config, stream=fn)
+        logger.success(f'Config info saved to {save_path}')
 
     return True
 
@@ -195,5 +189,5 @@ def parse_config_directories(directories: Dict[str, str]):
 
 def _add_to_conf(config: dict, conf_fn: Path, parse: bool = False):
     with suppress(IOError, TypeError):
-        with open(conf_fn, 'r') as fn:
+        with conf_fn.open('r') as fn:
             config.update(from_yaml(fn.read(), parse=parse))
