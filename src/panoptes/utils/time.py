@@ -124,7 +124,7 @@ class CountdownTimer(object):
         >>> timer.expired()
         True
         >>> print(timer)
-        'EXPIRED Timer 0.00/1.00'
+        EXPIRED Timer 0.00/1.00
 
 
     Args:
