@@ -106,6 +106,26 @@ def flatten_time(t):
 class CountdownTimer(object):
     """Simple timer object for tracking whether a time duration has elapsed.
 
+    .doctest::
+
+        >>> timer = CountdownTimer(0)
+        >>> timer.time_left() > 0
+        True
+        >>> timer.expired()
+        False
+        >>> # Sleep less than the duration returns True.
+        >>> timer.sleep(max_sleep=0.1)
+        True
+        >>> # Sleep more than the duration returns False.
+        >>> timer.sleep()
+        False
+        >>> timer.time_left() == 0
+        True
+        >>> timer.expired()
+        True
+        >>> print(timer)
+        'EXPIRED Timer 0.00/1.00'
+
 
     Args:
         duration (int or float or astropy.units.Quantity): Amount of time to before time expires.
