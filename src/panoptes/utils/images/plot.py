@@ -63,6 +63,28 @@ def add_colorbar(axes_image, size='5%', pad=0.05, orientation='vertical'):
 
 def add_pixel_grid(ax1, grid_height, grid_width, show_axis_labels=True, show_superpixel=False,
                    major_alpha=0.5, minor_alpha=0.25):
+    """ Adds a pixel grid to a plot, including features for the Bayer array superpixel.
+
+    .. plot::
+
+        >>> from matplotlib import pyplot as plt
+        >>> import numpy as np
+        >>> from panoptes.utils.images.plot import add_colorbar, add_pixel_grid, get_palette
+        >>>
+        >>> x = np.arange(-5, 5)
+        >>> y = np.arange(-5, 5)
+        >>> X, Y = np.meshgrid(x, y)
+        >>>
+        >>> func = lambda x, y: x**2 + y**2
+        >>>
+        >>> fig, ax = plt.subplots()
+        >>> im1 = ax.imshow(func(X, Y), origin='lower', cmap='Greys')
+        >>> add_colorbar(im1)
+        >>> add_pixel_grid(ax, grid_height=10, grid_width=10, show_superpixel=True)
+        >>> fig.show()
+
+
+    """
     # major ticks every 2, minor ticks every 1
     if show_superpixel:
         x_major_ticks = np.arange(-0.5, grid_width, 2)
