@@ -34,22 +34,26 @@ def add_colorbar(axes_image, size='5%', pad=0.05, orientation='vertical'):
     `matplotlib.pyplot.imshow`.
 
     .. plot::
+        :include-source:
+        :caption: A colorbar with sane settings.
 
         >>> from matplotlib import pyplot as plt
         >>> import numpy as np
         >>> from panoptes.utils.images.plot import add_colorbar
-        >>>
+
         >>> x = np.arange(0.0, 100.0)
         >>> y = np.arange(0.0, 100.0)
         >>> X, Y = np.meshgrid(x, y)
-        >>>
+
         >>> func = lambda x, y: x**2 + y**2
-        >>>
         >>> z = func(X, Y)
-        >>>
+
         >>> fig, ax = plt.subplots()
         >>> im1 = ax.imshow(z, origin='lower')
+
+        >>> # Add the colorbar to the Image object (not the Axes).
         >>> add_colorbar(im1)
+
         >>> fig.show()
 
 
@@ -63,6 +67,33 @@ def add_colorbar(axes_image, size='5%', pad=0.05, orientation='vertical'):
 
 def add_pixel_grid(ax1, grid_height, grid_width, show_axis_labels=True, show_superpixel=False,
                    major_alpha=0.5, minor_alpha=0.25):
+    """ Adds a pixel grid to a plot, including features for the Bayer array superpixel.
+
+    .. plot::
+        :include-source:
+        :caption: The Bayer array superpixel pattern. Grid height and size must be even.
+
+        >>> from matplotlib import pyplot as plt
+        >>> import numpy as np
+        >>> from panoptes.utils.images.plot import add_pixel_grid
+
+        >>> x = np.arange(-5, 5)
+        >>> y = np.arange(-5, 5)
+        >>> X, Y = np.meshgrid(x, y)
+        >>> func = lambda x, y: x**2 + y**2
+
+        >>> fig, ax = plt.subplots()
+        >>> im1 = ax.imshow(func(X, Y), origin='lower', cmap='Greys')
+
+        >>> # Add the grid to the Axes object.
+        >>> add_pixel_grid(ax, grid_height=10, grid_width=10, show_superpixel=True, show_axis_labels=False)
+
+        >>> fig.show()
+
+
+    """
+    ax1.set_xticks([])
+    ax1.set_yticks([])
     # major ticks every 2, minor ticks every 1
     if show_superpixel:
         x_major_ticks = np.arange(-0.5, grid_width, 2)
@@ -72,9 +103,6 @@ def add_pixel_grid(ax1, grid_height, grid_width, show_axis_labels=True, show_sup
         ax1.set_yticks(y_major_ticks)
 
         ax1.grid(which='major', color='r', linestyle='--', lw=3, alpha=major_alpha)
-    else:
-        ax1.set_xticks([])
-        ax1.set_yticks([])
 
     x_minor_ticks = np.arange(-0.5, grid_width, 1)
     y_minor_ticks = np.arange(-0.5, grid_height, 1)
