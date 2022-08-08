@@ -102,37 +102,35 @@ def flatten_time(t):
     return t.isot.replace('-', '').replace(':', '').split('.')[0]
 
 
-# This is a streamlined variant of PySerial's serialutil.Timeout.
 class CountdownTimer(object):
-    """Simple timer object for tracking whether a time duration has elapsed.
-
-    .doctest::
-
-        >>> timer = CountdownTimer(1)
-        >>> timer.time_left() > 0
-        True
-        >>> timer.expired()
-        False
-        >>> # Sleep less than the duration returns True.
-        >>> timer.sleep(max_sleep=0.1)
-        True
-        >>> # Sleep more than the duration returns False.
-        >>> timer.sleep()
-        False
-        >>> timer.time_left() == 0
-        True
-        >>> timer.expired()
-        True
-        >>> print(timer)
-        EXPIRED Timer 0.00/1.00
-
-
-    Args:
-        duration (int or float or astropy.units.Quantity): Amount of time to before time expires.
-            May be numeric seconds or an Astropy time duration (e.g. 1 * u.minute).
-    """
 
     def __init__(self, duration: Union[int, float], name: str = ''):
+        """Simple timer object for tracking whether a time duration has elapsed.
+
+        Examples:
+
+            >>> timer = CountdownTimer(1)
+            >>> timer.time_left() > 0
+            True
+            >>> timer.expired()
+            False
+            >>> # Sleep less than the duration returns True.
+            >>> timer.sleep(max_sleep=0.1)
+            True
+            >>> # Sleep more than the duration returns False.
+            >>> timer.sleep()
+            False
+            >>> timer.time_left() == 0
+            True
+            >>> timer.expired()
+            True
+            >>> print(timer)
+            EXPIRED Timer 0.00/1.00
+
+        Args:
+            duration (int or float or astropy.units.Quantity): Amount of time to before time expires.
+                May be numeric seconds or an Astropy time duration (e.g. 1 * u.minute).
+        """
         if isinstance(duration, u.Quantity):
             duration = duration.to(u.second).value
         elif not isinstance(duration, (int, float)):
