@@ -43,7 +43,6 @@ def test_countdown_timer_bad_input():
 
 def test_countdown_timer_non_blocking():
     timer = CountdownTimer(0)
-    assert timer.is_non_blocking
     assert timer.time_left() == 0
 
     for arg, expected_duration in [(2, 2.0), (0.5, 0.5), (1 * u.second, 1.0)]:
@@ -56,7 +55,6 @@ def test_countdown_timer():
     timer = CountdownTimer(count_time)
     assert timer.time_left() > 0
     assert timer.expired() is False
-    assert timer.is_non_blocking is False
 
     counter = 0.
     while timer.time_left() > 0:
@@ -66,6 +64,7 @@ def test_countdown_timer():
     assert counter == pytest.approx(1)
     assert timer.time_left() == 0
     assert timer.expired() is True
+    assert str(timer) == 'EXPIRED Timer 0.00/1.00'
 
 
 def test_countdown_timer_sleep():
@@ -73,7 +72,6 @@ def test_countdown_timer_sleep():
     timer = CountdownTimer(count_time)
     assert timer.time_left() > 0
     assert timer.expired() is False
-    assert timer.is_non_blocking is False
 
     counter = 0.
     while timer.time_left() > 0.5:
