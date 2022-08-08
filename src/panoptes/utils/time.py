@@ -108,7 +108,7 @@ class CountdownTimer(object):
 
     .doctest::
 
-        >>> timer = CountdownTimer(0)
+        >>> timer = CountdownTimer(1)
         >>> timer.time_left() > 0
         True
         >>> timer.expired()
