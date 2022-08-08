@@ -118,7 +118,7 @@ def save_config(save_path: Path, config: dict, overwrite: bool = True):
         raise FileExistsError(f"Path exists and overwrite=False: {save_path}")
     else:
         # Create directory if it does not exist.
-        save_path.mkdir(parents=True, exist_ok=True)
+        save_path.parent.mkdir(parents=True, exist_ok=True)
         logger.info(f'Saving config to {save_path}')
         with save_path.open('w') as fn:
             to_yaml(config, stream=fn)
