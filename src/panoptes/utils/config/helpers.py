@@ -110,27 +110,19 @@ def save_config(save_path: Path, config: dict, overwrite: bool = True):
     Raises:
          FileExistsError: If the local path already exists and ``overwrite=False``.
     """
-    # Make sure ends with '_local.yaml'
-    base = save_path.stem
+    # Make sure ends with '_local.yaml'.
+    if save_path.stem.endswith('_local') is False:
+        save_path = save_path.with_name(save_path.stem + '_local.yaml')
 
-    # Always want .yaml (although not actually used).
-    ext = '.yaml'
-
-    # Ensure '_local' is in name.
-    if not base.endswith('_local'):
-        base = f'{base}_local'
-
-    full_path = Path(f'{base}{ext}')
-
-    if full_path.exists() and overwrite is False:
-        raise FileExistsError(f"Path exists and overwrite=False: {full_path}")
+    if save_path.exists() and overwrite is False:
+        raise FileExistsError(f"Path exists and overwrite=False: {save_path}")
     else:
         # Create directory if it does not exist.
-        full_path.mkdir(parents=True, exist_ok=True)
-        logger.info(f'Saving config to {full_path}')
-        with full_path.open('w') as fn:
+        save_path.mkdir(parents=True, exist_ok=True)
+        logger.info(f'Saving config to {save_path}')
+        with save_path.open('w') as fn:
             to_yaml(config, stream=fn)
-        logger.success(f'Config info saved to {full_path}')
+        logger.success(f'Config info saved to {save_path}')
 
     return True
 

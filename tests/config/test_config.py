@@ -1,5 +1,3 @@
-import os
-
 import pytest
 from astropy import units as u
 
@@ -55,7 +53,7 @@ def test_save_config_custom_file(tmp_path):
     save_config(temp_conf_file, dict(foo=1, bar=2), overwrite=False)
 
     temp_local = temp_conf_file.with_suffix('_local.yaml')
-    assert os.path.exists(temp_local)
+    assert temp_local.exists()
 
     temp_config = load_config(temp_conf_file, load_local=True)
     assert temp_config['foo'] == 1
@@ -77,8 +75,9 @@ def test_save_config_custom_local_file(tmp_path):
     temp_conf_local_file = tmp_path / 'temp_conf_local.yaml'
 
     # Save the local directly.
+    assert temp_conf_local_file.exists() is False
     save_config(temp_conf_local_file, dict(foo=1, bar=2), overwrite=False)
-    assert os.path.exists(temp_conf_local_file)
+    assert temp_conf_local_file.exists()
 
     temp_config = load_config(temp_conf_file, load_local=False)
     assert temp_config == dict()

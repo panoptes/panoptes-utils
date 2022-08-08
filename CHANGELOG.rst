@@ -8,8 +8,7 @@ Changelog
 Added
 ^^^^^
 
-* The ``panoptes-utils image watch <PATH>`` command with default processing that will
-convert ``CR2`` files to ``JPG`` and ``FITS`` and then plate-solve the ``FITS`` files.
+* The ``panoptes-utils image watch <PATH>`` command with default processing that will convert ``CR2`` files to ``JPG`` and ``FITS`` and then plate-solve the ``FITS`` files.
 * GHA downloads a ``CR2`` file for testing.
 
 Changed
