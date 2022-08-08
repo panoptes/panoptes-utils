@@ -146,7 +146,7 @@ class CountdownTimer(object):
             int: Number of seconds remaining in timer, zero if ``is_non_blocking=True``.
         """
         delta = self.target_time - time.monotonic()
-        if delta > self.duration:
+        if delta > self.duration:  # pragma: no cover
             # clock jumped, recalculate
             self.restart()
             return self.duration
