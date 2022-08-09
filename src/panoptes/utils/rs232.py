@@ -143,7 +143,7 @@ class SerialData(object):
         # Properties have been set to reasonable values, ready to open the port.
         try:
             self.connect()
-        except serial.serialutil.SerialException as err:
+        except serial.serialutil.SerialException as err:  # pragma: no cover
             self.logger.debug(f'Unable to open {self.name}. Error: {err}')
             return
 
@@ -226,9 +226,6 @@ class SerialData(object):
         If no response is given, delay for retry_delay and then try to read
         again. Fail after retry_limit attempts.
         """
-        assert self.ser
-        assert self.ser.isOpen()
-
         if retry_limit is None:
             retry_limit = self.retry_limit
         if retry_delay is None:

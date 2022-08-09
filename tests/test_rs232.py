@@ -26,6 +26,8 @@ def test_usage():
     port = 'loop://'
     ser = rs232.SerialData(port=port, open_delay=0.1)
     assert ser.is_connected
+    ser.connect()
+
     write_bytes = ser.write('Hello world\n')
     assert write_bytes == 12
     read_line = ser.read(write_bytes)
@@ -39,6 +41,9 @@ def test_usage():
     reading = ser.get_and_parse_reading()
 
     ser.reset_input_buffer()
+
+    bytes = ser.write('a')
+    ser.read_bytes(bytes)
 
     ser.disconnect()
     assert not ser.is_connected
