@@ -14,10 +14,12 @@ from panoptes.utils.images.misc import crop_data, mask_saturated
 def test_mask_saturated():
     ones = np.ones((10, 10))
     ones[0, 0] = 256
+    # Bit-depth.
     assert mask_saturated(ones, bit_depth=8).sum() == 99.0
+    # Bit-depth with unit.
     assert mask_saturated(ones, bit_depth=8 * u.bit).sum() == 99.0
-
-    assert mask_saturated(ones.astype('int')).sum() == 99.0
+    # Array has int dtype so bit_depth is inferred.
+    assert mask_saturated(ones.astype('int8')).sum() == 99.0
 
 
 def test_mask_saturated_bad():
