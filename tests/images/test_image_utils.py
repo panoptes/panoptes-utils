@@ -3,11 +3,28 @@ import tempfile
 
 import numpy as np
 import pytest
+from astropy import units as u
 from astropy.nddata import Cutout2D
 
 from panoptes.utils import error
 from panoptes.utils.images import make_pretty_image
-from panoptes.utils.images.misc import crop_data
+from panoptes.utils.images.misc import crop_data, mask_saturated
+
+
+def test_mask_saturated():
+    ones = np.ones((10, 10))
+    ones[0, 0] = 256
+    assert mask_saturated(ones, bit_depth=8).sum() == 99.0
+    assert mask_saturated(ones, bit_depth=8 * u.bit).sum() == 99.0
+
+    assert mask_saturated(ones.astype('int')).sum() == 99.0
+
+
+def test_mask_saturated_bad():
+    ones = np.ones((10, 10))
+    ones[0, 0] = 256
+    with pytest.raises(error.IllegalValue):
+        mask_saturated(ones, bit_depth=8 * u.meter)
 
 
 def test_crop_data():
