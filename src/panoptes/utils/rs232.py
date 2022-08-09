@@ -5,9 +5,10 @@ from contextlib import suppress
 import serial
 from deprecated import deprecated
 from loguru import logger
+from serial.tools.list_ports import comports as get_comports
+
 from panoptes.utils import error
 from panoptes.utils import serializers
-from serial.tools.list_ports import comports as get_comports
 
 
 @deprecated(reason='Use panoptes.utils.serial.device')
@@ -71,39 +72,17 @@ class SerialData(object):
 
     .. doctest::
 
-        # Register our serial simulators by importing protocol.
-        >>> from panoptes.utils.serial.handlers import protocol_buffers
-
-        # Import our serial utils.
         >>> from panoptes.utils.rs232 import SerialData
-
-        # Connect to our fake buffered device
-        >>> device_listener = SerialData(port='buffers://')
-
-        # Note: A manual reset is currently required because implementation is not complete.
-        # See https://github.com/panoptes/POCS/issues/758 for details.
-        >>> protocol_buffers.reset_serial_buffers()
+        >>> # Connect to our fake buffered device
+        >>> device_listener = SerialData(port='loop://')
         >>> device_listener.is_connected
         True
-
         >>> device_listener.port
-        'buffers://'
-
-        # Device sends event
-        >>> protocol_buffers.set_serial_read_buffer(b'emit event')
-
-        # Listen for event
-        >>> device_listener.read()
-        'emit event'
-
-        >>> device_listener.write('ack event')
-        9
-        >>> protocol_buffers.get_serial_write_buffer()
-        b'ack event'
-
-        # Remove custom handlers
-        >>> import serial
-        >>> serial.protocol_handler_packages.remove('panoptes.utils.serial.handlers')
+        'loop://'
+        >>> # Device sends event
+        >>> bytes = device_listener.write('Hello World')
+        >>> device_listener.read(bytes)
+        'Hello World'
     """
 
     def __init__(self,
