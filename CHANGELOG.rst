@@ -2,8 +2,8 @@
 Changelog
 =========
 
-0.2.37dev
----------
+0.2.37 - 2022-08-09
+-------------------
 
 Added
 ^^^^^
@@ -25,6 +25,7 @@ Removed
 * Unused stamp plotting functions.
 * Testing of config servers on GHA.
 * `CountdownTimer.is_non_blocking` predicate that wasn't being used.
+* Extra serial protocol handlers.
 
 
 
