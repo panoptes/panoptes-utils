@@ -25,10 +25,27 @@ pip install panoptes-utils
 Full options for install:
 
 ```bash
-pip install -e ".[config,docs,images,testing,social]"
+pip install "panoptes-utils[config,docs,images,testing,social]"
 ```
 
 See the full documentation at: https://panoptes-utils.readthedocs.io
+
+Dependencies
+------------
+
+There are a few system dependencies depending on what functionality you will be using.
+
+In particular, the plate solving requires `astrometry.net` and the appropriate index files.
+
+Use the following on a debian-based system (e.g. Ubuntu) to easily install all dependencies:
+
+```bash
+apt-get update && apt-get install --no-install-recommends --yes \
+  libffi-dev libssl-dev \
+  astrometry.net astrometry-data-tycho2 \
+  dcraw exiftool libcfitsio-dev libcfitsio-bin \
+  libfreetype6-dev libpng-dev libjpeg-dev libffi-dev
+```
 
 Command Line
 ------------
@@ -53,23 +70,6 @@ After installing with the `config` option as above, type:
 
 ```bash
 panoptes-config-server run --config-file <path-to-file.yaml>
-```
-
-Dependencies
-------------
-
-There are a few system dependencies depending on what functionality you will be using.
-
-In particular, the plate solving requires `astrometry.net` and the appropriate index files.
-
-Use the following on a debian-based system (e.g. Ubuntu) to install all dependencies:
-
-```bash
-apt-get update && apt-get install --no-install-recommends --yes \
-  libffi-dev libssl-dev \
-  astrometry.net astrometry-data-tycho2 \
-  dcraw exiftool libcfitsio-dev libcfitsio-bin \
-  libfreetype6-dev libpng-dev libjpeg-dev libffi-dev
 ```
 
 Developing
