@@ -18,13 +18,8 @@ def test_missing_port():
 def test_non_existent_device():
     """Doesn't complain if it can't find the device."""
     port = '/dev/tty12345698765'
-    ser = rs232.SerialData(port=port)
-    assert not ser.is_connected
-    assert port == ser.name
-    # Can't connect to that device.
     with pytest.raises(error.BadSerialConnection):
-        ser.connect()
-    assert not ser.is_connected
+        ser = rs232.SerialData(port=port)
 
 
 def test_usage():
