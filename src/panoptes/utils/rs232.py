@@ -138,21 +138,21 @@ class SerialData(object):
         self.ser.rtscts = False
         self.ser.dsrdtr = False
 
-        self.logger.debug('SerialData for {} created', self.name)
+        self.logger.debug(f'SerialData for {self.name} created')
 
         # Properties have been set to reasonable values, ready to open the port.
         try:
             self.ser.open()
         except serial.serialutil.SerialException as err:
-            self.logger.debug('Unable to open {}. Error: {}', self.name, err)
+            self.logger.debug(f'Unable to open {self.name}. Error: {err}')
             return
 
         open_delay = max(0.0, float(open_delay))
         if open_delay > 0.0:
-            self.logger.debug('Opened {}, sleeping for {} seconds', self.name, open_delay)
+            self.logger.debug(f'Opened {self.name}, sleeping for {open_delay} seconds')
             time.sleep(open_delay)
         else:
-            self.logger.debug('Opened {}', self.name)
+            self.logger.debug(f'Opened {self.name}')
 
     @property
     def port(self):
@@ -171,19 +171,18 @@ class SerialData(object):
             error.BadSerialConnection if unable to open the connection.
         """
         if self.is_connected:
-            self.logger.debug('Connection already open to {}', self.name)
+            self.logger.debug(f'Connection already open to {self.name}')
             return
-        self.logger.debug('SerialData.connect called for {}', self.name)
+        self.logger.debug(f'SerialData.connect called for {self.name}')
         try:
             # Note: we must not call open when it is already open, else an exception is thrown of
             # the same type thrown when open fails to actually open the device.
             self.ser.open()
             if not self.is_connected:
-                raise error.BadSerialConnection(
-                    msg="Serial connection {} is not open".format(self.name))
+                raise error.BadSerialConnection(msg=f'Serial connection {self.name} is not open')
         except serial.serialutil.SerialException as err:
             raise error.BadSerialConnection(msg=err)
-        self.logger.debug('Serial connection established to {}', self.name)
+        self.logger.debug(f'Serial connection established to {self.name}')
 
     def disconnect(self):
         """Closes the serial connection.
@@ -192,16 +191,13 @@ class SerialData(object):
             error.BadSerialConnection if unable to close the connection.
         """
         # Fortunately, close() doesn't throw an exception if already closed.
-        self.logger.debug('SerialData.disconnect called for {}', self.name)
+        self.logger.debug(f'SerialData.disconnect called for {self.name}')
         try:
             self.ser.close()
-        except Exception as err:
-            raise error.BadSerialConnection(
-                msg="SerialData.disconnect failed for {}; underlying error: {}".format(
-                    self.name, err))
+        except Exception as e:
+            raise error.BadSerialConnection(msg=f'disconnect failed for {self.name}; {e!r}')
         if self.is_connected:
-            raise error.BadSerialConnection(
-                msg="SerialData.disconnect failed for {}".format(self.name))
+            raise error.BadSerialConnection(msg=f'SerialData.disconnect failed for {self.name}')
 
     def write_bytes(self, data):
         """Write data of type bytes."""

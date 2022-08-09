@@ -1,3 +1,5 @@
+import time
+
 import pytest
 
 from panoptes.utils import error
@@ -34,3 +36,12 @@ def test_write():
     assert write_bytes == 12
     read_line = ser.read(write_bytes)
     assert read_line == 'Hello world\n'
+
+
+def test_open_delay():
+    ser = rs232.SerialData(port='loop://', open_delay=0.5)
+    assert not ser.is_connected
+    while not ser.is_connected:
+        time.sleep(0.1)
+    assert ser.is_connected
+    ser.connect()
