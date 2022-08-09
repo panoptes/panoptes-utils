@@ -22,9 +22,10 @@ python:
     - requirements: docs/requirements.txt
     - method: pip
       path: .
-      extras_requirements:
+      extra_requirements:
         - config
         - docs
         - images
         - social
+        - testing
   system_packages: true
