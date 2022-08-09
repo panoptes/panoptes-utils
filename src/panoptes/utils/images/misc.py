@@ -103,6 +103,26 @@ def crop_data(data, box_width=200, center=None, data_only=True, wcs=None, **kwar
 
     Shape is a box centered around the middle of the data
 
+    .. plot::
+        :include-source:
+
+        >>> from matplotlib import pyplot as plt
+        >>> from astropy.wcs import WCS
+        >>> from panoptes.utils.images.misc import crop_data
+        >>> from panoptes.utils.images.plot import add_colorbar
+        >>> from panoptes.utils.images.fits import getdata
+        >>>
+        >>> fits_url = 'https://github.com/panoptes/panoptes-utils/raw/develop/tests/data/solved.fits.fz'
+        >>> data, header = getdata(fits_url, header=True)
+        >>> wcs = WCS(header)
+        >>> # Crop a portion of the image by WCS and get Cutout2d object.
+        >>> cropped = crop_data(data, box_width=10, wcs=wcs, data_only=False)
+        >>> fig, ax = plt.subplots()
+        >>> im = ax.imshow(cropped.data, origin='lower', cmap='Greys')
+        >>> add_colorbar(im)
+        >>> fig.show()
+
+
     Args:
         data (`numpy.array`): Array of data.
         box_width (int, optional): Size of box width in pixels, defaults to 200px.
