@@ -80,7 +80,7 @@ def add_pixel_grid(ax1, grid_height, grid_width, show_axis_labels=True, show_sup
         >>> x = np.arange(-5, 5)
         >>> y = np.arange(-5, 5)
         >>> X, Y = np.meshgrid(x, y)
-        >>> func = lambda x, y: x**2 + y**2
+        >>> func = lambda x, y: x**2 - y**2
         >>>
         >>> fig, ax = plt.subplots()
         >>> im1 = ax.imshow(func(X, Y), origin='lower', cmap='Greys')
@@ -90,7 +90,14 @@ def add_pixel_grid(ax1, grid_height, grid_width, show_axis_labels=True, show_sup
         >>>
         >>> fig.show()
 
-
+    Args:
+        ax1 (`matplotlib.axes.Axes`): The axes to add the grid to.
+        grid_height (int): The height of the grid in pixels.
+        grid_width (int): The width of the grid in pixels.
+        show_axis_labels (bool, optional): Whether to show the axis labels. Default True.
+        show_superpixel (bool, optional): Whether to show the superpixel pattern. Default False.
+        major_alpha (float, optional): The alpha value for the major grid lines. Default 0.5.
+        minor_alpha (float, optional): The alpha value for the minor grid lines. Default 0.25.
     """
     ax1.set_xticks([])
     ax1.set_yticks([])
