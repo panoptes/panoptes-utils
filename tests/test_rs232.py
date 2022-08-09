@@ -1,5 +1,3 @@
-import time
-
 import pytest
 
 from panoptes.utils import error
@@ -30,7 +28,7 @@ def test_non_existent_device():
 
 def test_usage():
     port = 'loop://'
-    ser = rs232.SerialData(port=port)
+    ser = rs232.SerialData(port=port, open_delay=0.1)
     assert ser.is_connected
     write_bytes = ser.write('Hello world\n')
     assert write_bytes == 12
@@ -38,12 +36,3 @@ def test_usage():
     assert read_line == 'Hello world\n'
     ser.disconnect()
     assert not ser.is_connected
-
-
-def test_open_delay():
-    ser = rs232.SerialData(port='loop://', open_delay=0.5)
-    assert not ser.is_connected
-    while not ser.is_connected:
-        time.sleep(0.1)
-    assert ser.is_connected
-    ser.connect()
