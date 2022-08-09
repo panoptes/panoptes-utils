@@ -28,7 +28,7 @@ def test_non_existent_device():
     assert not ser.is_connected
 
 
-def test_write():
+def test_usage():
     port = 'loop://'
     ser = rs232.SerialData(port=port)
     assert ser.is_connected
@@ -36,6 +36,8 @@ def test_write():
     assert write_bytes == 12
     read_line = ser.read(write_bytes)
     assert read_line == 'Hello world\n'
+    ser.disconnect()
+    assert not ser.is_connected
 
 
 def test_open_delay():
