@@ -178,7 +178,7 @@ class SerialData(object):
             # Note: we must not call open when it is already open, else an exception is thrown of
             # the same type thrown when open fails to actually open the device.
             self.ser.open()
-            if not self.is_connected:
+            if not self.is_connected:  # pragma: no cover
                 raise error.BadSerialConnection(msg=f'Serial connection {self.name} is not open')
         except serial.serialutil.SerialException as err:
             raise error.BadSerialConnection(msg=err)
@@ -231,12 +231,15 @@ class SerialData(object):
         if retry_delay is None:
             retry_delay = self.retry_delay
 
+        data = ''
         for _ in range(retry_limit):
-            data = self.ser.readline()
-            if data:
-                return data.decode(encoding='ascii')
+            line = self.ser.readline()
+            if line:
+                data = line.decode(encoding='ascii')
+                break
             time.sleep(retry_delay)
-        return ''
+
+        return data
 
     def get_reading(self):
         """Reads and returns a line, along with the timestamp of the read.
@@ -262,16 +265,17 @@ class SerialData(object):
             A pair (tuple) of (timestamp, decoded JSON line). The timestamp is the time of
             completion of the readline operation.
         """
+        reading = None
         for _ in range(max(1, retry_limit)):
             (ts, line) = self.get_reading()
-            if not line:
-                continue
 
-            with suppress(error.InvalidDeserialization):
+            with suppress(error.InvalidDeserialization, TypeError):
                 data = serializers.from_json(line)
                 if data:
-                    return (ts, data)
-        return None
+                    reading = (ts, data)
+                    break
+
+        return reading
 
     def reset_input_buffer(self):
         """Clear buffered data from connected port/device.
