@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ "3.10" ]
+        python-version: [ "3.7" ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -34,10 +34,19 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install and test panoptes-utils on ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          # TODO don't get all the indexes.
+          sudo apt-get install -y exiftool fonts-freefont-ttf libcfitsio-bin astrometry.net astrometry-data-tycho2-10-19
+      - name: Download CR2 file
+        run: |
+          curl https://storage.googleapis.com/panoptes-resources/test-data/canon.cr2 --output ./tests/data/canon.cr2
+      - name: Install panoptes-utils on ${{ matrix.python-version }}
         run: |
           pip install -e ".[config,images,testing,social]"
-          pytest
+      - name: Test panoptes-utils on ${{ matrix.python-version }}
+        run: |
+          pytest --test-solve --test-databases=all
       - name: Upload coverage report to codecov.io
         uses: codecov/codecov-action@v1
         if: success()

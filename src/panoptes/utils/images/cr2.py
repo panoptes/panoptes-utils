@@ -3,10 +3,11 @@ import shutil
 import subprocess
 from json import loads
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional
 from warnings import warn
 
 import numpy as np
+from PIL import Image, ImageDraw, ImageFont
 from astropy.io import fits
 from dateutil.parser import parse as date_parse
 from loguru import logger
@@ -252,3 +253,53 @@ def read_pgm(fname, byteorder='>', remove_after=False):  # pragma: no cover
         os.remove(fname)
 
     return data
+
+
+def cr2_to_jpg(
+        cr2_fname: Path,
+        jpg_fname: str = None,
+        title: str = '',
+        overwrite: bool = False,
+        remove_cr2: bool = False,
+) -> Optional[Path]:
+    """Extract a JPG image from a CR2, return the new path name."""
+    exiftool = shutil.which('exiftool')
+    if not exiftool:  # pragma: no cover
+        raise error.InvalidSystemCommand('exiftool not found')
+
+    jpg_fname = Path(jpg_fname) if jpg_fname else cr2_fname.with_suffix('.jpg')
+
+    if jpg_fname.exists() and overwrite is False:
+        raise error.AlreadyExists(f'{jpg_fname} already exists and overwrite is False')
+
+    cmd = [exiftool, '-b', '-PreviewImage', cr2_fname.as_posix()]
+    comp_proc = subprocess.run(cmd, check=True, stdout=jpg_fname.open('wb'))
+
+    if comp_proc.returncode != 0:  # pragma: no cover
+        raise error.InvalidSystemCommand(f'{comp_proc.returncode}')
+
+    if title and title > '':
+        try:
+            im = Image.open(jpg_fname)
+            id = ImageDraw.Draw(im)
+
+            im.info['title'] = title
+
+            try:
+                fnt = ImageFont.truetype('FreeMono.ttf', 120)
+            except Exception:  # pragma: no cover
+                fnt = ImageFont.load_default()
+            bottom_padding = 25
+            position = (im.size[0] / 2, im.size[1] - bottom_padding)
+            id.text(position, title, font=fnt, fill=(255, 0, 0), anchor='ms')
+
+            print(f'Adding title={title} to {jpg_fname.as_posix()}')
+            im.save(jpg_fname)
+        except Exception:
+            raise error.InvalidSystemCommand(f'Error adding title to {jpg_fname.as_posix()}')
+
+    if remove_cr2:
+        print(f'Removing {cr2_fname}')
+        cr2_fname.unlink()
+
+    return jpg_fname

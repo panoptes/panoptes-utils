@@ -5,13 +5,14 @@ import numpy as np
 from astropy.io import fits
 from astropy.stats import SigmaClip
 from loguru import logger
-from panoptes.utils.images import fits as fits_utils
 from photutils import Background2D
 from photutils import BkgZoomInterpolator
+from photutils import MMMBackground
 from photutils import MeanBackground
 from photutils import MedianBackground
-from photutils import MMMBackground
 from photutils import SExtractorBackground
+
+from panoptes.utils.images import fits as fits_utils
 
 
 class RGB(IntEnum):
@@ -366,7 +367,7 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False, as_slice
 
 def get_rgb_background(data,
                        box_size=(79, 84),
-                       filter_size=(11, 12),
+                       filter_size=(11, 11),
                        estimator='mmm',
                        interpolator='zoom',
                        sigma=5,

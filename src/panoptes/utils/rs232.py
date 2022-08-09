@@ -5,9 +5,10 @@ from contextlib import suppress
 import serial
 from deprecated import deprecated
 from loguru import logger
+from serial.tools.list_ports import comports as get_comports
+
 from panoptes.utils import error
 from panoptes.utils import serializers
-from serial.tools.list_ports import comports as get_comports
 
 
 @deprecated(reason='Use panoptes.utils.serial.device')
@@ -71,39 +72,17 @@ class SerialData(object):
 
     .. doctest::
 
-        # Register our serial simulators by importing protocol.
-        >>> from panoptes.utils.serial.handlers import protocol_buffers
-
-        # Import our serial utils.
         >>> from panoptes.utils.rs232 import SerialData
-
-        # Connect to our fake buffered device
-        >>> device_listener = SerialData(port='buffers://')
-
-        # Note: A manual reset is currently required because implementation is not complete.
-        # See https://github.com/panoptes/POCS/issues/758 for details.
-        >>> protocol_buffers.reset_serial_buffers()
+        >>> # Connect to our fake buffered device
+        >>> device_listener = SerialData(port='loop://')
         >>> device_listener.is_connected
         True
-
         >>> device_listener.port
-        'buffers://'
-
-        # Device sends event
-        >>> protocol_buffers.set_serial_read_buffer(b'emit event')
-
-        # Listen for event
-        >>> device_listener.read()
-        'emit event'
-
-        >>> device_listener.write('ack event')
-        9
-        >>> protocol_buffers.get_serial_write_buffer()
-        b'ack event'
-
-        # Remove custom handlers
-        >>> import serial
-        >>> serial.protocol_handler_packages.remove('panoptes.utils.serial.handlers')
+        'loop://'
+        >>> # Device sends event
+        >>> bytes = device_listener.write('Hello World')
+        >>> device_listener.read(bytes)
+        'Hello World'
     """
 
     def __init__(self,
@@ -159,21 +138,21 @@ class SerialData(object):
         self.ser.rtscts = False
         self.ser.dsrdtr = False
 
-        self.logger.debug('SerialData for {} created', self.name)
+        self.logger.debug(f'SerialData for {self.name} created')
 
         # Properties have been set to reasonable values, ready to open the port.
         try:
-            self.ser.open()
-        except serial.serialutil.SerialException as err:
-            self.logger.debug('Unable to open {}. Error: {}', self.name, err)
+            self.connect()
+        except serial.serialutil.SerialException as err:  # pragma: no cover
+            self.logger.debug(f'Unable to open {self.name}. Error: {err}')
             return
 
         open_delay = max(0.0, float(open_delay))
         if open_delay > 0.0:
-            self.logger.debug('Opened {}, sleeping for {} seconds', self.name, open_delay)
+            self.logger.debug(f'Opened {self.name}, sleeping for {open_delay} seconds')
             time.sleep(open_delay)
         else:
-            self.logger.debug('Opened {}', self.name)
+            self.logger.debug(f'Opened {self.name}')
 
     @property
     def port(self):
@@ -192,19 +171,18 @@ class SerialData(object):
             error.BadSerialConnection if unable to open the connection.
         """
         if self.is_connected:
-            self.logger.debug('Connection already open to {}', self.name)
+            self.logger.debug(f'Connection already open to {self.name}')
             return
-        self.logger.debug('SerialData.connect called for {}', self.name)
+        self.logger.debug(f'SerialData.connect called for {self.name}')
         try:
             # Note: we must not call open when it is already open, else an exception is thrown of
             # the same type thrown when open fails to actually open the device.
             self.ser.open()
-            if not self.is_connected:
-                raise error.BadSerialConnection(
-                    msg="Serial connection {} is not open".format(self.name))
+            if not self.is_connected:  # pragma: no cover
+                raise error.BadSerialConnection(msg=f'Serial connection {self.name} is not open')
         except serial.serialutil.SerialException as err:
             raise error.BadSerialConnection(msg=err)
-        self.logger.debug('Serial connection established to {}', self.name)
+        self.logger.debug(f'Serial connection established to {self.name}')
 
     def disconnect(self):
         """Closes the serial connection.
@@ -213,21 +191,16 @@ class SerialData(object):
             error.BadSerialConnection if unable to close the connection.
         """
         # Fortunately, close() doesn't throw an exception if already closed.
-        self.logger.debug('SerialData.disconnect called for {}', self.name)
+        self.logger.debug(f'SerialData.disconnect called for {self.name}')
         try:
             self.ser.close()
-        except Exception as err:
-            raise error.BadSerialConnection(
-                msg="SerialData.disconnect failed for {}; underlying error: {}".format(
-                    self.name, err))
-        if self.is_connected:
-            raise error.BadSerialConnection(
-                msg="SerialData.disconnect failed for {}".format(self.name))
+        except Exception as e:  # pragma: no cover
+            raise error.BadSerialConnection(msg=f'disconnect failed for {self.name}; {e!r}')
+        if self.is_connected:  # pragma: no cover
+            raise error.BadSerialConnection(msg=f'SerialData.disconnect failed for {self.name}')
 
     def write_bytes(self, data):
         """Write data of type bytes."""
-        assert self.ser
-        assert self.ser.isOpen()
         return self.ser.write(data)
 
     def write(self, value):
@@ -245,8 +218,6 @@ class SerialData(object):
         Returns:
             Bytes read from the port.
         """
-        assert self.ser
-        assert self.ser.isOpen()
         return self.ser.read(size=size)
 
     def read(self, retry_limit=None, retry_delay=None):
@@ -255,20 +226,20 @@ class SerialData(object):
         If no response is given, delay for retry_delay and then try to read
         again. Fail after retry_limit attempts.
         """
-        assert self.ser
-        assert self.ser.isOpen()
-
         if retry_limit is None:
             retry_limit = self.retry_limit
         if retry_delay is None:
             retry_delay = self.retry_delay
 
+        data = ''
         for _ in range(retry_limit):
-            data = self.ser.readline()
-            if data:
-                return data.decode(encoding='ascii')
+            line = self.ser.readline()
+            if line:
+                data = line.decode(encoding='ascii')
+                break
             time.sleep(retry_delay)
-        return ''
+
+        return data
 
     def get_reading(self):
         """Reads and returns a line, along with the timestamp of the read.
@@ -294,16 +265,17 @@ class SerialData(object):
             A pair (tuple) of (timestamp, decoded JSON line). The timestamp is the time of
             completion of the readline operation.
         """
+        reading = None
         for _ in range(max(1, retry_limit)):
             (ts, line) = self.get_reading()
-            if not line:
-                continue
 
-            with suppress(error.InvalidDeserialization):
+            with suppress(error.InvalidDeserialization, TypeError):
                 data = serializers.from_json(line)
                 if data:
-                    return (ts, data)
-        return None
+                    reading = (ts, data)
+                    break
+
+        return reading
 
     def reset_input_buffer(self):
         """Clear buffered data from connected port/device.

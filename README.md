@@ -25,10 +25,41 @@ pip install panoptes-utils
 Full options for install:
 
 ```bash
-pip install -e ".[config,docs,images,testing,social]"
+pip install "panoptes-utils[config,docs,images,testing,social]"
 ```
 
 See the full documentation at: https://panoptes-utils.readthedocs.io
+
+Dependencies
+------------
+
+There are a few system dependencies depending on what functionality you will be using.
+
+In particular, the plate solving requires `astrometry.net` and the appropriate index files.
+
+Use the following on a debian-based system (e.g. Ubuntu) to easily install all dependencies:
+
+```bash
+apt-get update && apt-get install --no-install-recommends --yes \
+  libffi-dev libssl-dev \
+  astrometry.net astrometry-data-tycho2 \
+  dcraw exiftool libcfitsio-dev libcfitsio-bin \
+  libfreetype6-dev libpng-dev libjpeg-dev libffi-dev
+```
+
+Command Line
+------------
+
+The `panoptes-utils` command line tool is available for use with subcommands
+corresponding to the modules in this library. Currently, the only implemented
+subcommand is `image`, which includes commands for converting `cr2` files into
+`jpg` and/or `fits` files as well as for plate-solving `fits` images.
+
+The `panoptes-utils image watch <path>` command will watch the given path for
+new files and convert them to `jpg` and/or `fits` files as they are added.
+
+See `panoptes-utils --help` and `panoptes-utils image --help` for details.
+
 
 Config Server
 -------------
@@ -39,23 +70,6 @@ After installing with the `config` option as above, type:
 
 ```bash
 panoptes-config-server run --config-file <path-to-file.yaml>
-```
-
-Dependencies
-------------
-
-There are a few system dependencies depending on what functionality you will be using.
-
-In particular, the plate solving requires `astrometry.net` and the appropriate index files.
-
-Use the following on a debian-based system (e.g. Ubuntu) to install all dependencies:
-
-```bash
-apt-get update && apt-get install --no-install-recommends --yes \
-  libffi-dev libssl-dev \
-  astrometry.net astrometry-data-tycho2 \
-  dcraw exiftool libcfitsio-dev libcfitsio-bin \
-  libfreetype6-dev libpng-dev libjpeg-dev libffi-dev
 ```
 
 Developing

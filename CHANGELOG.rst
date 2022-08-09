@@ -2,6 +2,32 @@
 Changelog
 =========
 
+0.2.37 - 2022-08-09
+-------------------
+
+Added
+^^^^^
+
+* The ``panoptes-utils image watch <PATH>`` command with default processing that will convert ``CR2`` files to ``JPG`` and ``FITS`` and then plate-solve the ``FITS`` files.
+* GHA downloads a ``CR2`` file for testing.
+* Plot directives for documentation.
+
+Changed
+^^^^^^^
+
+* Testing now includes ``--test-solve`` for plate-solving in GHA.
+* Local tests only uses ``memory`` database.
+* Rearranged some functions in the ``panoptes.utils.images`` namespace.
+
+Removed
+^^^^^^^
+
+* Unused stamp plotting functions.
+* Testing of config servers on GHA.
+* `CountdownTimer.is_non_blocking` predicate that wasn't being used.
+* Extra serial protocol handlers.
+
+
 
 0.2.36
 ------
