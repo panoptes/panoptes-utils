@@ -28,6 +28,9 @@ def test_mask_saturated_bad():
     with pytest.raises(error.IllegalValue):
         mask_saturated(ones, bit_depth=8 * u.meter)
 
+    with pytest.raises(error.IllegalValue):
+        mask_saturated(ones)
+
 
 def test_crop_data():
     ones = np.ones((201, 201))
