@@ -20,4 +20,11 @@ build:
 python:
   install:
     - requirements: docs/requirements.txt
+    - method: pip
+      path: .
+      extras_requirements:
+        - config
+        - docs
+        - images
+        - social
   system_packages: true
