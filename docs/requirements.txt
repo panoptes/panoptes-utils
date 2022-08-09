@@ -1,1 +1,3 @@
-sphinx_rtd_theme
+m2r2
+piccolo-theme
+pytest_mpl
