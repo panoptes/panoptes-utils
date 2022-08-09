@@ -142,7 +142,7 @@ class SerialData(object):
 
         # Properties have been set to reasonable values, ready to open the port.
         try:
-            self.ser.open()
+            self.connect()
         except serial.serialutil.SerialException as err:
             self.logger.debug(f'Unable to open {self.name}. Error: {err}')
             return
@@ -194,15 +194,13 @@ class SerialData(object):
         self.logger.debug(f'SerialData.disconnect called for {self.name}')
         try:
             self.ser.close()
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             raise error.BadSerialConnection(msg=f'disconnect failed for {self.name}; {e!r}')
-        if self.is_connected:
+        if self.is_connected:  # pragma: no cover
             raise error.BadSerialConnection(msg=f'SerialData.disconnect failed for {self.name}')
 
     def write_bytes(self, data):
         """Write data of type bytes."""
-        assert self.ser
-        assert self.ser.isOpen()
         return self.ser.write(data)
 
     def write(self, value):
@@ -220,8 +218,6 @@ class SerialData(object):
         Returns:
             Bytes read from the port.
         """
-        assert self.ser
-        assert self.ser.isOpen()
         return self.ser.read(size=size)
 
     def read(self, retry_limit=None, retry_delay=None):

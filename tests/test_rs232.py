@@ -2,6 +2,7 @@ import pytest
 
 from panoptes.utils import error
 from panoptes.utils import rs232
+from panoptes.utils.serializers import to_json
 
 
 def test_port_discovery():
@@ -34,5 +35,15 @@ def test_usage():
     assert write_bytes == 12
     read_line = ser.read(write_bytes)
     assert read_line == 'Hello world\n'
+
+    ser.write('A new line')
+    ts, reading = ser.get_reading()
+    assert reading == 'A new line'
+
+    ser.write(to_json(dict(message='Hello world')))
+    reading = ser.get_and_parse_reading()
+
+    ser.reset_input_buffer()
+
     ser.disconnect()
     assert not ser.is_connected
