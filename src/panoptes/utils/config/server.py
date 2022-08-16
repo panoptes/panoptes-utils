@@ -36,7 +36,7 @@ class CustomJSONEncoder(JSONEncoder):
         return serialize_object(obj)
 
 
-app.json_provider_class = CustomJSONEncoder
+app.json_encoder = CustomJSONEncoder
 
 
 def config_server(config_file,
