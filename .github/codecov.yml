@@ -1,0 +1,2 @@
+ignore:
+  - "src/panoptes/utils/config/server.py"

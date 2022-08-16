@@ -5,38 +5,18 @@ from multiprocessing import Process
 from flask import Flask
 from flask import jsonify
 from flask import request
-from flask.json import JSONEncoder
 from gevent.pywsgi import WSGIServer
 from loguru import logger
 from scalpl import Cut
 
 from panoptes.utils.config.helpers import load_config
 from panoptes.utils.config.helpers import save_config
-from panoptes.utils.serializers import serialize_object
 
 # Turn off noisy logging for Flask wsgi server.
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
 logging.getLogger('gevent').setLevel(logging.WARNING)
 
 app = Flask(__name__)
-
-
-class CustomJSONEncoder(JSONEncoder):
-
-    def default(self, obj):
-        """Custom serialization of each object.
-
-        This method will call :func:`panoptes.utils.serializers.serialize_object` for
-        each object.
-
-        Args:
-            obj (`any`): The object to serialize.
-
-        """
-        return serialize_object(obj)
-
-
-app.json_provider_class = CustomJSONEncoder
 
 
 def config_server(config_file,
@@ -72,7 +52,7 @@ def config_server(config_file,
         multiprocessing.Process: The process running the config server.
     """
     logger.info(f'Starting panoptes-config-server with  config_file={config_file!r}')
-    config = load_config(config_files=config_file, load_local=load_local)
+    config = load_config(config_files=config_file, load_local=load_local, parse=False)
     logger.success(f'Config server Loaded {len(config)} top-level items')
 
     # Add an entry to control running of the server.
@@ -317,7 +297,9 @@ def reset_config():
     if params['reset']:
         # Reload the config
         config = load_config(config_files=app.config['config_file'],
-                             load_local=app.config['load_local'])
+                             load_local=app.config['load_local'],
+                             parse=params.get('parse', False)
+                             )
         # Add an entry to control running of the server.
         config['config_server'] = dict(running=True)
         app.config['POCS'] = config
