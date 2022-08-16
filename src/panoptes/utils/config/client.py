@@ -45,7 +45,7 @@ def get_config(key=None,
 
         >>> # With no parsing, the raw string (including quotes) is returned.
         >>> get_config(key='location.horizon', parse=False)
-        '"30.0 deg"'
+        '"30 deg"'
         >>> get_config(key='cameras.devices[1].model')
         'canon_gphoto2'
 
