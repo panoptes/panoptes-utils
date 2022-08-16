@@ -2,6 +2,15 @@
 Changelog
 =========
 
+0.2.38 - 2022-08-16
+-------------------
+
+Fixed
+^^^^^
+
+* Config server doesn't initially parse config file so it doesn't need to deserialize on response.
+
+
 0.2.37 - 2022-08-09
 -------------------
 
