@@ -2,6 +2,15 @@
 Changelog
 =========
 
+0.2.39 - 2023-05-17
+-------------------
+
+Fixed
+^^^^^
+
+* Config server not properly saving entries to local file.
+
+
 0.2.38 - 2022-08-16
 -------------------
 
