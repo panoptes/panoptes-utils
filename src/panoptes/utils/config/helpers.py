@@ -110,7 +110,10 @@ def save_config(save_path: Path, config: dict, overwrite: bool = True):
     Raises:
          FileExistsError: If the local path already exists and ``overwrite=False``.
     """
-    # Make sure ends with '_local.yaml'.
+    # Make sure it's a path.
+    save_path = Path(save_path)
+
+    # Make sure ends with '_local.yaml'.     
     if save_path.stem.endswith('_local') is False:
         save_path = save_path.with_name(save_path.stem + '_local.yaml')
 
