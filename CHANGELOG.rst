@@ -2,6 +2,15 @@
 Changelog
 =========
 
+0.2.40 - 2023-05-17
+-------------------
+
+Fixed
+^^^^^
+
+* Added `tox` to `testing` install option to fix auto PyPi builds.
+
+
 0.2.39 - 2023-05-17
 -------------------
 
