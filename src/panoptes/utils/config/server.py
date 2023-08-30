@@ -1,5 +1,6 @@
 import logging
 import os
+from sys import platform
 from multiprocessing import Process
 
 from flask import Flask
@@ -11,6 +12,12 @@ from scalpl import Cut
 
 from panoptes.utils.config.helpers import load_config
 from panoptes.utils.config.helpers import save_config
+
+# This seems to be needed. Should switch entire mechanism.
+if platform == "darwin" or platform == "win32":
+    import multiprocessing
+
+    multiprocessing.set_start_method('fork')
 
 # Turn off noisy logging for Flask wsgi server.
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
