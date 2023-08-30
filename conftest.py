@@ -160,7 +160,7 @@ def noheader_fits_file(data_dir):
 def cr2_file(data_dir):
     cr2_path = os.path.join(data_dir, 'canon.cr2')
 
-    if not os.path.exists(cr2_path):
+    if os.path.exists(cr2_path) is False:
         pytest.skip("No CR2 file found, skipping test.")
 
     with tempfile.TemporaryDirectory() as tmpdirname:
