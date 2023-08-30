@@ -4,6 +4,7 @@ import os
 import shutil
 import tempfile
 from contextlib import suppress
+from pathlib import Path
 
 # Doctest modules
 import numpy as np
@@ -158,10 +159,19 @@ def noheader_fits_file(data_dir):
 
 @pytest.fixture(scope='function')
 def cr2_file(data_dir):
-    cr2_path = os.path.join(data_dir, 'canon.cr2')
+    cr2_path = Path(data_dir) / 'canon.cr2'
 
-    if os.path.exists(cr2_path) is False:
+    if cr2_path.exists() is False:
         pytest.skip("No CR2 file found, skipping test.")
+
+    # The file is fetched in conftest.py but may be a 404-not found text message.
+    # Try to read as text. If we fail it is because the file is a CR2 (i.e. bytes
+    # and not text).
+    try:
+        _ = cr2_path.read_text()
+        pytest.skip("CR2 file found but it is not a CR2 file, skipping test.")
+    except UnicodeDecodeError:
+        pass
 
     with tempfile.TemporaryDirectory() as tmpdirname:
         copy_file = shutil.copy2(cr2_path, tmpdirname)
