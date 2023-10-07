@@ -79,7 +79,7 @@ def get_serial_port_info():
     return sorted(get_comports(include_links=True), key=operator.attrgetter('device'))
 
 
-def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cover
+def find_serial_port(vendor_id: str, product_id: Optional[str] = None, return_all: bool = False):  # pragma: no cover
     """Finds the serial port that matches the given vendor and product id.
 
     .. doctest::
@@ -104,17 +104,19 @@ def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cov
     Returns:
         str or list: Either the path to the detected port or a list of all comports that match.
     """
-    # Get all serial ports.
-    matched_ports = [p for p in get_serial_port_info() if
-                     p.vid == vendor_id and p.pid == product_id]
+    # Get all serial ports that match the given vendor.
+    matched_ports = [p for p in get_serial_port_info() if p.vid == vendor_id]
+    
+    # If given a product_id, try to match.
+    if product_id is not None:
+        matched_ports = [p for p in matched_ports if p.pid == product_id]                     
 
     if len(matched_ports) == 1:
         return matched_ports[0].device
-    elif return_all:
+    elif return_all is True or product_id is None:
         return matched_ports
     else:
-        raise error.NotFound(
-            f'No serial ports for vendor_id={vendor_id:x} and product_id={product_id:x}')
+        raise error.NotFound(f'No serial ports for vendor_id={vendor_id:x} and product_id={product_id:x}')
 
 
 class SerialDevice(object):
