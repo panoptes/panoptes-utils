@@ -407,7 +407,7 @@ def get_rgb_background(data,
     >>> # Can also return the Background2D objects, which is the input to save_rgb_bg_fits
     >>> rgb_backs = get_rgb_background(data, return_separate=True)
     >>> rgb_backs[RGB.RED]
-    Background2D...
+    <photutils.background.background_2d.Background2D...>
 
     >>> {color.name:int(rgb_back[color].mean()) for color in RGB}
     {'RED': 145, 'GREEN': 127, 'BLUE': 145}
