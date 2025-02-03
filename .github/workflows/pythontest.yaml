@@ -25,7 +25,7 @@ jobs:
     strategy:
       matrix:
         os: [ 'ubuntu-latest' ]
-        python-version: [ '3.7', '3.8', '3.9', '3.10', '3.11' ]
+        python-version: [ '3.7', '3.8', '3.9', '3.10', '3.11', '3.12' ]
     steps:
       - uses: actions/checkout@master
       - uses: actions/setup-python@master
@@ -50,8 +50,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
       - name: Create log file artifact
-        uses: actions/upload-artifact@v1
-        if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: log-files
           path: logs/panoptes-testing.log
