@@ -161,6 +161,6 @@ def get_quantity_value(quantity, unit=None):
         float: numerical value of the Quantity after conversion to the specified unit.
     """
     try:
-        return quantity.to_value(unit)
+        return float(quantity.to_value(unit))
     except AttributeError:
         return quantity
