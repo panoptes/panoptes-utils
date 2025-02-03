@@ -500,7 +500,7 @@ def save_rgb_bg_fits(rgb_bg_data, output_filename, header=None, fpack=True, over
     """
 
     # Get combined data for Primary HDU
-    combined_bg = np.array([np.ma.array(data=d.background, mask=d.mask).filled(0)
+    combined_bg = np.array([np.ma.array(data=d.background, mask=d.coverage_mask).filled(0)
                             for d in rgb_bg_data]).sum(0)
 
     header = header or fits.Header()
