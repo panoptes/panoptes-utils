@@ -395,13 +395,13 @@ def get_rgb_background(data,
     >>> # Get our data and pre-process (basic bias subtract here).
     >>> fits_fn = getfixture('solved_fits_file')
     >>> camera_bias = 2048
-    >>> data = fits_utils.getdata(fits_fn) - camera_bias
+    >>> data = fits_utils.getdata(fits_fn).astype(float) - camera_bias
 
     >> The default is to return a single array for the background.
     >>> rgb_back = get_rgb_background(data)
-    >>> rgb_back.mean()
+    >>> float(rgb_back.mean())
     136...
-    >>> rgb_back.std()
+    >>> float(rgb_back.std())
     36...
 
     >>> # Can also return the Background2D objects, which is the input to save_rgb_bg_fits
