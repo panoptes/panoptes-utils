@@ -5,12 +5,12 @@ import numpy as np
 from astropy.io import fits
 from astropy.stats import SigmaClip
 from loguru import logger
-from photutils import Background2D
-from photutils import BkgZoomInterpolator
-from photutils import MMMBackground
-from photutils import MeanBackground
-from photutils import MedianBackground
-from photutils import SExtractorBackground
+from photutils.background import Background2D
+from photutils.background import BkgZoomInterpolator
+from photutils.background import MMMBackground
+from photutils.background import MeanBackground
+from photutils.background import MedianBackground
+from photutils.background import SExtractorBackground
 
 from panoptes.utils.images import fits as fits_utils
 
@@ -387,7 +387,7 @@ def get_rgb_background(data,
     of boxes. The size of the median filter box for the low resolution background
     is on the order of the stamp size.
 
-    Most of the options are described in the `photutils.Background2D` page:
+    Most of the options are described in the `photutils.background.Background2D` page:
     https://photutils.readthedocs.io/en/stable/background.html#d-background-and-noise-estimation
 
     >>> from panoptes.utils.images.bayer import RGB
@@ -490,7 +490,7 @@ def save_rgb_bg_fits(rgb_bg_data, output_filename, header=None, fpack=True, over
     """Save a FITS file containing a combined background as well as separate channels.
 
     Args:
-        rgb_bg_data (list[photutils.Background2D]): The RGB background data as
+        rgb_bg_data (list[photutils.background.Background2D]): The RGB background data as
             returned by calling `panoptes.utils.images.bayer.get_rgb_background`
             with `return_separate=True`.
         output_filename (str): The output name for the FITS file.
