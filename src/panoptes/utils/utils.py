@@ -2,10 +2,9 @@ import collections.abc
 import os
 import shutil
 
+import numpy as np
 from astropy import units as u
-from astropy.coordinates import AltAz
-from astropy.coordinates import ICRS
-from astropy.coordinates import SkyCoord
+from astropy.coordinates import AltAz, ICRS, SkyCoord
 
 from panoptes.utils.time import current_time
 
@@ -163,6 +162,9 @@ def get_quantity_value(quantity, unit=None):
         float: numerical value of the Quantity after conversion to the specified unit.
     """
     try:
-        return float(quantity.to_value(unit))
+        quantity = quantity.to_value(unit)
+        if type(quantity) == np.float64:
+            return quantity.item()
+        return quantity
     except AttributeError:
         return quantity
