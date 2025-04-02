@@ -67,11 +67,11 @@ def load_module(module_name):
     try:
         module = importlib.import_module(module_name)
     except (ModuleNotFoundError, ImportError):
-        base, cls = module_name.rsplit('.', 1)
         try:
+            base, cls = module_name.rsplit('.', 1)
             module = importlib.import_module(base)
             module = getattr(module, cls)
-        except (ModuleNotFoundError, ImportError, AttributeError):
+        except (ModuleNotFoundError, ImportError, AttributeError, ValueError):
             raise error.NotFound(msg=module_name)
 
     return module
