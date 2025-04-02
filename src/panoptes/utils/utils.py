@@ -2,10 +2,9 @@ import collections.abc
 import os
 import shutil
 
+import numpy as np
 from astropy import units as u
-from astropy.coordinates import AltAz
-from astropy.coordinates import ICRS
-from astropy.coordinates import SkyCoord
+from astropy.coordinates import AltAz, ICRS, SkyCoord
 
 from panoptes.utils.time import current_time
 
@@ -153,6 +152,12 @@ def get_quantity_value(quantity, unit=None):
     >>> get_quantity_value(60)
     60
 
+    >>> get_quantity_value('J2000.0', unit='jyear_str')
+    'J2000.0'
+
+    >>> get_quantity_value('J2000.0')
+    'J2000.0'
+
     Args:
         quantity (astropy.units.Quantity or scalar): Quantity to extract numerical value from.
         unit (astropy.units.Unit, optional): unit to convert to.
@@ -161,6 +166,9 @@ def get_quantity_value(quantity, unit=None):
         float: numerical value of the Quantity after conversion to the specified unit.
     """
     try:
-        return float(quantity.to_value(unit))
+        quantity = quantity.to_value(unit)
+        if type(quantity) == np.float64:
+            return quantity.item()
+        return quantity
     except AttributeError:
         return quantity
