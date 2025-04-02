@@ -155,6 +155,9 @@ def get_quantity_value(quantity, unit=None):
     >>> get_quantity_value('J2000.0', unit='jyear_str')
     'J2000.0'
 
+    >>> get_quantity_value('J2000.0')
+    'J2000.0'
+
     Args:
         quantity (astropy.units.Quantity or scalar): Quantity to extract numerical value from.
         unit (astropy.units.Unit, optional): unit to convert to.
