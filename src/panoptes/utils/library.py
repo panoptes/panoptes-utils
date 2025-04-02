@@ -3,6 +3,7 @@ import ctypes.util
 import importlib
 
 from loguru import logger
+
 from panoptes.utils import error
 
 
@@ -42,7 +43,7 @@ def load_c_library(name, path=None, mode=ctypes.DEFAULT_MODE, **kwargs):
 
 
 def load_module(module_name):
-    """Dynamically load a module.
+    """Dynamically load a module or a class from the module.
 
     >>> from panoptes.utils.library import load_module
     >>> error = load_module('panoptes.utils.error')
@@ -50,6 +51,9 @@ def load_module(module_name):
     'panoptes.utils.error'
     >>> error.__package__
     'panoptes.utils'
+    >>> PanError = load_module('panoptes.utils.error.PanError')
+    >>> PanError.__name__
+    'PanError'
 
     Args:
         module_name (str): Name of module to import.
@@ -63,6 +67,11 @@ def load_module(module_name):
     try:
         module = importlib.import_module(module_name)
     except (ModuleNotFoundError, ImportError):
-        raise error.NotFound(msg=module_name)
+        try:
+            base, cls = module_name.rsplit('.', 1)
+            module = importlib.import_module(base)
+            module = getattr(module, cls)
+        except (ModuleNotFoundError, ImportError, AttributeError, ValueError):
+            raise error.NotFound(msg=module_name)
 
     return module

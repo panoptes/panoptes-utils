@@ -2,6 +2,15 @@
 Changelog
 =========
 
+0.2.46 - 2025-04-02
+-------------------
+
+Updated
+^^^^^^^
+
+* Updated to ``python 3.12``.
+* Removed deprecated call to `resolve_name`.
+
 0.2.42 - 2023-08-30
 -------------------
 
