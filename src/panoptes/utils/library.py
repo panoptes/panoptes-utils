@@ -1,7 +1,7 @@
 import ctypes
 import ctypes.util
+import importlib
 
-from astropy.utils import resolve_name
 from loguru import logger
 from panoptes.utils import error
 
@@ -61,8 +61,8 @@ def load_module(module_name):
         error.NotFound: If module cannot be imported.
     """
     try:
-        module = resolve_name(module_name)
-    except ImportError:
+        module = importlib.import_module(module_name)
+    except (ModuleNotFoundError, ImportError):
         raise error.NotFound(msg=module_name)
 
     return module

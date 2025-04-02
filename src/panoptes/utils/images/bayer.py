@@ -5,12 +5,12 @@ import numpy as np
 from astropy.io import fits
 from astropy.stats import SigmaClip
 from loguru import logger
-from photutils import Background2D
-from photutils import BkgZoomInterpolator
-from photutils import MMMBackground
-from photutils import MeanBackground
-from photutils import MedianBackground
-from photutils import SExtractorBackground
+from photutils.background import Background2D
+from photutils.background import BkgZoomInterpolator
+from photutils.background import MMMBackground
+from photutils.background import MeanBackground
+from photutils.background import MedianBackground
+from photutils.background import SExtractorBackground
 
 from panoptes.utils.images import fits as fits_utils
 
@@ -247,9 +247,9 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False, as_slice
         >>> x = 7
         >>> y = 5
         >>> pixel_index = (y, x)  # y=rows, x=columns
-        >>> stamp0[pixel_index]
+        >>> str(stamp0[pixel_index])
         'G1'
-        >>> stamp1[pixel_index]
+        >>> int(stamp1[pixel_index])
         57
         >>> slice0 = bayer.get_stamp_slice(x, y, stamp_size=(6, 6))
         >>> slice0
@@ -387,7 +387,7 @@ def get_rgb_background(data,
     of boxes. The size of the median filter box for the low resolution background
     is on the order of the stamp size.
 
-    Most of the options are described in the `photutils.Background2D` page:
+    Most of the options are described in the `photutils.background.Background2D` page:
     https://photutils.readthedocs.io/en/stable/background.html#d-background-and-noise-estimation
 
     >>> from panoptes.utils.images.bayer import RGB
@@ -395,19 +395,19 @@ def get_rgb_background(data,
     >>> # Get our data and pre-process (basic bias subtract here).
     >>> fits_fn = getfixture('solved_fits_file')
     >>> camera_bias = 2048
-    >>> data = fits_utils.getdata(fits_fn) - camera_bias
+    >>> data = fits_utils.getdata(fits_fn).astype(float) - camera_bias
 
     >> The default is to return a single array for the background.
     >>> rgb_back = get_rgb_background(data)
-    >>> rgb_back.mean()
+    >>> float(rgb_back.mean())
     136...
-    >>> rgb_back.std()
+    >>> float(rgb_back.std())
     36...
 
     >>> # Can also return the Background2D objects, which is the input to save_rgb_bg_fits
     >>> rgb_backs = get_rgb_background(data, return_separate=True)
-    >>> rgb_backs[RGB.RED]
-    <photutils.background.background_2d.Background2D...>
+    >>> print(rgb_backs[RGB.RED])
+    <photutils.background.background_2d.Background2D>...
 
     >>> {color.name:int(rgb_back[color].mean()) for color in RGB}
     {'RED': 145, 'GREEN': 127, 'BLUE': 145}
@@ -490,7 +490,7 @@ def save_rgb_bg_fits(rgb_bg_data, output_filename, header=None, fpack=True, over
     """Save a FITS file containing a combined background as well as separate channels.
 
     Args:
-        rgb_bg_data (list[photutils.Background2D]): The RGB background data as
+        rgb_bg_data (list[photutils.background.Background2D]): The RGB background data as
             returned by calling `panoptes.utils.images.bayer.get_rgb_background`
             with `return_separate=True`.
         output_filename (str): The output name for the FITS file.
@@ -500,7 +500,7 @@ def save_rgb_bg_fits(rgb_bg_data, output_filename, header=None, fpack=True, over
     """
 
     # Get combined data for Primary HDU
-    combined_bg = np.array([np.ma.array(data=d.background, mask=d.mask).filled(0)
+    combined_bg = np.array([np.ma.array(data=d.background, mask=d.coverage_mask).filled(0)
                             for d in rgb_bg_data]).sum(0)
 
     header = header or fits.Header()

@@ -629,6 +629,7 @@ def extract_metadata(header: fits.Header) -> dict:
     try:
         # Add a units doc if it doesn't exist.
         unit_info = dict(
+            unit_id=path_info.unit_id,
             name=header.get('OBSERVER'),
             latitude=header.get('LAT-OBS'),
             longitude=header.get('LONG-OBS'),
@@ -636,6 +637,8 @@ def extract_metadata(header: fits.Header) -> dict:
         )
 
         sequence_info = dict(
+            unit_id=path_info.unit_id,
+            sequence_id=path_info.sequence_id,
             time=path_info.sequence_time.to_datetime(timezone=UTC),
             exptime=float(header.get('EXPTIME')),
             software_version=header.get('CREATOR', ''),
@@ -656,6 +659,7 @@ def extract_metadata(header: fits.Header) -> dict:
         camera_date = parse_date(header.get('DATE-OBS', path_info.image_time)).replace(tzinfo=UTC)
 
         image_info = dict(
+            uid=path_info.get_full_id(sep='_'),
             airmass=header.get('AIRMASS'),
             camera=dict(
                 dateobs=camera_date,
@@ -712,9 +716,10 @@ def getdata(fn, *args, **kwargs):
            ...,
            [2120, 2201, 2120, ..., 2209, 2126, 2195],
            [2219, 2151, 2199, ..., 2173, 2214, 2166],
-           [2114, 2194, 2122, ..., 2202, 2125, 2204]], dtype=uint16)
+           [2114, 2194, 2122, ..., 2202, 2125, 2204]],
+          shape=(700, 700), dtype=uint16)
     >>> d1, h1 = getdata(fits_fn, header=True)
-    >>> (d0 == d1).all()
+    >>> bool((d0 == d1).all())
     True
     >>> h1['FIELD']
     'KIC 8462852'
