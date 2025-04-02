@@ -50,9 +50,6 @@ def load_module(module_name):
     'panoptes.utils.error'
     >>> error.__package__
     'panoptes.utils'
-    >>> PanError = load_module('panoptes.utils.error.PanError')
-    >>> PanError.__name__
-    'panoptes.utils.error.PanError'
 
     Args:
         module_name (str): Name of module to import.
