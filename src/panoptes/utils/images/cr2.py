@@ -293,13 +293,13 @@ def cr2_to_jpg(
             position = (im.size[0] / 2, im.size[1] - bottom_padding)
             id.text(position, title, font=fnt, fill=(255, 0, 0), anchor='ms')
 
-            print(f'Adding title={title} to {jpg_fname.as_posix()}')
+            logger.debug(f'Adding title={title} to {jpg_fname.as_posix()}')
             im.save(jpg_fname)
         except Exception:
             raise error.InvalidSystemCommand(f'Error adding title to {jpg_fname.as_posix()}')
 
     if remove_cr2:
-        print(f'Removing {cr2_fname}')
+        logger.debug(f'Removing {cr2_fname}')
         cr2_fname.unlink()
 
     return jpg_fname
