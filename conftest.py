@@ -1,15 +1,12 @@
 import copy
-import logging
 import os
 import shutil
 import tempfile
-from contextlib import suppress
 from pathlib import Path
 
 # Doctest modules
 import numpy as np
 import pytest
-from _pytest.logging import caplog as _caplog  # noqa
 from loguru import logger
 from matplotlib import pyplot as plt
 
@@ -189,16 +186,3 @@ def cr2_file(data_dir):
 def add_doctest_dependencies(doctest_namespace):
     doctest_namespace["np"] = np
     doctest_namespace["plt"] = plt
-
-
-@pytest.fixture
-def caplog(_caplog):
-    class PropagateHandler(logging.Handler):
-        def emit(self, record):
-            logging.getLogger(record.name).handle(record)
-
-    logger.enable("panoptes")
-    handler_id = logger.add(PropagateHandler(), format="{message}")
-    yield _caplog
-    with suppress(ValueError):
-        logger.remove(handler_id)
