@@ -3,8 +3,6 @@
 *.py[cod]
 *.so
 *.cfg
-!.isort.cfg
-!setup.cfg
 *.orig
 *.log
 *.pot

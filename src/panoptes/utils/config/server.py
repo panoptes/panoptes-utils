@@ -1,17 +1,14 @@
 import logging
 import os
-from sys import platform
 from multiprocessing import Process
+from sys import platform
 
-from flask import Flask
-from flask import jsonify
-from flask import request
+from flask import Flask, jsonify, request
 from gevent.pywsgi import WSGIServer
 from loguru import logger
 from scalpl import Cut
 
-from panoptes.utils.config.helpers import load_config
-from panoptes.utils.config.helpers import save_config
+from panoptes.utils.config.helpers import load_config, save_config
 
 # This seems to be needed. Should switch entire mechanism.
 if platform == "darwin" or platform == "win32":
@@ -83,12 +80,15 @@ def config_server(config_file,
         def start_server(host='localhost', port=6563):
             try:
                 logger.info(f'Starting panoptes config server with {host}:{port}')
-                http_server = WSGIServer((host, int(port)), app, log=access_logs,
-                                         error_log=error_logs)
+                http_server = WSGIServer(
+                    (host, int(port)), app, log=access_logs,
+                    error_log=error_logs
+                    )
                 http_server.serve_forever()
             except OSError:
                 logger.warning(
-                    f'Problem starting config server, is another config server already running?')
+                    f'Problem starting config server, is another config server already running?'
+                )
                 return None
             except Exception as e:
                 logger.warning(f'Problem starting config server: {e!r}')
@@ -98,9 +98,11 @@ def config_server(config_file,
         port = port or os.getenv('PANOPTES_CONFIG_PORT', 6563)
         cmd_kwargs = dict(host=host, port=port)
         logger.debug(f'Setting up config server process with  cmd_kwargs={cmd_kwargs!r}')
-        server_process = Process(target=start_server,
-                                 daemon=True,
-                                 kwargs=cmd_kwargs)
+        server_process = Process(
+            target=start_server,
+            daemon=True,
+            kwargs=cmd_kwargs
+            )
 
         if auto_start:
             server_process.start()
@@ -182,10 +184,12 @@ def get_config_entry():
             key = params['key']
             logger.log(log_level, f'Request contains  key={key!r}')
         except KeyError:
-            return jsonify({
-                'success': False,
-                'msg': "No valid key found. Need json request: {'key': <config_entry>}"
-            })
+            return jsonify(
+                {
+                    'success': False,
+                    'msg': "No valid key found. Need json request: {'key': <config_entry>}"
+                }
+            )
 
         if key is None:
             # Return all
@@ -253,10 +257,12 @@ def set_config_entry():
         params = request.get_json()
 
     if params is None:
-        return jsonify({
-            'success': False,
-            'msg': "Invalid. Need json request: {'key': <config_entry>, 'value': <new_values>}"
-        })
+        return jsonify(
+            {
+                'success': False,
+                'msg': "Invalid. Need json request: {'key': <config_entry>, 'value': <new_values>}"
+            }
+        )
 
     try:
         app.config['POCS_cut'].update(params)
@@ -303,21 +309,26 @@ def reset_config():
 
     if params['reset']:
         # Reload the config
-        config = load_config(config_files=app.config['config_file'],
-                             load_local=app.config['load_local'],
-                             parse=params.get('parse', False)
-                             )
+        config = load_config(
+            config_files=app.config['config_file'],
+            load_local=app.config['load_local'],
+            parse=params.get('parse', False)
+            )
         # Add an entry to control running of the server.
         config['config_server'] = dict(running=True)
         app.config['POCS'] = config
         app.config['POCS_cut'] = Cut(config)
     else:
-        return jsonify({
-            'success': False,
-            'msg': "Invalid. Need json request: {'reset': True}"
-        })
+        return jsonify(
+            {
+                'success': False,
+                'msg': "Invalid. Need json request: {'reset': True}"
+            }
+        )
 
-    return jsonify({
-        'success': True,
-        'msg': f'Configuration reset'
-    })
+    return jsonify(
+        {
+            'success': True,
+            'msg': f'Configuration reset'
+        }
+    )
