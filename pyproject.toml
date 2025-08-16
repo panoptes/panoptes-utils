@@ -29,7 +29,6 @@ dependencies = [
     "astropy",
     "click",
     "click-spinner",
-    "colorama",
     "Deprecated",
     "loguru",
     "numpy>=2",
