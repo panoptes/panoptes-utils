@@ -8,9 +8,8 @@ NO_HORIZON = None
 
 
 class Obstruction(object):
-
     def __init__(self, points_list):
-        """ An obstruction is defined by a list of alt, az pairs in clockwise ordering.
+        """An obstruction is defined by a list of alt, az pairs in clockwise ordering.
         Args:
             points_list (list): The list of points, e.g. [[alt1, az1], [alt2, az2]].
         """
@@ -54,7 +53,7 @@ class Obstruction(object):
             raise ValueError("Azimuths must be ordered clockwise.")
 
     def get_horizon(self, az):
-        """ Get the horizon level in degrees at a given azimuth.
+        """Get the horizon level in degrees at a given azimuth.
         Args:
             az (float or astropy.Quantity): The azimuth. If float, assumed in degrees.
         Returns:
@@ -73,7 +72,7 @@ class Obstruction(object):
         return alt
 
     def _get_az_offsets(self, az_list):
-        """ Return the angular offset between az_array and first point in obstruction.
+        """Return the angular offset between az_array and first point in obstruction.
         Args:
             az_array (np.array): The array of azimuths in degrees.
         Returns:
@@ -142,7 +141,7 @@ class Horizon(object):
             self.horizon_line[i] = self.get_horizon(i).to_value(u.deg)
 
     def get_horizon(self, az):
-        """ Get the horizon level in degrees at a given azimuth.
+        """Get the horizon level in degrees at a given azimuth.
         Args:
             az (float or astropy.Quantity): The azimuth. If float, assumed in degrees.
         Returns:
@@ -157,7 +156,6 @@ class Horizon(object):
 
         # Find obstruction horizons at this az if any exist
         for ob in self.obstructions:
-
             hor = ob.get_horizon(az)
 
             if hor != NO_HORIZON:

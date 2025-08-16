@@ -17,6 +17,7 @@ from panoptes.utils.images import fits as fits_utils
 
 class RGB(IntEnum):
     """Helper class for array index access."""
+
     RED = 0
     R = 0
     GREEN = 1
@@ -171,7 +172,7 @@ def get_rgb_masks(data, separate_green=False):
         g2_mask[..., 0::2, 0::2] = False
         b_mask[..., 0::2, 1::2] = False
     else:
-        raise TypeError('Only 2D and 3D data allowed')
+        raise TypeError("Only 2D and 3D data allowed")
 
     if separate_green:
         return np.array([r_mask, g1_mask, g2_mask, b_mask])
@@ -180,7 +181,7 @@ def get_rgb_masks(data, separate_green=False):
 
 
 def get_pixel_color(x, y):
-    """ Given a zero-indexed x,y position, return the corresponding color.
+    """Given a zero-indexed x,y position, return the corresponding color.
 
     .. note::
 
@@ -193,14 +194,14 @@ def get_pixel_color(x, y):
     y = int(y)
     if x % 2 == 0:
         if y % 2 == 0:
-            return 'G2'
+            return "G2"
         else:
-            return 'R'
+            return "R"
     else:
         if y % 2 == 0:
-            return 'B'
+            return "B"
         else:
-            return 'G1'
+            return "G1"
 
 
 def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False, as_slices=True):
@@ -318,15 +319,17 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False, as_slice
         for side_length in stamp_size:
             side_length -= 2  # Subtract center superpixel
             if side_length / 2 % 2 != 0:
-                raise RuntimeError(f"Invalid slice size: {side_length + 2} "
-                                   f"Slice must have even number of pixels on each side"
-                                   f"of center superpixel. i.e. 6, 10, 14, 18...")
+                raise RuntimeError(
+                    f"Invalid slice size: {side_length + 2} "
+                    f"Slice must have even number of pixels on each side"
+                    f"of center superpixel. i.e. 6, 10, 14, 18..."
+                )
 
     # Pixels have nasty 0.5 rounding issues
     x = Decimal(float(x)).to_integral()
     y = Decimal(float(y)).to_integral()
     color = get_pixel_color(x, y)
-    logger.debug(f'Found color={color} for x={x} y={y}')
+    logger.debug(f"Found color={color} for x={x} y={y}")
 
     x_half = int(stamp_size[0] / 2)
     y_half = int(stamp_size[1] / 2)
@@ -340,15 +343,15 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False, as_slice
     # Alter the bounds depending on identified center pixel so we always center superpixel have:
     #   G2 B
     #   R  G1
-    if color == 'R':
+    if color == "R":
         x_min += 1
         x_max += 1
-    elif color == 'G2':
+    elif color == "G2":
         x_min += 1
         x_max += 1
         y_min += 1
         y_max += 1
-    elif color == 'B':
+    elif color == "B":
         y_min += 1
         y_max += 1
 
@@ -357,7 +360,7 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False, as_slice
         x_max += 1
         y_max += 1
 
-    logger.debug(f'x_min={x_min}, x_max={x_max}, y_min={y_min}, y_max={y_max}')
+    logger.debug(f"x_min={x_min}, x_max={x_max}, y_min={y_min}, y_max={y_max}")
 
     if as_slices:
         return slice(y_min, y_max), slice(x_min, x_max)
@@ -365,18 +368,19 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False, as_slice
         return y_min, y_max, x_min, x_max
 
 
-def get_rgb_background(data,
-                       box_size=(79, 84),
-                       filter_size=(11, 11),
-                       estimator='mmm',
-                       interpolator='zoom',
-                       sigma=5,
-                       iters=10,
-                       exclude_percentile=100,
-                       return_separate=False,
-                       *args,
-                       **kwargs
-                       ):
+def get_rgb_background(
+    data,
+    box_size=(79, 84),
+    filter_size=(11, 11),
+    estimator="mmm",
+    interpolator="zoom",
+    sigma=5,
+    iters=10,
+    exclude_percentile=100,
+    return_separate=False,
+    *args,
+    **kwargs,
+):
     """Get the background for each color channel.
 
     Note: This funtion does not perform any additional calibration, such as flat, bias,
@@ -439,37 +443,41 @@ def get_rgb_background(data,
     logger.debug(f"{estimator} {interpolator} {box_size} {filter_size} {sigma} {iters}")
 
     estimators = {
-        'sexb': SExtractorBackground,
-        'median': MedianBackground,
-        'mean': MeanBackground,
-        'mmm': MMMBackground
+        "sexb": SExtractorBackground,
+        "median": MedianBackground,
+        "mean": MeanBackground,
+        "mmm": MMMBackground,
     }
     interpolators = {
-        'zoom': BkgZoomInterpolator,
+        "zoom": BkgZoomInterpolator,
     }
 
     bkg_estimator = estimators[estimator]()
     interp = interpolators[interpolator]()
 
     # Get the data per color channel.
-    logger.debug(f'Getting RGB background data ({data.shape})')
+    logger.debug(f"Getting RGB background data ({data.shape})")
     rgb_data = get_rgb_data(data)
 
     backgrounds = list()
     for color, color_data in zip(RGB, rgb_data):
-        logger.debug(f'Calculating background for {color.name.lower()} pixels')
+        logger.debug(f"Calculating background for {color.name.lower()} pixels")
 
-        bkg = Background2D(color_data,
-                           box_size,
-                           filter_size=filter_size,
-                           sigma_clip=SigmaClip(sigma=sigma, maxiters=iters),
-                           bkg_estimator=bkg_estimator,
-                           exclude_percentile=exclude_percentile,
-                           mask=color_data.mask,
-                           interpolator=interp)
+        bkg = Background2D(
+            color_data,
+            box_size,
+            filter_size=filter_size,
+            sigma_clip=SigmaClip(sigma=sigma, maxiters=iters),
+            bkg_estimator=bkg_estimator,
+            exclude_percentile=exclude_percentile,
+            mask=color_data.mask,
+            interpolator=interp,
+        )
 
-        logger.debug(f"{color.name.lower()}: {bkg.background_median:.02f} "
-                     f"RMS: {bkg.background_rms_median:.02f}")
+        logger.debug(
+            f"{color.name.lower()}: {bkg.background_median:.02f} "
+            f"RMS: {bkg.background_rms_median:.02f}"
+        )
 
         if return_separate:
             backgrounds.append(bkg)
@@ -500,31 +508,32 @@ def save_rgb_bg_fits(rgb_bg_data, output_filename, header=None, fpack=True, over
     """
 
     # Get combined data for Primary HDU
-    combined_bg = np.array([np.ma.array(data=d.background, mask=d.coverage_mask).filled(0)
-                            for d in rgb_bg_data]).sum(0)
+    combined_bg = np.array(
+        [np.ma.array(data=d.background, mask=d.coverage_mask).filled(0) for d in rgb_bg_data]
+    ).sum(0)
 
     header = header or fits.Header()
 
     # Save as ing16.
-    header['BITPIX'] = 16
+    header["BITPIX"] = 16
 
     # Combined background is primary hdu.
     primary = fits.PrimaryHDU(combined_bg, header=header)
-    primary.scale('int16')
+    primary.scale("int16")
     hdu_list = [primary]
 
     for color, bg in zip(RGB, rgb_bg_data):
         h0 = fits.Header()
-        h0['COLOR'] = f'{color.name.lower()}'
+        h0["COLOR"] = f"{color.name.lower()}"
 
-        h0['IMGTYPE'] = 'background'
+        h0["IMGTYPE"] = "background"
         img0 = fits.ImageHDU(bg.background, header=h0)
-        img0.scale('int16')
+        img0.scale("int16")
         hdu_list.append(img0)
 
-        h0['IMGTYPE'] = 'background_rms'
+        h0["IMGTYPE"] = "background_rms"
         img1 = fits.ImageHDU(bg.background_rms, header=h0)
-        img1.scale('int16')
+        img1.scale("int16")
         hdu_list.append(img1)
 
     hdul = fits.HDUList(hdu_list)

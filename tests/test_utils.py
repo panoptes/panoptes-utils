@@ -8,22 +8,22 @@ from panoptes.utils.utils import listify
 
 def test_bad_load_module():
     with pytest.raises(error.NotFound):
-        load_module('FOOBAR')
+        load_module("FOOBAR")
 
 
 def test_load_c_library():
     # Called without a `path` this will use find_library to locate libc.
-    libc = load_c_library('c')
-    assert libc._name[:4] == 'libc'
+    libc = load_c_library("c")
+    assert libc._name[:4] == "libc"
 
-    libc = load_c_library('c', mode=None)
-    assert libc._name[:4] == 'libc'
+    libc = load_c_library("c", mode=None)
+    assert libc._name[:4] == "libc"
 
 
 def test_load_c_library_fail():
     # Called without a `path` this will use find_library to locate libc.
     with pytest.raises(error.NotFound):
-        load_c_library('foobar')
+        load_c_library("foobar")
 
 
 def test_listify():

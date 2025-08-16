@@ -14,8 +14,8 @@ from panoptes.utils.time import wait_for_events
 
 
 def test_pretty_time():
-    t0 = '2016-08-13 10:00:00'
-    os.environ['POCSTIME'] = t0
+    t0 = "2016-08-13 10:00:00"
+    os.environ["POCSTIME"] = t0
 
     t1 = current_time(pretty=True)
     assert t1 == t0
@@ -23,7 +23,7 @@ def test_pretty_time():
     # This will increment one second - see docs
     t2 = current_time(flatten=True)
     assert t2 != t0
-    assert t2 == '20160813T100001'
+    assert t2 == "20160813T100001"
 
     # This will increment one second - see docs
     t3 = current_time(datetime=True)
@@ -32,7 +32,7 @@ def test_pretty_time():
 
 def test_countdown_timer_bad_input():
     with pytest.raises(ValueError):
-        assert CountdownTimer('d')
+        assert CountdownTimer("d")
 
     with pytest.raises(ValueError):
         assert CountdownTimer(current_time())
@@ -56,7 +56,7 @@ def test_countdown_timer():
     assert timer.time_left() > 0
     assert timer.expired() is False
 
-    counter = 0.
+    counter = 0.0
     while timer.time_left() > 0:
         time.sleep(0.1)
         counter += 0.1
@@ -64,7 +64,7 @@ def test_countdown_timer():
     assert counter == pytest.approx(1)
     assert timer.time_left() == 0
     assert timer.expired() is True
-    assert str(timer) == 'EXPIRED Timer 0.00/1.00'
+    assert str(timer) == "EXPIRED Timer 0.00/1.00"
 
 
 def test_countdown_timer_sleep():
@@ -73,7 +73,7 @@ def test_countdown_timer_sleep():
     assert timer.time_left() > 0
     assert timer.expired() is False
 
-    counter = 0.
+    counter = 0.0
     while timer.time_left() > 0.5:
         assert timer.sleep(max_sleep=0.1)
         counter += 0.1
@@ -92,13 +92,13 @@ def test_countdown_timer_sleep_log(caplog):
     timer = CountdownTimer(count_time)
     # Default is a debug level
     timer.sleep()
-    assert caplog.records[-1].levelname == 'DEBUG'
-    assert caplog.records[-1].message.startswith('Sleeping Timer for')
+    assert caplog.records[-1].levelname == "DEBUG"
+    assert caplog.records[-1].message.startswith("Sleeping Timer for")
 
     timer.restart()
-    timer.sleep(log_level='info')
-    assert caplog.records[-1].levelname == 'INFO'
-    assert caplog.records[-1].message.startswith('Sleeping Timer for')
+    timer.sleep(log_level="info")
+    assert caplog.records[-1].levelname == "INFO"
+    assert caplog.records[-1].message.startswith("Sleeping Timer for")
 
 
 @pytest.mark.slow

@@ -85,11 +85,11 @@ def to_json(obj, filename=None, append=True, **kwargs):
         raise error.InvalidSerialization(e)
 
     if filename is not None:
-        mode = 'w'
+        mode = "w"
         if append:
-            mode = 'a'
+            mode = "a"
         with open(filename, mode) as fn:
-            fn.write(json_str + '\n')
+            fn.write(json_str + "\n")
 
     return json_str
 
@@ -155,7 +155,7 @@ def from_json(msg):
     try:
         new_obj = deserialize_all_objects(json.loads(msg))
     except json.decoder.JSONDecodeError as e:
-        raise error.InvalidDeserialization(f'Error: {e!r} Message: {msg!r}')
+        raise error.InvalidDeserialization(f"Error: {e!r} Message: {msg!r}")
 
     return new_obj
 
@@ -291,9 +291,9 @@ def deserialize_all_objects(obj):
         `dict`: Same as `obj` but with objects converted to quantities.
     """
     if isinstance(obj, (dict, OrderedDict)):
-        if 'value' in obj and 'unit' in obj:
+        if "value" in obj and "unit" in obj:
             with suppress(ValueError):
-                return obj['value'] * u.Unit(obj['unit'])
+                return obj["value"] * u.Unit(obj["unit"])
 
         for k, v in obj.items():
             obj[k] = deserialize_all_objects(v)
@@ -302,10 +302,10 @@ def deserialize_all_objects(obj):
         return bool(obj)
 
     # Try to parse as quantity if certain type
-    if isinstance(obj, str) and obj > '':
+    if isinstance(obj, str) and obj > "":
         with suppress(IndexError):
             units_string = obj.rsplit()[-1]  # Get the final word
-            if units_string in ['m', 'deg', 's']:
+            if units_string in ["m", "deg", "s"]:
                 with suppress(Exception):
                     return u.Quantity(obj)
 

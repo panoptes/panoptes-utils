@@ -11,17 +11,17 @@ from panoptes.utils import error
 from panoptes.utils import serializers
 
 
-@deprecated(reason='Use panoptes.utils.serial.device')
+@deprecated(reason="Use panoptes.utils.serial.device")
 def get_serial_port_info():
     """Returns the serial ports defined on the system.
 
     Returns: a list of PySerial's ListPortInfo objects. See:
         https://github.com/pyserial/pyserial/blob/master/serial/tools/list_ports_common.py
     """
-    return sorted(get_comports(), key=operator.attrgetter('device'))
+    return sorted(get_comports(), key=operator.attrgetter("device"))
 
 
-@deprecated(reason='Use panoptes.utils.serial.device')
+@deprecated(reason="Use panoptes.utils.serial.device")
 def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cover
     """Finds the serial port that matches the given vendor and product id.
 
@@ -48,8 +48,9 @@ def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cov
         str or list: Either the path to the detected port or a list of all comports that match.
     """
     # Get all serial ports.
-    matched_ports = [p for p in get_serial_port_info() if
-                     p.vid == vendor_id and p.pid == product_id]
+    matched_ports = [
+        p for p in get_serial_port_info() if p.vid == vendor_id and p.pid == product_id
+    ]
 
     if len(matched_ports) == 1:
         return matched_ports[0].device
@@ -57,10 +58,11 @@ def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cov
         return matched_ports
     else:
         raise error.NotFound(
-            f'No serial ports for vendor_id={vendor_id:x} and product_id={product_id:x}')
+            f"No serial ports for vendor_id={vendor_id:x} and product_id={product_id:x}"
+        )
 
 
-@deprecated(reason='Use panoptes.utils.serial.device')
+@deprecated(reason="Use panoptes.utils.serial.device")
 class SerialData(object):
     """SerialData wraps a PySerial instance for reading from and writing to a serial device.
 
@@ -85,16 +87,17 @@ class SerialData(object):
         'Hello World'
     """
 
-    def __init__(self,
-                 port=None,
-                 baudrate=115200,
-                 name=None,
-                 timeout=2.0,
-                 open_delay=0.0,
-                 retry_limit=5,
-                 retry_delay=0.5,
-                 **kwargs
-                 ):
+    def __init__(
+        self,
+        port=None,
+        baudrate=115200,
+        name=None,
+        timeout=2.0,
+        open_delay=0.0,
+        retry_limit=5,
+        retry_delay=0.5,
+        **kwargs,
+    ):
         """Create a SerialData instance and attempt to open a connection.
 
         The device need not exist at the time this is called, in which case is_connected will
@@ -119,7 +122,7 @@ class SerialData(object):
         self.logger = logger
 
         if not port:
-            raise ValueError('Must specify port for SerialData')
+            raise ValueError("Must specify port for SerialData")
 
         self.name = name or port
         self.retry_limit = retry_limit
@@ -138,21 +141,21 @@ class SerialData(object):
         self.ser.rtscts = False
         self.ser.dsrdtr = False
 
-        self.logger.debug(f'SerialData for {self.name} created')
+        self.logger.debug(f"SerialData for {self.name} created")
 
         # Properties have been set to reasonable values, ready to open the port.
         try:
             self.connect()
         except serial.serialutil.SerialException as err:  # pragma: no cover
-            self.logger.debug(f'Unable to open {self.name}. Error: {err}')
+            self.logger.debug(f"Unable to open {self.name}. Error: {err}")
             return
 
         open_delay = max(0.0, float(open_delay))
         if open_delay > 0.0:
-            self.logger.debug(f'Opened {self.name}, sleeping for {open_delay} seconds')
+            self.logger.debug(f"Opened {self.name}, sleeping for {open_delay} seconds")
             time.sleep(open_delay)
         else:
-            self.logger.debug(f'Opened {self.name}')
+            self.logger.debug(f"Opened {self.name}")
 
     @property
     def port(self):
@@ -171,18 +174,18 @@ class SerialData(object):
             error.BadSerialConnection if unable to open the connection.
         """
         if self.is_connected:
-            self.logger.debug(f'Connection already open to {self.name}')
+            self.logger.debug(f"Connection already open to {self.name}")
             return
-        self.logger.debug(f'SerialData.connect called for {self.name}')
+        self.logger.debug(f"SerialData.connect called for {self.name}")
         try:
             # Note: we must not call open when it is already open, else an exception is thrown of
             # the same type thrown when open fails to actually open the device.
             self.ser.open()
             if not self.is_connected:  # pragma: no cover
-                raise error.BadSerialConnection(msg=f'Serial connection {self.name} is not open')
+                raise error.BadSerialConnection(msg=f"Serial connection {self.name} is not open")
         except serial.serialutil.SerialException as err:
             raise error.BadSerialConnection(msg=err)
-        self.logger.debug(f'Serial connection established to {self.name}')
+        self.logger.debug(f"Serial connection established to {self.name}")
 
     def disconnect(self):
         """Closes the serial connection.
@@ -191,13 +194,13 @@ class SerialData(object):
             error.BadSerialConnection if unable to close the connection.
         """
         # Fortunately, close() doesn't throw an exception if already closed.
-        self.logger.debug(f'SerialData.disconnect called for {self.name}')
+        self.logger.debug(f"SerialData.disconnect called for {self.name}")
         try:
             self.ser.close()
         except Exception as e:  # pragma: no cover
-            raise error.BadSerialConnection(msg=f'disconnect failed for {self.name}; {e!r}')
+            raise error.BadSerialConnection(msg=f"disconnect failed for {self.name}; {e!r}")
         if self.is_connected:  # pragma: no cover
-            raise error.BadSerialConnection(msg=f'SerialData.disconnect failed for {self.name}')
+            raise error.BadSerialConnection(msg=f"SerialData.disconnect failed for {self.name}")
 
     def write_bytes(self, data):
         """Write data of type bytes."""
@@ -231,11 +234,11 @@ class SerialData(object):
         if retry_delay is None:
             retry_delay = self.retry_delay
 
-        data = ''
+        data = ""
         for _ in range(retry_limit):
             line = self.ser.readline()
             if line:
-                data = line.decode(encoding='ascii')
+                data = line.decode(encoding="ascii")
                 break
             time.sleep(retry_delay)
 
@@ -251,7 +254,7 @@ class SerialData(object):
         # Get the timestamp after the read so that a long delay on reading doesn't make it
         # appear that the read happened much earlier than it did.
         line = self.read()
-        ts = time.strftime('%Y-%m-%dT%H:%M:%S %Z', time.gmtime())
+        ts = time.strftime("%Y-%m-%dT%H:%M:%S %Z", time.gmtime())
         info = (ts, line)
         return info
 

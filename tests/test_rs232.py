@@ -17,32 +17,32 @@ def test_missing_port():
 
 def test_non_existent_device():
     """Doesn't complain if it can't find the device."""
-    port = '/dev/tty12345698765'
+    port = "/dev/tty12345698765"
     with pytest.raises(error.BadSerialConnection):
-        ser = rs232.SerialData(port=port)
+        rs232.SerialData(port=port)
 
 
 def test_usage():
-    port = 'loop://'
+    port = "loop://"
     ser = rs232.SerialData(port=port, open_delay=0.1)
     assert ser.is_connected
     ser.connect()
 
-    write_bytes = ser.write('Hello world\n')
+    write_bytes = ser.write("Hello world\n")
     assert write_bytes == 12
     read_line = ser.read(write_bytes)
-    assert read_line == 'Hello world\n'
+    assert read_line == "Hello world\n"
 
-    ser.write('A new line')
+    ser.write("A new line")
     ts, reading = ser.get_reading()
-    assert reading == 'A new line'
+    assert reading == "A new line"
 
-    ser.write(to_json(dict(message='Hello world')))
+    ser.write(to_json(dict(message="Hello world")))
     reading = ser.get_and_parse_reading()
 
     ser.reset_input_buffer()
 
-    bytes = ser.write('a')
+    bytes = ser.write("a")
     ser.read_bytes(bytes)
 
     ser.disconnect()
