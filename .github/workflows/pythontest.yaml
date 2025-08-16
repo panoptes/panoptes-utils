@@ -41,7 +41,7 @@ jobs:
       - name: Install Hatch
         run: pipx install hatch pytest
       - name: Install POCS with Hatch
-        run: hatch run pip install -e ".[all]"
+        run: hatch run pip install -e ".[config,docs,images,testing]"
       - name: Test with Hatch
         run: hatch run pytest
       - uses: codecov/codecov-action@v4

@@ -32,7 +32,7 @@ dependencies = [
     "colorama",
     "Deprecated",
     "loguru",
-    "numpy>=1.19",
+    "numpy>=2",
     "pyserial>=3.4",
     "python-dateutil",
     "requests",
