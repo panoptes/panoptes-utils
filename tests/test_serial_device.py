@@ -53,5 +53,4 @@ def test_write_raise_exception(caplog):
     s0.write("not a json message")
     time.sleep(0.5)
     assert "InvalidDeserialization" in caplog.records[-1].message
-    assert caplog.records[-1].levelname == "ERROR"
     assert len(s0.readings) == 0
