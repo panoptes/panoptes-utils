@@ -14,7 +14,7 @@ from panoptes.utils.serializers import to_json
 class PanFileDB(AbstractPanDB):
     """Stores collections as files of JSON records."""
 
-    def __init__(self, db_name='panoptes', storage_dir='json_store', **kwargs):
+    def __init__(self, db_name="panoptes", storage_dir="json_store", **kwargs):
         """Flat file storage for json records.
 
         This will simply store each json record inside a file corresponding
@@ -79,7 +79,7 @@ class PanFileDB(AbstractPanDB):
         collection_fn = self._get_file(collection)
         obj = None
         with suppress(FileNotFoundError):
-            with open(collection_fn, 'r') as f:
+            with open(collection_fn, "r") as f:
                 for line in f:
                     if obj_id in line:
                         obj = from_json(line)
@@ -99,9 +99,9 @@ class PanFileDB(AbstractPanDB):
 
     def _get_file(self, collection, permanent=True):
         if permanent:
-            name = f'{collection}.json'
+            name = f"{collection}.json"
         else:
-            name = f'current_{collection}.json'
+            name = f"current_{collection}.json"
         return os.path.join(self.storage_dir, name)
 
     def _make_id(self):
@@ -111,5 +111,5 @@ class PanFileDB(AbstractPanDB):
     def permanently_erase_database(cls, db_name, storage_dir=None):
         # Clear out any .json files.
         storage_dir = os.path.join(storage_dir, db_name)
-        for f in glob(os.path.join(storage_dir, '*.json')):
+        for f in glob(os.path.join(storage_dir, "*.json")):
             os.remove(f)

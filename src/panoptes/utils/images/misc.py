@@ -12,12 +12,13 @@ from panoptes.utils import error
 
 
 def make_timelapse(
-        directory,
-        fn_out=None,
-        glob_pattern='20[1-9][0-9]*T[0-9]*.jpg',
-        overwrite=False,
-        timeout=60,
-        **kwargs):  # pragma: no cover
+    directory,
+    fn_out=None,
+    glob_pattern="20[1-9][0-9]*T[0-9]*.jpg",
+    overwrite=False,
+    timeout=60,
+    **kwargs,
+):  # pragma: no cover
     """Create a timelapse.
 
     A timelapse is created from all the images in given ``directory``
@@ -43,18 +44,18 @@ def make_timelapse(
     """
     if fn_out is None:
         head, tail = os.path.split(directory)
-        if tail == '':
+        if tail == "":
             head, tail = os.path.split(head)
 
-        field_name = head.split('/')[-2]
-        cam_name = head.split('/')[-1]
-        fname = f'{field_name}_{cam_name}_{tail}.mp4'
+        field_name = head.split("/")[-2]
+        cam_name = head.split("/")[-1]
+        fname = f"{field_name}_{cam_name}_{tail}.mp4"
         fn_out = os.path.normpath(os.path.join(directory, fname))
 
     if os.path.exists(fn_out) and not overwrite:
         raise FileExistsError("Timelapse exists. Set overwrite=True if needed")
 
-    ffmpeg = shutil.which('ffmpeg')
+    ffmpeg = shutil.which("ffmpeg")
     if ffmpeg is None:
         raise error.InvalidSystemCommand("ffmpeg not found, can't make timelapse")
 
@@ -63,22 +64,28 @@ def make_timelapse(
     try:
         ffmpeg_cmd = [
             ffmpeg,
-            '-r', '3',
-            '-pattern_type', 'glob',
-            '-i', inputs_glob,
-            '-s', 'hd1080',
-            '-vcodec', 'libx264',
+            "-r",
+            "3",
+            "-pattern_type",
+            "glob",
+            "-i",
+            inputs_glob,
+            "-s",
+            "hd1080",
+            "-vcodec",
+            "libx264",
         ]
 
         if overwrite:
-            ffmpeg_cmd.append('-y')
+            ffmpeg_cmd.append("-y")
 
         ffmpeg_cmd.append(fn_out)
 
         logger.debug(ffmpeg_cmd)
 
-        proc = subprocess.Popen(ffmpeg_cmd, universal_newlines=True,
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen(
+            ffmpeg_cmd, universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
         try:
             # Don't wait forever
             outs, errs = proc.communicate(timeout=timeout)
@@ -137,8 +144,9 @@ def crop_data(data, box_width=200, center=None, data_only=True, wcs=None, **kwar
             a `astropy.nddata.Cutout2D` object.
 
     """
-    assert data.shape[
-               0] >= box_width, f"Can't clip data, it's smaller than {box_width} ({data.shape})"
+    assert data.shape[0] >= box_width, (
+        f"Can't clip data, it's smaller than {box_width} ({data.shape})"
+    )
     # Get the center
     if center is None:
         x_len, y_len = data.shape
@@ -215,12 +223,13 @@ def mask_saturated(data, saturation_level=None, threshold=0.9, bit_depth=None, d
                 try:
                     bit_depth = bit_depth.to_value(unit=u.bit / u.pixel)
                 except u.UnitConversionError:
-                    raise error.IllegalValue("bit_depth must have units of bits or bits/pixel, " +
-                                             f"got {bit_depth!r}")
+                    raise error.IllegalValue(
+                        "bit_depth must have units of bits or bits/pixel, " + f"got {bit_depth!r}"
+                    )
 
             bit_depth = int(bit_depth)
             logger.trace(f"Using bit depth {bit_depth!r}")
-            saturation_level = threshold * (2 ** bit_depth - 1)
+            saturation_level = threshold * (2**bit_depth - 1)
         else:
             # No bit depth specified, try to guess.
             logger.trace(f"Inferring bit_depth from data type, {data.dtype!r}")
@@ -229,9 +238,11 @@ def mask_saturated(data, saturation_level=None, threshold=0.9, bit_depth=None, d
                 saturation_level = threshold * np.iinfo(data.dtype).max
             except ValueError:
                 # ValueError from np.iinfo means not an integer type.
-                raise error.IllegalValue("Neither saturation_level or bit_depth given, and data " +
-                                         "is not an integer type. Cannot determine correct " +
-                                         "saturation level.")
+                raise error.IllegalValue(
+                    "Neither saturation_level or bit_depth given, and data "
+                    + "is not an integer type. Cannot determine correct "
+                    + "saturation level."
+                )
     logger.debug(f"Masking image using saturation level {saturation_level!r}")
     # Convert data to masked array of requested dtype, mask values above saturation level.
     return np.ma.array(data, mask=(data > saturation_level), dtype=dtype)

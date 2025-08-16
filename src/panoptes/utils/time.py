@@ -12,7 +12,7 @@ from panoptes.utils import error
 
 
 def current_time(flatten=False, datetime=False, pretty=False):
-    """ Convenience method to return the "current" time according to the system.
+    """Convenience method to return the "current" time according to the system.
 
     Note:
         If the ``$POCSTIME`` environment variable is set then this will return
@@ -57,12 +57,12 @@ def current_time(flatten=False, datetime=False, pretty=False):
         astropy.time.Time: Object representing now.
     """
 
-    pocs_time = os.getenv('POCSTIME')
+    pocs_time = os.getenv("POCSTIME")
 
-    if pocs_time is not None and pocs_time > '':
+    if pocs_time is not None and pocs_time > "":
         _time = Time(pocs_time)
         # Increment POCSTIME
-        os.environ['POCSTIME'] = (_time + 1 * u.second).isot
+        os.environ["POCSTIME"] = (_time + 1 * u.second).isot
     else:
         _time = Time.now()
 
@@ -70,7 +70,7 @@ def current_time(flatten=False, datetime=False, pretty=False):
         _time = flatten_time(_time)
 
     if pretty:
-        _time = _time.isot.split('.')[0].replace('T', ' ')
+        _time = _time.isot.split(".")[0].replace("T", " ")
 
     if datetime:
         # Add UTC timezone
@@ -99,12 +99,11 @@ def flatten_time(t):
     Returns:
         str: The flattened string representation of the time.
     """
-    return t.isot.replace('-', '').replace(':', '').split('.')[0]
+    return t.isot.replace("-", "").replace(":", "").split(".")[0]
 
 
 class CountdownTimer(object):
-
-    def __init__(self, duration: Union[int, float], name: str = ''):
+    def __init__(self, duration: Union[int, float], name: str = ""):
         """Simple timer object for tracking whether a time duration has elapsed.
 
         Examples:
@@ -134,20 +133,20 @@ class CountdownTimer(object):
         if isinstance(duration, u.Quantity):
             duration = duration.to(u.second).value
         elif not isinstance(duration, (int, float)):
-            raise ValueError(f'duration ({duration}) is not a supported type: {type(duration)}')
+            raise ValueError(f"duration ({duration}) is not a supported type: {type(duration)}")
 
         assert duration >= 0, "Duration must be non-negative."
 
-        self.name = f'{name}Timer'
+        self.name = f"{name}Timer"
         self.target_time = None
         self.duration = float(duration)
         self.restart()
 
     def __str__(self):
-        is_expired = ''
+        is_expired = ""
         if self.expired():
-            is_expired = 'EXPIRED'
-        return f'{is_expired} {self.name} {self.time_left():.02f}/{self.duration:.02f}'
+            is_expired = "EXPIRED"
+        return f"{is_expired} {self.name} {self.time_left():.02f}/{self.duration:.02f}"
 
     def expired(self):
         """Return a boolean, telling if the timeout has expired.
@@ -174,9 +173,9 @@ class CountdownTimer(object):
     def restart(self):
         """Restart the timed duration."""
         self.target_time = time.monotonic() + self.duration
-        logger.debug(f'Restarting {self.name}')
+        logger.debug(f"Restarting {self.name}")
 
-    def sleep(self, max_sleep: Union[int, float, None] = None, log_level: str = 'DEBUG'):
+    def sleep(self, max_sleep: Union[int, float, None] = None, log_level: str = "DEBUG"):
         """Sleep until the timer expires, or for max_sleep, whichever is sooner.
 
         Args:
@@ -195,17 +194,18 @@ class CountdownTimer(object):
         if max_sleep and max_sleep < sleep_time:
             sleep_time = max(max_sleep, 0)
 
-        logger.log(log_level.upper(), f'Sleeping {self.name} for {sleep_time:.02f} seconds')
+        logger.log(log_level.upper(), f"Sleeping {self.name} for {sleep_time:.02f} seconds")
         time.sleep(sleep_time)
 
         return sleep_time < remaining
 
 
-def wait_for_events(events,
-                    timeout=600,
-                    sleep_delay=5 * u.second,
-                    callback=None,
-                    ):
+def wait_for_events(
+    events,
+    timeout=600,
+    sleep_delay=5 * u.second,
+    callback=None,
+):
     """Wait for event(s) to be set.
 
     This method will wait for a maximum of `timeout` seconds for all the `events`
@@ -260,7 +260,7 @@ def wait_for_events(events,
         error.Timeout: Raised if events have not all been set before `timeout` seconds.
     """
     with suppress(AttributeError):
-        sleep_delay = sleep_delay.to_value('second')
+        sleep_delay = sleep_delay.to_value("second")
 
     event_timer = CountdownTimer(timeout)
 
@@ -269,16 +269,18 @@ def wait_for_events(events,
 
     start_time = current_time()
     while not all([event.is_set() for event in events]):
-        elapsed_secs = round((current_time() - start_time).to_value('second'), 2)
+        elapsed_secs = round((current_time() - start_time).to_value("second"), 2)
 
         if event_timer.expired():
             raise error.Timeout(
-                f"Timeout waiting for {len(events)} events after {elapsed_secs} seconds")
+                f"Timeout waiting for {len(events)} events after {elapsed_secs} seconds"
+            )
 
         if callable(callback) and callback() is False:
             logger.warning(
                 f"Waiting for {len(events)} events has been interrupted after {elapsed_secs} "
-                f"seconds")
+                f"seconds"
+            )
             break
 
         # Sleep for a little bit.

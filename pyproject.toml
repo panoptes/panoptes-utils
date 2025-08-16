@@ -26,13 +26,14 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Physics"
 ]
 dependencies = [
+    "Deprecated",
     "astropy",
     "click",
     "click-spinner",
-    "Deprecated",
     "loguru",
     "numpy>=2",
     "pyserial>=3.4",
+    "pytest-loguru",
     "python-dateutil",
     "requests",
     "ruamel.yaml",

@@ -8,11 +8,7 @@ from panoptes.utils.images.cr2 import cr2_to_jpg
 from panoptes.utils.images.fits import fits_to_jpg
 
 
-def make_pretty_image(fname,
-                      title=None,
-                      img_type=None,
-                      link_path=None,
-                      **kwargs) -> Optional[Path]:
+def make_pretty_image(fname, title=None, img_type=None, link_path=None, **kwargs) -> Optional[Path]:
     """Make a pretty image.
 
     This will create a jpg file from either a CR2 (Canon) or FITS file.
@@ -36,9 +32,9 @@ def make_pretty_image(fname,
     if not os.path.exists(fname):
         warn(f"File doesn't exist, can't make pretty: {fname}")
         return None
-    elif img_type == '.cr2':
+    elif img_type == ".cr2":
         pretty_path = cr2_to_jpg(Path(fname), title=title, **kwargs)
-    elif img_type in ['.fits', '.fz']:
+    elif img_type in [".fits", ".fz"]:
         pretty_path = fits_to_jpg(fname, title=title, **kwargs)
     else:
         warn("File must be a Canon CR2 or FITS file.")

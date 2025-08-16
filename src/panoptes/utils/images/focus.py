@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def focus_metric(data, merit_function='vollath_F4', **kwargs):
+def focus_metric(data, merit_function="vollath_F4", **kwargs):
     """Compute the focus metric.
 
     Computes a focus metric on the given data using a supplied merit function.
@@ -21,7 +21,7 @@ def focus_metric(data, merit_function='vollath_F4', **kwargs):
         try:
             merit_function = globals()[merit_function]
         except KeyError:
-            raise KeyError(f'Focus merit function {merit_function} not found.')
+            raise KeyError(f"Focus merit function {merit_function} not found.")
 
     return merit_function(data, **kwargs)
 
@@ -56,9 +56,9 @@ def vollath_F4(data, axis=None):
         A2 = (data[:, 2:] * data[:, :-2]).mean()
         return A1 - A2
 
-    if str(axis).lower() == 'y':
+    if str(axis).lower() == "y":
         return _vollath_F4_y()
-    elif str(axis).lower() == 'x':
+    elif str(axis).lower() == "x":
         return _vollath_F4_x()
     elif not axis:
         return (_vollath_F4_y() + _vollath_F4_x()) / 2

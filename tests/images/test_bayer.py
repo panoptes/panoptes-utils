@@ -63,31 +63,31 @@ def test_get_rgb_4d_data():
 
 def test_get_pixel_color():
     """
-        From the docstring:
+    From the docstring:
 
-                 | row (y) |  col (x)
-             --------------| ------
-              R  |  odd i, |  even j
-              G1 |  odd i, |   odd j
-              G2 | even i, |  even j
-              B  | even i, |   odd j
+             | row (y) |  col (x)
+         --------------| ------
+          R  |  odd i, |  even j
+          G1 |  odd i, |   odd j
+          G2 | even i, |  even j
+          B  | even i, |   odd j
 
     """
 
-    assert bayer.get_pixel_color(0, 1) == 'R'
-    assert bayer.get_pixel_color(1, 1) == 'G1'
-    assert bayer.get_pixel_color(2, 2) == 'G2'
-    assert bayer.get_pixel_color(1, 2) == 'B'
+    assert bayer.get_pixel_color(0, 1) == "R"
+    assert bayer.get_pixel_color(1, 1) == "G1"
+    assert bayer.get_pixel_color(2, 2) == "G2"
+    assert bayer.get_pixel_color(1, 2) == "B"
 
     # Test with some fractional pixels
-    assert bayer.get_pixel_color(0, 1.1) == 'R'
-    assert bayer.get_pixel_color(1.9, 1) == 'G1'
-    assert bayer.get_pixel_color(2, 2.5) == 'G2'
-    assert bayer.get_pixel_color(1.5, 2) == 'B'
+    assert bayer.get_pixel_color(0, 1.1) == "R"
+    assert bayer.get_pixel_color(1.9, 1) == "G1"
+    assert bayer.get_pixel_color(2, 2.5) == "G2"
+    assert bayer.get_pixel_color(1.5, 2) == "B"
 
 
 def test_get_stamp_slice():
-    superpixel = np.array(['G2', 'B', 'R', 'G1']).reshape(2, 2)
+    superpixel = np.array(["G2", "B", "R", "G1"]).reshape(2, 2)
     d0 = np.tile(superpixel, (5, 5))
     d1 = np.arange(100).reshape(10, 10)
 
@@ -99,7 +99,7 @@ def test_get_stamp_slice():
     ]
 
     centers = {d0[y, x]: d1[y, x] for x, y in positions}
-    assert centers == {'G2': 46, 'R': 56, 'B': 47, 'G1': 57}
+    assert centers == {"G2": 46, "R": 56, "B": 47, "G1": 57}
 
     slices = [bayer.get_stamp_slice(x, y, stamp_size=(6, 6)) for x, y in positions]
     # They should all be the same
@@ -130,21 +130,23 @@ def test_get_stamp_slice_fail():
 def test_save_rgb_bg_fits(solved_fits_file, tmpdir):
     d0, h0 = fits_utils.getdata(solved_fits_file, header=True)
 
-    temp_fn = tmpdir / 'temp.fits'
+    temp_fn = tmpdir / "temp.fits"
 
-    h0['test'] = True
+    h0["test"] = True
 
     rgb_data = bayer.get_rgb_background(d0, return_separate=True)
     bayer.save_rgb_bg_fits(rgb_data, output_filename=str(temp_fn), header=h0, fpack=False)
-    assert fits_utils.getval(str(temp_fn), 'test') is True
+    assert fits_utils.getval(str(temp_fn), "test") is True
 
     with pytest.raises(OSError):
-        bayer.save_rgb_bg_fits(rgb_data, output_filename=str(temp_fn), header=h0, fpack=False,
-                               overwrite=False)
+        bayer.save_rgb_bg_fits(
+            rgb_data, output_filename=str(temp_fn), header=h0, fpack=False, overwrite=False
+        )
 
-    temp_fn = bayer.save_rgb_bg_fits(rgb_data, output_filename=str(temp_fn), fpack=True,
-                                     overwrite=True)
+    temp_fn = bayer.save_rgb_bg_fits(
+        rgb_data, output_filename=str(temp_fn), fpack=True, overwrite=True
+    )
 
     # Didn't use our header.
     with pytest.raises(KeyError):
-        fits_utils.getval(str(temp_fn), 'test')
+        fits_utils.getval(str(temp_fn), "test")
