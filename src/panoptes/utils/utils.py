@@ -167,7 +167,7 @@ def get_quantity_value(quantity, unit=None):
     """
     try:
         quantity = quantity.to_value(unit)
-        if isinstance(quantity, np.float64):
+        if isinstance(quantity, (np.floating, float)):
             return quantity.item()
         return quantity
     except AttributeError:
