@@ -1,9 +1,155 @@
 [build-system]
-# AVOID CHANGING REQUIRES: IT WILL BE UPDATED BY PYSCAFFOLD!
-requires = ["setuptools>=46.1.0", "setuptools_scm[toml]>=5", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.25.0", "hatch-vcs>=0.4"]
+build-backend = "hatchling.build"
 
-[tool.setuptools_scm]
-# For smarter version schemes and other configuration options,
-# check out https://github.com/pypa/setuptools_scm
-version_scheme = "no-guess-dev"
+[project]
+name = "panoptes-utils"
+description = "Astronomical utilities for PANOPTES"
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.12"
+license = { file = "LICENSE.txt" }
+authors = [
+    { name = "PANOPTES Team", email = "developers@projectpanoptes.org" }
+]
+dynamic = ["version"]
+keywords = ["astronomy", "physics", "PANOPTES"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "Topic :: Scientific/Engineering :: Physics"
+]
+dependencies = [
+    "astropy",
+    "click",
+    "click-spinner",
+    "Deprecated",
+    "loguru",
+    "numpy>=2",
+    "pyserial>=3.4",
+    "python-dateutil",
+    "requests",
+    "ruamel.yaml",
+    "typer",
+]
+
+[project.urls]
+Homepage = "https://github.com/panoptes/panoptes-utils"
+Documentation = "https://panoptes-utils.readthedocs.io"
+"POCS Documentation" = "https://pocs.readthedocs.io"
+"Project PANOPTES" = "https://www.projectpanoptes.org"
+Forum = "https://forum.projectpanoptes.org"
+
+[project.optional-dependencies]
+config = [
+    "Flask",
+    "PyYAML",
+    "gevent",
+    "requests",
+    "scalpl",
+]
+docs = [
+    "myst-parser",
+    "piccolo-theme",
+    "pytest_mpl",
+    "sphinx",
+]
+examples = [
+    "matplotlib",
+    "pandas",
+    "seaborn",
+    "streamz",
+]
+images = [
+    "matplotlib",
+    "photutils",
+    "pillow>=9.1.1",
+    "scipy",
+    "watchfiles",
+]
+testing = [
+    "coverage",
+    "pycodestyle",
+    "pytest",
+    "pytest-cov",
+    "pytest-doctestplus",
+    "pytest-remotedata>=0.3.1",
+    "pytest_mpl",
+    "python-dotenv",
+    "tox",
+]
+
+[project.scripts]
+panoptes-config-server = "panoptes.utils.config.cli:config_server_cli"
+panoptes-utils = "panoptes.utils.cli.main:app"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build]
+include = ["src/panoptes/**"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/panoptes"]
+
+[tool.hatch.envs.default]
+dependencies = [
+    "ruff>=0.5.0"
+]
+[tool.hatch.envs.default.scripts]
+lint = "ruff check ."
+lint-fix = "ruff check --fix ."
+fmt = "ruff format ."
+fmt-check = "ruff format --check ."
+
+[tool.pytest.ini_options]
+addopts = [
+    "--cov", "panoptes",
+    "--cov-report", "term-missing:skip-covered",
+    "--cov-report", "xml:build/coverage.xml",
+    "--doctest-modules",
+    "--strict-markers",
+    "-vv",
+    "-ra",
+    "--test-databases", "memory",
+]
+norecursedirs = ["dist", "build", ".tox"]
+testpaths = ["tests", "src"]
+doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE", "ALLOW_UNICODE", "IGNORE_EXCEPTION_DETAIL"]
+filterwarnings = [
+    "ignore:elementwise == comparison failed:DeprecationWarning",
+    "ignore::pytest.PytestDeprecationWarning",
+]
+markers = [
+    "plate_solve: tests that require astrometry.net (i.e. solve-field).",
+    "slow: marks tests as slow (deselect with '-m \"not slow\"').",
+]
+
+[tool.coverage.report]
+show_missing = true
+ignore_errors = true
+exclude_lines = [
+    "pragma: no cover",
+    "noqa",
+    "def __repr__",
+    "if self\\.debug",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = [
+    "notebooks",
+    "resources",
+    "conf_files"
+]
