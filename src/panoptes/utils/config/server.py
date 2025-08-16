@@ -14,7 +14,10 @@ from panoptes.utils.config.helpers import load_config, save_config
 if platform == "darwin" or platform == "win32":
     import multiprocessing
 
-    multiprocessing.set_start_method('fork')
+    try:
+        multiprocessing.set_start_method('fork')
+    except RuntimeError:
+        pass
 
 # Turn off noisy logging for Flask wsgi server.
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
