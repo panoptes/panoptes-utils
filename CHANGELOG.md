@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 0.2.49 - 2025-08-16
 
 ### Updated
 
