@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.2.50 - 2025-08-16
+
+* Hotfix for GHA release action
+
 ## 0.2.49 - 2025-08-16
 
 ### Updated
