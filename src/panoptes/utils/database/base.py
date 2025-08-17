@@ -10,7 +10,7 @@ def create_storage_obj(collection, data, obj_id):
     return dict(_id=obj_id, data=data, type=collection, date=current_time(datetime=True))
 
 
-def get_db_class(module_name='file'):
+def get_db_class(module_name="file"):
     """Load the main DB class for the module of the given name.
 
     .. note::
@@ -30,17 +30,17 @@ def get_db_class(module_name='file'):
         Exception: If an unsupported database type string is passed.
     """
     class_map = {
-        'file': 'PanFileDB',
-        'memory': 'PanMemoryDB',
+        "file": "PanFileDB",
+        "memory": "PanMemoryDB",
     }
 
-    full_module_name = f'panoptes.utils.database.{module_name}'
+    full_module_name = f"panoptes.utils.database.{module_name}"
 
     try:
         db_module = load_module(full_module_name)
         return getattr(db_module, class_map[module_name])
     except Exception as e:
-        raise Exception(f'Unsupported database type: {full_module_name}: {e!r}')
+        raise Exception(f"Unsupported database type: {full_module_name}: {e!r}")
 
 
 class AbstractPanDB(metaclass=abc.ABCMeta):
@@ -52,7 +52,7 @@ class AbstractPanDB(metaclass=abc.ABCMeta):
             db_name: Name of the database, typically 'panoptes' or 'panoptes_testing'.
         """
         self.db_name = db_name
-        logger.info(f'Creating PanDB {self.db_name}')
+        logger.info(f"Creating PanDB {self.db_name}")
 
     @abc.abstractmethod
     def insert_current(self, collection, obj, store_permanently=True):  # pragma: no cover
@@ -154,13 +154,13 @@ class PanDB(object):
         True
     """
 
-    def __new__(cls, db_type='memory', db_name=None, *args, **kwargs):
+    def __new__(cls, db_type="memory", db_name=None, *args, **kwargs):
         """Create an instance based on db_type."""
 
         # Load the correct DB module
         DatabaseModule = get_db_class(db_type)
 
-        if db_type == 'memory':
+        if db_type == "memory":
             # The memory type has special setup
             db_instance = DatabaseModule.get_or_create(**kwargs)
         else:
@@ -169,20 +169,20 @@ class PanDB(object):
         return db_instance
 
     @classmethod
-    def permanently_erase_database(cls,
-                                   db_type,
-                                   db_name,
-                                   storage_dir=None,
-                                   really=False,
-                                   dangerous=False,
-                                   *args, **kwargs):
+    def permanently_erase_database(
+        cls, db_type, db_name, storage_dir=None, really=False, dangerous=False, *args, **kwargs
+    ):
         """Permanently delete the contents of the identified database."""
 
-        if not isinstance(db_name, str) or 'test' not in db_name:
-            raise ValueError(f'permanently_erase_database() called for non-test database {db_name!r}')
+        if not isinstance(db_name, str) or "test" not in db_name:
+            raise ValueError(
+                f"permanently_erase_database() called for non-test database {db_name!r}"
+            )
 
-        if really != 'Yes' or dangerous != 'Totally':
-            raise Exception('PanDB.permanently_erase_database called with invalid args!')
+        if really != "Yes" or dangerous != "Totally":
+            raise Exception("PanDB.permanently_erase_database called with invalid args!")
 
         # Load the correct DB module and do the deletion.
-        get_db_class(db_type).permanently_erase_database(db_name, storage_dir=storage_dir, *args, **kwargs)
+        get_db_class(db_type).permanently_erase_database(
+            db_name, storage_dir=storage_dir, *args, **kwargs
+        )

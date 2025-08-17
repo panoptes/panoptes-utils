@@ -12,20 +12,15 @@ from panoptes.utils.serializers import to_json
 def server_is_running(*args, **kwargs):  # pragma: no cover
     """Thin-wrapper to check server."""
     try:
-        return get_config(endpoint='heartbeat', verbose=False, *args, **kwargs)
+        return get_config(endpoint="heartbeat", verbose=False, *args, **kwargs)
     except Exception as e:
-        logger.warning(f'server_is_running error (ignore if just starting server): {e!r}')
+        logger.warning(f"server_is_running error (ignore if just starting server): {e!r}")
         return False
 
 
-def get_config(key=None,
-               default=None,
-               host=None,
-               port=None,
-               endpoint='get-config',
-               parse=True,
-               verbose=False
-               ):
+def get_config(
+    key=None, default=None, host=None, port=None, endpoint="get-config", parse=True, verbose=False
+):
     """Get a config item from the config server.
 
     Return the config entry for the given ``key``. If ``key=None`` (default), return
@@ -95,40 +90,40 @@ def get_config(key=None,
     Raises:
         Exception: Raised if the config server is not available.
     """
-    log_level = 'DEBUG' if verbose else 'TRACE'
+    log_level = "DEBUG" if verbose else "TRACE"
 
-    host = host or os.getenv('PANOPTES_CONFIG_HOST', 'localhost')
-    port = port or os.getenv('PANOPTES_CONFIG_PORT', 6563)
+    host = host or os.getenv("PANOPTES_CONFIG_HOST", "localhost")
+    port = port or os.getenv("PANOPTES_CONFIG_PORT", 6563)
 
-    url = f'http://{host}:{port}/{endpoint}'
+    url = f"http://{host}:{port}/{endpoint}"
 
     config_entry = default
 
     try:
-        logger.log(log_level, f'Calling get_config on url={url!r} with  key={key!r}')
-        response = requests.post(url, json={'key': key, 'verbose': verbose})
+        logger.log(log_level, f"Calling get_config on url={url!r} with  key={key!r}")
+        response = requests.post(url, json={"key": key, "verbose": verbose})
         if not response.ok:  # pragma: no cover
-            raise InvalidConfig(f'Config server returned invalid JSON: {response.content!r}')
+            raise InvalidConfig(f"Config server returned invalid JSON: {response.content!r}")
     except ConnectionError:
-        logger.debug('Bad connection to config-server. Check to make sure it is running.')
+        logger.debug("Bad connection to config-server. Check to make sure it is running.")
     except Exception as e:  # pragma: no cover
-        logger.warning(f'Problem with get_config: {e!r}')
+        logger.warning(f"Problem with get_config: {e!r}")
     else:
         response_text = response.text.strip()
-        logger.log(log_level, f'Decoded  response_text={response_text!r}')
-        if response_text != 'null':
-            logger.log(log_level, f'Received config key={key!r}  response_text={response_text!r}')
+        logger.log(log_level, f"Decoded  response_text={response_text!r}")
+        if response_text != "null":
+            logger.log(log_level, f"Received config key={key!r}  response_text={response_text!r}")
             if parse:
-                logger.log(log_level, f'Parsing config results:  response_text={response_text!r}')
+                logger.log(log_level, f"Parsing config results:  response_text={response_text!r}")
                 config_entry = from_json(response_text)
             else:
                 config_entry = response_text
 
     if config_entry is None:
-        logger.log(log_level, f'No config entry found, returning  default={default!r}')
+        logger.log(log_level, f"No config entry found, returning  default={default!r}")
         config_entry = default
 
-    logger.log(log_level, f'Config key={key!r}:  config_entry={config_entry!r}')
+    logger.log(log_level, f"Config key={key!r}:  config_entry={config_entry!r}")
     return config_entry
 
 
@@ -172,27 +167,24 @@ def set_config(key, new_value, host=None, port=None, parse=True):
     Raises:
         Exception: Raised if the config server is not available.
     """
-    host = host or os.getenv('PANOPTES_CONFIG_HOST', 'localhost')
-    port = port or os.getenv('PANOPTES_CONFIG_PORT', 6563)
-    url = f'http://{host}:{port}/set-config'
+    host = host or os.getenv("PANOPTES_CONFIG_HOST", "localhost")
+    port = port or os.getenv("PANOPTES_CONFIG_PORT", 6563)
+    url = f"http://{host}:{port}/set-config"
 
     json_str = to_json({key: new_value})
 
     config_entry = None
     try:
         # We use our own serializer so pass as `data` instead of `json`.
-        logger.debug(f'Calling set_config on  url={url!r}')
-        response = requests.post(url,
-                                 data=json_str,
-                                 headers={'Content-Type': 'application/json'}
-                                 )
+        logger.debug(f"Calling set_config on  url={url!r}")
+        response = requests.post(url, data=json_str, headers={"Content-Type": "application/json"})
         if not response.ok:  # pragma: no cover
-            raise Exception(f'Cannot access config server: {response.text}')
+            raise Exception(f"Cannot access config server: {response.text}")
     except Exception as e:
-        logger.warning(f'Problem with set_config: {e!r}')
+        logger.warning(f"Problem with set_config: {e!r}")
     else:
         if parse:
-            config_entry = from_json(response.content.decode('utf8'))
+            config_entry = from_json(response.content.decode("utf8"))
         else:
             config_entry = response.json()
 

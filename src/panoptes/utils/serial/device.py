@@ -45,9 +45,10 @@ class SerialDeviceDefaults:
         9600
 
     """
+
     baudrate: int = 9600
-    timeout: float = 1.
-    write_timeout: float = 1.
+    timeout: float = 1.0
+    write_timeout: float = 1.0
     bytesize: int = serial.EIGHTBITS
     parity: str = serial.PARITY_NONE
     stopbits: int = serial.STOPBITS_ONE
@@ -57,8 +58,7 @@ class SerialDeviceDefaults:
 
     def to_dict(self):
         """Return fields as dict."""
-        return {field: getattr(self, field)
-                for field in self.__dataclass_fields__.keys()}
+        return {field: getattr(self, field) for field in self.__dataclass_fields__.keys()}
 
 
 def get_serial_port_info():
@@ -76,7 +76,7 @@ def get_serial_port_info():
     Returns: a list of PySerial's ListPortInfo objects. See:
         https://github.com/pyserial/pyserial/blob/master/serial/tools/list_ports_common.py
     """
-    return sorted(get_comports(include_links=True), key=operator.attrgetter('device'))
+    return sorted(get_comports(include_links=True), key=operator.attrgetter("device"))
 
 
 def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cover
@@ -105,8 +105,9 @@ def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cov
         str or list: Either the path to the detected port or a list of all comports that match.
     """
     # Get all serial ports.
-    matched_ports = [p for p in get_serial_port_info() if
-                     p.vid == vendor_id and p.pid == product_id]
+    matched_ports = [
+        p for p in get_serial_port_info() if p.vid == vendor_id and p.pid == product_id
+    ]
 
     if len(matched_ports) == 1:
         return matched_ports[0].device
@@ -114,17 +115,19 @@ def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cov
         return matched_ports
     else:
         raise error.NotFound(
-            f'No serial ports for vendor_id={vendor_id:x} and product_id={product_id:x}')
+            f"No serial ports for vendor_id={vendor_id:x} and product_id={product_id:x}"
+        )
 
 
 class SerialDevice(object):
-    def __init__(self,
-                 port: str = None,
-                 name: str = None,
-                 reader_callback: Callable = None,
-                 serial_settings: Optional[Union[SerialDeviceDefaults, dict]] = None,
-                 reader_queue_size: int = 50,
-                 ):
+    def __init__(
+        self,
+        port: str = None,
+        name: str = None,
+        reader_callback: Callable = None,
+        serial_settings: Optional[Union[SerialDeviceDefaults, dict]] = None,
+        reader_queue_size: int = 50,
+    ):
         """A SerialDevice class with helper methods for serial communications.
 
         The device need not exist at the time this is called, in which case
@@ -180,12 +183,12 @@ class SerialDevice(object):
         self._reader_callback = reader_callback
 
         self.serial: serial.Serial = serial.serial_for_url(port)
-        logger.debug(f'SerialDevice for {self.name} created. Connected={self.is_connected}')
+        logger.debug(f"SerialDevice for {self.name} created. Connected={self.is_connected}")
 
         serial_settings = serial_settings or SerialDeviceDefaults()
         if isinstance(serial_settings, SerialDeviceDefaults):
             serial_settings = serial_settings.to_dict()
-        logger.debug(f'Applying settings to serial class: {serial_settings!r}')
+        logger.debug(f"Applying settings to serial class: {serial_settings!r}")
         self.serial.apply_settings(serial_settings)
 
         self._add_stream_reader()
@@ -232,7 +235,7 @@ class SerialDevice(object):
                 super(LineReader, this).connection_made(transport)
 
             def connection_lost(this, exc):
-                logger.trace(f'Disconnected from {self}')
+                logger.trace(f"Disconnected from {self}")
 
             def handle_line(this, data):
                 try:
@@ -241,20 +244,20 @@ class SerialDevice(object):
                     if data is not None:
                         self.readings.append(data)
                 except Exception as e:
-                    logger.trace(f'Error with callback: {e!r}')
+                    logger.trace(f"Error with callback: {e!r}")
 
         self.reader_thread = ReaderThread(self.serial, CustomReader)
         self.reader_thread.start()
 
     def __str__(self):
         if self.name == self.port:
-            full_name = f'SerialDevice {self.name}'
+            full_name = f"SerialDevice {self.name}"
         else:
-            full_name = f'{self.name} on port={self.port}'
+            full_name = f"{self.name} on port={self.port}"
 
         with self.serial as s:
-            serial_summary = f'{s.baudrate}/{s.bytesize}-{s.parity}-{s.stopbits}'
-        return f'{full_name} [{serial_summary}]'
+            serial_summary = f"{s.baudrate}/{s.bytesize}-{s.parity}-{s.stopbits}"
+        return f"{full_name} [{serial_summary}]"
 
     def __del__(self):
         """Close the serial device on delete.

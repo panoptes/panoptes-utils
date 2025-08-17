@@ -5,7 +5,7 @@ from panoptes.utils import serializers
 from panoptes.utils.time import current_time
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def obj():
     return {
         "name": "Testing PANOPTES Unit",
@@ -30,35 +30,32 @@ def obj():
             "targets": "resources/targets",
             "mounts": "resources/mounts",
         },
-        "db": {
-            "name": "panoptes",
-            "type": "file"
-        },
+        "db": {"name": "panoptes", "type": "file"},
         "empty": {},
         "current_time": current_time(),
         "bool": True,
         "exception": TypeError,
-        "panoptes_exception": error.InvalidObservation
+        "panoptes_exception": error.InvalidObservation,
     }
 
 
 def test_roundtrip_json(obj):
     config_str = serializers.to_json(obj)
     config = serializers.from_json(config_str)
-    assert config['name'] == obj['name']
-    assert config['location']['latitude'] == obj['location']['latitude']
+    assert config["name"] == obj["name"]
+    assert config["location"]["latitude"] == obj["location"]["latitude"]
 
 
 def test_roundtrip_yaml(obj):
     config_str = serializers.to_yaml(obj)
     config = serializers.from_yaml(config_str)
-    assert config['name'] == obj['name']
-    assert config['location']['latitude'] == obj['location']['latitude']
+    assert config["name"] == obj["name"]
+    assert config["location"]["latitude"] == obj["location"]["latitude"]
 
 
 def test_bad_deserialization():
     with pytest.raises(error.InvalidDeserialization):
-        serializers.from_json('foobar')
+        serializers.from_json("foobar")
 
 
 def test_bad_serialization():
@@ -67,11 +64,11 @@ def test_bad_serialization():
 
 
 def test_quantity():
-    json_str = serializers.to_json(dict(foo='42 deg', bar='foo deg'))
+    json_str = serializers.to_json(dict(foo="42 deg", bar="foo deg"))
     assert json_str == '{"foo": "42 deg", "bar": "foo deg"}'
     json_obj = serializers.from_json(json_str)
 
     # Make sure we made a quantity when we could.
-    assert json_obj['foo'] == 42 * u.deg
+    assert json_obj["foo"] == 42 * u.deg
     # And not when we can't.
-    assert json_obj['bar'] == 'foo deg'
+    assert json_obj["bar"] == "foo deg"

@@ -6,7 +6,10 @@ PANOPTES Utilities
 </p>
 <br>
 
-[![GHA Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fpanoptes%2Fpanoptes-utils%2Fbadge%3Fref%3Ddevelop&style=flat)](https://actions-badge.atrox.dev/panoptes/panoptes-utils/goto?ref=develop) [![codecov](https://codecov.io/gh/panoptes/panoptes-utils/branch/develop/graph/badge.svg)](https://codecov.io/gh/panoptes/panoptes-utils) [![Documentation Status](https://readthedocs.org/projects/panoptes-utils/badge/?version=latest)](https://panoptes-utils.readthedocs.io/en/latest/?badge=latest) [![PyPI version](https://badge.fury.io/py/panoptes-utils.svg)](https://badge.fury.io/py/panoptes-utils)
+[![GHA Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fpanoptes%2Fpanoptes-utils%2Fbadge%3Fref%3Ddevelop&style=flat)](https://actions-badge.atrox.dev/panoptes/panoptes-utils/goto?ref=develop) 
+[![codecov](https://codecov.io/gh/panoptes/panoptes-utils/graph/badge.svg?token=YCzESBa7rK)](https://codecov.io/gh/panoptes/panoptes-utils)
+[![Documentation Status](https://readthedocs.org/projects/panoptes-utils/badge/?version=latest)](https://panoptes-utils.readthedocs.io/en/latest/?badge=latest) 
+[![PyPI version](https://badge.fury.io/py/panoptes-utils.svg)](https://badge.fury.io/py/panoptes-utils)
 
 Utility functions for use within the [Project PANOPTES](https://projectpanoptes.org) ecosystem and for general
 astronomical processing.
@@ -72,20 +75,71 @@ After installing with the `config` option as above, type:
 panoptes-config-server run --config-file <path-to-file.yaml>
 ```
 
-Developing
-----------
+### Development with Hatch
 
-`panoptes-utils` uses [`pyscaffold`](https://pyscaffold.org/en/stable/usage.html) for project setup,
-which then uses the standard `tox` and `pyproject.toml` tools to manage the project. Tests can
-be run with `tox`, e.g.
+This project uses the Hatch build system and environment management.
+
+Prerequisites:
+- Python 3.12+
+- Hatch: https://hatch.pypa.io (install via `pipx install hatch` or `pip install --user hatch`).
+
+Basic workflow:
+
+- Create and enter a dev environment with all testing tools:
+  ```bash
+  hatch env create
+  hatch shell
+  # or run commands without activating the shell using `hatch run ...`
+  ```
+
+- Install optional extras as needed (choose any):
+  ```bash
+  # Examples: google, focuser, sensors, weather
+  hatch run pip install -e ".[config,images,testing]"
+  ```
+
+- Run tests:
+  ```bash
+  # All tests with coverage, using pytest options from pyproject.toml
+  hatch run pytest
+
+  # Single test file
+  hatch run pytest tests/test_utils.py
+  ```
+
+- Lint / style checks:
+  ```bash
+  # Lint (Ruff)
+  hatch run lint
+  # Format (Ruff)
+  hatch run fmt
+  # Check formatting without changes
+  hatch run fmt-check
+  ```
+
+- Build the package (wheel and sdist):
+  ```bash
+  hatch build
+  ```
+
+- Run the CLI locally (Typer app):
+  ```bash
+  hatch run pocs --help
+  ```
+
+- Versioning:
+  Version is derived from git tags via hatch-vcs. To produce a new version, create and push a tag (e.g., `v0.1.0`).
+
+#### [Testing]
+
+To test the software, prefer running via Hatch so the right environment and options are used:
 
 ```bash
-# Clean repository.
-tox -e clean
+hatch run pytest
+```
 
-# Run tests.
-tox
+By default all tests will be run. If you want to run one specific test, give the specific filename as an argument to `pytest`:
 
-# Build project.
-tox -e build
+```bash
+hatch run pytest tests/test_mount.py
 ```

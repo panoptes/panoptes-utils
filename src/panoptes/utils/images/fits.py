@@ -24,7 +24,8 @@ from panoptes.utils.images.misc import mask_saturated
 from panoptes.utils.images.plot import get_palette, add_colorbar
 from panoptes.utils.time import flatten_time
 
-PATH_MATCHER: Pattern[str] = re.compile(r"""^
+PATH_MATCHER: Pattern[str] = re.compile(
+    r"""^
                                 (?P<pre_info>.*)?                       # Anything before unit_id
                                 (?P<unit_id>PAN\d{3})                   # unit_id   - PAN + 3 digits
                                 /?(?P<field_name>.*)?                   # Legacy field name - any
@@ -33,7 +34,8 @@ PATH_MATCHER: Pattern[str] = re.compile(r"""^
                                 /(?P<image_time>[0-9]{8}T[0-9]{6})      # Image start time
                                 (?P<post_info>.*)?                      # Anything after (file ext)
                                 $""",
-                                        re.VERBOSE)
+    re.VERBOSE,
+)
 
 
 @dataclass
@@ -76,6 +78,7 @@ class ObservationPathInfo:
     'PAN001'
 
     """
+
     unit_id: str = None
     camera_id: str = None
     field_name: str = None
@@ -88,13 +91,13 @@ class ObservationPathInfo:
         if self.path is not None:
             path_match = PATH_MATCHER.match(self.path)
             if path_match is None:
-                raise ValueError(f'Invalid path received: {self.path}')
+                raise ValueError(f"Invalid path received: {self.path}")
 
-            self.unit_id = path_match.group('unit_id')
-            self.camera_id = path_match.group('camera_id')
-            self.field_name = path_match.group('field_name')
-            self.sequence_time = Time(parse_date(path_match.group('sequence_time')))
-            self.image_time = Time(parse_date(path_match.group('image_time')))
+            self.unit_id = path_match.group("unit_id")
+            self.camera_id = path_match.group("camera_id")
+            self.field_name = path_match.group("field_name")
+            self.sequence_time = Time(parse_date(path_match.group("sequence_time")))
+            self.image_time = Time(parse_date(path_match.group("image_time")))
 
     @property
     def id(self):
@@ -104,18 +107,18 @@ class ObservationPathInfo:
     @property
     def sequence_id(self) -> str:
         """The sequence id."""
-        return f'{self.unit_id}_{self.camera_id}_{flatten_time(self.sequence_time)}'
+        return f"{self.unit_id}_{self.camera_id}_{flatten_time(self.sequence_time)}"
 
     @property
     def image_id(self) -> str:
         """The matched image id."""
-        return f'{self.unit_id}_{self.camera_id}_{flatten_time(self.image_time)}'
+        return f"{self.unit_id}_{self.camera_id}_{flatten_time(self.image_time)}"
 
     def as_path(self, base: Union[Path, str] = None, ext: str = None) -> Path:
         """Return a Path object."""
         image_str = flatten_time(self.image_time)
         if ext is not None:
-            image_str = f'{image_str}.{ext}'
+            image_str = f"{image_str}.{ext}"
 
         full_path = Path(self.unit_id, self.camera_id, flatten_time(self.sequence_time), image_str)
 
@@ -124,29 +127,33 @@ class ObservationPathInfo:
 
         return full_path
 
-    def get_full_id(self, sep='_') -> str:
+    def get_full_id(self, sep="_") -> str:
         """Returns the full path id with the given separator."""
-        return f'{sep}'.join([
-            self.unit_id,
-            self.camera_id,
-            flatten_time(self.sequence_time),
-            flatten_time(self.image_time)
-        ])
+        return f"{sep}".join(
+            [
+                self.unit_id,
+                self.camera_id,
+                flatten_time(self.sequence_time),
+                flatten_time(self.image_time),
+            ]
+        )
 
     @classmethod
     def from_fits_header(cls, header):
         try:
-            new_instance = cls(path=header['FILENAME'])
+            new_instance = cls(path=header["FILENAME"])
         except ValueError:
-            sequence_id = header['SEQID']
-            image_id = header['IMAGEID']
-            unit_id, camera_id, sequence_time = sequence_id.split('_')
-            _, _, image_time = image_id.split('_')
+            sequence_id = header["SEQID"]
+            image_id = header["IMAGEID"]
+            unit_id, camera_id, sequence_time = sequence_id.split("_")
+            _, _, image_time = image_id.split("_")
 
-            new_instance = cls(unit_id=unit_id,
-                               camera_id=camera_id,
-                               sequence_time=Time(parse_date(sequence_time)),
-                               image_time=Time(parse_date(image_time)))
+            new_instance = cls(
+                unit_id=unit_id,
+                camera_id=camera_id,
+                sequence_time=Time(parse_date(sequence_time)),
+                image_time=Time(parse_date(image_time)),
+            )
 
         return new_instance
 
@@ -156,7 +163,7 @@ class ObservationPathInfo:
 
 
 def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
-    """ Plate solves an image.
+    """Plate solves an image.
 
     Note: This is a low-level wrapper around the underlying `solve-field`
         program. See `get_solve_field` for more typical usage and examples.
@@ -168,7 +175,7 @@ def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
                                     defaults to 60 seconds.
         solve_opts(list, optional): List of options for solve-field.
     """
-    solve_field_script = shutil.which('solve-field')
+    solve_field_script = shutil.which("solve-field")
 
     if solve_field_script is None:  # pragma: no cover
         raise error.InvalidSystemCommand("Can't find solve-field, is astrometry.net installed?")
@@ -179,64 +186,76 @@ def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
     else:
         # Default options
         options = [
-            '--guess-scale',
-            '--cpulimit', str(timeout),
-            '--no-verify',
-            '--crpix-center',
-            '--temp-axy',
-            '--index-xyls', 'none',
-            '--solved', 'none',
-            '--match', 'none',
-            '--rdls', 'none',
-            '--corr', 'none',
-            '--downsample', '4',
-            '--no-plots',
+            "--guess-scale",
+            "--cpulimit",
+            str(timeout),
+            "--no-verify",
+            "--crpix-center",
+            "--temp-axy",
+            "--index-xyls",
+            "none",
+            "--solved",
+            "none",
+            "--match",
+            "none",
+            "--rdls",
+            "none",
+            "--corr",
+            "none",
+            "--downsample",
+            "4",
+            "--no-plots",
         ]
 
-        if 'ra' in kwargs:
-            options.append('--ra')
-            options.append(str(kwargs.get('ra')))
-        if 'dec' in kwargs:
-            options.append('--dec')
-            options.append(str(kwargs.get('dec')))
-        if 'radius' in kwargs:
-            options.append('--radius')
-            options.append(str(kwargs.get('radius')))
+        if "ra" in kwargs:
+            options.append("--ra")
+            options.append(str(kwargs.get("ra")))
+        if "dec" in kwargs:
+            options.append("--dec")
+            options.append(str(kwargs.get("dec")))
+        if "radius" in kwargs:
+            options.append("--radius")
+            options.append(str(kwargs.get("radius")))
 
     # Gather all the kwargs that start with `--` and are not already present.
-    logger.debug(f'Adding kwargs: {kwargs!r}')
+    logger.debug(f"Adding kwargs: {kwargs!r}")
 
     def _modify_opt(opt, val):
         if isinstance(val, bool):
             opt_string = str(opt)
         else:
-            opt_string = f'{opt}={val}'
+            opt_string = f"{opt}={val}"
 
         return opt_string
 
-    options.extend([_modify_opt(opt, val)
-                    for opt, val
-                    in kwargs.items()
-                    if opt.startswith('--') and opt not in options])
+    options.extend(
+        [
+            _modify_opt(opt, val)
+            for opt, val in kwargs.items()
+            if opt.startswith("--") and opt not in options
+        ]
+    )
 
     cmd = [solve_field_script] + options + [fname]
 
-    logger.debug(f'Solving with: {cmd}')
+    logger.debug(f"Solving with: {cmd}")
     try:
-        proc = subprocess.Popen(cmd,
-                                universal_newlines=True,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
+        proc = subprocess.Popen(
+            cmd, universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
     except Exception as e:
         raise error.PanError(f"Problem plate-solving in solve_field: {e!r}")
 
     return proc
 
 
-def get_solve_field(fname: Union[str, Path],
-                    replace: bool = True,
-                    overwrite: bool = True,
-                    timeout: float = 30, **kwargs) -> Dict:
+def get_solve_field(
+    fname: Union[str, Path],
+    replace: bool = True,
+    overwrite: bool = True,
+    timeout: float = 30,
+    **kwargs,
+) -> Dict:
     """Convenience function to wait for `solve_field` to finish.
 
     This function merely passes the `fname` of the image to be solved along to `solve_field`,
@@ -280,7 +299,7 @@ def get_solve_field(fname: Union[str, Path],
     Returns:
         dict: Keyword information from the solved field.
     """
-    skip_solved = kwargs.get('skip_solved', True)
+    skip_solved = kwargs.get("skip_solved", True)
 
     if isinstance(fname, Path):
         fname = str(fname)
@@ -295,22 +314,22 @@ def get_solve_field(fname: Union[str, Path],
         logger.info(f"Skipping solved file (use skip_solved=False to solve again): {fname}")
 
         out_dict.update(header)
-        out_dict['solved_fits_file'] = fname
+        out_dict["solved_fits_file"] = fname
         return out_dict
 
     # Set a default radius of 15
     if overwrite:
-        kwargs['--overwrite'] = True
+        kwargs["--overwrite"] = True
 
     # Use unpacked version of file.
     was_compressed = False
-    if fname.endswith('.fz'):
-        logger.debug(f'Uncompressing {fname}')
+    if fname.endswith(".fz"):
+        logger.debug(f"Uncompressing {fname}")
         fname = funpack(fname)
-        logger.debug(f'Using {fname} for solving')
+        logger.debug(f"Using {fname} for solving")
         was_compressed = True
 
-    logger.debug(f'Use solve arguments: {kwargs!r}')
+    logger.debug(f"Use solve arguments: {kwargs!r}")
     proc = solve_field(fname, timeout=timeout, **kwargs)
     try:
         # Timeout plus a small buffer.
@@ -318,44 +337,44 @@ def get_solve_field(fname: Union[str, Path],
     except subprocess.TimeoutExpired:
         proc.kill()
         output, errs = proc.communicate()
-        raise error.Timeout(f'Timeout while solving: {output!r} {errs!r}')
+        raise error.Timeout(f"Timeout while solving: {output!r} {errs!r}")
     else:
         if proc.returncode != 0:
-            logger.debug(f'Returncode: {proc.returncode}')
+            logger.debug(f"Returncode: {proc.returncode}")
         for log in [output, errs]:
-            if log and log > '':
-                logger.debug(f'Output on {fname}: {log}')
+            if log and log > "":
+                logger.debug(f"Output on {fname}: {log}")
 
         if proc.returncode == 3:
-            raise error.SolveError(f'solve-field not found: {output}')
+            raise error.SolveError(f"solve-field not found: {output}")
 
-    new_fname = fname.replace('.fits', '.new')
+    new_fname = fname.replace(".fits", ".new")
     if replace:
-        logger.debug(f'Overwriting original {fname}')
+        logger.debug(f"Overwriting original {fname}")
         os.replace(new_fname, fname)
     else:
         fname = new_fname
 
     try:
         header = getheader(fname)
-        header.remove('COMMENT', ignore_missing=True, remove_all=True)
-        header.remove('HISTORY', ignore_missing=True, remove_all=True)
+        header.remove("COMMENT", ignore_missing=True, remove_all=True)
+        header.remove("HISTORY", ignore_missing=True, remove_all=True)
         out_dict.update(header)
     except OSError:
         logger.warning(f"Can't read fits header for: {fname}")
 
     # Check it was solved.
     if WCS(header).is_celestial is False:
-        raise error.SolveError('File not properly solved, no WCS header present.')
+        raise error.SolveError("File not properly solved, no WCS header present.")
 
     # Remove WCS file.
-    os.remove(fname.replace('.fits', '.wcs'))
+    os.remove(fname.replace(".fits", ".wcs"))
 
     if was_compressed and replace:
-        logger.debug(f'Compressing plate-solved {fname}')
+        logger.debug(f"Compressing plate-solved {fname}")
         fname = fpack(fname)
 
-    out_dict['solved_fits_file'] = fname
+    out_dict["solved_fits_file"] = fname
 
     return out_dict
 
@@ -378,18 +397,19 @@ def get_wcsinfo(fits_fname, **kwargs):
     """
     assert os.path.exists(fits_fname), warn(f"No file exists at: {fits_fname}")
 
-    wcsinfo = shutil.which('wcsinfo')
+    wcsinfo = shutil.which("wcsinfo")
     if wcsinfo is None:
-        raise error.InvalidCommand('wcsinfo not found')
+        raise error.InvalidCommand("wcsinfo not found")
 
     run_cmd = [wcsinfo, fits_fname]
 
-    if fits_fname.endswith('.fz'):
-        run_cmd.append('-e')
-        run_cmd.append('1')
+    if fits_fname.endswith(".fz"):
+        run_cmd.append("-e")
+        run_cmd.append("1")
 
-    proc = subprocess.Popen(run_cmd, stdout=subprocess.PIPE,
-                            stderr=subprocess.STDOUT, universal_newlines=True)
+    proc = subprocess.Popen(
+        run_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True
+    )
     try:
         output, errs = proc.communicate(timeout=5)
     except subprocess.TimeoutExpired:  # pragma: no cover
@@ -397,45 +417,45 @@ def get_wcsinfo(fits_fname, **kwargs):
         output, errs = proc.communicate()
 
     unit_lookup = {
-        'crpix0': u.pixel,
-        'crpix1': u.pixel,
-        'crval0': u.degree,
-        'crval1': u.degree,
-        'cd11': (u.deg / u.pixel),
-        'cd12': (u.deg / u.pixel),
-        'cd21': (u.deg / u.pixel),
-        'cd22': (u.deg / u.pixel),
-        'imagew': u.pixel,
-        'imageh': u.pixel,
-        'pixscale': (u.arcsec / u.pixel),
-        'orientation': u.degree,
-        'ra_center': u.degree,
-        'dec_center': u.degree,
-        'orientation_center': u.degree,
-        'ra_center_h': u.hourangle,
-        'ra_center_m': u.minute,
-        'ra_center_s': u.second,
-        'dec_center_d': u.degree,
-        'dec_center_m': u.minute,
-        'dec_center_s': u.second,
-        'fieldarea': (u.degree * u.degree),
-        'fieldw': u.degree,
-        'fieldh': u.degree,
-        'decmin': u.degree,
-        'decmax': u.degree,
-        'ramin': u.degree,
-        'ramax': u.degree,
-        'ra_min_merc': u.degree,
-        'ra_max_merc': u.degree,
-        'dec_min_merc': u.degree,
-        'dec_max_merc': u.degree,
-        'merc_diff': u.degree,
+        "crpix0": u.pixel,
+        "crpix1": u.pixel,
+        "crval0": u.degree,
+        "crval1": u.degree,
+        "cd11": (u.deg / u.pixel),
+        "cd12": (u.deg / u.pixel),
+        "cd21": (u.deg / u.pixel),
+        "cd22": (u.deg / u.pixel),
+        "imagew": u.pixel,
+        "imageh": u.pixel,
+        "pixscale": (u.arcsec / u.pixel),
+        "orientation": u.degree,
+        "ra_center": u.degree,
+        "dec_center": u.degree,
+        "orientation_center": u.degree,
+        "ra_center_h": u.hourangle,
+        "ra_center_m": u.minute,
+        "ra_center_s": u.second,
+        "dec_center_d": u.degree,
+        "dec_center_m": u.minute,
+        "dec_center_s": u.second,
+        "fieldarea": (u.degree * u.degree),
+        "fieldw": u.degree,
+        "fieldh": u.degree,
+        "decmin": u.degree,
+        "decmax": u.degree,
+        "ramin": u.degree,
+        "ramax": u.degree,
+        "ra_min_merc": u.degree,
+        "ra_max_merc": u.degree,
+        "dec_min_merc": u.degree,
+        "dec_max_merc": u.degree,
+        "merc_diff": u.degree,
     }
 
     wcs_info = {}
-    for line in output.split('\n'):
+    for line in output.split("\n"):
         try:
-            k, v = line.split(' ')
+            k, v = line.split(" ")
             try:
                 v = float(v)
             except Exception:
@@ -446,7 +466,7 @@ def get_wcsinfo(fits_fname, **kwargs):
             pass
             # print("Error on line: {}".format(line))
 
-    wcs_info['wcs_file'] = fits_fname
+    wcs_info["wcs_file"] = fits_fname
 
     return wcs_info
 
@@ -463,21 +483,20 @@ def fpack(fits_fname, unpack=False, overwrite=True):
     Returns:
         str: Filename of compressed/decompressed file.
     """
-    assert os.path.exists(fits_fname), warn(
-        "No file exists at: {}".format(fits_fname))
+    assert os.path.exists(fits_fname), warn("No file exists at: {}".format(fits_fname))
 
     if unpack:
-        fpack = shutil.which('funpack')
-        run_cmd = [fpack, '-D', fits_fname]
-        out_file = fits_fname.replace('.fz', '')
+        fpack = shutil.which("funpack")
+        run_cmd = [fpack, "-D", fits_fname]
+        out_file = fits_fname.replace(".fz", "")
     else:
-        fpack = shutil.which('fpack')
-        run_cmd = [fpack, '-D', '-Y', fits_fname]
-        out_file = fits_fname.replace('.fits', '.fits.fz')
+        fpack = shutil.which("fpack")
+        run_cmd = [fpack, "-D", "-Y", fits_fname]
+        out_file = fits_fname.replace(".fits", ".fits.fz")
 
     if os.path.exists(out_file):
         if overwrite is False:
-            raise FileExistsError('Destination file already exists at location and overwrite=False')
+            raise FileExistsError("Destination file already exists at location and overwrite=False")
         else:
             os.remove(out_file)
 
@@ -489,8 +508,9 @@ def fpack(fits_fname, unpack=False, overwrite=True):
 
     logger.debug("fpack command: {}".format(run_cmd))
 
-    proc = subprocess.Popen(run_cmd, stdout=subprocess.PIPE,
-                            stderr=subprocess.STDOUT, universal_newlines=True)
+    proc = subprocess.Popen(
+        run_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True
+    )
     try:
         output, errs = proc.communicate(timeout=5)
     except subprocess.TimeoutExpired:
@@ -554,9 +574,9 @@ def write_fits(data, header, filename, exposure_event=None, **kwargs):
     try:
         hdu.writeto(filename, **kwargs)
     except OSError as err:
-        logger.error(f'Error writing image to {filename}: {err!r}')
+        logger.error(f"Error writing image to {filename}: {err!r}")
     else:
-        logger.debug(f'Image written to {filename}')
+        logger.debug(f"Image written to {filename}")
     finally:
         if exposure_event:
             exposure_event.set()
@@ -583,27 +603,27 @@ def update_observation_headers(file_path, info):
         info (dict): The return dict from `pocs.observatory.Observation.status`,
             which includes basic information about the observation.
     """
-    with fits.open(file_path, 'update') as f:
+    with fits.open(file_path, "update") as f:
         hdu = f[0]
-        hdu.header.set('IMAGEID', info.get('image_id', ''))
-        hdu.header.set('SEQID', info.get('sequence_id', ''))
-        hdu.header.set('FIELD', info.get('field_name', ''))
-        hdu.header.set('RA-MNT', info.get('ra_mnt', ''), 'Degrees')
-        hdu.header.set('HA-MNT', info.get('ha_mnt', ''), 'Degrees')
-        hdu.header.set('DEC-MNT', info.get('dec_mnt', ''), 'Degrees')
-        hdu.header.set('EQUINOX', info.get('equinox', 2000.))  # Assume J2000
-        hdu.header.set('AIRMASS', info.get('airmass', ''), 'Sec(z)')
-        hdu.header.set('FILTER', info.get('filter', ''))
-        hdu.header.set('LAT-OBS', info.get('latitude', ''), 'Degrees')
-        hdu.header.set('LONG-OBS', info.get('longitude', ''), 'Degrees')
-        hdu.header.set('ELEV-OBS', info.get('elevation', ''), 'Meters')
-        hdu.header.set('MOONSEP', info.get('moon_separation', ''), 'Degrees')
-        hdu.header.set('MOONFRAC', info.get('moon_fraction', ''))
-        hdu.header.set('CREATOR', info.get('creator', ''), 'POCS Software version')
-        hdu.header.set('INSTRUME', info.get('camera_uid', ''), 'Camera ID')
-        hdu.header.set('OBSERVER', info.get('observer', ''), 'PANOPTES Unit ID')
-        hdu.header.set('ORIGIN', info.get('origin', ''))
-        hdu.header.set('RA-RATE', info.get('tracking_rate_ra', ''), 'RA Tracking Rate')
+        hdu.header.set("IMAGEID", info.get("image_id", ""))
+        hdu.header.set("SEQID", info.get("sequence_id", ""))
+        hdu.header.set("FIELD", info.get("field_name", ""))
+        hdu.header.set("RA-MNT", info.get("ra_mnt", ""), "Degrees")
+        hdu.header.set("HA-MNT", info.get("ha_mnt", ""), "Degrees")
+        hdu.header.set("DEC-MNT", info.get("dec_mnt", ""), "Degrees")
+        hdu.header.set("EQUINOX", info.get("equinox", 2000.0))  # Assume J2000
+        hdu.header.set("AIRMASS", info.get("airmass", ""), "Sec(z)")
+        hdu.header.set("FILTER", info.get("filter", ""))
+        hdu.header.set("LAT-OBS", info.get("latitude", ""), "Degrees")
+        hdu.header.set("LONG-OBS", info.get("longitude", ""), "Degrees")
+        hdu.header.set("ELEV-OBS", info.get("elevation", ""), "Meters")
+        hdu.header.set("MOONSEP", info.get("moon_separation", ""), "Degrees")
+        hdu.header.set("MOONFRAC", info.get("moon_fraction", ""))
+        hdu.header.set("CREATOR", info.get("creator", ""), "POCS Software version")
+        hdu.header.set("INSTRUME", info.get("camera_uid", ""), "Camera ID")
+        hdu.header.set("OBSERVER", info.get("observer", ""), "PANOPTES Unit ID")
+        hdu.header.set("ORIGIN", info.get("origin", ""))
+        hdu.header.set("RA-RATE", info.get("tracking_rate_ra", ""), "RA Tracking Rate")
 
 
 def extract_metadata(header: fits.Header) -> dict:
@@ -630,60 +650,60 @@ def extract_metadata(header: fits.Header) -> dict:
         # Add a units doc if it doesn't exist.
         unit_info = dict(
             unit_id=path_info.unit_id,
-            name=header.get('OBSERVER'),
-            latitude=header.get('LAT-OBS'),
-            longitude=header.get('LONG-OBS'),
-            elevation=float(header.get('ELEV-OBS')),
+            name=header.get("OBSERVER"),
+            latitude=header.get("LAT-OBS"),
+            longitude=header.get("LONG-OBS"),
+            elevation=float(header.get("ELEV-OBS")),
         )
 
         sequence_info = dict(
             unit_id=path_info.unit_id,
             sequence_id=path_info.sequence_id,
             time=path_info.sequence_time.to_datetime(timezone=UTC),
-            exptime=float(header.get('EXPTIME')),
-            software_version=header.get('CREATOR', ''),
-            field_name=header.get('FIELD', ''),
-            iso=header.get('ISO'),
-            ra=header.get('CRVAL1'),
-            dec=header.get('CRVAL2'),
+            exptime=float(header.get("EXPTIME")),
+            software_version=header.get("CREATOR", ""),
+            field_name=header.get("FIELD", ""),
+            iso=header.get("ISO"),
+            ra=header.get("CRVAL1"),
+            dec=header.get("CRVAL2"),
             camera_id=path_info.camera_id,
-            camera_serial_number=str(header.get('CAMSN')),
-            lens_serial_number=header.get('INTSN'),
+            camera_serial_number=str(header.get("CAMSN")),
+            lens_serial_number=header.get("INTSN"),
         )
 
-        measured_rggb = header.get('MEASRGGB', '0 0 0 0').split(' ')
-        if 'DATE' in header:
-            file_date = parse_date(header.get('DATE')).replace(tzinfo=UTC)
+        measured_rggb = header.get("MEASRGGB", "0 0 0 0").split(" ")
+        if "DATE" in header:
+            file_date = parse_date(header.get("DATE")).replace(tzinfo=UTC)
         else:
             file_date = path_info.image_time.to_datetime(timezone=UTC)
-        camera_date = parse_date(header.get('DATE-OBS', path_info.image_time)).replace(tzinfo=UTC)
+        camera_date = parse_date(header.get("DATE-OBS", path_info.image_time)).replace(tzinfo=UTC)
 
         image_info = dict(
-            uid=path_info.get_full_id(sep='_'),
-            airmass=header.get('AIRMASS'),
+            uid=path_info.get_full_id(sep="_"),
+            airmass=header.get("AIRMASS"),
             camera=dict(
                 dateobs=camera_date,
-                blue_balance=float(header.get('BLUEBAL')),
-                circconf=float(header.get('CIRCCONF', '0.').split(' ')[0]),
-                colortemp=float(header.get('COLORTMP')),
-                measured_ev=float(header.get('MEASEV')),
-                measured_ev2=float(header.get('MEASEV2')),
+                blue_balance=float(header.get("BLUEBAL")),
+                circconf=float(header.get("CIRCCONF", "0.").split(" ")[0]),
+                colortemp=float(header.get("COLORTMP")),
+                measured_ev=float(header.get("MEASEV")),
+                measured_ev2=float(header.get("MEASEV2")),
                 measured_r=float(measured_rggb[0]),
                 measured_g1=float(measured_rggb[1]),
                 measured_g2=float(measured_rggb[2]),
                 measured_b=float(measured_rggb[3]),
-                red_balance=float(header.get('REDBAL')),
-                temperature=float(header.get('CAMTEMP', 0).split(' ')[0]),
-                white_lvln=header.get('WHTLVLN'),
-                white_lvls=header.get('WHTLVLS'),
+                red_balance=float(header.get("REDBAL")),
+                temperature=float(header.get("CAMTEMP", 0).split(" ")[0]),
+                white_lvln=header.get("WHTLVLN"),
+                white_lvls=header.get("WHTLVLS"),
             ),
-            exptime=float(header.get('EXPTIME')),
+            exptime=float(header.get("EXPTIME")),
             file_creation_date=file_date,
-            moonfrac=float(header.get('MOONFRAC')),
-            moonsep=float(header.get('MOONSEP')),
-            mount_dec=header.get('DEC-MNT'),
-            mount_ha=header.get('HA-MNT'),
-            mount_ra=header.get('RA-MNT'),
+            moonfrac=float(header.get("MOONFRAC")),
+            moonsep=float(header.get("MOONSEP")),
+            mount_dec=header.get("DEC-MNT"),
+            mount_ha=header.get("HA-MNT"),
+            mount_ra=header.get("RA-MNT"),
             time=path_info.image_time.to_datetime(timezone=UTC),
         )
 
@@ -694,9 +714,9 @@ def extract_metadata(header: fits.Header) -> dict:
         )
 
     except Exception as e:
-        raise error.PanError(f'Error in extracting metadata: {e!r}')
+        raise error.PanError(f"Error in extracting metadata: {e!r}")
 
-    logger.success('Metadata extracted from header')
+    logger.success("Metadata extracted from header")
     return metadata
 
 
@@ -767,7 +787,7 @@ def getheader(fn, *args, **kwargs):
         `astropy.io.fits.header.Header`: The FITS header for the data.
     """
     ext = 0
-    if fn.endswith('.fz'):
+    if fn.endswith(".fz"):
         ext = 1
     return fits.getheader(fn, ext=ext)
 
@@ -817,38 +837,40 @@ def getval(fn, *args, **kwargs):
         str or float: Value from header (with no type conversion).
     """
     ext = 0
-    if fn.endswith('.fz'):
+    if fn.endswith(".fz"):
         ext = 1
     return fits.getval(fn, *args, ext=ext, **kwargs)
 
 
-def fits_to_jpg(fname=None,
-                title=None,
-                figsize=(10, 10 / 1.325),
-                dpi=150,
-                alpha=0.2,
-                number_ticks=7,
-                clip_percent=99.9,
-                **kwargs):
+def fits_to_jpg(
+    fname=None,
+    title=None,
+    figsize=(10, 10 / 1.325),
+    dpi=150,
+    alpha=0.2,
+    number_ticks=7,
+    clip_percent=99.9,
+    **kwargs,
+):
     data = mask_saturated(getdata(fname))
     header = getheader(fname)
     wcs = WCS(header)
 
     if not title:
-        field = header.get('FIELD', 'Unknown field')
-        exptime = header.get('EXPTIME', 'Unknown exptime')
-        filter_type = header.get('FILTER', 'Unknown filter')
+        field = header.get("FIELD", "Unknown field")
+        exptime = header.get("EXPTIME", "Unknown exptime")
+        filter_type = header.get("FILTER", "Unknown filter")
 
         try:
-            date_time = header['DATE-OBS']
+            date_time = header["DATE-OBS"]
         except KeyError:
             # If we don't have DATE-OBS, check filename for date.
             basename = os.path.splitext(os.path.basename(fname))[0]
             date_time = parse_date(basename).isoformat()
 
-        date_time = date_time.replace('T', ' ', 1)
+        date_time = date_time.replace("T", " ", 1)
 
-        title = f'{field} ({exptime}s {filter_type}) {date_time}'
+        title = f"{field} ({exptime}s {filter_type}) {date_time}"
 
     norm = ImageNormalize(interval=PercentileInterval(clip_percent), stretch=LogStretch())
 
@@ -859,32 +881,32 @@ def fits_to_jpg(fname=None,
 
     if wcs.is_celestial:
         ax = fig.add_subplot(1, 1, 1, projection=wcs)
-        ax.coords.grid(True, color='white', ls='-', alpha=alpha)
+        ax.coords.grid(True, color="white", ls="-", alpha=alpha)
 
-        ra_axis = ax.coords['ra']
-        ra_axis.set_axislabel('Right Ascension')
-        ra_axis.set_major_formatter('hh:mm')
-        ra_axis.set_ticks(number=number_ticks, color='white')
-        ra_axis.set_ticklabel(color='white', exclude_overlapping=True)
+        ra_axis = ax.coords["ra"]
+        ra_axis.set_axislabel("Right Ascension")
+        ra_axis.set_major_formatter("hh:mm")
+        ra_axis.set_ticks(number=number_ticks, color="white")
+        ra_axis.set_ticklabel(color="white", exclude_overlapping=True)
 
-        dec_axis = ax.coords['dec']
-        dec_axis.set_axislabel('Declination')
-        dec_axis.set_major_formatter('dd:mm')
-        dec_axis.set_ticks(number=number_ticks, color='white')
-        dec_axis.set_ticklabel(color='white', exclude_overlapping=True)
+        dec_axis = ax.coords["dec"]
+        dec_axis.set_axislabel("Declination")
+        dec_axis.set_major_formatter("dd:mm")
+        dec_axis.set_ticks(number=number_ticks, color="white")
+        dec_axis.set_ticklabel(color="white", exclude_overlapping=True)
     else:
         ax = fig.add_subplot(111)
-        ax.grid(True, color='white', ls='-', alpha=alpha)
+        ax.grid(True, color="white", ls="-", alpha=alpha)
 
-        ax.set_xlabel('X / pixels')
-        ax.set_ylabel('Y / pixels')
+        ax.set_xlabel("X / pixels")
+        ax.set_ylabel("Y / pixels")
 
-    im = ax.imshow(data, norm=norm, cmap=get_palette(), origin='lower')
+    im = ax.imshow(data, norm=norm, cmap=get_palette(), origin="lower")
     add_colorbar(im)
     fig.suptitle(title)
 
-    new_filename = re.sub(r'.fits(.fz)?', '.jpg', fname)
-    fig.savefig(new_filename, bbox_inches='tight')
+    new_filename = re.sub(r".fits(.fz)?", ".jpg", fname)
+    fig.savefig(new_filename, bbox_inches="tight")
 
     # explicitly close and delete figure
     fig.clf()

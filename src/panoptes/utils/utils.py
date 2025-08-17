@@ -10,7 +10,7 @@ from panoptes.utils.time import current_time
 
 
 def listify(obj):
-    """ Given an object, return a list.
+    """Given an object, return a list.
 
     Always returns a list. If obj is None, returns empty list,
     if obj is list, just returns obj, otherwise returns list with
@@ -71,7 +71,7 @@ def get_free_space(directory=None):
         astropy.units.Quantity: The number of gigabytes avialable in folder.
 
     """
-    directory = directory or os.path.abspath('/')
+    directory = directory or os.path.abspath("/")
 
     _, _, free_space = shutil.disk_usage(directory)
     free_space = (free_space * u.byte).to(u.gigabyte)
@@ -124,15 +124,15 @@ def altaz_to_radec(alt=None, az=None, location=None, obstime=None, **kwargs):
     if obstime is None:
         obstime = current_time()
 
-    alt = get_quantity_value(alt, 'degree') * u.degree
-    az = get_quantity_value(az, 'degree') * u.degree
+    alt = get_quantity_value(alt, "degree") * u.degree
+    az = get_quantity_value(az, "degree") * u.degree
 
     altaz = AltAz(obstime=obstime, location=location, alt=alt, az=az)
     return SkyCoord(altaz.transform_to(ICRS()))
 
 
 def get_quantity_value(quantity, unit=None):
-    """ Thin-wrapper around the `astropy.units.Quantity.to_value` method.
+    """Thin-wrapper around the `astropy.units.Quantity.to_value` method.
 
     If passed something other than a Quantity will simply return the original object.
 
@@ -167,7 +167,7 @@ def get_quantity_value(quantity, unit=None):
     """
     try:
         quantity = quantity.to_value(unit)
-        if type(quantity) == np.float64:
+        if isinstance(quantity, (np.floating, float)):
             return quantity.item()
         return quantity
     except AttributeError:

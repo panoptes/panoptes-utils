@@ -49,7 +49,9 @@ class PanMemoryDB(AbstractPanDB):
         try:
             obj = to_json(obj)
         except Exception as e:
-            raise error.InvalidSerialization(f"Problem serializing object for insertion: {e} {obj!r}")
+            raise error.InvalidSerialization(
+                f"Problem serializing object for insertion: {e} {obj!r}"
+            )
 
         with self.lock:
             self.current[collection] = obj
@@ -63,7 +65,9 @@ class PanMemoryDB(AbstractPanDB):
         try:
             obj = to_json(obj)
         except Exception as e:
-            raise error.InvalidSerialization(f"Problem inserting object into collection: {e}, {obj!r}")
+            raise error.InvalidSerialization(
+                f"Problem inserting object into collection: {e}, {obj!r}"
+            )
 
         with self.lock:
             self.collections.setdefault(collection, {})[obj_id] = obj
