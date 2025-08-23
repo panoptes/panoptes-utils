@@ -3,7 +3,7 @@ from collections import OrderedDict
 from contextlib import suppress
 from copy import deepcopy
 from pathlib import Path
-from typing import Union, TextIO, BinaryIO
+from typing import TextIO, BinaryIO
 
 import numpy as np
 from astropy import units as u
@@ -49,7 +49,7 @@ class StringYAML(YAML):
             return stream.getvalue()
 
 
-def to_json(obj, filename: Union[str, Path, TextIO, BinaryIO] = None, append=True, **kwargs):
+def to_json(obj, filename: str | Path | TextIO | BinaryIO = None, append=True, **kwargs):
     """Convert a Python object to a JSON string.
 
     Will handle `datetime` objects as well as `astropy.unit.Quantity` objects.

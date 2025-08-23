@@ -1,7 +1,7 @@
 from decimal import Decimal
 from enum import IntEnum
 from pathlib import Path
-from typing import Union, TextIO, BinaryIO
+from typing import TextIO, BinaryIO
 
 import numpy as np
 from astropy.io import fits
@@ -499,7 +499,7 @@ def get_rgb_background(
 
 def save_rgb_bg_fits(
     rgb_bg_data,
-    output_filename: Union[str, Path, TextIO, BinaryIO],
+    output_filename: str | Path | TextIO | BinaryIO,
     header=None,
     fpack=True,
     overwrite=True,

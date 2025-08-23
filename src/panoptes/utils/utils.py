@@ -2,7 +2,7 @@ import collections.abc
 import os
 import shutil
 from pathlib import Path
-from typing import Union, TextIO, BinaryIO
+from typing import TextIO, BinaryIO
 
 import numpy as np
 from astropy import units as u
@@ -176,7 +176,7 @@ def get_quantity_value(quantity, unit=None):
         return quantity
 
 
-def normalize_file_input(file_input: Union[str, Path, TextIO, BinaryIO]) -> str:
+def normalize_file_input(file_input: str | Path | TextIO | BinaryIO) -> str:
     """Normalize file input to a string path.
 
     This function accepts string paths, pathlib.Path objects, and open filehandles

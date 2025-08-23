@@ -18,8 +18,8 @@ from panoptes.utils.utils import normalize_file_input
 
 
 def cr2_to_fits(
-    cr2_fname: Union[str, Path, TextIO, BinaryIO],
-    fits_fname: Union[str, Path, TextIO, BinaryIO] = None,
+    cr2_fname: str | Path | TextIO | BinaryIO,
+    fits_fname: str | Path | TextIO | BinaryIO = None,
     overwrite: bool = False,
     headers: dict = None,
     fits_headers: dict = None,
@@ -123,8 +123,8 @@ def cr2_to_fits(
 
 
 def cr2_to_pgm(
-    cr2_fname: Union[str, Path, TextIO, BinaryIO],
-    pgm_fname: Union[str, Path, TextIO, BinaryIO] = None,
+    cr2_fname: str | Path | TextIO | BinaryIO,
+    pgm_fname: str | Path | TextIO | BinaryIO = None,
     overwrite=True,
     *args,
     **kwargs,
@@ -185,7 +185,7 @@ def cr2_to_pgm(
     return pgm_fname
 
 
-def read_exif(fname: Union[str, Path, TextIO, BinaryIO], exiftool="exiftool"):  # pragma: no cover
+def read_exif(fname: str | Path | TextIO | BinaryIO, exiftool="exiftool"):  # pragma: no cover
     """Read the EXIF information
 
     Gets the EXIF information using exiftool
@@ -224,7 +224,7 @@ def read_exif(fname: Union[str, Path, TextIO, BinaryIO], exiftool="exiftool"):  
 
 
 def read_pgm(
-    fname: Union[str, Path, TextIO, BinaryIO], byteorder=">", remove_after=False
+    fname: str | Path | TextIO | BinaryIO, byteorder=">", remove_after=False
 ):  # pragma: no cover
     """Return image data from a raw PGM file as numpy array.
 
@@ -278,8 +278,8 @@ def read_pgm(
 
 
 def cr2_to_jpg(
-    cr2_fname: Union[str, Path, TextIO, BinaryIO],
-    jpg_fname: Union[str, Path, TextIO, BinaryIO] = None,
+    cr2_fname: str | Path | TextIO | BinaryIO,
+    jpg_fname: str | Path | TextIO | BinaryIO = None,
     title: str = "",
     overwrite: bool = False,
     remove_cr2: bool = False,

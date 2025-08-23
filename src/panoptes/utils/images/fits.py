@@ -164,7 +164,7 @@ class ObservationPathInfo:
 
 
 def solve_field(
-    fname: Union[str, Path, TextIO, BinaryIO], timeout=15, solve_opts=None, *args, **kwargs
+    fname: str | Path | TextIO | BinaryIO, timeout=15, solve_opts=None, *args, **kwargs
 ):
     """Plate solves an image.
 
@@ -257,7 +257,7 @@ def solve_field(
 
 
 def get_solve_field(
-    fname: Union[str, Path, TextIO, BinaryIO],
+    fname: str | Path | TextIO | BinaryIO,
     replace: bool = True,
     overwrite: bool = True,
     timeout: float = 30,
@@ -387,7 +387,7 @@ def get_solve_field(
     return out_dict
 
 
-def get_wcsinfo(fits_fname: Union[str, Path, TextIO, BinaryIO], **kwargs):
+def get_wcsinfo(fits_fname: str | Path | TextIO | BinaryIO, **kwargs):
     """Returns the WCS information for a FITS file.
 
     Uses the `wcsinfo` astrometry.net utility script to get the WCS information
@@ -482,7 +482,7 @@ def get_wcsinfo(fits_fname: Union[str, Path, TextIO, BinaryIO], **kwargs):
     return wcs_info
 
 
-def fpack(fits_fname: Union[str, Path, TextIO, BinaryIO], unpack=False, overwrite=True):
+def fpack(fits_fname: str | Path | TextIO | BinaryIO, unpack=False, overwrite=True):
     """Compress/Decompress a FITS file
 
     Uses `fpack` (or `funpack` if `unpack=True`) to compress a FITS file
@@ -554,7 +554,7 @@ def funpack(*args, **kwargs):
 
 
 def write_fits(
-    data, header, filename: Union[str, Path, TextIO, BinaryIO], exposure_event=None, **kwargs
+    data, header, filename: str | Path | TextIO | BinaryIO, exposure_event=None, **kwargs
 ):
     """Write FITS file to requested location.
 
@@ -603,7 +603,7 @@ def write_fits(
             exposure_event.set()
 
 
-def update_observation_headers(file_path: Union[str, Path, TextIO, BinaryIO], info):
+def update_observation_headers(file_path: str | Path | TextIO | BinaryIO, info):
     """Update FITS headers with items from the Observation status.
 
     >>> # Check the headers
@@ -745,7 +745,7 @@ def extract_metadata(header: fits.Header) -> dict:
     return metadata
 
 
-def getdata(fn: Union[str, Path, TextIO, BinaryIO], *args, **kwargs):
+def getdata(fn: str | Path | TextIO | BinaryIO, *args, **kwargs):
     """Get the FITS data.
 
     Small wrapper around `astropy.io.fits.getdata` to auto-determine
@@ -783,7 +783,7 @@ def getdata(fn: Union[str, Path, TextIO, BinaryIO], *args, **kwargs):
     return fits.getdata(fn, *args, **kwargs)
 
 
-def getheader(fn: Union[str, Path, TextIO, BinaryIO], *args, **kwargs):
+def getheader(fn: str | Path | TextIO | BinaryIO, *args, **kwargs):
     """Get the FITS header.
 
     Small wrapper around `astropy.io.fits.getheader` to auto-determine
@@ -823,7 +823,7 @@ def getheader(fn: Union[str, Path, TextIO, BinaryIO], *args, **kwargs):
     return fits.getheader(fn, ext=ext)
 
 
-def getwcs(fn: Union[str, Path, TextIO, BinaryIO], *args, **kwargs):
+def getwcs(fn: str | Path | TextIO | BinaryIO, *args, **kwargs):
     """Get the WCS for the FITS file.
 
     Small wrapper around `astropy.wcs.WCS`.
@@ -850,7 +850,7 @@ def getwcs(fn: Union[str, Path, TextIO, BinaryIO], *args, **kwargs):
     return WCS(getheader(fn, *args, **kwargs), *args, **kwargs)
 
 
-def getval(fn: Union[str, Path, TextIO, BinaryIO], *args, **kwargs):
+def getval(fn: str | Path | TextIO | BinaryIO, *args, **kwargs):
     """Get a value from the FITS header.
 
     Small wrapper around `astropy.io.fits.getval` to auto-determine
@@ -878,7 +878,7 @@ def getval(fn: Union[str, Path, TextIO, BinaryIO], *args, **kwargs):
 
 
 def fits_to_jpg(
-    fname: Union[str, Path, TextIO, BinaryIO] = None,
+    fname: str | Path | TextIO | BinaryIO = None,
     title=None,
     figsize=(10, 10 / 1.325),
     dpi=150,
