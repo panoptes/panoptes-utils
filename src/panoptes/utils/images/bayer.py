@@ -1,5 +1,7 @@
 from decimal import Decimal
 from enum import IntEnum
+from pathlib import Path
+from typing import TextIO, BinaryIO
 
 import numpy as np
 from astropy.io import fits
@@ -13,6 +15,7 @@ from photutils.background import MedianBackground
 from photutils.background import SExtractorBackground
 
 from panoptes.utils.images import fits as fits_utils
+from panoptes.utils.utils import normalize_file_input
 
 
 class RGB(IntEnum):
@@ -494,18 +497,27 @@ def get_rgb_background(
     return full_background
 
 
-def save_rgb_bg_fits(rgb_bg_data, output_filename, header=None, fpack=True, overwrite=True):
+def save_rgb_bg_fits(
+    rgb_bg_data,
+    output_filename: str | Path | TextIO | BinaryIO,
+    header=None,
+    fpack=True,
+    overwrite=True,
+):
     """Save a FITS file containing a combined background as well as separate channels.
 
     Args:
         rgb_bg_data (list[photutils.background.Background2D]): The RGB background data as
             returned by calling `panoptes.utils.images.bayer.get_rgb_background`
             with `return_separate=True`.
-        output_filename (str): The output name for the FITS file.
+        output_filename: The output name for the FITS file. Can be a string path,
+                        pathlib.Path object, or open filehandle.
         header (astropy.io.fits.Header): FITS header to be saved with the file.
         fpack (bool): If the FITS file should be compressed, default True.
         overwrite (bool): If FITS file should be overwritten, default True.
     """
+    # Normalize the file input to a string path
+    output_filename = normalize_file_input(output_filename)
 
     # Get combined data for Primary HDU
     combined_bg = np.array(

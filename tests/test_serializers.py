@@ -3,6 +3,8 @@ from astropy import units as u
 from panoptes.utils import error
 from panoptes.utils import serializers
 from panoptes.utils.time import current_time
+from pathlib import Path
+import tempfile
 
 
 @pytest.fixture(scope="function")
@@ -72,3 +74,37 @@ def test_quantity():
     assert json_obj["foo"] == 42 * u.deg
     # And not when we can't.
     assert json_obj["bar"] == "foo deg"
+
+
+def test_to_json_pathlib(obj):
+    """Test to_json with pathlib.Path output."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        json_file = Path(tmpdir) / "test_output.json"
+
+        # Test with Path object
+        serializers.to_json(obj, filename=json_file)
+        assert json_file.exists()
+
+        # Verify we can read it back
+        with open(json_file, "r") as f:
+            content = f.read()
+            recovered = serializers.from_json(content)
+            assert recovered["name"] == obj["name"]
+
+
+def test_to_json_filehandle(obj):
+    """Test to_json with open filehandle output."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        json_file = Path(tmpdir) / "test_output_fh.json"
+
+        # Test with open filehandle
+        with open(json_file, "w") as f:
+            serializers.to_json(obj, filename=f)
+
+        assert json_file.exists()
+
+        # Verify we can read it back
+        with open(json_file, "r") as f:
+            content = f.read()
+            recovered = serializers.from_json(content)
+            assert recovered["name"] == obj["name"]
