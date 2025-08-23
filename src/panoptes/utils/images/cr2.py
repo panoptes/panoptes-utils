@@ -57,7 +57,7 @@ def cr2_to_fits(
 
     # Normalize file inputs to string paths
     cr2_fname = normalize_file_input(cr2_fname)
-    
+
     if fits_fname is not None:
         fits_fname = normalize_file_input(fits_fname)
     else:
@@ -122,7 +122,13 @@ def cr2_to_fits(
     return Path(fits_fname)
 
 
-def cr2_to_pgm(cr2_fname: Union[str, Path, TextIO, BinaryIO], pgm_fname: Union[str, Path, TextIO, BinaryIO] = None, overwrite=True, *args, **kwargs):  # pragma: no cover
+def cr2_to_pgm(
+    cr2_fname: Union[str, Path, TextIO, BinaryIO],
+    pgm_fname: Union[str, Path, TextIO, BinaryIO] = None,
+    overwrite=True,
+    *args,
+    **kwargs,
+):  # pragma: no cover
     """Convert CR2 file to PGM
 
     Converts a raw Canon CR2 file to a netpbm PGM file via `dcraw`. Assumes
@@ -150,7 +156,7 @@ def cr2_to_pgm(cr2_fname: Union[str, Path, TextIO, BinaryIO], pgm_fname: Union[s
     """
     # Normalize file inputs to string paths
     cr2_fname = normalize_file_input(cr2_fname)
-    
+
     dcraw = shutil.which("dcraw")
     if dcraw is None:
         raise error.InvalidCommand("dcraw not found")
@@ -200,7 +206,7 @@ def read_exif(fname: Union[str, Path, TextIO, BinaryIO], exiftool="exiftool"):  
     """
     # Normalize the file input to a string path
     fname = normalize_file_input(fname)
-    
+
     assert os.path.exists(fname), warn(f"File does not exist: {fname}")
     exif = {}
 
@@ -217,7 +223,9 @@ def read_exif(fname: Union[str, Path, TextIO, BinaryIO], exiftool="exiftool"):  
     return exif[0]
 
 
-def read_pgm(fname: Union[str, Path, TextIO, BinaryIO], byteorder=">", remove_after=False):  # pragma: no cover
+def read_pgm(
+    fname: Union[str, Path, TextIO, BinaryIO], byteorder=">", remove_after=False
+):  # pragma: no cover
     """Return image data from a raw PGM file as numpy array.
 
     Note:
@@ -282,11 +290,13 @@ def cr2_to_jpg(
         raise error.InvalidSystemCommand("exiftool not found")
 
     # Handle different input types for cr2_fname
-    if isinstance(cr2_fname, (str, Path)) or hasattr(cr2_fname, 'name'):
+    if isinstance(cr2_fname, (str, Path)) or hasattr(cr2_fname, "name"):
         cr2_path = Path(normalize_file_input(cr2_fname))
     else:
-        raise ValueError("cr2_fname must be a string path, Path object, or file-like object with name")
-    
+        raise ValueError(
+            "cr2_fname must be a string path, Path object, or file-like object with name"
+        )
+
     # Handle different input types for jpg_fname
     if jpg_fname is None:
         jpg_fname = cr2_path.with_suffix(".jpg")

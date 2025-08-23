@@ -33,7 +33,7 @@ def test_wcsinfo_pathlib(solved_fits_file):
 @pytest.mark.plate_solve
 def test_wcsinfo_filehandle(solved_fits_file):
     """Test get_wcsinfo with open filehandle input."""
-    with open(solved_fits_file, 'rb') as f:
+    with open(solved_fits_file, "rb") as f:
         wcsinfo = fits_utils.get_wcsinfo(f)
 
         assert "wcs_file" in wcsinfo
@@ -82,12 +82,12 @@ def test_fpack_filehandle(solved_fits_file):
     assert info.st_size > 0.0
 
     # Test funpack with filehandle
-    with open(copy_file, 'rb') as f:
+    with open(copy_file, "rb") as f:
         uncompressed = fits_utils.funpack(f)
     assert os.stat(uncompressed).st_size > info.st_size
 
-    # Test fpack with filehandle  
-    with open(uncompressed, 'rb') as f:
+    # Test fpack with filehandle
+    with open(uncompressed, "rb") as f:
         compressed = fits_utils.fpack(f)
     assert os.stat(compressed).st_size == info.st_size
 
@@ -134,7 +134,7 @@ def test_getheader_pathlib(solved_fits_file):
 
 def test_getheader_filehandle(solved_fits_file):
     """Test getheader with open filehandle input."""
-    with open(solved_fits_file, 'rb') as f:
+    with open(solved_fits_file, "rb") as f:
         header = fits_utils.getheader(f)
         assert isinstance(header, Header)
         assert header["IMAGEID"] == "PAN001_XXXXXX_20160909T081152"
@@ -154,7 +154,7 @@ def test_getval_pathlib(solved_fits_file):
 
 def test_getval_filehandle(solved_fits_file):
     """Test getval with open filehandle input."""
-    with open(solved_fits_file, 'rb') as f:
+    with open(solved_fits_file, "rb") as f:
         img_id = fits_utils.getval(f, "IMAGEID")
         assert img_id == "PAN001_XXXXXX_20160909T081152"
 
@@ -186,7 +186,7 @@ def test_solve_field_unsolved(unsolved_fits_file):
 def test_solve_field_pathlib(unsolved_fits_file):
     """Test solve_field with pathlib.Path input."""
     path_obj = Path(unsolved_fits_file)
-    
+
     with pytest.raises(KeyError):
         fits_utils.getval(path_obj, "WCSAXES")
 
@@ -208,17 +208,17 @@ def test_solve_field_pathlib(unsolved_fits_file):
             os.remove(unsolved_fits_file.replace(".fits", ext))
 
 
-@pytest.mark.plate_solve  
+@pytest.mark.plate_solve
 def test_solve_field_filehandle(unsolved_fits_file):
     """Test solve_field with open filehandle input."""
-    with open(unsolved_fits_file, 'rb') as f:
+    with open(unsolved_fits_file, "rb") as f:
         with pytest.raises(KeyError):
             fits_utils.getval(f, "WCSAXES")
 
-    with open(unsolved_fits_file, 'rb') as f:
+    with open(unsolved_fits_file, "rb") as f:
         assert "crpix0" not in fits_utils.get_wcsinfo(f)
 
-    with open(unsolved_fits_file, 'rb') as f:
+    with open(unsolved_fits_file, "rb") as f:
         proc = fits_utils.solve_field(f)
         assert isinstance(proc, subprocess.Popen)
         proc.wait()
@@ -262,11 +262,11 @@ def test_get_solve_field_pathlib(solved_fits_file):
 @pytest.mark.plate_solve
 def test_get_solve_field_filehandle(solved_fits_file):
     """Test get_solve_field with open filehandle input."""
-    with open(solved_fits_file, 'rb') as f:
+    with open(solved_fits_file, "rb") as f:
         orig_wcs = fits_utils.get_wcsinfo(f)
         assert "crpix0" in orig_wcs
 
-    with open(solved_fits_file, 'rb') as f:
+    with open(solved_fits_file, "rb") as f:
         solve_info = fits_utils.get_solve_field(f, skip_solved=False)
         assert isinstance(solve_info, dict)
         # 1-based numbering from WCS.

@@ -120,7 +120,7 @@ def test_make_pretty_image_pathlib(solved_fits_file, save_environ):
 
         link_path = Path(tmpdir) / "latest_path.jpg"
         pretty = make_pretty_image(Path(solved_fits_file), link_path=link_path)
-        
+
         assert pretty.exists()
         assert pretty.is_file()
         assert str(link_path) == pretty.as_posix()
@@ -133,10 +133,10 @@ def test_make_pretty_image_filehandle(solved_fits_file, save_environ):
         os.makedirs(imgdir, exist_ok=True)
 
         link_path = os.path.join(tmpdir, "latest_fh.jpg")
-        
-        with open(solved_fits_file, 'rb') as f:
+
+        with open(solved_fits_file, "rb") as f:
             pretty = make_pretty_image(f, link_path=link_path)
-        
+
         assert pretty.exists()
         assert pretty.is_file()
         assert link_path == pretty.as_posix()

@@ -80,13 +80,14 @@ def test_normalize_file_input_filehandle():
 
 def test_normalize_file_input_mock_filehandle():
     """Test normalize_file_input with mock file handle."""
+
     class MockFileHandle:
         def __init__(self, name):
             self.name = name
-        
+
         def read(self):
             return b"mock data"
-    
+
     mock_file = MockFileHandle("/path/to/mock.fits")
     result = normalize_file_input(mock_file)
     assert result == "/path/to/mock.fits"
@@ -95,13 +96,14 @@ def test_normalize_file_input_mock_filehandle():
 
 def test_normalize_file_input_text_filehandle():
     """Test normalize_file_input with text file handle."""
+
     class MockTextFile:
         def __init__(self, name):
             self.name = name
-        
+
         def write(self, data):
             pass
-    
+
     mock_file = MockTextFile("/path/to/text.json")
     result = normalize_file_input(mock_file)
     assert result == "/path/to/text.json"
@@ -112,19 +114,20 @@ def test_normalize_file_input_unsupported_type():
     """Test normalize_file_input with unsupported input type."""
     with pytest.raises(ValueError) as exc_info:
         normalize_file_input(123)
-    
+
     assert "Unsupported file input type" in str(exc_info.value)
     assert "Expected str, pathlib.Path, or file-like object" in str(exc_info.value)
 
 
 def test_normalize_file_input_object_without_name():
     """Test normalize_file_input with object that has read/write but no name."""
+
     class MockFileWithoutName:
         def read(self):
             return b"data"
-    
+
     mock_file = MockFileWithoutName()
     with pytest.raises(ValueError) as exc_info:
         normalize_file_input(mock_file)
-    
+
     assert "Unsupported file input type" in str(exc_info.value)

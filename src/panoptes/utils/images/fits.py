@@ -163,7 +163,9 @@ class ObservationPathInfo:
         return cls.from_fits_header(getheader(fits_file))
 
 
-def solve_field(fname: Union[str, Path, TextIO, BinaryIO], timeout=15, solve_opts=None, *args, **kwargs):
+def solve_field(
+    fname: Union[str, Path, TextIO, BinaryIO], timeout=15, solve_opts=None, *args, **kwargs
+):
     """Plate solves an image.
 
     Note: This is a low-level wrapper around the underlying `solve-field`
@@ -179,7 +181,7 @@ def solve_field(fname: Union[str, Path, TextIO, BinaryIO], timeout=15, solve_opt
     """
     # Normalize the file input to a string path
     fname = normalize_file_input(fname)
-    
+
     solve_field_script = shutil.which("solve-field")
 
     if solve_field_script is None:  # pragma: no cover
@@ -495,7 +497,7 @@ def fpack(fits_fname: Union[str, Path, TextIO, BinaryIO], unpack=False, overwrit
     """
     # Normalize the file input to a string path
     fits_fname = normalize_file_input(fits_fname)
-    
+
     assert os.path.exists(fits_fname), warn("No file exists at: {}".format(fits_fname))
 
     if unpack:
@@ -551,7 +553,9 @@ def funpack(*args, **kwargs):
     return fpack(*args, unpack=True, **kwargs)
 
 
-def write_fits(data, header, filename: Union[str, Path, TextIO, BinaryIO], exposure_event=None, **kwargs):
+def write_fits(
+    data, header, filename: Union[str, Path, TextIO, BinaryIO], exposure_event=None, **kwargs
+):
     """Write FITS file to requested location.
 
     >>> from panoptes.utils.images import fits as fits_utils
@@ -578,7 +582,7 @@ def write_fits(data, header, filename: Union[str, Path, TextIO, BinaryIO], expos
     """
     # Normalize the file input to a string path
     filename = normalize_file_input(filename)
-    
+
     if not isinstance(header, fits.Header):
         header = fits.Header(header)
 
@@ -623,7 +627,7 @@ def update_observation_headers(file_path: Union[str, Path, TextIO, BinaryIO], in
     """
     # Normalize the file input to a string path
     file_path = normalize_file_input(file_path)
-    
+
     with fits.open(file_path, "update") as f:
         hdu = f[0]
         hdu.header.set("IMAGEID", info.get("image_id", ""))

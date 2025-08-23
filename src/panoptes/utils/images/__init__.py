@@ -9,7 +9,9 @@ from panoptes.utils.images.fits import fits_to_jpg
 from panoptes.utils.utils import normalize_file_input
 
 
-def make_pretty_image(fname: Union[str, Path, TextIO, BinaryIO], title=None, img_type=None, link_path=None, **kwargs) -> Optional[Path]:
+def make_pretty_image(
+    fname: Union[str, Path, TextIO, BinaryIO], title=None, img_type=None, link_path=None, **kwargs
+) -> Optional[Path]:
     """Make a pretty image.
 
     This will create a jpg file from either a CR2 (Canon) or FITS file.
@@ -30,7 +32,7 @@ def make_pretty_image(fname: Union[str, Path, TextIO, BinaryIO], title=None, img
     """
     # Normalize file input to string for path operations
     fname_str = normalize_file_input(fname)
-    
+
     if img_type is None:
         img_type = os.path.splitext(fname_str)[-1]
 

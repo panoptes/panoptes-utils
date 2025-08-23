@@ -1,6 +1,5 @@
 import pytest
 import numpy as np
-import tempfile
 from pathlib import Path
 
 from panoptes.utils.images import bayer
@@ -165,7 +164,7 @@ def test_save_rgb_bg_fits_pathlib(solved_fits_file, tmpdir):
     rgb_data = bayer.get_rgb_background(d0, return_separate=True)
     # Test with Path object as output_filename
     result = bayer.save_rgb_bg_fits(rgb_data, output_filename=temp_fn, header=h0, fpack=False)
-    
+
     assert temp_fn.exists()
     assert fits_utils.getval(str(temp_fn), "test") is True
     assert result == str(temp_fn)
@@ -180,11 +179,11 @@ def test_save_rgb_bg_fits_filehandle(solved_fits_file, tmpdir):
     h0["test"] = True
 
     rgb_data = bayer.get_rgb_background(d0, return_separate=True)
-    
+
     # Test with filehandle as output_filename
-    with open(temp_fn, 'wb') as f:
+    with open(temp_fn, "wb") as f:
         result = bayer.save_rgb_bg_fits(rgb_data, output_filename=f, header=h0, fpack=False)
-    
+
     assert temp_fn.exists()
     assert fits_utils.getval(str(temp_fn), "test") is True
     assert result == str(temp_fn)
