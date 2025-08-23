@@ -2,12 +2,15 @@ import json
 from collections import OrderedDict
 from contextlib import suppress
 from copy import deepcopy
+from pathlib import Path
+from typing import Union, TextIO, BinaryIO
 
 import numpy as np
 from astropy import units as u
 from astropy.time import Time
 from dateutil.parser import isoparse as date_parse
 from panoptes.utils import error
+from panoptes.utils.utils import normalize_file_input
 from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
 
@@ -46,7 +49,7 @@ class StringYAML(YAML):
             return stream.getvalue()
 
 
-def to_json(obj, filename=None, append=True, **kwargs):
+def to_json(obj, filename: Union[str, Path, TextIO, BinaryIO] = None, append=True, **kwargs):
     """Convert a Python object to a JSON string.
 
     Will handle `datetime` objects as well as `astropy.unit.Quantity` objects.
@@ -71,7 +74,8 @@ def to_json(obj, filename=None, append=True, **kwargs):
 
     Args:
         obj (`object`): The object to be converted to JSON, usually a dict.
-        filename (`str`, optional): Path to file for saving.
+        filename: Path to file for saving. Can be a string path,
+                 pathlib.Path object, or open filehandle.
         append (`bool`, optional): Append to `filename`, default True. Setting
             False will clobber the file.
         **kwargs: Keyword arguments passed to `json.dumps`.
@@ -85,6 +89,8 @@ def to_json(obj, filename=None, append=True, **kwargs):
         raise error.InvalidSerialization(e)
 
     if filename is not None:
+        # Normalize the file input to a string path
+        filename = normalize_file_input(filename)
         mode = "w"
         if append:
             mode = "a"
