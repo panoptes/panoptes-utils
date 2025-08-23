@@ -1,5 +1,7 @@
 import pytest
 import numpy as np
+import tempfile
+from pathlib import Path
 
 from panoptes.utils.images import bayer
 from panoptes.utils.images import fits as fits_utils
@@ -150,3 +152,39 @@ def test_save_rgb_bg_fits(solved_fits_file, tmpdir):
     # Didn't use our header.
     with pytest.raises(KeyError):
         fits_utils.getval(str(temp_fn), "test")
+
+
+def test_save_rgb_bg_fits_pathlib(solved_fits_file, tmpdir):
+    """Test save_rgb_bg_fits with pathlib.Path output."""
+    d0, h0 = fits_utils.getdata(solved_fits_file, header=True)
+
+    temp_fn = Path(str(tmpdir)) / "temp_path.fits"
+
+    h0["test"] = True
+
+    rgb_data = bayer.get_rgb_background(d0, return_separate=True)
+    # Test with Path object as output_filename
+    result = bayer.save_rgb_bg_fits(rgb_data, output_filename=temp_fn, header=h0, fpack=False)
+    
+    assert temp_fn.exists()
+    assert fits_utils.getval(str(temp_fn), "test") is True
+    assert result == str(temp_fn)
+
+
+def test_save_rgb_bg_fits_filehandle(solved_fits_file, tmpdir):
+    """Test save_rgb_bg_fits with open filehandle output."""
+    d0, h0 = fits_utils.getdata(solved_fits_file, header=True)
+
+    temp_fn = Path(str(tmpdir)) / "temp_fh.fits"
+
+    h0["test"] = True
+
+    rgb_data = bayer.get_rgb_background(d0, return_separate=True)
+    
+    # Test with filehandle as output_filename
+    with open(temp_fn, 'wb') as f:
+        result = bayer.save_rgb_bg_fits(rgb_data, output_filename=f, header=h0, fpack=False)
+    
+    assert temp_fn.exists()
+    assert fits_utils.getval(str(temp_fn), "test") is True
+    assert result == str(temp_fn)
