@@ -96,6 +96,11 @@ def config_path() -> str:
     return os.getenv("PANOPTES_CONFIG_FILE", "tests/testing.yaml")
 
 
+@pytest.fixture(scope="session")
+def bad_config_path() -> str:
+    return os.getenv("PANOPTES_CONFIG_FILE", "tests/testing_bad.yaml")
+
+
 @pytest.fixture(scope="function", params=_all_databases)
 def db_type(request):
     db_list = request.config.option.test_databases

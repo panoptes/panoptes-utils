@@ -73,14 +73,18 @@ def run(context, config_file=None, save_local=True, load_local=False, heartbeat=
     """
     host = context.obj.get("host")
     port = context.obj.get("port")
-    server_process = server.config_server(
-        config_file,
-        host=host,
-        port=port,
-        load_local=load_local,
-        save_local=save_local,
-        auto_start=False,
-    )
+    try:
+        server_process = server.config_server(
+            config_file,
+            host=host,
+            port=port,
+            load_local=load_local,
+            save_local=save_local,
+            auto_start=False,
+        )
+    except Exception as e:
+        logger.error(f"Unable to start config server: {e!r}")
+        return
 
     try:
         print("Starting config server. Ctrl-c to stop")
