@@ -218,7 +218,7 @@ def wait_for_events(
     events: Event | list[Event],
     timeout: float | u.Quantity = 600,
     sleep_delay: float | u.Quantity = 5 * u.second,
-    callback: callable | None = None,
+    callback: Callable | None = None,
 ) -> bool:
     """Wait for event(s) to be set.
 
