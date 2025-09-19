@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## Unreleased
+
+### Added
+
+* Type hints to most functions and methods. #326
+* Docstrings to all major public functions and classes. #324
+
+### Changed
+
+* Trying to load an invalid config file will now result in an error instead of silently failing. #327
+  * Pinned `click` dependency to `<8.3` to avoid issues with `hatch`. #325
+
 ## 0.2.50 - 2025-08-16
 
 * Hotfix for GHA release action
