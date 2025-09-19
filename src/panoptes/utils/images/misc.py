@@ -108,11 +108,11 @@ def make_timelapse(
 
 
 def crop_data(
-    data: np.ndarray, 
-    box_width: int = 200, 
-    center: tuple[int, int] | None = None, 
-    data_only: bool = True, 
-    wcs: WCS | None = None, 
+    data: np.ndarray,
+    box_width: int = 200,
+    center: tuple[int, int] | None = None,
+    data_only: bool = True,
+    wcs: WCS | None = None,
     **kwargs,  # noqa: ANN003
 ) -> np.ndarray | Cutout2D:
     """Return a cropped portion of the image.
@@ -177,11 +177,11 @@ def crop_data(
 
 
 def mask_saturated(
-    data: np.ndarray, 
-    saturation_level: float | None = None, 
-    threshold: float = 0.9, 
-    bit_depth: u.Quantity | int | None = None, 
-    dtype: np.dtype | None = None
+    data: np.ndarray,
+    saturation_level: float | None = None,
+    threshold: float = 0.9,
+    bit_depth: u.Quantity | int | None = None,
+    dtype: np.dtype | None = None,
 ) -> np.ma.MaskedArray:
     """Convert data to a masked array with saturated values masked.
 

@@ -2,7 +2,9 @@ import numpy as np
 from typing import Callable
 
 
-def focus_metric(data: np.ndarray, merit_function: str | Callable = "vollath_F4", **kwargs) -> float:  # noqa: ANN003
+def focus_metric(
+    data: np.ndarray, merit_function: str | Callable = "vollath_F4", **kwargs
+) -> float:  # noqa: ANN003
     """Compute the focus metric.
 
     Computes a focus metric on the given data using a supplied merit function.
@@ -49,7 +51,7 @@ def vollath_F4(data: np.ndarray, axis: str | None = None) -> float:
 
     def _vollath_F4_y() -> float:
         """Calculate Vollath F4 focus metric along Y axis.
-        
+
         Returns:
             float: Focus metric value.
         """
@@ -59,7 +61,7 @@ def vollath_F4(data: np.ndarray, axis: str | None = None) -> float:
 
     def _vollath_F4_x() -> float:
         """Calculate Vollath F4 focus metric along X axis.
-        
+
         Returns:
             float: Focus metric value.
         """

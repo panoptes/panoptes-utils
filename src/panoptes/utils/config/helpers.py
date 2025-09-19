@@ -193,7 +193,7 @@ def parse_config_directories(directories: Dict[str, str]) -> dict:
 
 def _add_to_conf(config: dict, conf_fn: Path, parse: bool = False) -> None:
     """Add configuration from file to existing config dictionary.
-    
+
     Args:
         config (dict): Configuration dictionary to update.
         conf_fn (Path): Path to configuration file.

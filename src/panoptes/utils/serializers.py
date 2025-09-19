@@ -17,12 +17,12 @@ from ruamel.yaml.compat import StringIO
 
 class StringYAML(YAML):
     """YAML class that can dump to a string.
-    
+
     By default the YAML parser doesn't serialize directly to a string. This
     class is a small wrapper to output StreamIO as a string if no stream is
     provided.
     """
-    
+
     def dump(self, data, stream: IO | None = None, **kwargs) -> str | None:  # noqa: ANN001, ANN003
         """YAML class that can dump to a string.
 
@@ -56,7 +56,9 @@ class StringYAML(YAML):
             return stream.getvalue()
 
 
-def to_json(obj, filename: str | Path | TextIO | BinaryIO | None = None, append: bool = True, **kwargs) -> str:  # noqa: ANN001, ANN003
+def to_json(
+    obj, filename: str | Path | TextIO | BinaryIO | None = None, append: bool = True, **kwargs
+) -> str:  # noqa: ANN001, ANN003
     """Convert a Python object to a JSON string.
 
     Will handle `datetime` objects as well as `astropy.unit.Quantity` objects.

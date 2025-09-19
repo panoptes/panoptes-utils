@@ -208,11 +208,11 @@ def get_pixel_color(x: int, y: int) -> str:
 
 
 def get_stamp_slice(
-    x: int, 
-    y: int, 
-    stamp_size: tuple[int, int] = (14, 14), 
-    ignore_superpixel: bool = False, 
-    as_slices: bool = True
+    x: int,
+    y: int,
+    stamp_size: tuple[int, int] = (14, 14),
+    ignore_superpixel: bool = False,
+    as_slices: bool = True,
 ) -> tuple[slice, slice] | tuple[int, int, int, int]:
     """Get the slice around a given position with fixed Bayer pattern.
 

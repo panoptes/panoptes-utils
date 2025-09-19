@@ -12,7 +12,9 @@ from loguru import logger
 from panoptes.utils import error
 
 
-def current_time(flatten: bool = False, datetime: bool = False, pretty: bool = False) -> Time | datetime | str:
+def current_time(
+    flatten: bool = False, datetime: bool = False, pretty: bool = False
+) -> Time | datetime | str:
     """Convenience method to return the "current" time according to the system.
 
     Note:
@@ -105,11 +107,11 @@ def flatten_time(t: Time) -> str:
 
 class CountdownTimer(object):
     """Simple timer object for tracking whether a time duration has elapsed.
-    
+
     A countdown timer that tracks elapsed time and provides methods to check
     if the timer has expired, how much time is left, and sleep until expiration.
     """
-    
+
     def __init__(self, duration: Union[int, float], name: str = "") -> None:
         """Simple timer object for tracking whether a time duration has elapsed.
 
@@ -151,7 +153,7 @@ class CountdownTimer(object):
 
     def __str__(self) -> str:
         """Return string representation of the timer.
-        
+
         Returns:
             str: String showing timer status, name, and time remaining/total.
         """

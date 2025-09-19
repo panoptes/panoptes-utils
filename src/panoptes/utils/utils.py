@@ -82,11 +82,11 @@ def get_free_space(directory: str | Path | None = None) -> u.Quantity:
 
 
 def altaz_to_radec(
-    alt: float | u.Quantity | None = None, 
-    az: float | u.Quantity | None = None, 
-    location: EarthLocation | None = None, 
-    obstime: Time | None = None, 
-    **kwargs  # noqa: ANN003
+    alt: float | u.Quantity | None = None,
+    az: float | u.Quantity | None = None,
+    location: EarthLocation | None = None,
+    obstime: Time | None = None,
+    **kwargs,  # noqa: ANN003
 ) -> SkyCoord:
     """Convert alt/az degrees to RA/Dec SkyCoord.
 
