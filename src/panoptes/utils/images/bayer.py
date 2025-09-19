@@ -30,7 +30,7 @@ class RGB(IntEnum):
     B = 2
 
 
-def get_rgb_data(data, separate_green=False):
+def get_rgb_data(data: np.ndarray, separate_green: bool = False) -> np.ndarray:
     """Get the data split into separate channels for RGB.
 
     `data` can be a 2D (`W x H`) or 3D (`N x W x H`) array where W=width
@@ -139,7 +139,7 @@ def get_rgb_data(data, separate_green=False):
     return np.ma.array(color_data)
 
 
-def get_rgb_masks(data, separate_green=False):
+def get_rgb_masks(data: np.ndarray, separate_green: bool = False) -> np.ndarray:
     """Get the RGGB Bayer pattern for the given data.
 
     .. note::
@@ -183,7 +183,7 @@ def get_rgb_masks(data, separate_green=False):
         return np.array([r_mask, g1_mask, b_mask])
 
 
-def get_pixel_color(x, y):
+def get_pixel_color(x: int, y: int) -> str:
     """Given a zero-indexed x,y position, return the corresponding color.
 
     .. note::
@@ -207,7 +207,13 @@ def get_pixel_color(x, y):
             return "G1"
 
 
-def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False, as_slices=True):
+def get_stamp_slice(
+    x: int,
+    y: int,
+    stamp_size: tuple[int, int] = (14, 14),
+    ignore_superpixel: bool = False,
+    as_slices: bool = True,
+) -> tuple[slice, slice] | tuple[int, int, int, int]:
     """Get the slice around a given position with fixed Bayer pattern.
 
     Given an x,y pixel position, get the slice object for a stamp of a given size
@@ -372,18 +378,18 @@ def get_stamp_slice(x, y, stamp_size=(14, 14), ignore_superpixel=False, as_slice
 
 
 def get_rgb_background(
-    data,
-    box_size=(79, 84),
-    filter_size=(11, 11),
-    estimator="mmm",
-    interpolator="zoom",
-    sigma=5,
-    iters=10,
-    exclude_percentile=100,
-    return_separate=False,
-    *args,
-    **kwargs,
-):
+    data: np.ndarray,
+    box_size: tuple[int, int] = (79, 84),
+    filter_size: tuple[int, int] = (11, 11),
+    estimator: str = "mmm",
+    interpolator: str = "zoom",
+    sigma: int = 5,
+    iters: int = 10,
+    exclude_percentile: int = 100,
+    return_separate: bool = False,
+    *args,  # noqa: ANN002
+    **kwargs,  # noqa: ANN003
+) -> np.ndarray | list:
     """Get the background for each color channel.
 
     Note: This funtion does not perform any additional calibration, such as flat, bias,
@@ -498,12 +504,12 @@ def get_rgb_background(
 
 
 def save_rgb_bg_fits(
-    rgb_bg_data,
+    rgb_bg_data: list,
     output_filename: str | Path | TextIO | BinaryIO,
-    header=None,
-    fpack=True,
-    overwrite=True,
-):
+    header: fits.Header | None = None,
+    fpack: bool = True,
+    overwrite: bool = True,
+) -> None:
     """Save a FITS file containing a combined background as well as separate channels.
 
     Args:
