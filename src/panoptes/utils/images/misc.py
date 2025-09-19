@@ -2,23 +2,25 @@ import os
 import shutil
 import subprocess
 from contextlib import suppress
+from pathlib import Path
 
 import numpy as np
 from astropy import units as u
 from astropy.nddata import Cutout2D
+from astropy.wcs import WCS
 from loguru import logger
 
 from panoptes.utils import error
 
 
 def make_timelapse(
-    directory,
-    fn_out=None,
-    glob_pattern="20[1-9][0-9]*T[0-9]*.jpg",
-    overwrite=False,
-    timeout=60,
-    **kwargs,
-):  # pragma: no cover
+    directory: str | Path,
+    fn_out: str | Path | None = None,
+    glob_pattern: str = "20[1-9][0-9]*T[0-9]*.jpg",
+    overwrite: bool = False,
+    timeout: int = 60,
+    **kwargs,  # noqa: ANN003
+) -> str | None:  # pragma: no cover
     """Create a timelapse.
 
     A timelapse is created from all the images in given ``directory``
@@ -105,7 +107,14 @@ def make_timelapse(
     return fn_out
 
 
-def crop_data(data, box_width=200, center=None, data_only=True, wcs=None, **kwargs):
+def crop_data(
+    data: np.ndarray, 
+    box_width: int = 200, 
+    center: tuple[int, int] | None = None, 
+    data_only: bool = True, 
+    wcs: WCS | None = None, 
+    **kwargs,  # noqa: ANN003
+) -> np.ndarray | Cutout2D:
     """Return a cropped portion of the image.
 
     Shape is a box centered around the middle of the data
@@ -167,7 +176,13 @@ def crop_data(data, box_width=200, center=None, data_only=True, wcs=None, **kwar
     return cutout
 
 
-def mask_saturated(data, saturation_level=None, threshold=0.9, bit_depth=None, dtype=None):
+def mask_saturated(
+    data: np.ndarray, 
+    saturation_level: float | None = None, 
+    threshold: float = 0.9, 
+    bit_depth: u.Quantity | int | None = None, 
+    dtype: np.dtype | None = None
+) -> np.ma.MaskedArray:
     """Convert data to a masked array with saturated values masked.
 
     .. plot::

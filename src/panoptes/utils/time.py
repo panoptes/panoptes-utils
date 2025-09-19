@@ -1,8 +1,9 @@
 import os
 import time
 from contextlib import suppress
-from datetime import timezone as tz
+from datetime import datetime, timezone as tz
 from typing import Union
+from threading import Event
 
 from astropy import units as u
 from astropy.time import Time
@@ -11,7 +12,7 @@ from loguru import logger
 from panoptes.utils import error
 
 
-def current_time(flatten=False, datetime=False, pretty=False):
+def current_time(flatten: bool = False, datetime: bool = False, pretty: bool = False) -> Time | datetime | str:
     """Convenience method to return the "current" time according to the system.
 
     Note:
@@ -79,7 +80,7 @@ def current_time(flatten=False, datetime=False, pretty=False):
     return _time
 
 
-def flatten_time(t):
+def flatten_time(t: Time) -> str:
     """Given an astropy time, flatten to have no extra chars besides integers.
 
     .. doctest::
@@ -109,7 +110,7 @@ class CountdownTimer(object):
     if the timer has expired, how much time is left, and sleep until expiration.
     """
     
-    def __init__(self, duration: Union[int, float], name: str = ""):
+    def __init__(self, duration: Union[int, float], name: str = "") -> None:
         """Simple timer object for tracking whether a time duration has elapsed.
 
         Examples:
@@ -148,7 +149,7 @@ class CountdownTimer(object):
         self.duration = float(duration)
         self.restart()
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return string representation of the timer.
         
         Returns:
@@ -159,7 +160,7 @@ class CountdownTimer(object):
             is_expired = "EXPIRED"
         return f"{is_expired} {self.name} {self.time_left():.02f}/{self.duration:.02f}"
 
-    def expired(self):
+    def expired(self) -> bool:
         """Return a boolean, telling if the timeout has expired.
 
         Returns:
@@ -167,7 +168,7 @@ class CountdownTimer(object):
         """
         return self.time_left() <= 0
 
-    def time_left(self):
+    def time_left(self) -> float:
         """Return how many seconds are left until the timeout expires.
 
         Returns:
@@ -181,12 +182,12 @@ class CountdownTimer(object):
         else:
             return max(0.0, delta)
 
-    def restart(self):
+    def restart(self) -> None:
         """Restart the timed duration."""
         self.target_time = time.monotonic() + self.duration
         logger.debug(f"Restarting {self.name}")
 
-    def sleep(self, max_sleep: Union[int, float, None] = None, log_level: str = "DEBUG"):
+    def sleep(self, max_sleep: Union[int, float, None] = None, log_level: str = "DEBUG") -> bool:
         """Sleep until the timer expires, or for max_sleep, whichever is sooner.
 
         Args:
@@ -212,11 +213,11 @@ class CountdownTimer(object):
 
 
 def wait_for_events(
-    events,
-    timeout=600,
-    sleep_delay=5 * u.second,
-    callback=None,
-):
+    events: Event | list[Event],
+    timeout: float | u.Quantity = 600,
+    sleep_delay: float | u.Quantity = 5 * u.second,
+    callback: callable | None = None,
+) -> bool:
     """Wait for event(s) to be set.
 
     This method will wait for a maximum of `timeout` seconds for all the `events`
