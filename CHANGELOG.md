@@ -10,7 +10,7 @@
 ### Changed
 
 * Trying to load an invalid config file will now result in an error instead of silently failing. #327
-  * Pinned `click` dependency to `<8.3` to avoid issues with `hatch`. #325
+* Pinned `click` dependency to `<8.3` to avoid issues with `hatch`. #325
 
 ## 0.2.50 - 2025-08-16
 
