@@ -2,8 +2,8 @@ import os
 import time
 from contextlib import suppress
 from datetime import datetime, timezone as tz
-from typing import Union
 from threading import Event
+from typing import Callable, Union
 
 from astropy import units as u
 from astropy.time import Time
