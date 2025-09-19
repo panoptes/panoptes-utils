@@ -122,7 +122,7 @@ def cr2_to_fits(
 
 
 @fits_app.command("solve")
-def solve_fits(fits_fname: Path, **kwargs) -> Optional[Path]:
+def solve_fits(fits_fname: Path, **kwargs) -> Optional[Path]:  # noqa: ANN003
     """Plate-solve a FITS file."""
     typer.secho(f"Solving {fits_fname}", fg="green")
     try:

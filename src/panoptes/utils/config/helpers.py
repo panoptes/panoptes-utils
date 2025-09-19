@@ -1,6 +1,6 @@
 from contextlib import suppress
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import Dict, List
 
 from loguru import logger
 
@@ -11,8 +11,8 @@ from panoptes.utils.utils import listify
 
 
 def load_config(
-    config_files: Union[Path, List] = None, parse: bool = True, load_local: bool = True
-):
+    config_files: Path | List | None = None, parse: bool = True, load_local: bool = True
+) -> dict:
     """Load configuration information.
 
     .. note::
@@ -94,7 +94,7 @@ def load_config(
     return config
 
 
-def save_config(save_path: Path, config: dict, overwrite: bool = True):
+def save_config(save_path: Path, config: dict, overwrite: bool = True) -> bool:
     """Save config to local yaml file.
 
     Args:
@@ -131,7 +131,7 @@ def save_config(save_path: Path, config: dict, overwrite: bool = True):
     return True
 
 
-def parse_config_directories(directories: Dict[str, str]):
+def parse_config_directories(directories: Dict[str, str]) -> dict:
     """Parse the config dictionary for common objects.
 
     Given a `base` entry that corresponds to the absolute path of a directory,
@@ -191,7 +191,7 @@ def parse_config_directories(directories: Dict[str, str]):
     return resolved_dirs
 
 
-def _add_to_conf(config: dict, conf_fn: Path, parse: bool = False):
+def _add_to_conf(config: dict, conf_fn: Path, parse: bool = False) -> None:
     """Add configuration from file to existing config dictionary.
     
     Args:

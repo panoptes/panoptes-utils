@@ -3,7 +3,7 @@ from collections import OrderedDict
 from contextlib import suppress
 from copy import deepcopy
 from pathlib import Path
-from typing import TextIO, BinaryIO
+from typing import TextIO, BinaryIO, IO
 
 import numpy as np
 from astropy import units as u
@@ -23,7 +23,7 @@ class StringYAML(YAML):
     provided.
     """
     
-    def dump(self, data, stream=None, **kwargs):
+    def dump(self, data, stream: IO | None = None, **kwargs) -> str | None:  # noqa: ANN001, ANN003
         """YAML class that can dump to a string.
 
         By default the YAML parser doesn't serialize directly to a string. This
@@ -56,7 +56,7 @@ class StringYAML(YAML):
             return stream.getvalue()
 
 
-def to_json(obj, filename: str | Path | TextIO | BinaryIO = None, append=True, **kwargs):
+def to_json(obj, filename: str | Path | TextIO | BinaryIO | None = None, append: bool = True, **kwargs) -> str:  # noqa: ANN001, ANN003
     """Convert a Python object to a JSON string.
 
     Will handle `datetime` objects as well as `astropy.unit.Quantity` objects.
@@ -107,7 +107,7 @@ def to_json(obj, filename: str | Path | TextIO | BinaryIO = None, append=True, *
     return json_str
 
 
-def from_json(msg):
+def from_json(msg: str) -> dict:
     """Convert a JSON string into a Python object.
 
     Astropy quanitites will be converted from a ``{"value": val, "unit": unit}``
@@ -173,7 +173,7 @@ def from_json(msg):
     return new_obj
 
 
-def to_yaml(obj, **kwargs):
+def to_yaml(obj, **kwargs) -> str:  # noqa: ANN001, ANN003
     """Serialize a Python object to a YAML string.
 
     This will properly serialize the following:
@@ -220,7 +220,7 @@ def to_yaml(obj, **kwargs):
     return yaml.dump(obj, **kwargs)
 
 
-def from_yaml(msg, parse=True):
+def from_yaml(msg: str, parse: bool = True) -> dict:
     """Convert a YAML string into a Python object.
 
     This is a thin-wrapper around `ruamel.YAML.load` that also parses the results
@@ -279,7 +279,7 @@ def from_yaml(msg, parse=True):
     return obj
 
 
-def deserialize_all_objects(obj):
+def deserialize_all_objects(obj):  # noqa: ANN001, ANN201
     """Recursively parse the incoming object for various data types.
 
     This will currently attempt to parse and return, in the following order:
@@ -329,7 +329,7 @@ def deserialize_all_objects(obj):
     return obj
 
 
-def serialize_object(obj):
+def serialize_object(obj):  # noqa: ANN001, ANN201
     """Serialize the given object.
 
     This is a custom serializer function used by ``to_json`` to serialize
@@ -380,7 +380,7 @@ def serialize_object(obj):
     return obj
 
 
-def serialize_all_objects(obj):
+def serialize_all_objects(obj):  # noqa: ANN001, ANN201
     """Iterate the ``obj`` items and serialize each value.
 
     .. note::

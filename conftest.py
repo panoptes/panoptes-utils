@@ -44,7 +44,7 @@ logger.add(
 logger.log("testing", "*" * 25 + startup_message + "*" * 25)
 
 
-def pytest_configure(config):
+def pytest_configure(config) -> None:  # noqa: ANN001
     """Set up the testing."""
     logger.info("Setting up the config server.")
     config_file = "tests/testing.yaml"
@@ -61,7 +61,7 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "plate_solve: Tests that require astrometry.net")
 
 
-def pytest_addoption(parser):
+def pytest_addoption(parser) -> None:  # noqa: ANN001
     db_names = ",".join(_all_databases) + " (or all for all databases)"
     group = parser.getgroup("PANOPTES pytest options")
     group.addoption(
@@ -82,7 +82,7 @@ def pytest_addoption(parser):
     )
 
 
-def pytest_collection_modifyitems(config, items):
+def pytest_collection_modifyitems(config, items) -> None:  # noqa: ANN001
     if config.getoption("--test-solve"):
         return
     skip_solve = pytest.mark.skip(reason="No plate solving requested")
@@ -92,7 +92,7 @@ def pytest_collection_modifyitems(config, items):
 
 
 @pytest.fixture(scope="session")
-def config_path():
+def config_path() -> str:
     return os.getenv("PANOPTES_CONFIG_FILE", "tests/testing.yaml")
 
 

@@ -6,12 +6,13 @@ from typing import TextIO, BinaryIO
 
 import numpy as np
 from astropy import units as u
-from astropy.coordinates import AltAz, ICRS, SkyCoord
+from astropy.coordinates import AltAz, ICRS, SkyCoord, EarthLocation
+from astropy.time import Time
 
 from panoptes.utils.time import current_time
 
 
-def listify(obj):
+def listify(obj) -> list:  # noqa: ANN001
     """Given an object, return a list.
 
     Always returns a list. If obj is None, returns empty list,
@@ -56,7 +57,7 @@ def listify(obj):
         return [obj]
 
 
-def get_free_space(directory=None):
+def get_free_space(directory: str | Path | None = None) -> u.Quantity:
     """Return the amoung of freespace in gigabytes for given directory.
 
     >>> from panoptes.utils.utils import get_free_space
@@ -80,7 +81,13 @@ def get_free_space(directory=None):
     return free_space
 
 
-def altaz_to_radec(alt=None, az=None, location=None, obstime=None, **kwargs):
+def altaz_to_radec(
+    alt: float | u.Quantity | None = None, 
+    az: float | u.Quantity | None = None, 
+    location: EarthLocation | None = None, 
+    obstime: Time | None = None, 
+    **kwargs  # noqa: ANN003
+) -> SkyCoord:
     """Convert alt/az degrees to RA/Dec SkyCoord.
 
     >>> from panoptes.utils.utils import altaz_to_radec
@@ -133,7 +140,7 @@ def altaz_to_radec(alt=None, az=None, location=None, obstime=None, **kwargs):
     return SkyCoord(altaz.transform_to(ICRS()))
 
 
-def get_quantity_value(quantity, unit=None):
+def get_quantity_value(quantity: u.Quantity | float, unit: str | u.Unit | None = None) -> float:
     """Thin-wrapper around the `astropy.units.Quantity.to_value` method.
 
     If passed something other than a Quantity will simply return the original object.
