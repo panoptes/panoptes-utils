@@ -141,6 +141,14 @@ class ObservationPathInfo:
 
     @classmethod
     def from_fits_header(cls, header):
+        """Create ObservationPathInfo from FITS header.
+        
+        Args:
+            header: FITS header containing observation metadata.
+            
+        Returns:
+            ObservationPathInfo: New instance with path information.
+        """
         try:
             new_instance = cls(path=header["FILENAME"])
         except ValueError:
@@ -160,6 +168,14 @@ class ObservationPathInfo:
 
     @classmethod
     def from_fits(cls, fits_file):
+        """Create ObservationPathInfo from FITS file.
+        
+        Args:
+            fits_file: Path to FITS file or file-like object.
+            
+        Returns:
+            ObservationPathInfo: New instance with path information from file header.
+        """
         return cls.from_fits_header(getheader(fits_file))
 
 
@@ -228,6 +244,15 @@ def solve_field(
     logger.debug(f"Adding kwargs: {kwargs!r}")
 
     def _modify_opt(opt, val):
+        """Modify option string based on value type.
+        
+        Args:
+            opt: Option name.
+            val: Option value.
+            
+        Returns:
+            str: Formatted option string.
+        """
         if isinstance(val, bool):
             opt_string = str(opt)
         else:
@@ -887,6 +912,21 @@ def fits_to_jpg(
     clip_percent=99.9,
     **kwargs,
 ):
+    """Convert a FITS file to a JPG image.
+    
+    Args:
+        fname: FITS file path or file-like object.
+        title (str, optional): Title for the image. Defaults to None.
+        figsize (tuple): Figure size as (width, height). Defaults to (10, 10/1.325).
+        dpi (int): DPI for output image. Defaults to 150.
+        alpha (float): Alpha transparency for overlays. Defaults to 0.2.
+        number_ticks (int): Number of coordinate ticks. Defaults to 7.
+        clip_percent (float): Percentage for data clipping. Defaults to 99.9.
+        **kwargs: Additional keyword arguments.
+        
+    Returns:
+        str: Path to generated JPG file.
+    """
     # Note: fname is used directly by getdata() and getheader() which now handle normalization
     data = mask_saturated(getdata(fname))
     header = getheader(fname)

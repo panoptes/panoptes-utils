@@ -8,6 +8,13 @@ NO_HORIZON = None
 
 
 class Obstruction(object):
+    """Define an obstruction on the horizon.
+    
+    An obstruction is defined by a list of altitude/azimuth coordinate pairs
+    that form a polygon representing the obstruction boundary. Points should
+    be provided in clockwise ordering.
+    """
+    
     def __init__(self, points_list):
         """An obstruction is defined by a list of alt, az pairs in clockwise ordering.
         Args:

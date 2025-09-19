@@ -30,6 +30,14 @@ from panoptes.utils.config.client import set_config
 )
 @click.pass_context
 def config_server_cli(context, host="localhost", port=6563, verbose=False):
+    """Command line interface for the config server.
+    
+    Args:
+        context: Click context object.
+        host (str): Host address to bind to. Defaults to "localhost".
+        port (int): Port number to bind to. Defaults to 6563.
+        verbose (bool): Enable verbose logging. Defaults to False.
+    """
     context.ensure_object(dict)
     context.obj["host"] = host
     context.obj["port"] = port

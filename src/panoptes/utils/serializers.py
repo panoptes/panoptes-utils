@@ -16,6 +16,13 @@ from ruamel.yaml.compat import StringIO
 
 
 class StringYAML(YAML):
+    """YAML class that can dump to a string.
+    
+    By default the YAML parser doesn't serialize directly to a string. This
+    class is a small wrapper to output StreamIO as a string if no stream is
+    provided.
+    """
+    
     def dump(self, data, stream=None, **kwargs):
         """YAML class that can dump to a string.
 
