@@ -103,6 +103,12 @@ def flatten_time(t):
 
 
 class CountdownTimer(object):
+    """Simple timer object for tracking whether a time duration has elapsed.
+    
+    A countdown timer that tracks elapsed time and provides methods to check
+    if the timer has expired, how much time is left, and sleep until expiration.
+    """
+    
     def __init__(self, duration: Union[int, float], name: str = ""):
         """Simple timer object for tracking whether a time duration has elapsed.
 
@@ -143,6 +149,11 @@ class CountdownTimer(object):
         self.restart()
 
     def __str__(self):
+        """Return string representation of the timer.
+        
+        Returns:
+            str: String showing timer status, name, and time remaining/total.
+        """
         is_expired = ""
         if self.expired():
             is_expired = "EXPIRED"

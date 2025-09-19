@@ -120,6 +120,15 @@ def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cov
 
 
 class SerialDevice(object):
+    """A SerialDevice class with helper methods for serial communications.
+
+    The device need not exist at the time this is called, in which case
+    is_connected will be false.
+
+    The serial device settings can be passed as a dictionary. See SerialDeviceDefaults
+    for possible values.
+    """
+    
     def __init__(
         self,
         port: str = None,
@@ -230,14 +239,31 @@ class SerialDevice(object):
 
         # Set up a custom threaded reader class that calls user callback.
         class CustomReader(LineReader):
+            """Custom LineReader for handling serial device data with callbacks."""
+            
             # Use `this` so `self` still refers to device instance.
             def connection_made(this, transport):
+                """Called when connection is established.
+                
+                Args:
+                    transport: The transport object for the connection.
+                """
                 super(LineReader, this).connection_made(transport)
 
             def connection_lost(this, exc):
+                """Called when connection is lost.
+                
+                Args:
+                    exc: Exception that caused connection loss, if any.
+                """
                 logger.trace(f"Disconnected from {self}")
 
             def handle_line(this, data):
+                """Handle incoming line of data from serial device.
+                
+                Args:
+                    data: Raw data received from the serial device.
+                """
                 try:
                     if callback and callable(callback):
                         data = callback(data)
@@ -250,6 +276,11 @@ class SerialDevice(object):
         self.reader_thread.start()
 
     def __str__(self):
+        """Return string representation of the serial device.
+        
+        Returns:
+            str: Device name, port, and serial settings summary.
+        """
         if self.name == self.port:
             full_name = f"SerialDevice {self.name}"
         else:

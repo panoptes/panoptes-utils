@@ -47,11 +47,21 @@ def vollath_F4(data, axis=None):
     data = data.astype(np.float64)
 
     def _vollath_F4_y():
+        """Calculate Vollath F4 focus metric along Y axis.
+        
+        Returns:
+            float: Focus metric value.
+        """
         A1 = (data[1:] * data[:-1]).mean()
         A2 = (data[2:] * data[:-2]).mean()
         return A1 - A2
 
     def _vollath_F4_x():
+        """Calculate Vollath F4 focus metric along X axis.
+        
+        Returns:
+            float: Focus metric value.
+        """
         A1 = (data[:, 1:] * data[:, :-1]).mean()
         A2 = (data[:, 2:] * data[:, :-2]).mean()
         return A1 - A2

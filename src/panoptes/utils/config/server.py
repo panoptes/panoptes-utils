@@ -82,6 +82,15 @@ def config_server(
         error_logs = logger if error_logs == "logger" else error_logs
 
         def start_server(host="localhost", port=6563):
+            """Start the config server.
+            
+            Args:
+                host (str): Host address to bind to. Defaults to "localhost".
+                port (int): Port number to bind to. Defaults to 6563.
+                
+            Returns:
+                None: Returns None if server fails to start.
+            """
             try:
                 logger.info(f"Starting panoptes config server with {host}:{port}")
                 http_server = WSGIServer(

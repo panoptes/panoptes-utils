@@ -35,15 +35,35 @@ class PanMemoryDB(AbstractPanDB):
         return db
 
     def __init__(self, **kwargs):
+        """Initialize in-memory database.
+        
+        Args:
+            **kwargs: Additional keyword arguments passed to parent class.
+        """
         super().__init__(**kwargs)
         self.current = {}
         self.collections = {}
         self.lock = threading.Lock()
 
     def _make_id(self):
+        """Generate a unique ID for database objects.
+        
+        Returns:
+            str: Unique identifier string.
+        """
         return str(uuid4())
 
     def insert_current(self, collection, obj, store_permanently=True):
+        """Insert object as current item in collection.
+        
+        Args:
+            collection (str): Collection name to insert into.
+            obj: Object to insert.
+            store_permanently (bool): Whether to also store in permanent collection.
+            
+        Returns:
+            str: Object ID of inserted item.
+        """
         obj_id = self._make_id()
         obj = create_storage_obj(collection, obj, obj_id)
         try:
@@ -60,6 +80,15 @@ class PanMemoryDB(AbstractPanDB):
         return obj_id
 
     def insert(self, collection, obj):
+        """Insert object into collection.
+        
+        Args:
+            collection (str): Collection name to insert into.
+            obj: Object to insert.
+            
+        Returns:
+            str: Object ID of inserted item.
+        """
         obj_id = self._make_id()
         obj = create_storage_obj(collection, obj, obj_id)
         try:
@@ -74,6 +103,14 @@ class PanMemoryDB(AbstractPanDB):
         return obj_id
 
     def get_current(self, collection):
+        """Get current object from collection.
+        
+        Args:
+            collection (str): Collection name to get current from.
+            
+        Returns:
+            dict or None: Current object in collection, or None if not found.
+        """
         with self.lock:
             obj = self.current.get(collection, None)
         if obj:
@@ -81,6 +118,15 @@ class PanMemoryDB(AbstractPanDB):
         return obj
 
     def find(self, collection, obj_id):
+        """Find object by ID in collection.
+        
+        Args:
+            collection (str): Collection name to search in.
+            obj_id (str): Object ID to find.
+            
+        Returns:
+            dict or None: Found object, or None if not found.
+        """
         with self.lock:
             obj = self.collections.get(collection, {}).get(obj_id)
         if obj:
@@ -88,11 +134,24 @@ class PanMemoryDB(AbstractPanDB):
         return obj
 
     def clear_current(self, entry_type):
+        """Clear current entry for specified type.
+        
+        Args:
+            entry_type (str): Entry type to clear.
+        """
         with suppress(KeyError):
             del self.current[entry_type]
 
     @classmethod
     def permanently_erase_database(cls, *args, **kwargs):
+        """Permanently erase the database.
+        
+        For testing purposes only. Erases all data and references.
+        
+        Args:
+            *args: Positional arguments (ignored).
+            **kwargs: Keyword arguments (ignored).
+        """
         # For some reason we're not seeing all the references disappear
         # after tests. Perhaps there is some global variable pointing at
         # the db or one of its referrers, or perhaps a pytest fixture
