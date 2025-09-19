@@ -28,7 +28,7 @@ classifiers = [
 dependencies = [
     "Deprecated",
     "astropy",
-    "click",
+    "click<8.3",
     "click-spinner",
     "loguru",
     "numpy>=2",
