@@ -5,10 +5,11 @@ import subprocess
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Pattern, Union, Dict
+from typing import Pattern, Union, Dict, TextIO, BinaryIO
 from warnings import warn
 
 from astropy import units as u
+from astropy.coordinates import EarthLocation, HADec, SkyCoord
 from astropy.io import fits
 from astropy.time import Time
 from astropy.visualization import ImageNormalize, PercentileInterval, LogStretch
@@ -23,6 +24,7 @@ from panoptes.utils import error
 from panoptes.utils.images.misc import mask_saturated
 from panoptes.utils.images.plot import get_palette, add_colorbar
 from panoptes.utils.time import flatten_time
+from panoptes.utils.utils import normalize_file_input
 
 PATH_MATCHER: Pattern[str] = re.compile(
     r"""^
@@ -39,7 +41,7 @@ PATH_MATCHER: Pattern[str] = re.compile(
 
 
 @dataclass
-class ObservationPathInfo:
+class ImagePathInfo:
     """Parse the location path for an image.
 
     This is a small dataclass that offers some convenience methods for dealing
@@ -47,9 +49,9 @@ class ObservationPathInfo:
 
     This would usually be instantiated via `path`:
 
-    >>> from panoptes.utils.images.fits import ObservationPathInfo  # noqa
+    >>> from panoptes.utils.images.fits import ImagePathInfo  # noqa
     >>> bucket_path = 'gs://panoptes-images-background/PAN012/Hd189733/358d0f/20180824T035917/20180824T040118.fits'
-    >>> path_info = ObservationPathInfo(path=bucket_path)
+    >>> path_info = ImagePathInfo(path=bucket_path)
 
     >>> path_info.id
     'PAN012_358d0f_20180824T035917_20180824T040118'
@@ -66,14 +68,14 @@ class ObservationPathInfo:
     >>> path_info.as_path(base='/tmp', ext='jpg')
     PosixPath('/tmp/PAN012/358d0f/20180824T035917/20180824T040118.jpg')
 
-    >>> ObservationPathInfo(path='foobar')
+    >>> ImagePathInfo(path='foobar')
     Traceback (most recent call last):
       ...
     ValueError: Invalid path received: self.path='foobar'
 
     >>> # Works from a fits file directly, which reads header.
     >>> fits_fn = getfixture('unsolved_fits_file')
-    >>> path_info = ObservationPathInfo.from_fits(fits_fn)
+    >>> path_info = ImagePathInfo.from_fits(fits_fn)
     >>> path_info.unit_id
     'PAN001'
 
@@ -140,6 +142,14 @@ class ObservationPathInfo:
 
     @classmethod
     def from_fits_header(cls, header):
+        """Create ObservationPathInfo from FITS header.
+
+        Args:
+            header: FITS header containing observation metadata.
+
+        Returns:
+            ImagePathInfo: New instance with path information.
+        """
         try:
             new_instance = cls(path=header["FILENAME"])
         except ValueError:
@@ -159,10 +169,20 @@ class ObservationPathInfo:
 
     @classmethod
     def from_fits(cls, fits_file):
+        """Create ObservationPathInfo from FITS file.
+
+        Args:
+            fits_file: Path to FITS file or file-like object.
+
+        Returns:
+            ImagePathInfo: New instance with path information from file header.
+        """
         return cls.from_fits_header(getheader(fits_file))
 
 
-def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
+def solve_field(
+    fname: str | Path | TextIO | BinaryIO, timeout=15, solve_opts=None, *args, **kwargs
+):
     """Plate solves an image.
 
     Note: This is a low-level wrapper around the underlying `solve-field`
@@ -170,11 +190,15 @@ def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
 
 
     Args:
-        fname(str, required):       Filename to solve in .fits extension.
+        fname: Filename to solve in .fits extension. Can be a string path,
+               pathlib.Path object, or open filehandle.
         timeout(int, optional):     Timeout for the solve-field command,
                                     defaults to 60 seconds.
         solve_opts(list, optional): List of options for solve-field.
     """
+    # Normalize the file input to a string path
+    fname = normalize_file_input(fname)
+
     solve_field_script = shutil.which("solve-field")
 
     if solve_field_script is None:  # pragma: no cover
@@ -221,6 +245,15 @@ def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
     logger.debug(f"Adding kwargs: {kwargs!r}")
 
     def _modify_opt(opt, val):
+        """Modify option string based on value type.
+
+        Args:
+            opt: Option name.
+            val: Option value.
+
+        Returns:
+            str: Formatted option string.
+        """
         if isinstance(val, bool):
             opt_string = str(opt)
         else:
@@ -250,7 +283,7 @@ def solve_field(fname, timeout=15, solve_opts=None, *args, **kwargs):
 
 
 def get_solve_field(
-    fname: Union[str, Path],
+    fname: str | Path | TextIO | BinaryIO,
     replace: bool = True,
     overwrite: bool = True,
     timeout: float = 30,
@@ -289,7 +322,8 @@ def get_solve_field(
     >>> assert os.path.exists('/tmp/awesome.bmp') # doctest: +SKIP
 
     Args:
-        fname ({str}): Name of FITS file to be solved.
+        fname: Name of FITS file to be solved. Can be a string path,
+               pathlib.Path object, or open filehandle.
         replace (bool, optional): Saves the WCS back to the original file,
             otherwise output base filename with `.new` extension. Default True.
         overwrite (bool, optional): Clobber file, default True. Required if `replace=True`.
@@ -301,8 +335,8 @@ def get_solve_field(
     """
     skip_solved = kwargs.get("skip_solved", True)
 
-    if isinstance(fname, Path):
-        fname = str(fname)
+    # Normalize the file input to a string path
+    fname = normalize_file_input(fname)
 
     out_dict = {}
 
@@ -379,14 +413,15 @@ def get_solve_field(
     return out_dict
 
 
-def get_wcsinfo(fits_fname, **kwargs):
+def get_wcsinfo(fits_fname: str | Path | TextIO | BinaryIO, **kwargs):
     """Returns the WCS information for a FITS file.
 
     Uses the `wcsinfo` astrometry.net utility script to get the WCS information
     from a plate-solved file.
 
     Args:
-        fits_fname ({str}): Name of a FITS file that contains a WCS.
+        fits_fname: Name of a FITS file that contains a WCS. Can be a string path,
+                   pathlib.Path object, or open filehandle.
         **kwargs: Args that can be passed to wcsinfo.
 
     Returns:
@@ -395,6 +430,8 @@ def get_wcsinfo(fits_fname, **kwargs):
     Raises:
         error.InvalidCommand: Raised if `wcsinfo` is not found (part of astrometry.net)
     """
+    # Normalize the file input to a string path
+    fits_fname = normalize_file_input(fits_fname)
     assert os.path.exists(fits_fname), warn(f"No file exists at: {fits_fname}")
 
     wcsinfo = shutil.which("wcsinfo")
@@ -471,18 +508,22 @@ def get_wcsinfo(fits_fname, **kwargs):
     return wcs_info
 
 
-def fpack(fits_fname, unpack=False, overwrite=True):
+def fpack(fits_fname: str | Path | TextIO | BinaryIO, unpack=False, overwrite=True):
     """Compress/Decompress a FITS file
 
     Uses `fpack` (or `funpack` if `unpack=True`) to compress a FITS file
 
     Args:
-        fits_fname ({str}): Name of a FITS file that contains a WCS.
+        fits_fname: Name of a FITS file that contains a WCS. Can be a string path,
+                   pathlib.Path object, or open filehandle.
         unpack ({bool}, optional): file should decompressed instead of compressed, default False.
 
     Returns:
         str: Filename of compressed/decompressed file.
     """
+    # Normalize the file input to a string path
+    fits_fname = normalize_file_input(fits_fname)
+
     assert os.path.exists(fits_fname), warn("No file exists at: {}".format(fits_fname))
 
     if unpack:
@@ -538,7 +579,9 @@ def funpack(*args, **kwargs):
     return fpack(*args, unpack=True, **kwargs)
 
 
-def write_fits(data, header, filename, exposure_event=None, **kwargs):
+def write_fits(
+    data, header, filename: str | Path | TextIO | BinaryIO, exposure_event=None, **kwargs
+):
     """Write FITS file to requested location.
 
     >>> from panoptes.utils.images import fits as fits_utils
@@ -556,12 +599,16 @@ def write_fits(data, header, filename, exposure_event=None, **kwargs):
     Args:
         data (array_like): The data to be written.
         header (dict): Dictionary of items to be saved in header.
-        filename (str): Path to filename for output.
+        filename: Path to filename for output. Can be a string path,
+                 pathlib.Path object, or open filehandle.
         exposure_event (None|`threading.Event`, optional): A `threading.Event` that
             can be triggered when the image is written.
         kwargs (dict): Options that are passed to the `astropy.io.fits.PrimaryHDU.writeto`
             method.
     """
+    # Normalize the file input to a string path
+    filename = normalize_file_input(filename)
+
     if not isinstance(header, fits.Header):
         header = fits.Header(header)
 
@@ -582,7 +629,7 @@ def write_fits(data, header, filename, exposure_event=None, **kwargs):
             exposure_event.set()
 
 
-def update_observation_headers(file_path, info):
+def update_observation_headers(file_path: str | Path | TextIO | BinaryIO, info):
     """Update FITS headers with items from the Observation status.
 
     >>> # Check the headers
@@ -599,10 +646,14 @@ def update_observation_headers(file_path, info):
     'Tabbys Star'
 
     Args:
-        file_path (str): Path to a FITS file.
+        file_path: Path to a FITS file. Can be a string path,
+                  pathlib.Path object, or open filehandle.
         info (dict): The return dict from `pocs.observatory.Observation.status`,
             which includes basic information about the observation.
     """
+    # Normalize the file input to a string path
+    file_path = normalize_file_input(file_path)
+
     with fits.open(file_path, "update") as f:
         hdu = f[0]
         hdu.header.set("IMAGEID", info.get("image_id", ""))
@@ -627,48 +678,112 @@ def update_observation_headers(file_path, info):
 
 
 def extract_metadata(header: fits.Header) -> dict:
-    """Get the metadata from a FITS image.
+    """Get metadata from a FITS image header.
 
-    This function parses some of the more common headers (some from the
-    `update_observation_headers` but others as well) and puts them into a dict
-    with the obvious data types converted into objects (e.g. dates and times).
+    This parses common PANOPTES FITS headers (including those written by
+    `update_observation_headers`) into a nested dictionary with convenient
+    Python types (e.g. datetimes for dates). If the file is plate-solved,
+    the returned metadata will include celestial coordinates and derived
+    quantities; otherwise the coordinates dict will be empty.
 
-    >>> # Check the headers
+    The returned dictionary has the following top-level keys:
+    - unit: Information about the observing unit (location, ids).
+    - sequence: Information about the capture sequence, mount, and camera.
+    - image: Information about this specific image (camera, environment,
+      timestamps, and coordinates if solved).
+
+    Examples
+    --------
+    Unsolved FITS (no WCS):
+
     >>> from panoptes.utils.images import fits as fits_utils
     >>> fits_fn = getfixture('unsolved_fits_file')
     >>> header = fits_utils.getheader(fits_fn)
     >>> metadata = extract_metadata(header)
     >>> metadata['unit']['name']
     'PAN001'
+    >>> # Coordinates dict is empty for unsolved files
+    >>> metadata['image']['coordinates']
+    {}
+
+    Solved FITS (with WCS):
+
+    >>> fits_fn = getfixture('solved_fits_file')
+    >>> header = fits_utils.getheader(fits_fn)
+    >>> metadata = extract_metadata(header)
+    >>> # Coordinates contain standard celestial/alt-az/airmass entries
+    >>> coords = metadata['image']['coordinates']
+    >>> all(k in coords for k in ('ra', 'dec', 'ha', 'ha_deg', 'alt', 'az', 'airmass'))
+    True
 
     Args:
         header (astropy.io.fits.Header): The Header object from a FITS file.
+
+    Returns:
+        dict: Nested metadata dictionary with 'unit', 'sequence', and 'image' keys.
     """
-    path_info = ObservationPathInfo.from_fits_header(header)
+    path_info = ImagePathInfo.from_fits_header(header)
+
+    # Extract the coordinate information and get AltAz and HA.
+    coord_info = {}
+
+    try:
+        wcs = WCS(header)
+        is_solved = wcs.is_celestial
+
+        if is_solved:
+            wcs_meta = wcs.to_header(relax=True)
+
+            radec_coord = SkyCoord(
+                ra=wcs_meta["CRVAL1"],
+                dec=wcs_meta["CRVAL2"],
+                unit="deg",
+                frame="icrs",
+                obstime=path_info.image_time.to_datetime(timezone=UTC),
+                location=EarthLocation(
+                    lon=header["LONG-OBS"], lat=header["LAT-OBS"], height=header["ELEV-OBS"]
+                ),
+            )
+            hadec_coord = radec_coord.transform_to(HADec)
+
+            coord_info = dict(
+                ra=radec_coord.ra.value,
+                dec=radec_coord.dec.value,
+                ha=hadec_coord.ha.value,
+                ha_deg=hadec_coord.ha.to("deg").value,
+                alt=hadec_coord.altaz.alt.value,
+                az=hadec_coord.altaz.az.value,
+                airmass=hadec_coord.altaz.secz.value,
+            )
+    except Exception as e:
+        logger.warning(f"Error in extracting WCS coordinates: {e!r}")
 
     try:
         # Add a units doc if it doesn't exist.
         unit_info = dict(
-            unit_id=path_info.unit_id,
-            name=header.get("OBSERVER"),
+            elevation=float(header.get("ELEV-OBS")),
             latitude=header.get("LAT-OBS"),
             longitude=header.get("LONG-OBS"),
-            elevation=float(header.get("ELEV-OBS")),
+            name=header.get("OBSERVER"),
+            unit_id=path_info.unit_id,
         )
 
         sequence_info = dict(
-            unit_id=path_info.unit_id,
             sequence_id=path_info.sequence_id,
-            time=path_info.sequence_time.to_datetime(timezone=UTC),
-            exptime=float(header.get("EXPTIME")),
-            software_version=header.get("CREATOR", ""),
+            sequence_time=path_info.sequence_time.to_datetime(timezone=UTC),
+            coordinates=dict(
+                mount_dec=header.get("DEC-MNT"),
+                mount_ra=header.get("RA-MNT"),
+                mount_ha=header.get("HA-MNT"),
+            ),
+            camera=dict(
+                camera_id=path_info.camera_id,
+                lens_serial_number=header.get("INTSN"),
+                serial_number=str(header.get("CAMSN")),
+            ),
             field_name=header.get("FIELD", ""),
-            iso=header.get("ISO"),
-            ra=header.get("CRVAL1"),
-            dec=header.get("CRVAL2"),
-            camera_id=path_info.camera_id,
-            camera_serial_number=str(header.get("CAMSN")),
-            lens_serial_number=header.get("INTSN"),
+            software_version=header.get("CREATOR", ""),
+            unit_id=path_info.unit_id,
         )
 
         measured_rggb = header.get("MEASRGGB", "0 0 0 0").split(" ")
@@ -680,31 +795,31 @@ def extract_metadata(header: fits.Header) -> dict:
 
         image_info = dict(
             uid=path_info.get_full_id(sep="_"),
-            airmass=header.get("AIRMASS"),
             camera=dict(
-                dateobs=camera_date,
                 blue_balance=float(header.get("BLUEBAL")),
                 circconf=float(header.get("CIRCCONF", "0.").split(" ")[0]),
                 colortemp=float(header.get("COLORTMP")),
-                measured_ev=float(header.get("MEASEV")),
+                dateobs=camera_date,
+                exptime=float(header.get("EXPTIME")),
+                iso=header.get("ISO"),
+                measured_b=float(measured_rggb[3]),
                 measured_ev2=float(header.get("MEASEV2")),
-                measured_r=float(measured_rggb[0]),
+                measured_ev=float(header.get("MEASEV")),
                 measured_g1=float(measured_rggb[1]),
                 measured_g2=float(measured_rggb[2]),
-                measured_b=float(measured_rggb[3]),
+                measured_r=float(measured_rggb[0]),
                 red_balance=float(header.get("REDBAL")),
                 temperature=float(header.get("CAMTEMP", 0).split(" ")[0]),
                 white_lvln=header.get("WHTLVLN"),
                 white_lvls=header.get("WHTLVLS"),
             ),
-            exptime=float(header.get("EXPTIME")),
+            coordinates=coord_info,
+            environment=dict(
+                moonfrac=float(header.get("MOONFRAC")),
+                moonsep=float(header.get("MOONSEP")),
+            ),
             file_creation_date=file_date,
-            moonfrac=float(header.get("MOONFRAC")),
-            moonsep=float(header.get("MOONSEP")),
-            mount_dec=header.get("DEC-MNT"),
-            mount_ha=header.get("HA-MNT"),
-            mount_ra=header.get("RA-MNT"),
-            time=path_info.image_time.to_datetime(timezone=UTC),
+            image_time=path_info.image_time.to_datetime(timezone=UTC),
         )
 
         metadata = dict(
@@ -720,7 +835,7 @@ def extract_metadata(header: fits.Header) -> dict:
     return metadata
 
 
-def getdata(fn, *args, **kwargs):
+def getdata(fn: str | Path | TextIO | BinaryIO, *args, **kwargs):
     """Get the FITS data.
 
     Small wrapper around `astropy.io.fits.getdata` to auto-determine
@@ -745,17 +860,20 @@ def getdata(fn, *args, **kwargs):
     'KIC 8462852'
 
     Args:
-        fn (str): Path to FITS file.
+        fn: Path to FITS file. Can be a string path,
+            pathlib.Path object, or open filehandle.
         *args: Passed to `astropy.io.fits.getdata`.
         **kwargs: Passed to `astropy.io.fits.getdata`.
 
     Returns:
         `np.ndarray`: The FITS data.
     """
+    # Normalize the file input to a string path
+    fn = normalize_file_input(fn)
     return fits.getdata(fn, *args, **kwargs)
 
 
-def getheader(fn, *args, **kwargs):
+def getheader(fn: str | Path | TextIO | BinaryIO, *args, **kwargs):
     """Get the FITS header.
 
     Small wrapper around `astropy.io.fits.getheader` to auto-determine
@@ -779,20 +897,23 @@ def getheader(fn, *args, **kwargs):
     'PAN001_XXXXXX_20160909T081152'
 
     Args:
-        fn (str): Path to FITS file.
+        fn: Path to FITS file. Can be a string path,
+            pathlib.Path object, or open filehandle.
         *args: Passed to `astropy.io.fits.getheader`.
         **kwargs: Passed to `astropy.io.fits.getheader`.
 
     Returns:
         `astropy.io.fits.header.Header`: The FITS header for the data.
     """
+    # Normalize the file input to a string path
+    fn = normalize_file_input(fn)
     ext = 0
     if fn.endswith(".fz"):
         ext = 1
     return fits.getheader(fn, ext=ext)
 
 
-def getwcs(fn, *args, **kwargs):
+def getwcs(fn: str | Path | TextIO | BinaryIO, *args, **kwargs):
     """Get the WCS for the FITS file.
 
     Small wrapper around `astropy.wcs.WCS`.
@@ -808,7 +929,8 @@ def getwcs(fn, *args, **kwargs):
     False
 
     Args:
-        fn (str): Path to FITS file.
+        fn: Path to FITS file. Can be a string path,
+            pathlib.Path object, or open filehandle.
         *args: Passed to `astropy.io.fits.getheader`.
         **kwargs: Passed to `astropy.io.fits.getheader`.
 
@@ -818,7 +940,7 @@ def getwcs(fn, *args, **kwargs):
     return WCS(getheader(fn, *args, **kwargs), *args, **kwargs)
 
 
-def getval(fn, *args, **kwargs):
+def getval(fn: str | Path | TextIO | BinaryIO, *args, **kwargs):
     """Get a value from the FITS header.
 
     Small wrapper around `astropy.io.fits.getval` to auto-determine
@@ -831,11 +953,14 @@ def getval(fn, *args, **kwargs):
     'PAN001_XXXXXX_20160909T081152'
 
     Args:
-        fn (str): Path to FITS file.
+        fn: Path to FITS file. Can be a string path,
+            pathlib.Path object, or open filehandle.
 
     Returns:
         str or float: Value from header (with no type conversion).
     """
+    # Normalize the file input to a string path
+    fn = normalize_file_input(fn)
     ext = 0
     if fn.endswith(".fz"):
         ext = 1
@@ -843,7 +968,7 @@ def getval(fn, *args, **kwargs):
 
 
 def fits_to_jpg(
-    fname=None,
+    fname: str | Path | TextIO | BinaryIO = None,
     title=None,
     figsize=(10, 10 / 1.325),
     dpi=150,
@@ -852,6 +977,22 @@ def fits_to_jpg(
     clip_percent=99.9,
     **kwargs,
 ):
+    """Convert a FITS file to a JPG image.
+
+    Args:
+        fname: FITS file path or file-like object.
+        title (str, optional): Title for the image. Defaults to None.
+        figsize (tuple): Figure size as (width, height). Defaults to (10, 10/1.325).
+        dpi (int): DPI for output image. Defaults to 150.
+        alpha (float): Alpha transparency for overlays. Defaults to 0.2.
+        number_ticks (int): Number of coordinate ticks. Defaults to 7.
+        clip_percent (float): Percentage for data clipping. Defaults to 99.9.
+        **kwargs: Additional keyword arguments.
+
+    Returns:
+        str: Path to generated JPG file.
+    """
+    # Note: fname is used directly by getdata() and getheader() which now handle normalization
     data = mask_saturated(getdata(fname))
     header = getheader(fname)
     wcs = WCS(header)
@@ -865,7 +1006,9 @@ def fits_to_jpg(
             date_time = header["DATE-OBS"]
         except KeyError:
             # If we don't have DATE-OBS, check filename for date.
-            basename = os.path.splitext(os.path.basename(fname))[0]
+            # Normalize fname to string for os.path operations
+            fname_str = normalize_file_input(fname)
+            basename = os.path.splitext(os.path.basename(fname_str))[0]
             date_time = parse_date(basename).isoformat()
 
         date_time = date_time.replace("T", " ", 1)
@@ -905,7 +1048,9 @@ def fits_to_jpg(
     add_colorbar(im)
     fig.suptitle(title)
 
-    new_filename = re.sub(r".fits(.fz)?", ".jpg", fname)
+    # Normalize fname to string for regex and file operations
+    fname_str = normalize_file_input(fname)
+    new_filename = re.sub(r".fits(.fz)?", ".jpg", fname_str)
     fig.savefig(new_filename, bbox_inches="tight")
 
     # explicitly close and delete figure

@@ -1,5 +1,6 @@
 import os
 import tempfile
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -109,3 +110,33 @@ def test_make_pretty_image_cr2(cr2_file, tmpdir):
     assert pretty_path.exists()
     assert pretty_path.as_posix() == link_path
     assert os.path.exists(cr2_file) is False
+
+
+def test_make_pretty_image_pathlib(solved_fits_file, save_environ):
+    """Test make_pretty_image with pathlib.Path input."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        imgdir = os.path.join(tmpdir, "images")
+        os.makedirs(imgdir, exist_ok=True)
+
+        link_path = Path(tmpdir) / "latest_path.jpg"
+        pretty = make_pretty_image(Path(solved_fits_file), link_path=link_path)
+
+        assert pretty.exists()
+        assert pretty.is_file()
+        assert str(link_path) == pretty.as_posix()
+
+
+def test_make_pretty_image_filehandle(solved_fits_file, save_environ):
+    """Test make_pretty_image with open filehandle input."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        imgdir = os.path.join(tmpdir, "images")
+        os.makedirs(imgdir, exist_ok=True)
+
+        link_path = os.path.join(tmpdir, "latest_fh.jpg")
+
+        with open(solved_fits_file, "rb") as f:
+            pretty = make_pretty_image(f, link_path=link_path)
+
+        assert pretty.exists()
+        assert pretty.is_file()
+        assert link_path == pretty.as_posix()

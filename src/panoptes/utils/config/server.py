@@ -6,6 +6,7 @@ from sys import platform
 from flask import Flask, jsonify, request
 from gevent.pywsgi import WSGIServer
 from loguru import logger
+from ruamel.yaml.parser import ParserError
 from scalpl import Cut
 
 from panoptes.utils.config.helpers import load_config, save_config
@@ -59,8 +60,13 @@ def config_server(
     Returns:
         multiprocessing.Process: The process running the config server.
     """
-    logger.info(f"Starting panoptes-config-server with  config_file={config_file!r}")
-    config = load_config(config_files=config_file, load_local=load_local, parse=False)
+    logger.info(f"Starting panoptes-config-server with config_file={config_file!r}")
+    try:
+        config = load_config(config_files=config_file, load_local=load_local, parse=False)
+    except ParserError as e:
+        logger.error(f"Problem parsing config file {config_file}: {e!r}")
+        raise e
+
     logger.success(f"Config server Loaded {len(config)} top-level items")
 
     # Add an entry to control running of the server.
@@ -82,6 +88,15 @@ def config_server(
         error_logs = logger if error_logs == "logger" else error_logs
 
         def start_server(host="localhost", port=6563):
+            """Start the config server.
+            
+            Args:
+                host (str): Host address to bind to. Defaults to "localhost".
+                port (int): Port number to bind to. Defaults to 6563.
+                
+            Returns:
+                None: Returns None if server fails to start.
+            """
             try:
                 logger.info(f"Starting panoptes config server with {host}:{port}")
                 http_server = WSGIServer(
@@ -308,11 +323,16 @@ def reset_config():
 
     if params["reset"]:
         # Reload the config
-        config = load_config(
-            config_files=app.config["config_file"],
-            load_local=app.config["load_local"],
-            parse=params.get("parse", False),
-        )
+        try:
+            config = load_config(
+                config_files=app.config["config_file"],
+                load_local=app.config["load_local"],
+                parse=params.get("parse", False),
+            )
+        except ParserError as e:
+            logger.error(f"Problem parsing config file {app.config['config_file']}: {e!r}")
+            return jsonify({"success": False, "msg": f"Problem parsing config file: {e!r}"})
+
         # Add an entry to control running of the server.
         config["config_server"] = dict(running=True)
         app.config["POCS"] = config

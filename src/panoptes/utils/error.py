@@ -7,6 +7,12 @@ class PanError(Exception):
     """Base class for Panoptes errors"""
 
     def __init__(self, msg=None, exit=False):
+        """Initialize PanError exception.
+        
+        Args:
+            msg (str, optional): Error message. Defaults to None.
+            exit (bool, optional): Whether to exit program on error. Defaults to False.
+        """
         self.msg = msg
 
         if self.msg:
@@ -26,6 +32,11 @@ class PanError(Exception):
         sys.exit(1)
 
     def __str__(self):
+        """Return string representation of the error.
+        
+        Returns:
+            str: Error class name and message if available.
+        """
         error_str = str(self.__class__.__name__)
         if self.msg:
             error_str += ": {}".format(self.msg)
@@ -37,6 +48,12 @@ class InvalidSystemCommand(PanError):
     """Error for a system level command malfunction"""
 
     def __init__(self, msg="Problem running system command", **kwargs):
+        """Initialize InvalidSystemCommand exception.
+        
+        Args:
+            msg (str): Error message. Defaults to "Problem running system command".
+            **kwargs: Additional keyword arguments passed to parent class.
+        """
         super().__init__(msg, **kwargs)
 
 
@@ -44,6 +61,12 @@ class InvalidDeserialization(PanError):
     """Error for serialization errors"""
 
     def __init__(self, msg="Problem deserializing", **kwargs):
+        """Initialize InvalidDeserialization exception.
+        
+        Args:
+            msg (str): Error message. Defaults to "Problem deserializing".
+            **kwargs: Additional keyword arguments passed to parent class.
+        """
         super().__init__(msg, **kwargs)
 
 
@@ -51,6 +74,12 @@ class InvalidSerialization(PanError):
     """Error for serialization errors"""
 
     def __init__(self, msg="Problem Serializing", **kwargs):
+        """Initialize InvalidSerialization exception.
+        
+        Args:
+            msg (str): Error message. Defaults to "Problem Serializing".
+            **kwargs: Additional keyword arguments passed to parent class.
+        """
         super().__init__(msg, **kwargs)
 
 
@@ -58,6 +87,12 @@ class Timeout(PanError):
     """Error called when an event times out"""
 
     def __init__(self, msg="Timeout waiting for event", **kwargs):
+        """Initialize Timeout exception.
+        
+        Args:
+            msg (str): Error message. Defaults to "Timeout waiting for event".
+            **kwargs: Additional keyword arguments passed to parent class.
+        """
         super().__init__(msg, **kwargs)
 
 
@@ -65,6 +100,12 @@ class NoObservation(PanError):
     """Generic no Observation"""
 
     def __init__(self, msg="No valid observations found.", **kwargs):
+        """Initialize NoObservation exception.
+        
+        Args:
+            msg (str): Error message. Defaults to "No valid observations found.".
+            **kwargs: Additional keyword arguments passed to parent class.
+        """
         super().__init__(msg, **kwargs)
 
 
@@ -126,6 +167,12 @@ class MountNotFound(NotFound):
     """Mount cannot be import"""
 
     def __init__(self, msg="Mount Not Found", **kwargs):
+        """Initialize MountNotFound exception.
+        
+        Args:
+            msg (str): Error message. Defaults to "Mount Not Found".
+            **kwargs: Additional keyword arguments passed to parent class.
+        """
         super().__init__(msg, **kwargs)
 
 

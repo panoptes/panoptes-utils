@@ -2,9 +2,9 @@ from pathlib import Path
 
 import pytest
 from astropy import units as u
+from ruamel.yaml.parser import ParserError
 
-from panoptes.utils.config.helpers import load_config
-from panoptes.utils.config.helpers import save_config
+from panoptes.utils.config.helpers import load_config, save_config
 from panoptes.utils.serializers import to_yaml
 
 
@@ -12,6 +12,12 @@ def test_load_config(config_path):
     """Test basic loading"""
     conf = load_config(config_files=config_path)
     assert conf["name"] == "Testing PANOPTES Unit"
+
+
+def test_bad_config(bad_config_path):
+    """Test bad config file"""
+    with pytest.raises(ParserError):
+        load_config(config_files=bad_config_path)
 
 
 def test_load_config_custom_file(tmp_path):

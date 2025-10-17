@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 0.2.52 - 2025-10-17
+
+### Added
+
+* Type hints to most functions and methods. #326
+* Docstrings to all major public functions and classes. #324
+
+### Changed
+
+* Renamed `ObservationPathInfo` to `ImagePathInfo` to better reflect its purpose. #328
+* Updated `panoptes.utils.images.fits.extract_metadata` to include more metadata fields, including plate-solved
+  information. Extracted metadata now matches what was being performed via the pipeline on the cloud. #328
+* Trying to load an invalid config file will now result in an error instead of silently failing. #327
+* Pinned `click` dependency to `<8.3` to avoid issues with `hatch`. #325
+
 ## 0.2.50 - 2025-08-16
 
 * Hotfix for GHA release action

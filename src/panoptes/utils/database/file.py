@@ -36,6 +36,16 @@ class PanFileDB(AbstractPanDB):
         os.makedirs(self.storage_dir, exist_ok=True)
 
     def insert_current(self, collection, obj, store_permanently=True):
+        """Insert object as current item in collection.
+        
+        Args:
+            collection (str): Collection name to insert into.
+            obj: Object to insert.
+            store_permanently (bool): Whether to also store in permanent collection.
+            
+        Returns:
+            str: Object ID of inserted item.
+        """
         obj_id = self._make_id()
         result = obj_id
         storage_obj = create_storage_obj(collection, obj, obj_id)
@@ -53,6 +63,15 @@ class PanFileDB(AbstractPanDB):
         return result
 
     def insert(self, collection, obj):
+        """Insert object into collection.
+        
+        Args:
+            collection (str): Collection name to insert into.
+            obj: Object to insert.
+            
+        Returns:
+            str: Object ID of inserted item.
+        """
         obj_id = self._make_id()
         obj = create_storage_obj(collection, obj, obj_id)
         collection_fn = self._get_file(collection)
@@ -64,6 +83,14 @@ class PanFileDB(AbstractPanDB):
             raise error.InvalidSerialization(f"Problem serializing before insert: {e!r} {obj!r}")
 
     def get_current(self, collection):
+        """Get current object from collection.
+        
+        Args:
+            collection (str): Collection name to get current from.
+            
+        Returns:
+            dict or None: Current object in collection, or None if not found.
+        """
         current_fn = self._get_file(collection, permanent=False)
 
         try:
@@ -76,6 +103,15 @@ class PanFileDB(AbstractPanDB):
             return None
 
     def find(self, collection, obj_id):
+        """Find object by ID in collection.
+        
+        Args:
+            collection (str): Collection name to search in.
+            obj_id (str): Object ID to find.
+            
+        Returns:
+            dict or None: Found object, or None if not found.
+        """
         collection_fn = self._get_file(collection)
         obj = None
         with suppress(FileNotFoundError):
@@ -98,6 +134,15 @@ class PanFileDB(AbstractPanDB):
             os.remove(current_f)
 
     def _get_file(self, collection, permanent=True):
+        """Get file path for collection.
+        
+        Args:
+            collection (str): Collection name.
+            permanent (bool): Whether to get permanent or current file.
+            
+        Returns:
+            str: Full file path for the collection.
+        """
         if permanent:
             name = f"{collection}.json"
         else:
@@ -105,10 +150,23 @@ class PanFileDB(AbstractPanDB):
         return os.path.join(self.storage_dir, name)
 
     def _make_id(self):
+        """Generate a unique ID for database objects.
+        
+        Returns:
+            str: Unique identifier string.
+        """
         return str(uuid4())
 
     @classmethod
     def permanently_erase_database(cls, db_name, storage_dir=None):
+        """Permanently erase the database.
+        
+        For testing purposes only. Removes all JSON files from storage directory.
+        
+        Args:
+            db_name (str): Database name.
+            storage_dir (str, optional): Storage directory path.
+        """
         # Clear out any .json files.
         storage_dir = os.path.join(storage_dir, db_name)
         for f in glob(os.path.join(storage_dir, "*.json")):

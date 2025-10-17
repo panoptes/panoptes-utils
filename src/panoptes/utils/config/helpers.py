@@ -1,6 +1,6 @@
 from contextlib import suppress
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import Dict, List
 
 from loguru import logger
 
@@ -11,57 +11,37 @@ from panoptes.utils.utils import listify
 
 
 def load_config(
-    config_files: Union[Path, List] = None, parse: bool = True, load_local: bool = True
-):
-    """Load configuration information.
+    config_files: str | Path | List | None = None, parse: bool = True, load_local: bool = True
+) -> dict:
+    """Loads configuration information from one or more YAML files.
 
-    .. note::
+    This function is used by the config server; normal config usage should
+    be via a running config server.
 
-        This function is used by the config server and normal config usage should
-        be via a running config server.
-
-    This function supports loading of a number of different files. If no options
-    are passed to ``config_files`` then the default ``$PANOPTES_CONFIG_FILE``
-    will be loaded.
-
-    ``config_files`` is a list and loaded in order, so the second entry will overwrite
-    any values specified by similarly named keys in the first entry.
-
-    ``config_files`` should be specified by an absolute path, which can exist anywhere
-    on the filesystem.
-
-    Local versions of files can override built-in versions and are automatically loaded if
-    they exist alongside the specified config path. Local files have a ``<>_local.yaml`` name, where
-    ``<>`` is the built-in file.
-
-    Given the following path:
-
-    ::
-
-        /path/to/dir
-        |- my_conf.yaml
-        |- my_conf_local.yaml
-
-    You can do a ``load_config('/path/to/dir/my_conf.yaml')`` and both versions of the file will
-    be loaded, with the values in the local file overriding the non-local. Typically the local
-    file would also be ignored by ``git``, etc.
-
-    For example, the ``panoptes.utils.config.server.config_server`` will always save values to
-    a local version of the file so the default settings can always be recovered if necessary.
-
-    Local files can be ignored (mostly for testing purposes or for recovering default values)
-    with the ``load_local=False`` parameter.
+    If no options are passed to `config_files`, the default `$PANOPTES_CONFIG_FILE`
+    will be loaded. Multiple files can be specified and are loaded in order,
+    with later files overwriting values from earlier ones. Local versions of files
+    (named `<name>_local.yaml`) can override built-in versions if present.
 
     Args:
-        config_files (list, optional): A list of files to load as config,
-            see Notes for details of how to specify files.
-        parse (bool, optional): If the config file should attempt to create
-            objects such as dates, astropy units, etc.
-        load_local (bool, optional): If local files should be used, see
-            Notes for details.
+        config_files (str | Path | List | None, optional): A path or list of paths to config files.
+            If None, uses the default config file. Files are loaded in order.
+        parse (bool, optional): Whether to parse objects such as dates and astropy units.
+            Defaults to True.
+        load_local (bool, optional): Whether to load local override files (ending with `_local.yaml`)
+            if present. Defaults to True.
 
     Returns:
-        dict: A dictionary of config items.
+        dict: Dictionary of configuration items.
+
+    Raises:
+        ruamel.yaml.parser.ParserError: If a YAML file cannot be parsed.
+        IOError: If a config file cannot be read.
+        TypeError: If a config file contains invalid data types.
+
+    Notes:
+        Local files are automatically loaded if they exist alongside the specified config path.
+        Local files can be ignored by setting `load_local=False`.
     """
     config = dict()
 
@@ -69,20 +49,14 @@ def load_config(
     logger.debug(f"Loading config files: config_files={config_files!r}")
     for config_file in config_files:
         config_file = Path(config_file)
-        try:
-            logger.debug(f"Adding config_file={config_file!r} to config dict")
-            _add_to_conf(config, config_file, parse=parse)
-        except Exception as e:  # pragma: no cover
-            logger.warning(f"Problem with config_file={config_file!r}, skipping. {e!r}")
+        logger.debug(f"Adding config_file={config_file!r} to config dict")
+        _add_to_conf(config, config_file, parse=parse)
 
         # Load local version of config
         if load_local:
             local_version = config_file.parent / Path(config_file.stem + "_local.yaml")
             if local_version.exists():
-                try:
-                    _add_to_conf(config, local_version, parse=parse)
-                except Exception as e:  # pragma: no cover
-                    logger.warning(f"Problem with local_version={local_version!r}, skipping: {e!r}")
+                _add_to_conf(config, local_version, parse=parse)
 
     # parse_config_directories currently only corrects directory names.
     if parse:
@@ -94,7 +68,7 @@ def load_config(
     return config
 
 
-def save_config(save_path: Path, config: dict, overwrite: bool = True):
+def save_config(save_path: Path, config: dict, overwrite: bool = True) -> bool:
     """Save config to local yaml file.
 
     Args:
@@ -131,7 +105,7 @@ def save_config(save_path: Path, config: dict, overwrite: bool = True):
     return True
 
 
-def parse_config_directories(directories: Dict[str, str]):
+def parse_config_directories(directories: Dict[str, str]) -> dict:
     """Parse the config dictionary for common objects.
 
     Given a `base` entry that corresponds to the absolute path of a directory,
@@ -191,7 +165,14 @@ def parse_config_directories(directories: Dict[str, str]):
     return resolved_dirs
 
 
-def _add_to_conf(config: dict, conf_fn: Path, parse: bool = False):
+def _add_to_conf(config: dict, conf_fn: Path, parse: bool = False) -> None:
+    """Add configuration from file to existing config dictionary.
+
+    Args:
+        config (dict): Configuration dictionary to update.
+        conf_fn (Path): Path to configuration file.
+        parse (bool, optional): Whether to parse YAML values. Defaults to False.
+    """
     with suppress(IOError, TypeError):
         with conf_fn.open("r") as fn:
             config.update(from_yaml(fn.read(), parse=parse))

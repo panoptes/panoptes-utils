@@ -1,15 +1,18 @@
 import collections.abc
 import os
 import shutil
+from pathlib import Path
+from typing import TextIO, BinaryIO
 
 import numpy as np
 from astropy import units as u
-from astropy.coordinates import AltAz, ICRS, SkyCoord
+from astropy.coordinates import AltAz, ICRS, SkyCoord, EarthLocation
+from astropy.time import Time
 
 from panoptes.utils.time import current_time
 
 
-def listify(obj):
+def listify(obj) -> list:  # noqa: ANN001
     """Given an object, return a list.
 
     Always returns a list. If obj is None, returns empty list,
@@ -54,7 +57,7 @@ def listify(obj):
         return [obj]
 
 
-def get_free_space(directory=None):
+def get_free_space(directory: str | Path | None = None) -> u.Quantity:
     """Return the amoung of freespace in gigabytes for given directory.
 
     >>> from panoptes.utils.utils import get_free_space
@@ -78,7 +81,13 @@ def get_free_space(directory=None):
     return free_space
 
 
-def altaz_to_radec(alt=None, az=None, location=None, obstime=None, **kwargs):
+def altaz_to_radec(
+    alt: float | u.Quantity | None = None,
+    az: float | u.Quantity | None = None,
+    location: EarthLocation | None = None,
+    obstime: Time | None = None,
+    **kwargs,  # noqa: ANN003
+) -> SkyCoord:
     """Convert alt/az degrees to RA/Dec SkyCoord.
 
     >>> from panoptes.utils.utils import altaz_to_radec
@@ -131,7 +140,7 @@ def altaz_to_radec(alt=None, az=None, location=None, obstime=None, **kwargs):
     return SkyCoord(altaz.transform_to(ICRS()))
 
 
-def get_quantity_value(quantity, unit=None):
+def get_quantity_value(quantity: u.Quantity | float, unit: str | u.Unit | None = None) -> float:
     """Thin-wrapper around the `astropy.units.Quantity.to_value` method.
 
     If passed something other than a Quantity will simply return the original object.
@@ -172,3 +181,40 @@ def get_quantity_value(quantity, unit=None):
         return quantity
     except AttributeError:
         return quantity
+
+
+def normalize_file_input(file_input: str | Path | TextIO | BinaryIO) -> str:
+    """Normalize file input to a string path.
+
+    This function accepts string paths, pathlib.Path objects, and open filehandles
+    and returns a string path that can be used with functions that expect a filename.
+
+    Args:
+        file_input: A string path, pathlib.Path object, or open filehandle.
+
+    Returns:
+        str: The normalized file path as a string.
+
+    Raises:
+        ValueError: If the input is an open filehandle without a name attribute,
+                   or if the input type is not supported.
+    """
+    # Handle string paths (most common case)
+    if isinstance(file_input, str):
+        return file_input
+
+    # Handle pathlib.Path objects
+    if isinstance(file_input, Path):
+        return str(file_input)
+
+    # Handle open filehandles
+    if hasattr(file_input, "name"):
+        # File-like objects should have a name attribute with the file path
+        if hasattr(file_input, "read") or hasattr(file_input, "write"):
+            return str(file_input.name)
+
+    # If we get here, the input type is not supported
+    raise ValueError(
+        f"Unsupported file input type: {type(file_input)}. "
+        f"Expected str, pathlib.Path, or file-like object with name attribute."
+    )

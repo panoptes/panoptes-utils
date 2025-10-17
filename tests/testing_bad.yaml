@@ -1,0 +1,33 @@
+---
+######################### PANOPTES UNIT ########################################
+# name:   Can be anything you want it to be. This name is displayed in several
+#         places and should be a "personal" name for the unit.
+#
+# pan_id: This is an identification number assigned by the PANOPTES team and is
+#         the official designator for your unit. This id is used to store image
+#         files and communicate with the Google Cloud network.
+#
+#         Leave the pan_id at `PAN000` for testing until you have been assigned
+#         an official id. Update pocs_local.yaml with official name once received.
+################################################################################
+name: Testing PANOPTES Unit
+pan_id: PAN000
+
+location:
+  name: Mauna Loa Observatory
+  latitude: 19.54 deg
+  longitude: -155.58 deg
+  elevation: 3400.0 m
+  horizon: 30 deg # targets must be above this to be considered valid.
+  flat_horizon: -6 deg # Flats when sun between this and focus horizon.
+  focus_horizon: -12 deg # Dark enough to focus on stars.
+  observe_horizon: -18 deg # Sun below this limit to observe.
+  timezone: US/Hawaii
+  gmt_offset: -600 # Offset in minutes from GMT during.
+ directories:
+  base: .
+  images: images
+  data: data
+  resources: POCS/resources/
+  targets: POCS/resources/targets
+  mounts: POCS/resources/mounts

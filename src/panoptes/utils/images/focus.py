@@ -1,7 +1,10 @@
 import numpy as np
+from typing import Callable
 
 
-def focus_metric(data, merit_function="vollath_F4", **kwargs):
+def focus_metric(
+    data: np.ndarray, merit_function: str | Callable = "vollath_F4", **kwargs
+) -> float:  # noqa: ANN003
     """Compute the focus metric.
 
     Computes a focus metric on the given data using a supplied merit function.
@@ -26,7 +29,7 @@ def focus_metric(data, merit_function="vollath_F4", **kwargs):
     return merit_function(data, **kwargs)
 
 
-def vollath_F4(data, axis=None):
+def vollath_F4(data: np.ndarray, axis: str | None = None) -> float:
     """Compute F4 focus metric
 
     Computes the F_4 focus metric as defined by Vollath (1998) for the given 2D
@@ -46,12 +49,22 @@ def vollath_F4(data, axis=None):
     # so convert to float64 before doing anything else.
     data = data.astype(np.float64)
 
-    def _vollath_F4_y():
+    def _vollath_F4_y() -> float:
+        """Calculate Vollath F4 focus metric along Y axis.
+
+        Returns:
+            float: Focus metric value.
+        """
         A1 = (data[1:] * data[:-1]).mean()
         A2 = (data[2:] * data[:-2]).mean()
         return A1 - A2
 
-    def _vollath_F4_x():
+    def _vollath_F4_x() -> float:
+        """Calculate Vollath F4 focus metric along X axis.
+
+        Returns:
+            float: Focus metric value.
+        """
         A1 = (data[:, 1:] * data[:, :-1]).mean()
         A2 = (data[:, 2:] * data[:, :-2]).mean()
         return A1 - A2

@@ -3,7 +3,7 @@ import shutil
 import subprocess
 from json import loads
 from pathlib import Path
-from typing import Union, Optional
+from typing import Union, Optional, TextIO, BinaryIO
 from warnings import warn
 
 import numpy as np
@@ -14,11 +14,12 @@ from loguru import logger
 
 from panoptes.utils import error
 from panoptes.utils.images import fits as fits_utils
+from panoptes.utils.utils import normalize_file_input
 
 
 def cr2_to_fits(
-    cr2_fname: Union[str, Path],
-    fits_fname: str = None,
+    cr2_fname: str | Path | TextIO | BinaryIO,
+    fits_fname: str | Path | TextIO | BinaryIO = None,
     overwrite: bool = False,
     headers: dict = None,
     fits_headers: dict = None,
@@ -34,9 +35,11 @@ def cr2_to_fits(
         The intermediate PGM file is automatically removed
 
     Arguments:
-        cr2_fname (str): Name of the CR2 file to be converted.
-        fits_fname (str, optional): Name of the FITS file to output. Default is `None`, in which
-            case the `cr2_fname` is used as the base.
+        cr2_fname: Name of the CR2 file to be converted. Can be a string path,
+                  pathlib.Path object, or open filehandle.
+        fits_fname: Name of the FITS file to output. Can be a string path,
+                   pathlib.Path object, or open filehandle. Default is `None`, in which
+                   case the `cr2_fname` is used as the base.
         overwrite (bool, optional): Overwrite existing FITS, default False.
         headers (dict, optional): Header data added to the FITS file.
         fits_headers (dict, optional): Header data added to the FITS file without filtering.
@@ -52,14 +55,12 @@ def cr2_to_fits(
     if headers is None:
         headers = {}
 
-    # Convert path to just a str.
-    if isinstance(cr2_fname, Path):
-        cr2_fname = str(cr2_fname)
+    # Normalize file inputs to string paths
+    cr2_fname = normalize_file_input(cr2_fname)
 
-    if isinstance(fits_fname, Path):
-        fits_fname = str(fits_fname)
-
-    if fits_fname is None:
+    if fits_fname is not None:
+        fits_fname = normalize_file_input(fits_fname)
+    else:
         fits_fname = cr2_fname.replace(".cr2", ".fits")
 
     if not os.path.exists(fits_fname) or overwrite:
@@ -121,7 +122,13 @@ def cr2_to_fits(
     return Path(fits_fname)
 
 
-def cr2_to_pgm(cr2_fname, pgm_fname=None, overwrite=True, *args, **kwargs):  # pragma: no cover
+def cr2_to_pgm(
+    cr2_fname: str | Path | TextIO | BinaryIO,
+    pgm_fname: str | Path | TextIO | BinaryIO = None,
+    overwrite=True,
+    *args,
+    **kwargs,
+):  # pragma: no cover
     """Convert CR2 file to PGM
 
     Converts a raw Canon CR2 file to a netpbm PGM file via `dcraw`. Assumes
@@ -131,12 +138,14 @@ def cr2_to_pgm(cr2_fname, pgm_fname=None, overwrite=True, *args, **kwargs):  # p
         This is a blocking call
 
     Arguments:
-        cr2_fname {str} -- Name of CR2 file to convert
+        cr2_fname: Name of CR2 file to convert. Can be a string path,
+                  pathlib.Path object, or open filehandle.
         **kwargs {dict} -- Additional keywords to pass to script
 
     Keyword Arguments:
-        pgm_fname {str} -- Name of PGM file to output, if None (default) then
-                           use same name as CR2 (default: {None})
+        pgm_fname: Name of PGM file to output. Can be a string path,
+                  pathlib.Path object, or open filehandle. If None (default) then
+                  use same name as CR2 (default: {None})
         dcraw {str} -- Path to installed `dcraw` (default: {'dcraw'})
         overwrite {bool} -- A bool indicating if existing PGM should be overwritten
                          (default: {True})
@@ -145,12 +154,17 @@ def cr2_to_pgm(cr2_fname, pgm_fname=None, overwrite=True, *args, **kwargs):  # p
         str -- Filename of PGM that was created
 
     """
+    # Normalize file inputs to string paths
+    cr2_fname = normalize_file_input(cr2_fname)
+
     dcraw = shutil.which("dcraw")
     if dcraw is None:
         raise error.InvalidCommand("dcraw not found")
 
     if pgm_fname is None:
         pgm_fname = cr2_fname.replace(".cr2", ".pgm")
+    else:
+        pgm_fname = normalize_file_input(pgm_fname)
 
     if os.path.exists(pgm_fname) and not overwrite:
         logger.warning(f"PGM file exists, returning existing file: {pgm_fname}")
@@ -171,7 +185,7 @@ def cr2_to_pgm(cr2_fname, pgm_fname=None, overwrite=True, *args, **kwargs):  # p
     return pgm_fname
 
 
-def read_exif(fname, exiftool="exiftool"):  # pragma: no cover
+def read_exif(fname: str | Path | TextIO | BinaryIO, exiftool="exiftool"):  # pragma: no cover
     """Read the EXIF information
 
     Gets the EXIF information using exiftool
@@ -180,7 +194,8 @@ def read_exif(fname, exiftool="exiftool"):  # pragma: no cover
         Assumes the `exiftool` is installed
 
     Args:
-        fname {str} -- Name of file (CR2) to read
+        fname: Name of file (CR2) to read. Can be a string path,
+               pathlib.Path object, or open filehandle.
 
     Keyword Args:
         exiftool {str} -- Location of exiftool (default: {'/usr/bin/exiftool'})
@@ -189,6 +204,9 @@ def read_exif(fname, exiftool="exiftool"):  # pragma: no cover
         dict -- Dictionary of EXIF information
 
     """
+    # Normalize the file input to a string path
+    fname = normalize_file_input(fname)
+
     assert os.path.exists(fname), warn(f"File does not exist: {fname}")
     exif = {}
 
@@ -205,7 +223,9 @@ def read_exif(fname, exiftool="exiftool"):  # pragma: no cover
     return exif[0]
 
 
-def read_pgm(fname, byteorder=">", remove_after=False):  # pragma: no cover
+def read_pgm(
+    fname: str | Path | TextIO | BinaryIO, byteorder=">", remove_after=False
+):  # pragma: no cover
     """Return image data from a raw PGM file as numpy array.
 
     Note:
@@ -218,7 +238,8 @@ def read_pgm(fname, byteorder=">", remove_after=False):  # pragma: no cover
         as the comment about significant bit in the Format Spec
 
     Args:
-        fname(str):         Filename of PGM to be converted
+        fname: Filename of PGM to be converted. Can be a string path,
+               pathlib.Path object, or open filehandle.
         byteorder(str):     Big endian
         remove_after(bool): Delete fname file after reading, defaults to False.
         overwrite(bool):      overwrite existing PGM or not, defaults to True
@@ -227,6 +248,8 @@ def read_pgm(fname, byteorder=">", remove_after=False):  # pragma: no cover
         numpy.array:        The raw data from the PGMx
 
     """
+    # Normalize the file input to a string path
+    fname = normalize_file_input(fname)
 
     with open(fname, "rb") as f:
         buffer = f.read()
@@ -255,8 +278,8 @@ def read_pgm(fname, byteorder=">", remove_after=False):  # pragma: no cover
 
 
 def cr2_to_jpg(
-    cr2_fname: Path,
-    jpg_fname: str = None,
+    cr2_fname: str | Path | TextIO | BinaryIO,
+    jpg_fname: str | Path | TextIO | BinaryIO = None,
     title: str = "",
     overwrite: bool = False,
     remove_cr2: bool = False,
@@ -266,12 +289,24 @@ def cr2_to_jpg(
     if not exiftool:  # pragma: no cover
         raise error.InvalidSystemCommand("exiftool not found")
 
-    jpg_fname = Path(jpg_fname) if jpg_fname else cr2_fname.with_suffix(".jpg")
+    # Handle different input types for cr2_fname
+    if isinstance(cr2_fname, (str, Path)) or hasattr(cr2_fname, "name"):
+        cr2_path = Path(normalize_file_input(cr2_fname))
+    else:
+        raise ValueError(
+            "cr2_fname must be a string path, Path object, or file-like object with name"
+        )
+
+    # Handle different input types for jpg_fname
+    if jpg_fname is None:
+        jpg_fname = cr2_path.with_suffix(".jpg")
+    else:
+        jpg_fname = Path(normalize_file_input(jpg_fname))
 
     if jpg_fname.exists() and overwrite is False:
         raise error.AlreadyExists(f"{jpg_fname} already exists and overwrite is False")
 
-    cmd = [exiftool, "-b", "-PreviewImage", cr2_fname.as_posix()]
+    cmd = [exiftool, "-b", "-PreviewImage", cr2_path.as_posix()]
     comp_proc = subprocess.run(cmd, check=True, stdout=jpg_fname.open("wb"))
 
     if comp_proc.returncode != 0:  # pragma: no cover
@@ -298,7 +333,7 @@ def cr2_to_jpg(
             raise error.InvalidSystemCommand(f"Error adding title to {jpg_fname.as_posix()}")
 
     if remove_cr2:
-        logger.debug(f"Removing {cr2_fname}")
-        cr2_fname.unlink()
+        logger.debug(f"Removing {cr2_path}")
+        cr2_path.unlink()
 
     return jpg_fname

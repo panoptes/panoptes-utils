@@ -30,6 +30,14 @@ from panoptes.utils.config.client import set_config
 )
 @click.pass_context
 def config_server_cli(context, host="localhost", port=6563, verbose=False):
+    """Command line interface for the config server.
+    
+    Args:
+        context: Click context object.
+        host (str): Host address to bind to. Defaults to "localhost".
+        port (int): Port number to bind to. Defaults to 6563.
+        verbose (bool): Enable verbose logging. Defaults to False.
+    """
     context.ensure_object(dict)
     context.obj["host"] = host
     context.obj["port"] = port
@@ -65,14 +73,18 @@ def run(context, config_file=None, save_local=True, load_local=False, heartbeat=
     """
     host = context.obj.get("host")
     port = context.obj.get("port")
-    server_process = server.config_server(
-        config_file,
-        host=host,
-        port=port,
-        load_local=load_local,
-        save_local=save_local,
-        auto_start=False,
-    )
+    try:
+        server_process = server.config_server(
+            config_file,
+            host=host,
+            port=port,
+            load_local=load_local,
+            save_local=save_local,
+            auto_start=False,
+        )
+    except Exception as e:
+        logger.error(f"Unable to start config server: {e!r}")
+        return
 
     try:
         print("Starting config server. Ctrl-c to stop")

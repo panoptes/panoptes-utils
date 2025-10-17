@@ -44,6 +44,12 @@ def get_db_class(module_name="file"):
 
 
 class AbstractPanDB(metaclass=abc.ABCMeta):
+    """Abstract base class for PANOPTES database implementations.
+    
+    This class defines the interface that all database implementations
+    must follow for storing and retrieving observational data.
+    """
+    
     def __init__(self, db_name=None, **kwargs):
         """
         Init base class for db instances.

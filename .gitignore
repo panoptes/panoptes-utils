@@ -20,6 +20,7 @@
 .idea
 tags
 pythonenv*
+.vscode
 
 # Package files
 *.egg

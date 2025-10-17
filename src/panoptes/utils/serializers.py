@@ -2,18 +2,28 @@ import json
 from collections import OrderedDict
 from contextlib import suppress
 from copy import deepcopy
+from pathlib import Path
+from typing import TextIO, BinaryIO, IO
 
 import numpy as np
 from astropy import units as u
 from astropy.time import Time
 from dateutil.parser import isoparse as date_parse
 from panoptes.utils import error
+from panoptes.utils.utils import normalize_file_input
 from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
 
 
 class StringYAML(YAML):
-    def dump(self, data, stream=None, **kwargs):
+    """YAML class that can dump to a string.
+
+    By default the YAML parser doesn't serialize directly to a string. This
+    class is a small wrapper to output StreamIO as a string if no stream is
+    provided.
+    """
+
+    def dump(self, data, stream: IO | None = None, **kwargs) -> str | None:  # noqa: ANN001, ANN003
         """YAML class that can dump to a string.
 
         By default the YAML parser doesn't serialize directly to a string. This
@@ -46,7 +56,9 @@ class StringYAML(YAML):
             return stream.getvalue()
 
 
-def to_json(obj, filename=None, append=True, **kwargs):
+def to_json(
+    obj, filename: str | Path | TextIO | BinaryIO | None = None, append: bool = True, **kwargs
+) -> str:  # noqa: ANN001, ANN003
     """Convert a Python object to a JSON string.
 
     Will handle `datetime` objects as well as `astropy.unit.Quantity` objects.
@@ -71,7 +83,8 @@ def to_json(obj, filename=None, append=True, **kwargs):
 
     Args:
         obj (`object`): The object to be converted to JSON, usually a dict.
-        filename (`str`, optional): Path to file for saving.
+        filename: Path to file for saving. Can be a string path,
+                 pathlib.Path object, or open filehandle.
         append (`bool`, optional): Append to `filename`, default True. Setting
             False will clobber the file.
         **kwargs: Keyword arguments passed to `json.dumps`.
@@ -85,6 +98,8 @@ def to_json(obj, filename=None, append=True, **kwargs):
         raise error.InvalidSerialization(e)
 
     if filename is not None:
+        # Normalize the file input to a string path
+        filename = normalize_file_input(filename)
         mode = "w"
         if append:
             mode = "a"
@@ -94,7 +109,7 @@ def to_json(obj, filename=None, append=True, **kwargs):
     return json_str
 
 
-def from_json(msg):
+def from_json(msg: str) -> dict:
     """Convert a JSON string into a Python object.
 
     Astropy quanitites will be converted from a ``{"value": val, "unit": unit}``
@@ -160,7 +175,7 @@ def from_json(msg):
     return new_obj
 
 
-def to_yaml(obj, **kwargs):
+def to_yaml(obj, **kwargs) -> str:  # noqa: ANN001, ANN003
     """Serialize a Python object to a YAML string.
 
     This will properly serialize the following:
@@ -207,7 +222,7 @@ def to_yaml(obj, **kwargs):
     return yaml.dump(obj, **kwargs)
 
 
-def from_yaml(msg, parse=True):
+def from_yaml(msg: str, parse: bool = True) -> dict:
     """Convert a YAML string into a Python object.
 
     This is a thin-wrapper around `ruamel.YAML.load` that also parses the results
@@ -266,7 +281,7 @@ def from_yaml(msg, parse=True):
     return obj
 
 
-def deserialize_all_objects(obj):
+def deserialize_all_objects(obj):  # noqa: ANN001, ANN201
     """Recursively parse the incoming object for various data types.
 
     This will currently attempt to parse and return, in the following order:
@@ -316,7 +331,7 @@ def deserialize_all_objects(obj):
     return obj
 
 
-def serialize_object(obj):
+def serialize_object(obj):  # noqa: ANN001, ANN201
     """Serialize the given object.
 
     This is a custom serializer function used by ``to_json`` to serialize
@@ -367,7 +382,7 @@ def serialize_object(obj):
     return obj
 
 
-def serialize_all_objects(obj):
+def serialize_all_objects(obj):  # noqa: ANN001, ANN201
     """Iterate the ``obj`` items and serialize each value.
 
     .. note::
