@@ -678,22 +678,49 @@ def update_observation_headers(file_path: str | Path | TextIO | BinaryIO, info):
 
 
 def extract_metadata(header: fits.Header) -> dict:
-    """Get the metadata from a FITS image.
+    """Get metadata from a FITS image header.
 
-    This function parses some of the more common headers (some from the
-    `update_observation_headers` but others as well) and puts them into a dict
-    with the obvious data types converted into objects (e.g. dates and times).
+    This parses common PANOPTES FITS headers (including those written by
+    `update_observation_headers`) into a nested dictionary with convenient
+    Python types (e.g. datetimes for dates). If the file is plate-solved,
+    the returned metadata will include celestial coordinates and derived
+    quantities; otherwise the coordinates dict will be empty.
 
-    >>> # Check the headers
+    The returned dictionary has the following top-level keys:
+    - unit: Information about the observing unit (location, ids).
+    - sequence: Information about the capture sequence, mount, and camera.
+    - image: Information about this specific image (camera, environment,
+      timestamps, and coordinates if solved).
+
+    Examples
+    --------
+    Unsolved FITS (no WCS):
+
     >>> from panoptes.utils.images import fits as fits_utils
     >>> fits_fn = getfixture('unsolved_fits_file')
     >>> header = fits_utils.getheader(fits_fn)
     >>> metadata = extract_metadata(header)
     >>> metadata['unit']['name']
     'PAN001'
+    >>> # Coordinates dict is empty for unsolved files
+    >>> metadata['image']['coordinates']
+    {}
+
+    Solved FITS (with WCS):
+
+    >>> fits_fn = getfixture('solved_fits_file')
+    >>> header = fits_utils.getheader(fits_fn)
+    >>> metadata = extract_metadata(header)
+    >>> # Coordinates contain standard celestial/alt-az/airmass entries
+    >>> coords = metadata['image']['coordinates']
+    >>> all(k in coords for k in ('ra', 'dec', 'ha', 'ha_deg', 'alt', 'az', 'airmass'))
+    True
 
     Args:
         header (astropy.io.fits.Header): The Header object from a FITS file.
+
+    Returns:
+        dict: Nested metadata dictionary with 'unit', 'sequence', and 'image' keys.
     """
     path_info = ImagePathInfo.from_fits_header(header)
 
