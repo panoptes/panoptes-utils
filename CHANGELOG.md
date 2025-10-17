@@ -9,6 +9,8 @@
 
 ### Changed
 
+* Renamed `ObservationPathInfo` to `ImagePathInfo` to better reflect its purpose. #328
+* Updated `panoptes.utils.images.fits.extract_metadata` to include more metadata fields, including plate-solved information. Extracted metadata now matches what was being performed via the pipeline on the cloud. #328
 * Trying to load an invalid config file will now result in an error instead of silently failing. #327
 * Pinned `click` dependency to `<8.3` to avoid issues with `hatch`. #325
 

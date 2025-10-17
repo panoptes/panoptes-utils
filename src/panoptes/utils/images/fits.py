@@ -9,6 +9,7 @@ from typing import Pattern, Union, Dict, TextIO, BinaryIO
 from warnings import warn
 
 from astropy import units as u
+from astropy.coordinates import EarthLocation, HADec, SkyCoord
 from astropy.io import fits
 from astropy.time import Time
 from astropy.visualization import ImageNormalize, PercentileInterval, LogStretch
@@ -40,7 +41,7 @@ PATH_MATCHER: Pattern[str] = re.compile(
 
 
 @dataclass
-class ObservationPathInfo:
+class ImagePathInfo:
     """Parse the location path for an image.
 
     This is a small dataclass that offers some convenience methods for dealing
@@ -48,9 +49,9 @@ class ObservationPathInfo:
 
     This would usually be instantiated via `path`:
 
-    >>> from panoptes.utils.images.fits import ObservationPathInfo  # noqa
+    >>> from panoptes.utils.images.fits import ImagePathInfo  # noqa
     >>> bucket_path = 'gs://panoptes-images-background/PAN012/Hd189733/358d0f/20180824T035917/20180824T040118.fits'
-    >>> path_info = ObservationPathInfo(path=bucket_path)
+    >>> path_info = ImagePathInfo(path=bucket_path)
 
     >>> path_info.id
     'PAN012_358d0f_20180824T035917_20180824T040118'
@@ -67,14 +68,14 @@ class ObservationPathInfo:
     >>> path_info.as_path(base='/tmp', ext='jpg')
     PosixPath('/tmp/PAN012/358d0f/20180824T035917/20180824T040118.jpg')
 
-    >>> ObservationPathInfo(path='foobar')
+    >>> ImagePathInfo(path='foobar')
     Traceback (most recent call last):
       ...
     ValueError: Invalid path received: self.path='foobar'
 
     >>> # Works from a fits file directly, which reads header.
     >>> fits_fn = getfixture('unsolved_fits_file')
-    >>> path_info = ObservationPathInfo.from_fits(fits_fn)
+    >>> path_info = ImagePathInfo.from_fits(fits_fn)
     >>> path_info.unit_id
     'PAN001'
 
@@ -142,12 +143,12 @@ class ObservationPathInfo:
     @classmethod
     def from_fits_header(cls, header):
         """Create ObservationPathInfo from FITS header.
-        
+
         Args:
             header: FITS header containing observation metadata.
-            
+
         Returns:
-            ObservationPathInfo: New instance with path information.
+            ImagePathInfo: New instance with path information.
         """
         try:
             new_instance = cls(path=header["FILENAME"])
@@ -169,12 +170,12 @@ class ObservationPathInfo:
     @classmethod
     def from_fits(cls, fits_file):
         """Create ObservationPathInfo from FITS file.
-        
+
         Args:
             fits_file: Path to FITS file or file-like object.
-            
+
         Returns:
-            ObservationPathInfo: New instance with path information from file header.
+            ImagePathInfo: New instance with path information from file header.
         """
         return cls.from_fits_header(getheader(fits_file))
 
@@ -245,11 +246,11 @@ def solve_field(
 
     def _modify_opt(opt, val):
         """Modify option string based on value type.
-        
+
         Args:
             opt: Option name.
             val: Option value.
-            
+
         Returns:
             str: Formatted option string.
         """
@@ -677,48 +678,112 @@ def update_observation_headers(file_path: str | Path | TextIO | BinaryIO, info):
 
 
 def extract_metadata(header: fits.Header) -> dict:
-    """Get the metadata from a FITS image.
+    """Get metadata from a FITS image header.
 
-    This function parses some of the more common headers (some from the
-    `update_observation_headers` but others as well) and puts them into a dict
-    with the obvious data types converted into objects (e.g. dates and times).
+    This parses common PANOPTES FITS headers (including those written by
+    `update_observation_headers`) into a nested dictionary with convenient
+    Python types (e.g. datetimes for dates). If the file is plate-solved,
+    the returned metadata will include celestial coordinates and derived
+    quantities; otherwise the coordinates dict will be empty.
 
-    >>> # Check the headers
+    The returned dictionary has the following top-level keys:
+    - unit: Information about the observing unit (location, ids).
+    - sequence: Information about the capture sequence, mount, and camera.
+    - image: Information about this specific image (camera, environment,
+      timestamps, and coordinates if solved).
+
+    Examples
+    --------
+    Unsolved FITS (no WCS):
+
     >>> from panoptes.utils.images import fits as fits_utils
     >>> fits_fn = getfixture('unsolved_fits_file')
     >>> header = fits_utils.getheader(fits_fn)
     >>> metadata = extract_metadata(header)
     >>> metadata['unit']['name']
     'PAN001'
+    >>> # Coordinates dict is empty for unsolved files
+    >>> metadata['image']['coordinates']
+    {}
+
+    Solved FITS (with WCS):
+
+    >>> fits_fn = getfixture('solved_fits_file')
+    >>> header = fits_utils.getheader(fits_fn)
+    >>> metadata = extract_metadata(header)
+    >>> # Coordinates contain standard celestial/alt-az/airmass entries
+    >>> coords = metadata['image']['coordinates']
+    >>> all(k in coords for k in ('ra', 'dec', 'ha', 'ha_deg', 'alt', 'az', 'airmass'))
+    True
 
     Args:
         header (astropy.io.fits.Header): The Header object from a FITS file.
+
+    Returns:
+        dict: Nested metadata dictionary with 'unit', 'sequence', and 'image' keys.
     """
-    path_info = ObservationPathInfo.from_fits_header(header)
+    path_info = ImagePathInfo.from_fits_header(header)
+
+    # Extract the coordinate information and get AltAz and HA.
+    coord_info = {}
+
+    try:
+        wcs = WCS(header)
+        is_solved = wcs.is_celestial
+
+        if is_solved:
+            wcs_meta = wcs.to_header(relax=True)
+
+            radec_coord = SkyCoord(
+                ra=wcs_meta["CRVAL1"],
+                dec=wcs_meta["CRVAL2"],
+                unit="deg",
+                frame="icrs",
+                obstime=path_info.image_time.to_datetime(timezone=UTC),
+                location=EarthLocation(
+                    lon=header["LONG-OBS"], lat=header["LAT-OBS"], height=header["ELEV-OBS"]
+                ),
+            )
+            hadec_coord = radec_coord.transform_to(HADec)
+
+            coord_info = dict(
+                ra=radec_coord.ra.value,
+                dec=radec_coord.dec.value,
+                ha=hadec_coord.ha.value,
+                ha_deg=hadec_coord.ha.to("deg").value,
+                alt=hadec_coord.altaz.alt.value,
+                az=hadec_coord.altaz.az.value,
+                airmass=hadec_coord.altaz.secz.value,
+            )
+    except Exception as e:
+        logger.warning(f"Error in extracting WCS coordinates: {e!r}")
 
     try:
         # Add a units doc if it doesn't exist.
         unit_info = dict(
-            unit_id=path_info.unit_id,
-            name=header.get("OBSERVER"),
+            elevation=float(header.get("ELEV-OBS")),
             latitude=header.get("LAT-OBS"),
             longitude=header.get("LONG-OBS"),
-            elevation=float(header.get("ELEV-OBS")),
+            name=header.get("OBSERVER"),
+            unit_id=path_info.unit_id,
         )
 
         sequence_info = dict(
-            unit_id=path_info.unit_id,
             sequence_id=path_info.sequence_id,
-            time=path_info.sequence_time.to_datetime(timezone=UTC),
-            exptime=float(header.get("EXPTIME")),
-            software_version=header.get("CREATOR", ""),
+            sequence_time=path_info.sequence_time.to_datetime(timezone=UTC),
+            coordinates=dict(
+                mount_dec=header.get("DEC-MNT"),
+                mount_ra=header.get("RA-MNT"),
+                mount_ha=header.get("HA-MNT"),
+            ),
+            camera=dict(
+                camera_id=path_info.camera_id,
+                lens_serial_number=header.get("INTSN"),
+                serial_number=str(header.get("CAMSN")),
+            ),
             field_name=header.get("FIELD", ""),
-            iso=header.get("ISO"),
-            ra=header.get("CRVAL1"),
-            dec=header.get("CRVAL2"),
-            camera_id=path_info.camera_id,
-            camera_serial_number=str(header.get("CAMSN")),
-            lens_serial_number=header.get("INTSN"),
+            software_version=header.get("CREATOR", ""),
+            unit_id=path_info.unit_id,
         )
 
         measured_rggb = header.get("MEASRGGB", "0 0 0 0").split(" ")
@@ -730,31 +795,31 @@ def extract_metadata(header: fits.Header) -> dict:
 
         image_info = dict(
             uid=path_info.get_full_id(sep="_"),
-            airmass=header.get("AIRMASS"),
             camera=dict(
-                dateobs=camera_date,
                 blue_balance=float(header.get("BLUEBAL")),
                 circconf=float(header.get("CIRCCONF", "0.").split(" ")[0]),
                 colortemp=float(header.get("COLORTMP")),
-                measured_ev=float(header.get("MEASEV")),
+                dateobs=camera_date,
+                exptime=float(header.get("EXPTIME")),
+                iso=header.get("ISO"),
+                measured_b=float(measured_rggb[3]),
                 measured_ev2=float(header.get("MEASEV2")),
-                measured_r=float(measured_rggb[0]),
+                measured_ev=float(header.get("MEASEV")),
                 measured_g1=float(measured_rggb[1]),
                 measured_g2=float(measured_rggb[2]),
-                measured_b=float(measured_rggb[3]),
+                measured_r=float(measured_rggb[0]),
                 red_balance=float(header.get("REDBAL")),
                 temperature=float(header.get("CAMTEMP", 0).split(" ")[0]),
                 white_lvln=header.get("WHTLVLN"),
                 white_lvls=header.get("WHTLVLS"),
             ),
-            exptime=float(header.get("EXPTIME")),
+            coordinates=coord_info,
+            environment=dict(
+                moonfrac=float(header.get("MOONFRAC")),
+                moonsep=float(header.get("MOONSEP")),
+            ),
             file_creation_date=file_date,
-            moonfrac=float(header.get("MOONFRAC")),
-            moonsep=float(header.get("MOONSEP")),
-            mount_dec=header.get("DEC-MNT"),
-            mount_ha=header.get("HA-MNT"),
-            mount_ra=header.get("RA-MNT"),
-            time=path_info.image_time.to_datetime(timezone=UTC),
+            image_time=path_info.image_time.to_datetime(timezone=UTC),
         )
 
         metadata = dict(
@@ -913,7 +978,7 @@ def fits_to_jpg(
     **kwargs,
 ):
     """Convert a FITS file to a JPG image.
-    
+
     Args:
         fname: FITS file path or file-like object.
         title (str, optional): Title for the image. Defaults to None.
@@ -923,7 +988,7 @@ def fits_to_jpg(
         number_ticks (int): Number of coordinate ticks. Defaults to 7.
         clip_percent (float): Percentage for data clipping. Defaults to 99.9.
         **kwargs: Additional keyword arguments.
-        
+
     Returns:
         str: Path to generated JPG file.
     """
