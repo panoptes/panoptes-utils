@@ -40,7 +40,7 @@ PATH_MATCHER: Pattern[str] = re.compile(
 
 
 @dataclass
-class ObservationPathInfo:
+class ImagePathInfo:
     """Parse the location path for an image.
 
     This is a small dataclass that offers some convenience methods for dealing
@@ -48,9 +48,9 @@ class ObservationPathInfo:
 
     This would usually be instantiated via `path`:
 
-    >>> from panoptes.utils.images.fits import ObservationPathInfo  # noqa
+    >>> from panoptes.utils.images.fits import ImagePathInfo  # noqa
     >>> bucket_path = 'gs://panoptes-images-background/PAN012/Hd189733/358d0f/20180824T035917/20180824T040118.fits'
-    >>> path_info = ObservationPathInfo(path=bucket_path)
+    >>> path_info = ImagePathInfo(path=bucket_path)
 
     >>> path_info.id
     'PAN012_358d0f_20180824T035917_20180824T040118'
@@ -67,14 +67,14 @@ class ObservationPathInfo:
     >>> path_info.as_path(base='/tmp', ext='jpg')
     PosixPath('/tmp/PAN012/358d0f/20180824T035917/20180824T040118.jpg')
 
-    >>> ObservationPathInfo(path='foobar')
+    >>> ImagePathInfo(path='foobar')
     Traceback (most recent call last):
       ...
     ValueError: Invalid path received: self.path='foobar'
 
     >>> # Works from a fits file directly, which reads header.
     >>> fits_fn = getfixture('unsolved_fits_file')
-    >>> path_info = ObservationPathInfo.from_fits(fits_fn)
+    >>> path_info = ImagePathInfo.from_fits(fits_fn)
     >>> path_info.unit_id
     'PAN001'
 
@@ -147,7 +147,7 @@ class ObservationPathInfo:
             header: FITS header containing observation metadata.
             
         Returns:
-            ObservationPathInfo: New instance with path information.
+            ImagePathInfo: New instance with path information.
         """
         try:
             new_instance = cls(path=header["FILENAME"])
@@ -174,7 +174,7 @@ class ObservationPathInfo:
             fits_file: Path to FITS file or file-like object.
             
         Returns:
-            ObservationPathInfo: New instance with path information from file header.
+            ImagePathInfo: New instance with path information from file header.
         """
         return cls.from_fits_header(getheader(fits_file))
 
@@ -694,7 +694,7 @@ def extract_metadata(header: fits.Header) -> dict:
     Args:
         header (astropy.io.fits.Header): The Header object from a FITS file.
     """
-    path_info = ObservationPathInfo.from_fits_header(header)
+    path_info = ImagePathInfo.from_fits_header(header)
 
     try:
         # Add a units doc if it doesn't exist.
