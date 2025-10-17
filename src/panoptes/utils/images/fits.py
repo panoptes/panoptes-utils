@@ -143,10 +143,10 @@ class ImagePathInfo:
     @classmethod
     def from_fits_header(cls, header):
         """Create ObservationPathInfo from FITS header.
-        
+
         Args:
             header: FITS header containing observation metadata.
-            
+
         Returns:
             ImagePathInfo: New instance with path information.
         """
@@ -170,10 +170,10 @@ class ImagePathInfo:
     @classmethod
     def from_fits(cls, fits_file):
         """Create ObservationPathInfo from FITS file.
-        
+
         Args:
             fits_file: Path to FITS file or file-like object.
-            
+
         Returns:
             ImagePathInfo: New instance with path information from file header.
         """
@@ -246,11 +246,11 @@ def solve_field(
 
     def _modify_opt(opt, val):
         """Modify option string based on value type.
-        
+
         Args:
             opt: Option name.
             val: Option value.
-            
+
         Returns:
             str: Formatted option string.
         """
@@ -698,20 +698,38 @@ def extract_metadata(header: fits.Header) -> dict:
     path_info = ImagePathInfo.from_fits_header(header)
 
     # Extract the coordinate information and get AltAz and HA.
-    wcs_meta = WCS(header).to_header(relax=True)
-    radec_coord = SkyCoord(
-        ra=wcs_meta['CRVAL1'],
-        dec=wcs_meta['CRVAL2'],
-        unit='deg',
-        frame='icrs',
-        obstime=path_info.image_time.to_datetime(timezone=UTC),
-        location=EarthLocation(
-            lon=header['LONG-OBS'],
-            lat=header['LAT-OBS'],
-            height=header['ELEV-OBS']
-        )
-    )
-    hadec_coord = radec_coord.transform_to(HADec)
+    coord_info = {}
+
+    try:
+        wcs = WCS(header)
+        is_solved = wcs.is_celestial
+
+        if is_solved:
+            wcs_meta = wcs.to_header(relax=True)
+
+            radec_coord = SkyCoord(
+                ra=wcs_meta["CRVAL1"],
+                dec=wcs_meta["CRVAL2"],
+                unit="deg",
+                frame="icrs",
+                obstime=path_info.image_time.to_datetime(timezone=UTC),
+                location=EarthLocation(
+                    lon=header["LONG-OBS"], lat=header["LAT-OBS"], height=header["ELEV-OBS"]
+                ),
+            )
+            hadec_coord = radec_coord.transform_to(HADec)
+
+            coord_info = dict(
+                ra=radec_coord.ra.value,
+                dec=radec_coord.dec.value,
+                ha=hadec_coord.ha.value,
+                ha_deg=hadec_coord.ha.to("deg").value,
+                alt=hadec_coord.altaz.alt.value,
+                az=hadec_coord.altaz.az.value,
+                airmass=hadec_coord.altaz.secz.value,
+            )
+    except Exception as e:
+        logger.warning(f"Error in extracting WCS coordinates: {e!r}")
 
     try:
         # Add a units doc if it doesn't exist.
@@ -727,14 +745,14 @@ def extract_metadata(header: fits.Header) -> dict:
             sequence_id=path_info.sequence_id,
             sequence_time=path_info.sequence_time.to_datetime(timezone=UTC),
             coordinates=dict(
-                mount_dec=header.get('DEC-MNT'),
-                mount_ra=header.get('RA-MNT'),
-                mount_ha=header.get('HA-MNT'),
+                mount_dec=header.get("DEC-MNT"),
+                mount_ra=header.get("RA-MNT"),
+                mount_ha=header.get("HA-MNT"),
             ),
             camera=dict(
                 camera_id=path_info.camera_id,
-                lens_serial_number=header.get('INTSN'),
-                serial_number=str(header.get('CAMSN')),
+                lens_serial_number=header.get("INTSN"),
+                serial_number=str(header.get("CAMSN")),
             ),
             field_name=header.get("FIELD", ""),
             software_version=header.get("CREATOR", ""),
@@ -768,18 +786,10 @@ def extract_metadata(header: fits.Header) -> dict:
                 white_lvln=header.get("WHTLVLN"),
                 white_lvls=header.get("WHTLVLS"),
             ),
-            coordinates=dict(
-                ra=radec_coord.ra.value,
-                dec=radec_coord.dec.value,
-                ha=hadec_coord.ha.value,
-                ha_deg=hadec_coord.ha.to('deg').value,
-                alt=hadec_coord.altaz.alt.value,
-                az=hadec_coord.altaz.az.value,
-                airmass=hadec_coord.altaz.secz.value,
-            ),
+            coordinates=coord_info,
             environment=dict(
-                moonfrac=float(header.get('MOONFRAC')),
-                moonsep=float(header.get('MOONSEP')),
+                moonfrac=float(header.get("MOONFRAC")),
+                moonsep=float(header.get("MOONSEP")),
             ),
             file_creation_date=file_date,
             image_time=path_info.image_time.to_datetime(timezone=UTC),
@@ -941,7 +951,7 @@ def fits_to_jpg(
     **kwargs,
 ):
     """Convert a FITS file to a JPG image.
-    
+
     Args:
         fname: FITS file path or file-like object.
         title (str, optional): Title for the image. Defaults to None.
@@ -951,7 +961,7 @@ def fits_to_jpg(
         number_ticks (int): Number of coordinate ticks. Defaults to 7.
         clip_percent (float): Percentage for data clipping. Defaults to 99.9.
         **kwargs: Additional keyword arguments.
-        
+
     Returns:
         str: Path to generated JPG file.
     """
