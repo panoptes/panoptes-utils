@@ -9,6 +9,7 @@ from typing import Pattern, Union, Dict, TextIO, BinaryIO
 from warnings import warn
 
 from astropy import units as u
+from astropy.coordinates import EarthLocation, HADec, SkyCoord
 from astropy.io import fits
 from astropy.time import Time
 from astropy.visualization import ImageNormalize, PercentileInterval, LogStretch
@@ -696,29 +697,48 @@ def extract_metadata(header: fits.Header) -> dict:
     """
     path_info = ImagePathInfo.from_fits_header(header)
 
+    # Extract the coordinate information and get AltAz and HA.
+    wcs_meta = WCS(header).to_header(relax=True)
+    radec_coord = SkyCoord(
+        ra=wcs_meta['CRVAL1'],
+        dec=wcs_meta['CRVAL2'],
+        unit='deg',
+        frame='icrs',
+        obstime=path_info.image_time.to_datetime(timezone=UTC),
+        location=EarthLocation(
+            lon=header['LONG-OBS'],
+            lat=header['LAT-OBS'],
+            height=header['ELEV-OBS']
+        )
+    )
+    hadec_coord = radec_coord.transform_to(HADec)
+
     try:
         # Add a units doc if it doesn't exist.
         unit_info = dict(
-            unit_id=path_info.unit_id,
-            name=header.get("OBSERVER"),
+            elevation=float(header.get("ELEV-OBS")),
             latitude=header.get("LAT-OBS"),
             longitude=header.get("LONG-OBS"),
-            elevation=float(header.get("ELEV-OBS")),
+            name=header.get("OBSERVER"),
+            unit_id=path_info.unit_id,
         )
 
         sequence_info = dict(
-            unit_id=path_info.unit_id,
             sequence_id=path_info.sequence_id,
-            time=path_info.sequence_time.to_datetime(timezone=UTC),
-            exptime=float(header.get("EXPTIME")),
-            software_version=header.get("CREATOR", ""),
+            sequence_time=path_info.sequence_time.to_datetime(timezone=UTC),
+            coordinates=dict(
+                mount_dec=header.get('DEC-MNT'),
+                mount_ra=header.get('RA-MNT'),
+                mount_ha=header.get('HA-MNT'),
+            ),
+            camera=dict(
+                camera_id=path_info.camera_id,
+                lens_serial_number=header.get('INTSN'),
+                serial_number=str(header.get('CAMSN')),
+            ),
             field_name=header.get("FIELD", ""),
-            iso=header.get("ISO"),
-            ra=header.get("CRVAL1"),
-            dec=header.get("CRVAL2"),
-            camera_id=path_info.camera_id,
-            camera_serial_number=str(header.get("CAMSN")),
-            lens_serial_number=header.get("INTSN"),
+            software_version=header.get("CREATOR", ""),
+            unit_id=path_info.unit_id,
         )
 
         measured_rggb = header.get("MEASRGGB", "0 0 0 0").split(" ")
@@ -730,31 +750,39 @@ def extract_metadata(header: fits.Header) -> dict:
 
         image_info = dict(
             uid=path_info.get_full_id(sep="_"),
-            airmass=header.get("AIRMASS"),
             camera=dict(
-                dateobs=camera_date,
                 blue_balance=float(header.get("BLUEBAL")),
                 circconf=float(header.get("CIRCCONF", "0.").split(" ")[0]),
                 colortemp=float(header.get("COLORTMP")),
-                measured_ev=float(header.get("MEASEV")),
+                dateobs=camera_date,
+                exptime=float(header.get("EXPTIME")),
+                iso=header.get("ISO"),
+                measured_b=float(measured_rggb[3]),
                 measured_ev2=float(header.get("MEASEV2")),
-                measured_r=float(measured_rggb[0]),
+                measured_ev=float(header.get("MEASEV")),
                 measured_g1=float(measured_rggb[1]),
                 measured_g2=float(measured_rggb[2]),
-                measured_b=float(measured_rggb[3]),
+                measured_r=float(measured_rggb[0]),
                 red_balance=float(header.get("REDBAL")),
                 temperature=float(header.get("CAMTEMP", 0).split(" ")[0]),
                 white_lvln=header.get("WHTLVLN"),
                 white_lvls=header.get("WHTLVLS"),
             ),
-            exptime=float(header.get("EXPTIME")),
+            coordinates=dict(
+                ra=radec_coord.ra.value,
+                dec=radec_coord.dec.value,
+                ha=hadec_coord.ha.value,
+                ha_deg=hadec_coord.ha.to('deg').value,
+                alt=hadec_coord.altaz.alt.value,
+                az=hadec_coord.altaz.az.value,
+                airmass=hadec_coord.altaz.secz.value,
+            ),
+            environment=dict(
+                moonfrac=float(header.get('MOONFRAC')),
+                moonsep=float(header.get('MOONSEP')),
+            ),
             file_creation_date=file_date,
-            moonfrac=float(header.get("MOONFRAC")),
-            moonsep=float(header.get("MOONSEP")),
-            mount_dec=header.get("DEC-MNT"),
-            mount_ha=header.get("HA-MNT"),
-            mount_ra=header.get("RA-MNT"),
-            time=path_info.image_time.to_datetime(timezone=UTC),
+            image_time=path_info.image_time.to_datetime(timezone=UTC),
         )
 
         metadata = dict(
