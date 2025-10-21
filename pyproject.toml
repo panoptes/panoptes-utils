@@ -72,6 +72,7 @@ images = [
     "photutils",
     "pillow>=9.1.1",
     "scipy",
+    "sep",
     "watchfiles",
 ]
 testing = [

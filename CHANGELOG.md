@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.2.53 - 2025-10-21
+
+## Added
+
+* `panoptes.utils.images.fits.detect_sources`, which uses the `sep` package to detect sources in a FITS image. Should mostly be considered a "quick-look" function as it doesn't do anything smart with the background and bayer array. #329
+
 ## 0.2.52 - 2025-10-17
 
 ### Added
