@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Pattern, Union, Dict, TextIO, BinaryIO
 from warnings import warn
 
+import sep
 from astropy import units as u
 from astropy.coordinates import EarthLocation, HADec, SkyCoord
 from astropy.io import fits
@@ -19,6 +20,7 @@ from dateutil.tz import UTC
 from loguru import logger
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
+from numpy.typing import NDArray
 
 from panoptes.utils import error
 from panoptes.utils.images.misc import mask_saturated
@@ -412,6 +414,81 @@ def get_solve_field(
 
     return out_dict
 
+def detect_sources(
+    fits_fname: str | Path | TextIO | BinaryIO | None = None,
+    data: NDArray | None = None,
+    subtract_background: bool = True,
+    background_params: dict | None = None,
+    extract_params: dict | None = None,
+    **kwargs,
+) -> NDArray:
+    """Detect sources in a FITS file.
+
+    Uses `sep` to detect sources in a FITS file. You can pass either a FITS
+    filename (or file-like object) or a pre-loaded data array via the `data`
+    parameter.
+
+    Examples
+    --------
+    Unsolved FITS (no WCS needed for detection):
+
+    >>> from panoptes.utils.images import fits as fits_utils
+    >>> fits_fn = getfixture('unsolved_fits_file')
+    >>> objs = fits_utils.detect_sources(fits_fn)
+    >>> print(len(objs))
+    1087
+    >>> # sep returns a structured array with standard fields
+    >>> all(n in objs.dtype.names for n in ('x', 'y', 'a', 'b', 'theta'))
+    True
+
+    Solved FITS (compressed .fz supported by astropy):
+
+    >>> fits_fn = getfixture('solved_fits_file')
+    >>> objs = fits_utils.detect_sources(fits_fn)
+    >>> all(n in objs.dtype.names for n in ('x', 'y'))
+    True
+
+    You can also pass a pre-loaded data array directly:
+
+    >>> data = fits_utils.getdata(getfixture('solved_fits_file')).astype(float)
+    >>> objs2 = fits_utils.detect_sources(data=data)
+    >>> len(objs2) == len(objs)
+    True
+
+    Args:
+        fits_fname: Name of a FITS file. Can be a string path, pathlib.Path object, or open filehandle.
+        data (ndarray, optional):  If provided, use this data array instead of reading from fits_fname.
+        subtract_background (bool, optional): Whether to subtract the background, default True.
+        background_params (dict, optional): Parameters to pass to `sep.Background`.
+        extract_params (dict, optional): Parameters to pass to `sep.extract`.
+        **kwargs: Args that can be passed to detect.
+
+    Returns:
+        NDArray: Structured numpy array of detected sources as returned from `detect`.
+    """
+    if fits_fname is None and data is None:
+        raise ValueError("Either 'fits_fname' or 'data' must be provided to detect_sources.")
+
+    background_params = background_params or {}
+    extract_params = extract_params or {}
+
+    if fits_fname is not None:
+        logger.debug(f"Detecting sources in: {fits_fname}")
+        data = fits.getdata(fits_fname).astype(float)
+
+    bkg_globalrms = None
+    if subtract_background:
+        bkg = sep.Background(data, **background_params)
+        logger.debug(f"Background mean: {bkg.globalback:.2f}, std: {bkg.globalrms:.2f}")
+        bkg_globalrms = bkg.globalrms
+        data_sub = data - bkg
+    else:
+        data_sub = data
+
+    objects = sep.extract(data_sub, 1.5, err=bkg_globalrms, **extract_params)
+    logger.debug(f"Detected {len(objects)} sources")
+
+    return objects
 
 def get_wcsinfo(fits_fname: str | Path | TextIO | BinaryIO, **kwargs):
     """Returns the WCS information for a FITS file.
