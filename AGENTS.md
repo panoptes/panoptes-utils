@@ -321,7 +321,7 @@ panoptes-config-server --host 0.0.0.0 --port 8765 run --config-file tests/testin
    ```
 
 4. **Update `CHANGELOG.md`:**
-   - Add release header with version and date: `## [X.Y.Z] - YYYY-MM-DD`
+   - Add release header with version and date: `## X.Y.Z - YYYY-MM-DD`
    - Ensure all changes are documented under appropriate sections (Added, Changed, Fixed, Removed)
    - Move any "Unreleased" changes under the new version
    - Verify all PR numbers are referenced
@@ -342,10 +342,10 @@ panoptes-config-server --host 0.0.0.0 --port 8765 run --config-file tests/testin
    git commit -m "Update CHANGELOG for ${NEW_VERSION}"
    ```
 
-6. **Merge release branch into `master`:**
+6. **Merge release branch into `main`:**
    ```bash
-   git checkout master
-   git pull origin master
+   git checkout main
+   git pull origin main
    git merge --no-ff release-${NEW_VERSION} -m "Merge release-${NEW_VERSION}"
    ```
 
@@ -358,7 +358,7 @@ panoptes-config-server --host 0.0.0.0 --port 8765 run --config-file tests/testin
      git commit -m "Resolve merge conflicts for ${NEW_VERSION}"
      ```
 
-8. **Test and build on `master`:**
+8. **Test and build on `main`:**
    ```bash
    # Ensure environment is up to date
    uv sync --all-extras --group dev
@@ -383,14 +383,14 @@ panoptes-config-server --host 0.0.0.0 --port 8765 run --config-file tests/testin
    # and "Checking dist/panoptes_utils-X.Y.Z-py3-none-any.whl: PASSED"
    ```
 
-10. **Tag `master` with new version:**
+10. **Tag `main` with new version:**
     ```bash
     git tag -a ${NEW_VERSION} -m "Release ${NEW_VERSION}"
     ```
 
-11. **Push `master` and tags to origin:**
+11. **Push `main` and tags to origin:**
     ```bash
-    git push origin master
+    git push origin main
     git push origin ${NEW_VERSION}
     ```
 
@@ -420,7 +420,7 @@ panoptes-config-server --host 0.0.0.0 --port 8765 run --config-file tests/testin
 
 **Common Issues:**
 - **Merge conflicts:** Most common in `CHANGELOG.md`. Keep both sets of changes and organize chronologically.
-- **Test failures:** Fix on the release branch before merging to `master`.
+- **Test failures:** Fix on the release branch before merging to `main`.
 - **Twine check failures:** Usually due to missing or malformed metadata in `pyproject.toml`.
 
 **Automation Notes for AI Agents:**

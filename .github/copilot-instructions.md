@@ -26,7 +26,7 @@ uv run pytest tests/test_utils.py
 - ✅ Python 3.12+ with type hints
 - ✅ Google-style docstrings
 - ✅ Line length: 110 chars
-- ✅ Use `loguru.logger`, `pathlib.Path`
+- ✅ Use `from loguru import logger` + `logger.<level>(...)`, `pathlib.Path`
 - ✅ Update `CHANGELOG.md` for all PRs
 
 ## Quick Navigation
