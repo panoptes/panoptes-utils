@@ -327,7 +327,7 @@ panoptes-config-server --host 0.0.0.0 --port 8765 run --config-file tests/testin
    - Verify all PR numbers are referenced
    - Example:
      ```markdown
-     ## [0.8.11] - 2026-02-13
+     ## 0.8.11 - 2026-02-13
      
      ### Added
      - New feature description. #123
