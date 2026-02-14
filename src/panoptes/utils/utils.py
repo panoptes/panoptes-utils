@@ -2,11 +2,11 @@ import collections.abc
 import os
 import shutil
 from pathlib import Path
-from typing import TextIO, BinaryIO
+from typing import BinaryIO, TextIO
 
 import numpy as np
 from astropy import units as u
-from astropy.coordinates import AltAz, ICRS, SkyCoord, EarthLocation
+from astropy.coordinates import ICRS, AltAz, EarthLocation, SkyCoord
 from astropy.time import Time
 
 from panoptes.utils.time import current_time

@@ -3,14 +3,14 @@ import shutil
 import subprocess
 from json import loads
 from pathlib import Path
-from typing import Union, Optional, TextIO, BinaryIO
+from typing import BinaryIO, TextIO
 from warnings import warn
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont
 from astropy.io import fits
 from dateutil.parser import parse as date_parse
 from loguru import logger
+from PIL import Image, ImageDraw, ImageFont
 
 from panoptes.utils import error
 from panoptes.utils.images import fits as fits_utils
@@ -25,7 +25,7 @@ def cr2_to_fits(
     fits_headers: dict = None,
     remove_cr2: bool = False,
     **kwargs,
-) -> Union[Path, None]:  # pragma: no cover
+) -> Path | None:  # pragma: no cover
     """Convert a CR2 file to FITS.
 
     This is a convenience function that first converts the CR2 to PGM via ~cr2_to_pgm.
@@ -223,9 +223,7 @@ def read_exif(fname: str | Path | TextIO | BinaryIO, exiftool="exiftool"):  # pr
     return exif[0]
 
 
-def read_pgm(
-    fname: str | Path | TextIO | BinaryIO, byteorder=">", remove_after=False
-):  # pragma: no cover
+def read_pgm(fname: str | Path | TextIO | BinaryIO, byteorder=">", remove_after=False):  # pragma: no cover
     """Return image data from a raw PGM file as numpy array.
 
     Note:
@@ -283,7 +281,7 @@ def cr2_to_jpg(
     title: str = "",
     overwrite: bool = False,
     remove_cr2: bool = False,
-) -> Optional[Path]:
+) -> Path | None:
     """Extract a JPG image from a CR2, return the new path name."""
     exiftool = shutil.which("exiftool")
     if not exiftool:  # pragma: no cover
@@ -293,9 +291,7 @@ def cr2_to_jpg(
     if isinstance(cr2_fname, (str, Path)) or hasattr(cr2_fname, "name"):
         cr2_path = Path(normalize_file_input(cr2_fname))
     else:
-        raise ValueError(
-            "cr2_fname must be a string path, Path object, or file-like object with name"
-        )
+        raise ValueError("cr2_fname must be a string path, Path object, or file-like object with name")
 
     # Handle different input types for jpg_fname
     if jpg_fname is None:

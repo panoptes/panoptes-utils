@@ -1,17 +1,15 @@
 from contextlib import suppress
 from pathlib import Path
-from typing import Dict, List
 
 from loguru import logger
 
 from panoptes.utils import error
-from panoptes.utils.serializers import from_yaml
-from panoptes.utils.serializers import to_yaml
+from panoptes.utils.serializers import from_yaml, to_yaml
 from panoptes.utils.utils import listify
 
 
 def load_config(
-    config_files: str | Path | List | None = None, parse: bool = True, load_local: bool = True
+    config_files: str | Path | list | None = None, parse: bool = True, load_local: bool = True
 ) -> dict:
     """Loads configuration information from one or more YAML files.
 
@@ -105,7 +103,7 @@ def save_config(save_path: Path, config: dict, overwrite: bool = True) -> bool:
     return True
 
 
-def parse_config_directories(directories: Dict[str, str]) -> dict:
+def parse_config_directories(directories: dict[str, str]) -> dict:
     """Parse the config dictionary for common objects.
 
     Given a `base` entry that corresponds to the absolute path of a directory,

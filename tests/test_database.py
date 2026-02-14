@@ -1,7 +1,7 @@
 import pytest
 
-from panoptes.utils.database import PanDB
 from panoptes.utils import error
+from panoptes.utils.database import PanDB
 
 
 def test_bad_db():
@@ -82,6 +82,4 @@ def test_delete_file_db(tmpdir):
     PanDB.permanently_erase_database(
         "file", "panoptes_testing", storage_dir=str(file_dir), really="Yes", dangerous="Totally"
     )
-    PanDB.permanently_erase_database(
-        "memory", "panoptes_testing", dangerous="Totally", really="Yes"
-    )
+    PanDB.permanently_erase_database("memory", "panoptes_testing", dangerous="Totally", really="Yes")

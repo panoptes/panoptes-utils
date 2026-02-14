@@ -4,9 +4,7 @@ import click
 from loguru import logger
 
 from panoptes.utils.config import server
-from panoptes.utils.config.client import get_config
-from panoptes.utils.config.client import server_is_running
-from panoptes.utils.config.client import set_config
+from panoptes.utils.config.client import get_config, server_is_running, set_config
 
 
 @click.group()
@@ -31,7 +29,7 @@ from panoptes.utils.config.client import set_config
 @click.pass_context
 def config_server_cli(context, host="localhost", port=6563, verbose=False):
     """Command line interface for the config server.
-    
+
     Args:
         context: Click context object.
         host (str): Host address to bind to. Defaults to "localhost".

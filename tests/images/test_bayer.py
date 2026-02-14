@@ -1,6 +1,7 @@
-import pytest
-import numpy as np
 from pathlib import Path
+
+import numpy as np
+import pytest
 
 from panoptes.utils.images import bayer
 from panoptes.utils.images import fits as fits_utils
@@ -144,9 +145,7 @@ def test_save_rgb_bg_fits(solved_fits_file, tmpdir):
             rgb_data, output_filename=str(temp_fn), header=h0, fpack=False, overwrite=False
         )
 
-    temp_fn = bayer.save_rgb_bg_fits(
-        rgb_data, output_filename=str(temp_fn), fpack=True, overwrite=True
-    )
+    temp_fn = bayer.save_rgb_bg_fits(rgb_data, output_filename=str(temp_fn), fpack=True, overwrite=True)
 
     # Didn't use our header.
     with pytest.raises(KeyError):

@@ -153,9 +153,7 @@ def crop_data(
             a `astropy.nddata.Cutout2D` object.
 
     """
-    assert data.shape[0] >= box_width, (
-        f"Can't clip data, it's smaller than {box_width} ({data.shape})"
-    )
+    assert data.shape[0] >= box_width, f"Can't clip data, it's smaller than {box_width} ({data.shape})"
     # Get the center
     if center is None:
         x_len, y_len = data.shape

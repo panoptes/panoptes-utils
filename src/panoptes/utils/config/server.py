@@ -54,8 +54,8 @@ def config_server(
             the gevent WSGIServer. The `default` string will cause access logs to go to stderr. The
             string `logger` will use the panoptes logger. A File-like will write to file. The default
             `None` will turn off all access logs.
-        error_logs ('default' or 'logger' or `File`-like or None, optional): Same as `access_logs` except we use
-            our `logger` as the default.
+        error_logs ('default' or 'logger' or `File`-like or None, optional): Same as
+            `access_logs` except we use our `logger` as the default.
 
     Returns:
         multiprocessing.Process: The process running the config server.
@@ -89,24 +89,20 @@ def config_server(
 
         def start_server(host="localhost", port=6563):
             """Start the config server.
-            
+
             Args:
                 host (str): Host address to bind to. Defaults to "localhost".
                 port (int): Port number to bind to. Defaults to 6563.
-                
+
             Returns:
                 None: Returns None if server fails to start.
             """
             try:
                 logger.info(f"Starting panoptes config server with {host}:{port}")
-                http_server = WSGIServer(
-                    (host, int(port)), app, log=access_logs, error_log=error_logs
-                )
+                http_server = WSGIServer((host, int(port)), app, log=access_logs, error_log=error_logs)
                 http_server.serve_forever()
             except OSError:
-                logger.warning(
-                    "Problem starting config server, is another config server already running?"
-                )
+                logger.warning("Problem starting config server, is another config server already running?")
                 return None
             except Exception as e:
                 logger.warning(f"Problem starting config server: {e!r}")

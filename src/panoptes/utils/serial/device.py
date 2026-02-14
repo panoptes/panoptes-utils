@@ -1,8 +1,8 @@
 import operator
 from collections import deque
+from collections.abc import Callable
 from contextlib import suppress
 from dataclasses import dataclass
-from typing import Optional, Union, Callable
 
 import serial
 from loguru import logger
@@ -31,8 +31,10 @@ class SerialDeviceDefaults:
         >>> import serial
         >>> from panoptes.utils.serial.device import SerialDeviceDefaults
         >>> serial_settings = SerialDeviceDefaults(baudrate=115200)
-        >>> serial_settings
-        SerialDeviceDefaults(baudrate=115200, timeout=1.0, write_timeout=1.0, bytesize=8, parity='N', stopbits=1, xonxoff=False, rtscts=False, dsrdtr=False)
+        >>> serial_settings  # doctest: +NORMALIZE_WHITESPACE
+        SerialDeviceDefaults(baudrate=115200, timeout=1.0, write_timeout=1.0,
+                             bytesize=8, parity='N', stopbits=1,
+                             xonxoff=False, rtscts=False, dsrdtr=False)
 
         >>> # Create a serial device and apply changed settings.
         >>> ser0 = serial.Serial()
@@ -105,21 +107,17 @@ def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cov
         str or list: Either the path to the detected port or a list of all comports that match.
     """
     # Get all serial ports.
-    matched_ports = [
-        p for p in get_serial_port_info() if p.vid == vendor_id and p.pid == product_id
-    ]
+    matched_ports = [p for p in get_serial_port_info() if p.vid == vendor_id and p.pid == product_id]
 
     if len(matched_ports) == 1:
         return matched_ports[0].device
     elif return_all:
         return matched_ports
     else:
-        raise error.NotFound(
-            f"No serial ports for vendor_id={vendor_id:x} and product_id={product_id:x}"
-        )
+        raise error.NotFound(f"No serial ports for vendor_id={vendor_id:x} and product_id={product_id:x}")
 
 
-class SerialDevice(object):
+class SerialDevice:
     """A SerialDevice class with helper methods for serial communications.
 
     The device need not exist at the time this is called, in which case
@@ -128,13 +126,13 @@ class SerialDevice(object):
     The serial device settings can be passed as a dictionary. See SerialDeviceDefaults
     for possible values.
     """
-    
+
     def __init__(
         self,
         port: str = None,
         name: str = None,
         reader_callback: Callable = None,
-        serial_settings: Optional[Union[SerialDeviceDefaults, dict]] = None,
+        serial_settings: SerialDeviceDefaults | dict | None = None,
         reader_queue_size: int = 50,
     ):
         """A SerialDevice class with helper methods for serial communications.
@@ -240,11 +238,11 @@ class SerialDevice(object):
         # Set up a custom threaded reader class that calls user callback.
         class CustomReader(LineReader):
             """Custom LineReader for handling serial device data with callbacks."""
-            
+
             # Use `this` so `self` still refers to device instance.
             def connection_made(this, transport):
                 """Called when connection is established.
-                
+
                 Args:
                     transport: The transport object for the connection.
                 """
@@ -252,7 +250,7 @@ class SerialDevice(object):
 
             def connection_lost(this, exc):
                 """Called when connection is lost.
-                
+
                 Args:
                     exc: Exception that caused connection loss, if any.
                 """
@@ -260,7 +258,7 @@ class SerialDevice(object):
 
             def handle_line(this, data):
                 """Handle incoming line of data from serial device.
-                
+
                 Args:
                     data: Raw data received from the serial device.
                 """
@@ -277,7 +275,7 @@ class SerialDevice(object):
 
     def __str__(self):
         """Return string representation of the serial device.
-        
+
         Returns:
             str: Device name, port, and serial settings summary.
         """

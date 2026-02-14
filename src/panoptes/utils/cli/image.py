@@ -1,8 +1,7 @@
 from pathlib import Path
-from typing import Optional
 
 import typer
-from watchfiles import watch, Change
+from watchfiles import Change, watch
 
 from panoptes.utils import error
 from panoptes.utils.images import cr2
@@ -78,7 +77,7 @@ def cr2_to_jpg(
     title: str = "",
     overwrite: bool = False,
     remove_cr2: bool = False,
-) -> Optional[Path]:
+) -> Path | None:
     """Extract a JPG image from a CR2, return the new path name.
 
     Args:
@@ -112,9 +111,7 @@ def cr2_to_fits(
 ) -> Path:
     """Convert a CR2 image to a FITS, return the new path name."""
     typer.secho(f"Converting {cr2_fname} to FITS", fg="green")
-    fits_fn = cr2.cr2_to_fits(
-        cr2_fname, fits_fname=fits_fname, overwrite=overwrite, remove_cr2=remove_cr2
-    )
+    fits_fn = cr2.cr2_to_fits(cr2_fname, fits_fname=fits_fname, overwrite=overwrite, remove_cr2=remove_cr2)
 
     if fits_fname is not None:
         typer.secho(f"FITS file available at {fits_fn}", fg="green")
@@ -122,7 +119,7 @@ def cr2_to_fits(
 
 
 @fits_app.command("solve")
-def solve_fits(fits_fname: Path, **kwargs) -> Optional[Path]:  # noqa: ANN003
+def solve_fits(fits_fname: Path, **kwargs) -> Path | None:  # noqa: ANN003
     """Plate-solve a FITS file."""
     typer.secho(f"Solving {fits_fname}", fg="green")
     try:
