@@ -284,7 +284,6 @@ panoptes-config-server --host 0.0.0.0 --port 8765 run --config-file tests/testin
 
 **Prerequisites:**
 - Ensure you have write access to the repository
-- Ensure `twine` is installed for PyPI uploads: `uv tool install twine` or `pipx install twine`
 - Ensure all CI tests are passing on `develop` branch
 - Determine the new version number (see Version Numbering below)
 
@@ -378,7 +377,7 @@ panoptes-config-server --host 0.0.0.0 --port 8765 run --config-file tests/testin
 9. **Verify distribution files:**
    ```bash
    # Check the built distribution files
-   python -m twine check dist/*
+   uv run --with twine twine check dist/*
    
    # Should show: "Checking dist/panoptes_utils-X.Y.Z.tar.gz: PASSED"
    # and "Checking dist/panoptes_utils-X.Y.Z-py3-none-any.whl: PASSED"
