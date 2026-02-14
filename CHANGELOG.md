@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## Unreleased
+
+### Added
+
+* AI agent guidelines document (`AGENTS.md`) with comprehensive development workflow and coding standards. #TBD
+* CHANGELOG update requirement to contributor guidelines in `AGENTS.md`. #TBD
+
+### Changed
+
+* Line-length configuration from 100 to 110 characters in `pyproject.toml` and documentation. #TBD
+
 ## 0.2.53 - 2025-10-21
 
 ## Added
