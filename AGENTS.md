@@ -66,7 +66,7 @@ panoptes-utils/
 
 **Style and Formatting:**
 - Use Ruff for linting and formatting (configured in `pyproject.toml`)
-- Line length: 100 characters
+- Line length: 110 characters
 - Quote style: double quotes
 - Follow PEP 8 conventions
 
@@ -126,6 +126,13 @@ panoptes-utils/
 - Clear, descriptive commit messages
 - Reference issue numbers when applicable
 - Format: `Brief description (#issue-number)`
+
+**CHANGELOG Updates:**
+- **Always update `CHANGELOG.md`** when submitting a PR
+- Add entry under the appropriate section (Added, Changed, Fixed, Removed)
+- Include PR number reference (e.g., `#123`)
+- Follow the existing format: `* Brief description of change. #PR-number`
+- Place new entries at the top of the file under a new version heading if starting a new release
 
 ## Module Guidelines
 
@@ -382,6 +389,7 @@ def function_name(param1: str, param2: int) -> bool:
 ### Documentation Updates
 
 When making changes, update:
+- **`CHANGELOG.md`** for all PRs (required)
 - Inline code comments for complex logic
 - Docstrings for API changes
 - Sphinx docs in `docs/` for major features
