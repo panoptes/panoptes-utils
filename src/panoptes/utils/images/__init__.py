@@ -2,7 +2,7 @@ import os
 from _warnings import warn
 from contextlib import suppress
 from pathlib import Path
-from typing import Optional, TextIO, BinaryIO
+from typing import BinaryIO, TextIO
 
 from panoptes.utils.images.cr2 import cr2_to_jpg
 from panoptes.utils.images.fits import fits_to_jpg
@@ -11,7 +11,7 @@ from panoptes.utils.utils import normalize_file_input
 
 def make_pretty_image(
     fname: str | Path | TextIO | BinaryIO, title=None, img_type=None, link_path=None, **kwargs
-) -> Optional[Path]:
+) -> Path | None:
     """Make a pretty image.
 
     This will create a jpg file from either a CR2 (Canon) or FITS file.

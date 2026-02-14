@@ -6,8 +6,7 @@ from uuid import uuid4
 from panoptes.utils import error
 from panoptes.utils.database import AbstractPanDB
 from panoptes.utils.database.base import create_storage_obj
-from panoptes.utils.serializers import from_json
-from panoptes.utils.serializers import to_json
+from panoptes.utils.serializers import from_json, to_json
 
 
 class PanMemoryDB(AbstractPanDB):
@@ -36,7 +35,7 @@ class PanMemoryDB(AbstractPanDB):
 
     def __init__(self, **kwargs):
         """Initialize in-memory database.
-        
+
         Args:
             **kwargs: Additional keyword arguments passed to parent class.
         """
@@ -47,7 +46,7 @@ class PanMemoryDB(AbstractPanDB):
 
     def _make_id(self):
         """Generate a unique ID for database objects.
-        
+
         Returns:
             str: Unique identifier string.
         """
@@ -55,12 +54,12 @@ class PanMemoryDB(AbstractPanDB):
 
     def insert_current(self, collection, obj, store_permanently=True):
         """Insert object as current item in collection.
-        
+
         Args:
             collection (str): Collection name to insert into.
             obj: Object to insert.
             store_permanently (bool): Whether to also store in permanent collection.
-            
+
         Returns:
             str: Object ID of inserted item.
         """
@@ -69,9 +68,7 @@ class PanMemoryDB(AbstractPanDB):
         try:
             obj = to_json(obj)
         except Exception as e:
-            raise error.InvalidSerialization(
-                f"Problem serializing object for insertion: {e} {obj!r}"
-            )
+            raise error.InvalidSerialization(f"Problem serializing object for insertion: {e} {obj!r}")
 
         with self.lock:
             self.current[collection] = obj
@@ -81,11 +78,11 @@ class PanMemoryDB(AbstractPanDB):
 
     def insert(self, collection, obj):
         """Insert object into collection.
-        
+
         Args:
             collection (str): Collection name to insert into.
             obj: Object to insert.
-            
+
         Returns:
             str: Object ID of inserted item.
         """
@@ -94,9 +91,7 @@ class PanMemoryDB(AbstractPanDB):
         try:
             obj = to_json(obj)
         except Exception as e:
-            raise error.InvalidSerialization(
-                f"Problem inserting object into collection: {e}, {obj!r}"
-            )
+            raise error.InvalidSerialization(f"Problem inserting object into collection: {e}, {obj!r}")
 
         with self.lock:
             self.collections.setdefault(collection, {})[obj_id] = obj
@@ -104,10 +99,10 @@ class PanMemoryDB(AbstractPanDB):
 
     def get_current(self, collection):
         """Get current object from collection.
-        
+
         Args:
             collection (str): Collection name to get current from.
-            
+
         Returns:
             dict or None: Current object in collection, or None if not found.
         """
@@ -119,11 +114,11 @@ class PanMemoryDB(AbstractPanDB):
 
     def find(self, collection, obj_id):
         """Find object by ID in collection.
-        
+
         Args:
             collection (str): Collection name to search in.
             obj_id (str): Object ID to find.
-            
+
         Returns:
             dict or None: Found object, or None if not found.
         """
@@ -135,7 +130,7 @@ class PanMemoryDB(AbstractPanDB):
 
     def clear_current(self, entry_type):
         """Clear current entry for specified type.
-        
+
         Args:
             entry_type (str): Entry type to clear.
         """
@@ -145,9 +140,9 @@ class PanMemoryDB(AbstractPanDB):
     @classmethod
     def permanently_erase_database(cls, *args, **kwargs):
         """Permanently erase the database.
-        
+
         For testing purposes only. Erases all data and references.
-        
+
         Args:
             *args: Positional arguments (ignored).
             **kwargs: Keyword arguments (ignored).

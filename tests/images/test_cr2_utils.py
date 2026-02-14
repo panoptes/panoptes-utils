@@ -2,7 +2,6 @@ import os
 import tempfile
 from pathlib import Path
 
-
 from panoptes.utils.images import cr2 as cr2_utils
 
 

@@ -1,10 +1,10 @@
-import pytest
-from pathlib import Path
 import tempfile
+from pathlib import Path
+
+import pytest
 
 from panoptes.utils import error
-from panoptes.utils.library import load_c_library
-from panoptes.utils.library import load_module
+from panoptes.utils.library import load_c_library, load_module
 from panoptes.utils.utils import listify, normalize_file_input
 
 

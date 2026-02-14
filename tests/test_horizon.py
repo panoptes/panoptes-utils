@@ -1,7 +1,7 @@
-import pytest
 import random
 
 import numpy as np
+import pytest
 from astropy import units as u
 
 from panoptes.utils.horizon import Horizon

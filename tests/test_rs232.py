@@ -1,7 +1,6 @@
 import pytest
 
-from panoptes.utils import error
-from panoptes.utils import rs232
+from panoptes.utils import error, rs232
 from panoptes.utils.serializers import to_json
 
 

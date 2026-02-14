@@ -7,8 +7,7 @@ from deprecated import deprecated
 from loguru import logger
 from serial.tools.list_ports import comports as get_comports
 
-from panoptes.utils import error
-from panoptes.utils import serializers
+from panoptes.utils import error, serializers
 
 
 @deprecated(reason="Use panoptes.utils.serial.device")
@@ -48,22 +47,18 @@ def find_serial_port(vendor_id, product_id, return_all=False):  # pragma: no cov
         str or list: Either the path to the detected port or a list of all comports that match.
     """
     # Get all serial ports.
-    matched_ports = [
-        p for p in get_serial_port_info() if p.vid == vendor_id and p.pid == product_id
-    ]
+    matched_ports = [p for p in get_serial_port_info() if p.vid == vendor_id and p.pid == product_id]
 
     if len(matched_ports) == 1:
         return matched_ports[0].device
     elif return_all:
         return matched_ports
     else:
-        raise error.NotFound(
-            f"No serial ports for vendor_id={vendor_id:x} and product_id={product_id:x}"
-        )
+        raise error.NotFound(f"No serial ports for vendor_id={vendor_id:x} and product_id={product_id:x}")
 
 
 @deprecated(reason="Use panoptes.utils.serial.device")
-class SerialData(object):
+class SerialData:
     """SerialData wraps a PySerial instance for reading from and writing to a serial device.
 
     Because POCS is intended to be very long running, and hardware may be turned off when unused

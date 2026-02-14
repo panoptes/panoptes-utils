@@ -1,18 +1,20 @@
 from decimal import Decimal
 from enum import IntEnum
 from pathlib import Path
-from typing import TextIO, BinaryIO
+from typing import BinaryIO, TextIO
 
 import numpy as np
 from astropy.io import fits
 from astropy.stats import SigmaClip
 from loguru import logger
-from photutils.background import Background2D
-from photutils.background import BkgZoomInterpolator
-from photutils.background import MMMBackground
-from photutils.background import MeanBackground
-from photutils.background import MedianBackground
-from photutils.background import SExtractorBackground
+from photutils.background import (
+    Background2D,
+    BkgZoomInterpolator,
+    MeanBackground,
+    MedianBackground,
+    MMMBackground,
+    SExtractorBackground,
+)
 
 from panoptes.utils.images import fits as fits_utils
 from panoptes.utils.utils import normalize_file_input
@@ -484,8 +486,7 @@ def get_rgb_background(
         )
 
         logger.debug(
-            f"{color.name.lower()}: {bkg.background_median:.02f} "
-            f"RMS: {bkg.background_rms_median:.02f}"
+            f"{color.name.lower()}: {bkg.background_median:.02f} RMS: {bkg.background_rms_median:.02f}"
         )
 
         if return_separate:

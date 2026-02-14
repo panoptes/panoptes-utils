@@ -1,10 +1,11 @@
+import tempfile
+from pathlib import Path
+
 import pytest
 from astropy import units as u
-from panoptes.utils import error
-from panoptes.utils import serializers
+
+from panoptes.utils import error, serializers
 from panoptes.utils.time import current_time
-from pathlib import Path
-import tempfile
 
 
 @pytest.fixture(scope="function")
@@ -86,7 +87,7 @@ def test_to_json_pathlib(obj):
         assert json_file.exists()
 
         # Verify we can read it back
-        with open(json_file, "r") as f:
+        with open(json_file) as f:
             content = f.read()
             recovered = serializers.from_json(content)
             assert recovered["name"] == obj["name"]
@@ -104,7 +105,7 @@ def test_to_json_filehandle(obj):
         assert json_file.exists()
 
         # Verify we can read it back
-        with open(json_file, "r") as f:
+        with open(json_file) as f:
             content = f.read()
             recovered = serializers.from_json(content)
             assert recovered["name"] == obj["name"]
