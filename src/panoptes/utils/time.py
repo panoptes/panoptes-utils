@@ -1,9 +1,9 @@
 import os
 import time
+from collections.abc import Callable
 from contextlib import suppress
-from datetime import datetime, timezone as tz
+from datetime import UTC, datetime
 from threading import Event
-from typing import Callable, Union
 
 from astropy import units as u
 from astropy.time import Time
@@ -77,7 +77,7 @@ def current_time(
 
     if datetime:
         # Add UTC timezone
-        _time = _time.to_datetime(timezone=tz.utc)
+        _time = _time.to_datetime(timezone=UTC)
 
     return _time
 
@@ -105,14 +105,14 @@ def flatten_time(t: Time) -> str:
     return t.isot.replace("-", "").replace(":", "").split(".")[0]
 
 
-class CountdownTimer(object):
+class CountdownTimer:
     """Simple timer object for tracking whether a time duration has elapsed.
 
     A countdown timer that tracks elapsed time and provides methods to check
     if the timer has expired, how much time is left, and sleep until expiration.
     """
 
-    def __init__(self, duration: Union[int, float], name: str = "") -> None:
+    def __init__(self, duration: int | float, name: str = "") -> None:
         """Simple timer object for tracking whether a time duration has elapsed.
 
         Examples:
@@ -189,7 +189,7 @@ class CountdownTimer(object):
         self.target_time = time.monotonic() + self.duration
         logger.debug(f"Restarting {self.name}")
 
-    def sleep(self, max_sleep: Union[int, float, None] = None, log_level: str = "DEBUG") -> bool:
+    def sleep(self, max_sleep: int | float | None = None, log_level: str = "DEBUG") -> bool:
         """Sleep until the timer expires, or for max_sleep, whichever is sooner.
 
         Args:
@@ -286,14 +286,11 @@ def wait_for_events(
         elapsed_secs = round((current_time() - start_time).to_value("second"), 2)
 
         if event_timer.expired():
-            raise error.Timeout(
-                f"Timeout waiting for {len(events)} events after {elapsed_secs} seconds"
-            )
+            raise error.Timeout(f"Timeout waiting for {len(events)} events after {elapsed_secs} seconds")
 
         if callable(callback) and callback() is False:
             logger.warning(
-                f"Waiting for {len(events)} events has been interrupted after {elapsed_secs} "
-                f"seconds"
+                f"Waiting for {len(events)} events has been interrupted after {elapsed_secs} seconds"
             )
             break
 

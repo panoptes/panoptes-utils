@@ -7,14 +7,14 @@ from panoptes.utils.utils import get_quantity_value
 NO_HORIZON = None
 
 
-class Obstruction(object):
+class Obstruction:
     """Define an obstruction on the horizon.
-    
+
     An obstruction is defined by a list of altitude/azimuth coordinate pairs
     that form a polygon representing the obstruction boundary. Points should
     be provided in clockwise ordering.
     """
-    
+
     def __init__(self, points_list):
         """An obstruction is defined by a list of alt, az pairs in clockwise ordering.
         Args:
@@ -91,7 +91,7 @@ class Obstruction(object):
         return az_offset
 
 
-class Horizon(object):
+class Horizon:
     """A simple class to define some coordinate points.
 
     Accepts a list of lists where each list consists of two points corresponding

@@ -1,16 +1,14 @@
 import os
 import threading
 import time
+from datetime import UTC
 from datetime import datetime as dt
-from datetime import timezone as tz
 
 import pytest
 from astropy import units as u
 
 from panoptes.utils import error
-from panoptes.utils.time import CountdownTimer
-from panoptes.utils.time import current_time
-from panoptes.utils.time import wait_for_events
+from panoptes.utils.time import CountdownTimer, current_time, wait_for_events
 
 
 def test_pretty_time():
@@ -27,7 +25,7 @@ def test_pretty_time():
 
     # This will increment one second - see docs
     t3 = current_time(datetime=True)
-    assert t3 == dt(2016, 8, 13, 10, 0, 2, tzinfo=tz.utc)
+    assert t3 == dt(2016, 8, 13, 10, 0, 2, tzinfo=UTC)
 
 
 def test_countdown_timer_bad_input():

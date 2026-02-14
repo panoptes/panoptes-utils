@@ -1,6 +1,7 @@
 import abc
 
 from loguru import logger
+
 from panoptes.utils.library import load_module
 from panoptes.utils.time import current_time
 
@@ -45,11 +46,11 @@ def get_db_class(module_name="file"):
 
 class AbstractPanDB(metaclass=abc.ABCMeta):
     """Abstract base class for PANOPTES database implementations.
-    
+
     This class defines the interface that all database implementations
     must follow for storing and retrieving observational data.
     """
-    
+
     def __init__(self, db_name=None, **kwargs):
         """
         Init base class for db instances.
@@ -135,7 +136,7 @@ class AbstractPanDB(metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
 
-class PanDB(object):
+class PanDB:
     """Simple class to load the appropriate DB type based on the config.
 
     We don't actually create instances of this class, but instead create
@@ -181,14 +182,10 @@ class PanDB(object):
         """Permanently delete the contents of the identified database."""
 
         if not isinstance(db_name, str) or "test" not in db_name:
-            raise ValueError(
-                f"permanently_erase_database() called for non-test database {db_name!r}"
-            )
+            raise ValueError(f"permanently_erase_database() called for non-test database {db_name!r}")
 
         if really != "Yes" or dangerous != "Totally":
             raise Exception("PanDB.permanently_erase_database called with invalid args!")
 
         # Load the correct DB module and do the deletion.
-        get_db_class(db_type).permanently_erase_database(
-            db_name, storage_dir=storage_dir, *args, **kwargs
-        )
+        get_db_class(db_type).permanently_erase_database(db_name, storage_dir=storage_dir, *args, **kwargs)

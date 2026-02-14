@@ -5,24 +5,27 @@ import subprocess
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Pattern, Union, Dict, TextIO, BinaryIO
+from re import Pattern
+from typing import BinaryIO, TextIO
 from warnings import warn
 
+import sep
 from astropy import units as u
 from astropy.coordinates import EarthLocation, HADec, SkyCoord
 from astropy.io import fits
 from astropy.time import Time
-from astropy.visualization import ImageNormalize, PercentileInterval, LogStretch
+from astropy.visualization import ImageNormalize, LogStretch, PercentileInterval
 from astropy.wcs import WCS
 from dateutil.parser import parse as parse_date
 from dateutil.tz import UTC
 from loguru import logger
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
+from numpy.typing import NDArray
 
 from panoptes.utils import error
 from panoptes.utils.images.misc import mask_saturated
-from panoptes.utils.images.plot import get_palette, add_colorbar
+from panoptes.utils.images.plot import add_colorbar, get_palette
 from panoptes.utils.time import flatten_time
 from panoptes.utils.utils import normalize_file_input
 
@@ -84,9 +87,9 @@ class ImagePathInfo:
     unit_id: str = None
     camera_id: str = None
     field_name: str = None
-    sequence_time: Union[str, datetime, Time] = None
-    image_time: Union[str, datetime, Time] = None
-    path: Union[str, Path] = None
+    sequence_time: str | datetime | Time = None
+    image_time: str | datetime | Time = None
+    path: str | Path = None
 
     def __post_init__(self):
         """Parse the path when provided upon initialization."""
@@ -116,7 +119,7 @@ class ImagePathInfo:
         """The matched image id."""
         return f"{self.unit_id}_{self.camera_id}_{flatten_time(self.image_time)}"
 
-    def as_path(self, base: Union[Path, str] = None, ext: str = None) -> Path:
+    def as_path(self, base: Path | str = None, ext: str = None) -> Path:
         """Return a Path object."""
         image_str = flatten_time(self.image_time)
         if ext is not None:
@@ -180,9 +183,7 @@ class ImagePathInfo:
         return cls.from_fits_header(getheader(fits_file))
 
 
-def solve_field(
-    fname: str | Path | TextIO | BinaryIO, timeout=15, solve_opts=None, *args, **kwargs
-):
+def solve_field(fname: str | Path | TextIO | BinaryIO, timeout=15, solve_opts=None, *args, **kwargs):
     """Plate solves an image.
 
     Note: This is a low-level wrapper around the underlying `solve-field`
@@ -262,20 +263,14 @@ def solve_field(
         return opt_string
 
     options.extend(
-        [
-            _modify_opt(opt, val)
-            for opt, val in kwargs.items()
-            if opt.startswith("--") and opt not in options
-        ]
+        [_modify_opt(opt, val) for opt, val in kwargs.items() if opt.startswith("--") and opt not in options]
     )
 
     cmd = [solve_field_script] + options + [fname]
 
     logger.debug(f"Solving with: {cmd}")
     try:
-        proc = subprocess.Popen(
-            cmd, universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
+        proc = subprocess.Popen(cmd, universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except Exception as e:
         raise error.PanError(f"Problem plate-solving in solve_field: {e!r}")
 
@@ -288,7 +283,7 @@ def get_solve_field(
     overwrite: bool = True,
     timeout: float = 30,
     **kwargs,
-) -> Dict:
+) -> dict:
     """Convenience function to wait for `solve_field` to finish.
 
     This function merely passes the `fname` of the image to be solved along to `solve_field`,
@@ -413,6 +408,83 @@ def get_solve_field(
     return out_dict
 
 
+def detect_sources(
+    fits_fname: str | Path | TextIO | BinaryIO | None = None,
+    data: NDArray | None = None,
+    subtract_background: bool = True,
+    background_params: dict | None = None,
+    extract_params: dict | None = None,
+    **kwargs,
+) -> NDArray:
+    """Detect sources in a FITS file.
+
+    Uses `sep` to detect sources in a FITS file. You can pass either a FITS
+    filename (or file-like object) or a pre-loaded data array via the `data`
+    parameter.
+
+    Examples
+    --------
+    Unsolved FITS (no WCS needed for detection):
+
+    >>> from panoptes.utils.images import fits as fits_utils
+    >>> fits_fn = getfixture('unsolved_fits_file')
+    >>> objs = fits_utils.detect_sources(fits_fn)
+    >>> print(len(objs))
+    1087
+    >>> # sep returns a structured array with standard fields
+    >>> all(n in objs.dtype.names for n in ('x', 'y', 'a', 'b', 'theta'))
+    True
+
+    Solved FITS (compressed .fz supported by astropy):
+
+    >>> fits_fn = getfixture('solved_fits_file')
+    >>> objs = fits_utils.detect_sources(fits_fn)
+    >>> all(n in objs.dtype.names for n in ('x', 'y'))
+    True
+
+    You can also pass a pre-loaded data array directly:
+
+    >>> data = fits_utils.getdata(getfixture('solved_fits_file')).astype(float)
+    >>> objs2 = fits_utils.detect_sources(data=data)
+    >>> len(objs2) == len(objs)
+    True
+
+    Args:
+        fits_fname: Name of a FITS file. Can be a string path, pathlib.Path object, or open filehandle.
+        data (ndarray, optional):  If provided, use this data array instead of reading from fits_fname.
+        subtract_background (bool, optional): Whether to subtract the background, default True.
+        background_params (dict, optional): Parameters to pass to `sep.Background`.
+        extract_params (dict, optional): Parameters to pass to `sep.extract`.
+        **kwargs: Args that can be passed to detect.
+
+    Returns:
+        NDArray: Structured numpy array of detected sources as returned from `detect`.
+    """
+    if fits_fname is None and data is None:
+        raise ValueError("Either 'fits_fname' or 'data' must be provided to detect_sources.")
+
+    background_params = background_params or {}
+    extract_params = extract_params or {}
+
+    if fits_fname is not None:
+        logger.debug(f"Detecting sources in: {fits_fname}")
+        data = fits.getdata(fits_fname).astype(float)
+
+    bkg_globalrms = None
+    if subtract_background:
+        bkg = sep.Background(data, **background_params)
+        logger.debug(f"Background mean: {bkg.globalback:.2f}, std: {bkg.globalrms:.2f}")
+        bkg_globalrms = bkg.globalrms
+        data_sub = data - bkg
+    else:
+        data_sub = data
+
+    objects = sep.extract(data_sub, 1.5, err=bkg_globalrms, **extract_params)
+    logger.debug(f"Detected {len(objects)} sources")
+
+    return objects
+
+
 def get_wcsinfo(fits_fname: str | Path | TextIO | BinaryIO, **kwargs):
     """Returns the WCS information for a FITS file.
 
@@ -524,7 +596,7 @@ def fpack(fits_fname: str | Path | TextIO | BinaryIO, unpack=False, overwrite=Tr
     # Normalize the file input to a string path
     fits_fname = normalize_file_input(fits_fname)
 
-    assert os.path.exists(fits_fname), warn("No file exists at: {}".format(fits_fname))
+    assert os.path.exists(fits_fname), warn(f"No file exists at: {fits_fname}")
 
     if unpack:
         fpack = shutil.which("funpack")
@@ -547,7 +619,7 @@ def fpack(fits_fname: str | Path | TextIO | BinaryIO, unpack=False, overwrite=Tr
         warn("fpack not found (try installing cfitsio). File has not been changed")
         return fits_fname
 
-    logger.debug("fpack command: {}".format(run_cmd))
+    logger.debug(f"fpack command: {run_cmd}")
 
     proc = subprocess.Popen(
         run_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True
@@ -579,9 +651,7 @@ def funpack(*args, **kwargs):
     return fpack(*args, unpack=True, **kwargs)
 
 
-def write_fits(
-    data, header, filename: str | Path | TextIO | BinaryIO, exposure_event=None, **kwargs
-):
+def write_fits(data, header, filename: str | Path | TextIO | BinaryIO, exposure_event=None, **kwargs):
     """Write FITS file to requested location.
 
     >>> from panoptes.utils.images import fits as fits_utils

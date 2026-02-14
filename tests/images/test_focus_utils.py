@@ -30,9 +30,7 @@ def test_focus_metric_default(data_dir):
 def test_focus_metric_vollath(data_dir):
     data = fits.getdata(os.path.join(data_dir, "unsolved.fits"))
     data = mask_saturated(data)
-    assert focus_utils.focus_metric(data, merit_function="vollath_F4") == pytest.approx(
-        14667.207897717599
-    )
+    assert focus_utils.focus_metric(data, merit_function="vollath_F4") == pytest.approx(14667.207897717599)
     assert focus_utils.focus_metric(data, merit_function="vollath_F4", axis="Y") == pytest.approx(
         14380.343807477504
     )

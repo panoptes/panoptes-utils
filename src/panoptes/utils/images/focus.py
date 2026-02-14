@@ -1,10 +1,9 @@
+from collections.abc import Callable
+
 import numpy as np
-from typing import Callable
 
 
-def focus_metric(
-    data: np.ndarray, merit_function: str | Callable = "vollath_F4", **kwargs
-) -> float:  # noqa: ANN003
+def focus_metric(data: np.ndarray, merit_function: str | Callable = "vollath_F4", **kwargs) -> float:  # noqa: ANN003
     """Compute the focus metric.
 
     Computes a focus metric on the given data using a supplied merit function.

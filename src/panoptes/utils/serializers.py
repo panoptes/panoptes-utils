@@ -3,16 +3,17 @@ from collections import OrderedDict
 from contextlib import suppress
 from copy import deepcopy
 from pathlib import Path
-from typing import TextIO, BinaryIO, IO
+from typing import IO, BinaryIO, TextIO
 
 import numpy as np
 from astropy import units as u
 from astropy.time import Time
 from dateutil.parser import isoparse as date_parse
-from panoptes.utils import error
-from panoptes.utils.utils import normalize_file_input
 from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
+
+from panoptes.utils import error
+from panoptes.utils.utils import normalize_file_input
 
 
 class StringYAML(YAML):

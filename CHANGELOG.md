@@ -1,5 +1,33 @@
 # CHANGELOG
 
+## Unreleased
+
+## 0.2.54 - 2026-02-13
+
+### Added
+
+* AI agent guidelines document (`AGENTS.md`) with comprehensive development workflow and coding standards. #331
+* CHANGELOG update requirement to contributor guidelines in `AGENTS.md`. #331
+
+### Changed
+
+* Migrated build system from Hatch to UV for faster dependency management and better PEP 735 support. #XXX
+* Updated all documentation and CI workflows to use UV commands instead of Hatch. #XXX
+* Moved testing dependencies from `[project.optional-dependencies]` to `[dependency-groups]` for modern dependency management. #XXX
+* Updated `.gitignore` to exclude auto-generated `_version.py` files from setuptools-scm. #XXX
+* Line-length configuration from 100 to 110 characters in `pyproject.toml` and documentation. #331
+
+### Removed
+
+* Removed `click<8.3` pin as it was only needed for Hatch compatibility. #XXX
+
+
+## 0.2.53 - 2025-10-21
+
+## Added
+
+* `panoptes.utils.images.fits.detect_sources`, which uses the `sep` package to detect sources in a FITS image. Should mostly be considered a "quick-look" function as it doesn't do anything smart with the background and bayer array. #329
+
 ## 0.2.52 - 2025-10-17
 
 ### Added

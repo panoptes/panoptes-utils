@@ -5,8 +5,7 @@ from loguru import logger
 from requests.exceptions import ConnectionError
 
 from panoptes.utils.error import InvalidConfig
-from panoptes.utils.serializers import from_json
-from panoptes.utils.serializers import to_json
+from panoptes.utils.serializers import from_json, to_json
 
 
 def server_is_running(*args, **kwargs):  # pragma: no cover
