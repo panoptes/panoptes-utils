@@ -322,13 +322,13 @@ panoptes-config-server --host 0.0.0.0 --port 8765 run --config-file tests/testin
    ```
 
 4. **Update `CHANGELOG.md`:**
-   - Add release header with version and date: `## [X.Y.Z] - YYYY-MM-DD`
+   - Add release header with version and date: `## X.Y.Z - YYYY-MM-DD`
    - Ensure all changes are documented under appropriate sections (Added, Changed, Fixed, Removed)
    - Move any "Unreleased" changes under the new version
    - Verify all PR numbers are referenced
    - Example:
      ```markdown
-     ## [0.8.11] - 2026-02-13
+     ## 0.8.11 - 2026-02-13
      
      ### Added
      - New feature description. #123
