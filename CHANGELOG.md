@@ -7,6 +7,10 @@
 * Migrated build system from Hatch to UV for faster dependency management and better PEP 735 support. #XXX
 * Updated all documentation and CI workflows to use UV commands instead of Hatch. #XXX
 * Moved testing dependencies from `[project.optional-dependencies]` to `[dependency-groups]` for modern dependency management. #XXX
+* Updated `.gitignore` to exclude auto-generated `_version.py` files from setuptools-scm. #XXX
+
+### Removed
+
 * Removed `click<8.3` pin as it was only needed for Hatch compatibility. #XXX
 
 ### Added

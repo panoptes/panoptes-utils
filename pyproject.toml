@@ -114,10 +114,6 @@ namespaces = false
 [tool.setuptools_scm]
 version_file = "src/panoptes/utils/_version.py"
 
-[tool.uv]
-# Modern uv configuration
-dev-dependencies = []  # Use dependency-groups instead
-
 [tool.pytest.ini_options]
 addopts = [
     "--cov", "panoptes",
@@ -161,7 +157,8 @@ target-version = "py312"
 extend-exclude = [
     "notebooks",
     "resources",
-    "conf_files"
+    "conf_files",
+    "src/panoptes/utils/_version.py"
 ]
 
 [tool.ruff.lint]
