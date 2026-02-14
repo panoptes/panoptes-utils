@@ -11,7 +11,7 @@ PANOPTES Utilities is a Python library providing astronomical utilities for the 
 - **Architecture:** Modular utility library with CLI tools and services
 - **Domain:** Astronomy, image processing, configuration management
 - **Testing:** pytest with high coverage requirements
-- **Build System:** Hatch (modern Python build system)
+- **Build System:** UV (modern Python package and environment manager)
 - **Code Style:** Ruff for linting and formatting
 
 ## Essential Reading
@@ -87,7 +87,7 @@ panoptes-utils/
 - Test files named `test_*.py`
 - Use pytest fixtures from `conftest.py`
 - Maintain or improve code coverage
-- Run tests locally before committing: `hatch run pytest`
+- Run tests locally before committing: `uv run pytest`
 
 **Testing markers available:**
 ```python
@@ -100,7 +100,8 @@ panoptes-utils/
 **Adding Dependencies:**
 - Add to `dependencies` in `pyproject.toml` for runtime requirements
 - Add to `[project.optional-dependencies]` for optional features
-- Use `hatch run pip install <package>` to install in dev environment
+- Use `uv sync --extra <package>` to install optional extras
+- Add to `[dependency-groups]` for development dependencies (testing, lint, etc.)
 - Consider which extras group the dependency belongs to:
   - `config`: Configuration server dependencies
   - `images`: Image processing dependencies
@@ -343,19 +344,19 @@ def test_config_client(config_host, config_port):
 
 ```bash
 # Run all tests
-hatch run pytest
+uv run pytest
 
 # Run specific test file
-hatch run pytest tests/test_time.py
+uv run pytest tests/test_time.py
 
 # Run specific test
-hatch run pytest tests/test_time.py::test_countdown_timer
+uv run pytest tests/test_time.py::test_countdown_timer
 
 # Run with markers
-hatch run pytest -m "not plate_solve"
+uv run pytest -m "not plate_solve"
 
 # Run with coverage (default)
-hatch run pytest
+uv run pytest
 ```
 
 ## Documentation
@@ -507,28 +508,28 @@ When making changes, update:
 
 ```bash
 # Create development environment
-hatch env create
+uv sync --all-extras --group dev
 
 # Install optional extras
-hatch run pip install -e ".[config,images,testing]"
+uv sync --extra config --extra images
 
 # Run tests
-hatch run pytest
+uv run pytest
 
 # Run specific test file
-hatch run pytest tests/test_utils.py
+uv run pytest tests/test_utils.py
 
 # Check code style
-hatch run lint
+uv run ruff check .
 
 # Format code
-hatch run fmt
+uv run ruff format .
 
 # Check formatting
-hatch run fmt-check
+uv run ruff format --check .
 
 # Build package
-hatch build
+uv build
 
 # Start config server
 panoptes-config-server run --config-file tests/testing.yaml

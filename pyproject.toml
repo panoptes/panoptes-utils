@@ -1,6 +1,9 @@
 [build-system]
-requires = ["hatchling>=1.25.0", "hatch-vcs>=0.4"]
-build-backend = "hatchling.build"
+requires = [
+    "setuptools>=64",
+    "setuptools-scm>=8",
+]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "panoptes-utils"
@@ -28,7 +31,7 @@ classifiers = [
 dependencies = [
     "Deprecated",
     "astropy",
-    "click<8.3",
+    "click>=8.2.1",
     "click-spinner",
     "loguru",
     "numpy>=2",
@@ -75,40 +78,45 @@ images = [
     "sep",
     "watchfiles",
 ]
+
+[project.scripts]
+panoptes-config-server = "panoptes.utils.config.cli:config_server_cli"
+panoptes-utils = "panoptes.utils.cli.main:app"
+
+[dependency-groups]
 testing = [
     "coverage",
     "pycodestyle",
     "pytest",
     "pytest-cov",
     "pytest-doctestplus",
+    "pytest-loguru",
     "pytest-remotedata>=0.3.1",
     "pytest_mpl",
     "python-dotenv",
     "tox",
 ]
-
-[project.scripts]
-panoptes-config-server = "panoptes.utils.config.cli:config_server_cli"
-panoptes-utils = "panoptes.utils.cli.main:app"
-
-[tool.hatch.version]
-source = "vcs"
-
-[tool.hatch.build]
-include = ["src/panoptes/**"]
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/panoptes"]
-
-[tool.hatch.envs.default]
-dependencies = [
-    "ruff>=0.5.0"
+lint = [
+    "ruff>=0.5.0",
 ]
-[tool.hatch.envs.default.scripts]
-lint = "ruff check ."
-lint-fix = "ruff check --fix ."
-fmt = "ruff format ."
-fmt-check = "ruff format --check ."
+dev = [
+    { include-group = "testing" },
+    { include-group = "lint" },
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
+
+[tool.setuptools_scm]
+version_file = "src/panoptes/utils/_version.py"
+
+[tool.uv]
+# Modern uv configuration
+dev-dependencies = []  # Use dependency-groups instead
 
 [tool.pytest.ini_options]
 addopts = [
@@ -155,3 +163,17 @@ extend-exclude = [
     "resources",
     "conf_files"
 ]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
