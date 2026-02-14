@@ -28,6 +28,9 @@ pythonenv*
 .installed.cfg
 *.egg-info
 
+# Version files
+**/_version.py
+
 # Unittest and coverage
 htmlcov/*
 .coverage

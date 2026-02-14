@@ -11,9 +11,11 @@ Always reference these instructions first and fallback to search or bash command
   ```bash
   python3 --version  # Must be 3.12+
   ```
-- Install Hatch build system:
+- Install UV build system:
   ```bash
-  pipx install hatch  # Takes ~21 seconds
+  curl -LsSf https://astral.sh/uv/install.sh | sh  # Takes ~5 seconds
+  # or
+  pipx install uv  # Takes ~10 seconds
   ```
 - Install required system dependencies:
   ```bash
@@ -28,99 +30,78 @@ Always reference these instructions first and fallback to search or bash command
 ### Environment Setup and Build
 - Create development environment:
   ```bash
-  hatch env create  # Takes 2-5 minutes - NEVER CANCEL. Set timeout to 10+ minutes.
+  uv sync --all-extras --group dev  # Takes 1-3 minutes. Set timeout to 5+ minutes.
   ```
-  **KNOWN ISSUE**: Environment creation FAILS with PyPI timeout errors in GitHub Actions and similar restricted environments due to network connectivity limitations. This is a known limitation of the build system in environments with restricted internet access.
-
-- Install optional extras (if environment creation succeeds):
+  
+- Install specific extras or groups as needed:
   ```bash
-  hatch run pip install -e ".[config,images,testing]"  # Takes 1-3 minutes - NEVER CANCEL
+  uv sync --extra config --extra images --group testing  # Install specific features
   ```
-  **NOTE**: This command will also fail in environments with PyPI connectivity issues.
 
 - Build the package:
   ```bash
-  hatch build  # Takes 30-60 seconds - NEVER CANCEL. Set timeout to 5+ minutes.
+  uv build  # Takes 10-30 seconds. Set timeout to 2+ minutes.
   ```
-  **NOTE**: Build will fail if dependencies cannot be downloaded from PyPI.
 
 ### Testing
 - Run all tests (with coverage):
   ```bash
-  hatch run pytest  # Takes 2-5 minutes - NEVER CANCEL. Set timeout to 10+ minutes.
+  uv run pytest  # Takes 2-5 minutes - NEVER CANCEL. Set timeout to 10+ minutes.
   ```
-  **NOTE**: Requires successful environment setup. Will fail in environments with PyPI connectivity issues.
   
 - Run specific test file:
   ```bash
-  hatch run pytest tests/test_utils.py  # Takes 10-30 seconds
+  uv run pytest tests/test_utils.py  # Takes 10-30 seconds
   ```
 - Run specific test:
   ```bash
-  hatch run pytest tests/test_time.py::test_countdown_timer  # Takes 5-10 seconds
+  uv run pytest tests/test_time.py::test_countdown_timer  # Takes 5-10 seconds
   ```
 
 ### Linting and Formatting
 - Run linting (Ruff):
   ```bash
-  hatch run lint  # Takes 5-15 seconds
+  uv run ruff check .  # Takes 5-15 seconds
   ```
-  **NOTE**: Requires Ruff to be installed in the Hatch environment.
   
 - Fix linting issues automatically:
   ```bash
-  hatch run lint-fix  # Takes 5-15 seconds
+  uv run ruff check --fix .  # Takes 5-15 seconds
   ```
 - Format code:
   ```bash
-  hatch run fmt  # Takes 5-15 seconds
+  uv run ruff format .  # Takes 5-15 seconds
   ```
 - Check formatting without changes:
   ```bash
-  hatch run fmt-check  # Takes 5-15 seconds
+  uv run ruff format --check .  # Takes 5-15 seconds
   ```
-
-**WORKAROUND for network issues**: If Hatch commands fail due to network issues, install tools directly:
-```bash
-# Install ruff directly (may also fail in restricted environments)
-pip install --user ruff
-# Then run directly
-ruff check .
-ruff format .
-```
 
 ### CLI Tools
 - Main CLI help:
   ```bash
-  hatch run panoptes-utils --help
+  uv run panoptes-utils --help
   ```
 - Image processing CLI:
   ```bash
-  hatch run panoptes-utils image --help
+  uv run panoptes-utils image --help
   ```
 - Config server:
   ```bash
-  hatch run panoptes-config-server run --config-file tests/testing.yaml
+  uv run panoptes-config-server run --config-file tests/testing.yaml
   ```
 
 ## Validation
-- **CRITICAL**: Always run `hatch run lint` and `hatch run fmt-check` before committing changes or the CI (.github/workflows/pythontest.yaml) will fail.
-  **NOTE**: These commands may fail in environments with PyPI connectivity issues.
-- **Alternative validation**: If Hatch commands fail, use direct tool commands (if tools can be installed):
-  ```bash
-  ruff check .  # Lint check
-  ruff format --check .  # Format check
-  ```
+- **CRITICAL**: Always run `uv run ruff check .` and `uv run ruff format --check .` before committing changes or the CI (.github/workflows/pythontest.yaml) will fail.
 - Always run at least one test to ensure changes don't break functionality:
   ```bash
-  hatch run pytest tests/test_utils.py  # Requires working environment
+  uv run pytest tests/test_utils.py
   ```
 - **Manual Testing Scenarios**: After making changes to CLI tools, validate by running:
   ```bash
-  hatch run panoptes-utils --help  # Should show help without errors
-  hatch run panoptes-config-server --help  # Should show config server help
+  uv run panoptes-utils --help  # Should show help without errors
+  uv run panoptes-config-server --help  # Should show config server help
   ```
-  **NOTE**: These require successful package installation.
 
 ## Project Structure and Navigation
 
@@ -161,10 +142,10 @@ Output includes:
 - `conftest.py` - Test configuration
 
 ### Development Workflow
-1. Check code style: `hatch run lint`
-2. Format code: `hatch run fmt`
-3. Run tests: `hatch run pytest`
-4. Build package: `hatch build`
+1. Check code style: `uv run ruff check .`
+2. Format code: `uv run ruff format .`
+3. Run tests: `uv run pytest`
+4. Build package: `uv build`
 
 ### Environment Variables
 - `PANOPTES_CONFIG_HOST` - Config server host (default: localhost)
@@ -172,32 +153,12 @@ Output includes:
 - `PANOPTES_CONFIG_FILE` - Config file path (default: tests/testing.yaml)
 
 ## Known Issues and Limitations
-- **CRITICAL LIMITATION**: PyPI connectivity issues prevent most development commands from working in GitHub Actions and restricted network environments:
-  - `hatch env create` FAILS with timeout errors
-  - `hatch run pytest` FAILS - cannot install dependencies  
-  - `hatch run lint` FAILS - cannot install Ruff
-  - `hatch build` FAILS - cannot download build dependencies
-  - `pip install` commands FAIL with PyPI timeouts
-- **Root Cause**: This appears to be a network connectivity issue where PyPI (pypi.org) is unreachable from the execution environment
-- **Impact**: Most Hatch-based development workflows are unusable in CI/CD environments with restricted internet access
-- **Workaround**: Development must be done in environments with full internet access to PyPI
 - **System Dependencies**: Some astrometry.net data packages may not be available on all systems
 - **Port Conflicts**: Config server uses port 8765 - ensure no other services are running on this port
 
 ## Troubleshooting
-- **PRIMARY ISSUE - Network Connectivity**: If ANY Hatch or pip command fails with timeout errors:
-  ```
-  TimeoutError: The read operation timed out
-  ReadTimeoutError: HTTPSConnectionPool(host='pypi.org', port=443): Read timed out
-  ```
-  This indicates PyPI is unreachable. Test with: `ping pypi.org`
-  **Resolution**: Must work in environment with unrestricted internet access
-  
-- **Environment Creation Fails**: `hatch env create` fails due to network issues
-  **Workaround**: Document this limitation and work in local development environment
-  
-- **Lint/Test Commands Fail**: All `hatch run` commands fail if environment creation failed
-  **Resolution**: Fix network connectivity or work in pre-configured environment
+- **Config Server Errors**: If tests fail with config server errors, ensure no other services are running on port 8765
+- **Image Processing Test Failures**: Verify system dependencies (astrometry.net, dcraw, exiftool) are installed
   
 - **Config Server Errors**: If tests fail with config server errors, ensure no other services are running on port 8765
 - **Image Processing Test Failures**: Verify system dependencies (astrometry.net, dcraw, exiftool) are installed
