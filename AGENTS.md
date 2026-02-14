@@ -401,22 +401,13 @@ panoptes-config-server --host 0.0.0.0 --port 8765 run --config-file tests/testin
     git merge --no-ff release-${NEW_VERSION} -m "Merge release-${NEW_VERSION} into develop"
     ```
 
-13. **Tag `develop` with next dev version:**
-    ```bash
-    # Calculate next dev version (increment patch version)
-    # Example: v0.8.11 -> v0.8.12dev
-    NEXT_DEV_VERSION="v0.8.12dev"  # Increment Z and add 'dev' suffix
-    
-    git tag -a ${NEXT_DEV_VERSION} -m "Begin development of ${NEXT_DEV_VERSION}"
-    ```
-
-14. **Push `develop` and tags to origin:**
+13. **Push `develop` and tags to origin:**
     ```bash
     git push origin develop
     git push origin ${NEXT_DEV_VERSION}
     ```
 
-15. **Clean up release branch (optional):**
+14. **Clean up release branch:**
     ```bash
     git branch -d release-${NEW_VERSION}
     ```
@@ -424,7 +415,7 @@ panoptes-config-server --host 0.0.0.0 --port 8765 run --config-file tests/testin
 **Post-Release:**
 - Verify the new tag appears on GitHub releases page
 - Monitor CI/CD for any issues
-- Upload to PyPI if configured (separate process)
+- Confirm the GitHub Actions workflow (`.github/workflows/create-release.yml`) has successfully built and published the release to PyPI (triggered on tag push)
 - Announce release on forum/communications channels
 
 **Common Issues:**
