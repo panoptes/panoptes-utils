@@ -401,13 +401,20 @@ panoptes-config-server --host 0.0.0.0 --port 8765 run --config-file tests/testin
     git merge --no-ff release-${NEW_VERSION} -m "Merge release-${NEW_VERSION} into develop"
     ```
 
-13. **Push `develop` and tags to origin:**
+13. **Tag `develop` with next development version:**
+    ```bash
+    # Set next development version (example: v0.2.50 -> v0.2.51.dev0)
+    NEXT_DEV_VERSION="v0.2.51.dev0"
+    git tag -a ${NEXT_DEV_VERSION} -m "Start development for ${NEXT_DEV_VERSION}"
+    ```
+
+14. **Push `develop` and tags to origin:**
     ```bash
     git push origin develop
     git push origin ${NEXT_DEV_VERSION}
     ```
 
-14. **Clean up release branch:**
+15. **Clean up release branch:**
     ```bash
     git branch -d release-${NEW_VERSION}
     ```
