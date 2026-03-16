@@ -38,7 +38,18 @@ def config_server_cli(context, host="localhost", port=6563, verbose=False):
         verbose (bool): Enable verbose logging. Defaults to False.
     """
     context.ensure_object(dict)
-    context.obj["host"] = host
+
+    # Distinguish between the address the server binds to and the address clients use
+    # to connect. When binding to 0.0.0.0 (all interfaces) or when no host is set,
+    # clients should connect via localhost/127.0.0.1 rather than the wildcard address.
+    bind_host = host
+    client_host = "localhost" if host in (None, "0.0.0.0") else host
+
+    # For backward compatibility, keep the "host" key pointing at the client host so
+    # existing commands that read context.obj["host"] will use a connectable address.
+    context.obj["bind_host"] = bind_host
+    context.obj["client_host"] = client_host
+    context.obj["host"] = client_host
     context.obj["port"] = port
 
     # Setup the logger.
@@ -79,17 +90,16 @@ def run(context, config_file=None, save_local=True, load_local=False, heartbeat=
     This function is installed as an entry_point for the module, accessible
      at `panoptes-config-server`.
     """
-    host = context.obj.get("host")
+    # Prefer the explicitly stored bind/client hosts, falling back to "host" for
+    # compatibility with older contexts.
+    bind_host = context.obj.get("bind_host", context.obj.get("host"))
+    client_host = context.obj.get("client_host", bind_host)
     port = context.obj.get("port")
-
-    # When the server binds to 0.0.0.0 (all interfaces), clients must connect via
-    # localhost/127.0.0.1 rather than the wildcard address itself.
-    client_host = "localhost" if host in (None, "0.0.0.0") else host
 
     try:
         server_process = server.config_server(
             config_file,
-            host=host,
+            host=bind_host,
             port=port,
             load_local=load_local,
             save_local=save_local,
