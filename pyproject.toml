@@ -39,6 +39,7 @@ dependencies = [
     "pytest-loguru",
     "python-dateutil",
     "requests",
+    "rich>=12.3.0",
     "ruamel.yaml",
     "typer",
 ]

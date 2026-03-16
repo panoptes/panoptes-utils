@@ -5,6 +5,9 @@
 ### Added
 
 * Config server CLI commands (`run`, `stop`, `get`, `set`) are now available under `panoptes-utils config` using Typer, harmonized with the existing `panoptes-utils` CLI. #337
+* All Typer CLI scripts now use `rich.print` for styled terminal output (green for success, red for errors, bold/italic for emphasis) and `rich_markup_mode="rich"` on all `Typer` app instances. #337
+* All Typer sub-apps now use `no_args_is_help=True`, showing help automatically when no subcommand is provided. #337
+* Added `rich>=12.3.0` as an explicit core dependency (it was already available transitively through `typer`). #337
 * Documented environment variables used by the config server and client in the `README.md`. #336
 
 ### Fixed
@@ -13,7 +16,7 @@
 
 ### Changed
 
-* Moved config server CLI into the main `panoptes.utils.cli` namespace as `panoptes-utils config`. The `panoptes-config-server` entry point has been removed; use `panoptes-utils config` instead. #XXX
+* Moved config server CLI into the main `panoptes.utils.cli` namespace as `panoptes-utils config`. The `panoptes-config-server` entry point has been removed; use `panoptes-utils config` instead. #337
 * Migrated config server from Flask+gevent to FastAPI+uvicorn for improved performance and modern async support. #336
 * Config server CLI `run` command now defaults to `--load-local` (previously `--no-load-local`) so any locally saved config overrides are applied on startup. #336
 
