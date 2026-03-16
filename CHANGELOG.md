@@ -4,18 +4,12 @@
 
 ### Added
 
-* Config server CLI commands (`run`, `stop`, `get`, `set`) are now available under `panoptes-utils config` using Typer, harmonized with the existing `panoptes-utils` CLI. #XXX
-* All Typer CLI scripts now use `rich.print` for styled terminal output (green for success, red for errors, bold/italic for emphasis) and `rich_markup_mode="rich"` on all `Typer` app instances. #XXX
-* All Typer sub-apps now use `no_args_is_help=True`, showing help automatically when no subcommand is provided. #XXX
+* Config server CLI commands (`run`, `stop`, `get`, `set`) are now available under `panoptes-utils config` using Typer, harmonized with the existing `panoptes-utils` CLI. #337
 * Documented environment variables used by the config server and client in the `README.md`. #336
 
 ### Fixed
 
 * Unified CLI logging behavior: `DEBUG` level output is now silenced by default in all CLI tools (`panoptes-config-server` and `panoptes-utils`) and only enabled when the `--verbose` flag is provided. #336
-* Config server CLI `run` command no longer exits immediately when started with `--host 0.0.0.0`; the wildcard bind address is now normalized to `localhost` for client-side connectivity checks. #336
-* Config server CLI `run` command now waits up to 30 seconds (configurable via `--startup-timeout`) for the server socket to be ready before entering the monitoring loop. #336
-* Startup "Bad connection" log message is now emitted at `TRACE` level (invisible by default) instead of `DEBUG` during the expected server-ready polling phase. #336
-* Added null guard in `set_config_entry` before saving to disk when `_pocs_cut` is uninitialized. #336
 
 ### Changed
 
