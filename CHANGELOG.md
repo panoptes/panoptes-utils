@@ -5,6 +5,8 @@
 ### Added
 
 * Config server CLI commands (`run`, `stop`, `get`, `set`) are now available under `panoptes-utils config` using Typer, harmonized with the existing `panoptes-utils` CLI. #XXX
+* All Typer CLI scripts now use `rich.print` for styled terminal output (green for success, red for errors, bold/italic for emphasis) and `rich_markup_mode="rich"` on all `Typer` app instances. #XXX
+* All Typer sub-apps now use `no_args_is_help=True`, showing help automatically when no subcommand is provided. #XXX
 * Documented environment variables used by the config server and client in the `README.md`. #336
 
 ### Fixed

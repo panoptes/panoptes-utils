@@ -2,11 +2,15 @@ import time
 
 import typer
 from loguru import logger
+from rich import print
+from rich.console import Console
 
 from panoptes.utils.config import server
 from panoptes.utils.config.client import get_config, server_is_running, set_config
 
-app = typer.Typer(help="Manage the config server.")
+err_console = Console(stderr=True)
+
+app = typer.Typer(help="Manage the config server.", rich_markup_mode="rich", no_args_is_help=True)
 
 
 @app.callback()
@@ -62,7 +66,7 @@ def run(
     # Prefer the explicitly stored bind/client hosts, falling back to "host" for
     # compatibility with older contexts.
     bind_host = ctx.obj.get("bind_host", ctx.obj.get("host"))
-    client_host = ctx.obj.get("client_host", bind_host)
+    client_host = ctx.obj.get("client_host", "localhost" if bind_host in (None, "0.0.0.0") else bind_host)
     port = ctx.obj.get("port")
 
     try:
@@ -79,11 +83,11 @@ def run(
         return
 
     try:
-        typer.echo("Starting config server. Ctrl-c to stop")
+        print("Starting config server. [bold]Ctrl-c[/bold] to stop")
         server_process.start()
-        typer.echo(
-            f"Config server started on server_process.pid={server_process.pid!r}. "
-            f'Set "config_server.running=False" or Ctrl-c to stop'
+        print(
+            f"Config server started on [bold]pid={server_process.pid!r}[/bold]. "
+            f'Set [italic]"config_server.running=False"[/italic] or [bold]Ctrl-c[/bold] to stop'
         )
 
         # Wait for the server to become reachable before entering the monitor loop.
@@ -148,10 +152,10 @@ def config_get(
         config_entry = get_config(key=key, host=host, port=port, parse=parse, default=default)
     except Exception as e:
         logger.error(f"Error while trying to get config: {e!r}")
-        typer.secho(f"Error while trying to get config: {e!r}", fg="red", err=True)
+        err_console.print(f"[red]Error while trying to get config: {e!r}[/red]")
     else:
         logger.debug(f"Config server response: config_entry={config_entry!r}")
-        typer.echo(config_entry)
+        print(config_entry)
 
 
 @app.command("set")
@@ -167,7 +171,7 @@ def config_set(
     port = ctx.obj.get("port")
     logger.debug(f"Setting config key={key!r} new_value={new_value!r} on {host}:{port}")
     config_entry = set_config(key, new_value, host=host, port=port, parse=parse)
-    typer.echo(config_entry)
+    print(config_entry)
 
 
 if __name__ == "__main__":
