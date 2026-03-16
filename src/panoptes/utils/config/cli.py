@@ -1,3 +1,4 @@
+import sys
 import time
 
 import click
@@ -40,8 +41,12 @@ def config_server_cli(context, host="localhost", port=6563, verbose=False):
     context.obj["host"] = host
     context.obj["port"] = port
 
+    # Setup the logger.
+    logger.remove()
     if verbose:
-        logger.enable("panoptes")
+        logger.add(sys.stderr, level="DEBUG")
+    else:
+        logger.add(sys.stderr, level="INFO")
 
 
 @click.command("run")

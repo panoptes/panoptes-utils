@@ -1,9 +1,23 @@
+import sys
 import typer
+from loguru import logger
 
 from panoptes.utils.cli import image
 
 app = typer.Typer()
 state = {"verbose": False}
+
+
+@app.callback()
+def main(verbose: bool = False):
+    """PANOPTES Utilities CLI."""
+    # Setup the logger.
+    logger.remove()
+    if verbose:
+        logger.add(sys.stderr, level="DEBUG")
+    else:
+        logger.add(sys.stderr, level="INFO")
+
 
 app.add_typer(image.app, name="image", help="Process an image.")
 
