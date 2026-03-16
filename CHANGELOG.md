@@ -4,15 +4,15 @@
 
 ### Added
 
-* Documented environment variables used by the config server and client in the `README.md`. #XXX
+* Documented environment variables used by the config server and client in the `README.md`. #336
 
 ### Fixed
 
-* Unified CLI logging behavior: `DEBUG` level output is now silenced by default in all CLI tools (`panoptes-config-server` and `panoptes-utils`) and only enabled when the `--verbose` flag is provided. #XXX
+* Unified CLI logging behavior: `DEBUG` level output is now silenced by default in all CLI tools (`panoptes-config-server` and `panoptes-utils`) and only enabled when the `--verbose` flag is provided. #336
 
 ### Changed
 
-* Migrated config server from Flask+gevent to FastAPI+uvicorn for improved performance and modern async support. #XXX
+* Migrated config server from Flask+gevent to FastAPI+uvicorn for improved performance and modern async support. #336
 
 ## 0.2.54 - 2026-02-13
 
