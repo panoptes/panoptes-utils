@@ -102,6 +102,8 @@ lint = [
 dev = [
     { include-group = "testing" },
     { include-group = "lint" },
+    "fastapi>=0.115",
+    "uvicorn>=0.34",
 ]
 
 [tool.setuptools]
