@@ -52,11 +52,11 @@ Forum = "https://forum.projectpanoptes.org"
 
 [project.optional-dependencies]
 config = [
-    "Flask",
+    "fastapi>=0.115",
     "PyYAML",
-    "gevent",
     "requests",
     "scalpl",
+    "uvicorn>=0.34",
 ]
 docs = [
     "myst-parser",

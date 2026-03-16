@@ -36,8 +36,8 @@ def test_config_client_bad(caplog):
     assert caplog.records[-1].levelname == "WARNING"
     assert caplog.records[-1].message.startswith("Problem with set_config")
 
-    # Bad host will return `None` but also throw error
-    assert get_config("foo", host="foobaz") is None
+    # Bad host will return `None`; with verbose=True the connection error is logged at DEBUG.
+    assert get_config("foo", host="foobaz", verbose=True) is None
     found_log = False
     for rec in caplog.records[-5:]:
         if rec.levelname == "DEBUG" and rec.message.startswith("Bad connection to config-server"):

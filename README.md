@@ -75,6 +75,17 @@ After installing with the `config` option as above, type:
 panoptes-config-server run --config-file <path-to-file.yaml>
 ```
 
+### Environment Variables
+
+The config server and client use the following environment variables:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PANOPTES_CONFIG_HOST` | The host address for the config server. | `localhost` |
+| `PANOPTES_CONFIG_PORT` | The port number for the config server. | `6563` |
+| `PANOPTES_CONFIG_FILE` | The YAML configuration file to load (used by CLI). | |
+| `PANOPTES_DEBUG` | Enables verbose logging if set. | `False` |
+
 ### Development with UV
 
 This project uses UV for fast Python package and environment management with modern PEP 735 dependency groups.
