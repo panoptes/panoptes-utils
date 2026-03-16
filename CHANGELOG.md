@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+* Migrated config server from Flask+gevent to FastAPI+uvicorn for improved performance and modern async support. #XXX
+
 ## 0.2.54 - 2026-02-13
 
 ### Added
