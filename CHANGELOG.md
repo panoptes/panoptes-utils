@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+* Documented environment variables used by the config server and client in the `README.md`. #XXX
+
 ### Fixed
 
 * Unified CLI logging behavior: `DEBUG` level output is now silenced by default in all CLI tools (`panoptes-config-server` and `panoptes-utils`) and only enabled when the `--verbose` flag is provided. #XXX
