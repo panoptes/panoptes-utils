@@ -318,11 +318,11 @@ async def set_config_entry(request: Request) -> JSONResponse:
     logger.info(f"Setting config  save_local={save_local!r}")
     if save_local and _server_config.get("config_file") is not None:
         if _pocs_cut is None:
-            logger.error("Configuration state is uninitialized; cannot save config entry to disk.")
+            logger.error("Configuration state is uninitialized; cannot save configuration to disk.")
             return JSONResponse(
                 {
                     "success": False,
-                    "msg": "Configuration state is not initialized; unable to save configuration.",
+                    "msg": "Configuration state is uninitialized; cannot save configuration to disk.",
                 },
                 status_code=500,
             )

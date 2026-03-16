@@ -9,10 +9,15 @@
 ### Fixed
 
 * Unified CLI logging behavior: `DEBUG` level output is now silenced by default in all CLI tools (`panoptes-config-server` and `panoptes-utils`) and only enabled when the `--verbose` flag is provided. #336
+* Config server CLI `run` command no longer exits immediately when started with `--host 0.0.0.0`; the wildcard bind address is now normalized to `localhost` for client-side connectivity checks. #336
+* Config server CLI `run` command now waits up to 30 seconds (configurable via `--startup-timeout`) for the server socket to be ready before entering the monitoring loop. #336
+* Startup "Bad connection" log message is now emitted at `TRACE` level (invisible by default) instead of `DEBUG` during the expected server-ready polling phase. #336
+* Added null guard in `set_config_entry` before saving to disk when `_pocs_cut` is uninitialized. #336
 
 ### Changed
 
 * Migrated config server from Flask+gevent to FastAPI+uvicorn for improved performance and modern async support. #336
+* Config server CLI `run` command now defaults to `--load-local` (previously `--no-load-local`) so any locally saved config overrides are applied on startup. #336
 
 ## 0.2.54 - 2026-02-13
 

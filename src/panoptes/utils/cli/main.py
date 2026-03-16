@@ -6,12 +6,15 @@ from loguru import logger
 from panoptes.utils.cli import image
 
 app = typer.Typer()
-state = {"verbose": False}
 
 
 @app.callback()
 def main(verbose: bool = False):
-    """PANOPTES Utilities CLI."""
+    """PANOPTES Utilities CLI.
+
+    Args:
+        verbose: Enable DEBUG-level logging. Defaults to False (INFO level).
+    """
     # Setup the logger.
     logger.remove()
     if verbose:
