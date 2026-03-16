@@ -3,7 +3,7 @@ import sys
 import typer
 from loguru import logger
 
-from panoptes.utils.cli import image
+from panoptes.utils.cli import config, image
 
 app = typer.Typer()
 
@@ -23,6 +23,7 @@ def main(verbose: bool = False):
         logger.add(sys.stderr, level="INFO")
 
 
+app.add_typer(config.app, name="config", help="Manage the config server.")
 app.add_typer(image.app, name="image", help="Process an image.")
 
 if __name__ == "__main__":
