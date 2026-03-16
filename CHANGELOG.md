@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Fixed
+
+* Config server CLI `run` command no longer exits immediately when started with `--host 0.0.0.0`; the wildcard bind address is now normalized to `localhost` for client-side connectivity checks. #XXX
+* Config server CLI `run` command now waits for the server to become reachable before entering the monitoring loop, preventing a startup race condition where `server_is_running` returned `False` before uvicorn finished binding its socket. #XXX
+
 ### Changed
 
 * Migrated config server from Flask+gevent to FastAPI+uvicorn for improved performance and modern async support. #XXX

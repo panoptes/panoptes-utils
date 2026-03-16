@@ -62,8 +62,13 @@ def config_server_cli(context, host="localhost", port=6563, verbose=False):
     help="If the set values should be saved to the local file, default True.",
 )
 @click.option("--heartbeat", default=2, help="Heartbeat interval, default 2 seconds.")
+@click.option(
+    "--startup-timeout",
+    default=30,
+    help="Seconds to wait for the server to become ready before giving up, default 30.",
+)
 @click.pass_context
-def run(context, config_file=None, save_local=True, load_local=False, heartbeat=2):
+def run(context, config_file=None, save_local=True, load_local=False, heartbeat=2, startup_timeout=30):
     """Runs the config server with command line options.
 
     This function is installed as an entry_point for the module, accessible
@@ -71,6 +76,11 @@ def run(context, config_file=None, save_local=True, load_local=False, heartbeat=
     """
     host = context.obj.get("host")
     port = context.obj.get("port")
+
+    # When the server binds to 0.0.0.0 (all interfaces), clients must connect via
+    # localhost/127.0.0.1 rather than the wildcard address itself.
+    client_host = "localhost" if host in (None, "0.0.0.0") else host
+
     try:
         server_process = server.config_server(
             config_file,
@@ -92,8 +102,26 @@ def run(context, config_file=None, save_local=True, load_local=False, heartbeat=
             f'Set "config_server.running=False" or Ctrl-c to stop'
         )
 
-        # Loop until config told to stop.
-        while server_is_running(host=host, port=port):
+        # Wait for the server to become reachable before entering the monitor loop.
+        # uvicorn takes a moment to bind its socket after the process is forked.
+        logger.info(f"Waiting for config server to be ready on {client_host}:{port}")
+        startup_elapsed = 0.0
+        startup_interval = 0.5
+        while startup_elapsed < startup_timeout:
+            if server_is_running(host=client_host, port=port):
+                break
+            time.sleep(startup_interval)
+            startup_elapsed += startup_interval
+        else:
+            logger.error(f"Config server did not become ready within {startup_timeout}s")
+            server_process.terminate()
+            server_process.join(5)
+            return
+
+        logger.info("Config server is ready")
+
+        # Loop until the server signals it is no longer running.
+        while server_is_running(host=client_host, port=port):
             time.sleep(heartbeat)
 
         server_process.terminate()
