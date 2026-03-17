@@ -140,7 +140,7 @@ def test_config_run_startup_timeout(runner, config_path):
     with (
         patch("panoptes.utils.cli.config.server.config_server", return_value=mock_proc),
         patch("panoptes.utils.cli.config.server_is_running", return_value=False),
-        patch("panoptes.utils.cli.config.time.sleep"),
+        patch("panoptes.utils.cli.config.time"),
     ):
         result = runner.invoke(
             app,
@@ -170,7 +170,7 @@ def test_config_run_normal(runner, config_path):
     with (
         patch("panoptes.utils.cli.config.server.config_server", return_value=mock_proc),
         patch("panoptes.utils.cli.config.server_is_running", side_effect=fake_is_running),
-        patch("panoptes.utils.cli.config.time.sleep"),
+        patch("panoptes.utils.cli.config.time"),
     ):
         result = runner.invoke(app, ["config", "run", "--config-file", f"{config_path}"])
 
@@ -200,7 +200,7 @@ def test_config_run_monitor_exception(runner, config_path):
     with (
         patch("panoptes.utils.cli.config.server.config_server", return_value=mock_proc),
         patch("panoptes.utils.cli.config.server_is_running", side_effect=fake_is_running),
-        patch("panoptes.utils.cli.config.time.sleep"),
+        patch("panoptes.utils.cli.config.time"),
     ):
         result = runner.invoke(app, ["config", "run", "--config-file", f"{config_path}"])
 
