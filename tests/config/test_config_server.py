@@ -13,7 +13,7 @@ def config_host():
 
 @pytest.fixture(scope="module")
 def config_port():
-    return 8765
+    return 6563
 
 
 def test_config_client():

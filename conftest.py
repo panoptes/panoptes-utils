@@ -50,12 +50,12 @@ def pytest_configure(config) -> None:  # noqa: ANN001
     config_file = "tests/testing.yaml"
 
     host = "localhost"
-    port = "8765"
+    port = "6563"
 
     os.environ["PANOPTES_CONFIG_HOST"] = host
     os.environ["PANOPTES_CONFIG_PORT"] = port
 
-    config_server(config_file, host="localhost", port=8765, load_local=False, save_local=False)
+    config_server(config_file, host=host, port=port, load_local=False, save_local=False)
     logger.success("Config server set up")
 
     config.addinivalue_line("markers", "plate_solve: Tests that require astrometry.net")

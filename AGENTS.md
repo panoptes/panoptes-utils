@@ -236,11 +236,11 @@ The configuration server provides a REST API for centralized configuration manag
 panoptes-config-server run --config-file tests/testing.yaml
 
 # With custom host/port
-panoptes-config-server --host 0.0.0.0 --port 8765 run --config-file tests/testing.yaml
+panoptes-config-server --host 0.0.0.0 --port 6563 run --config-file tests/testing.yaml
 ```
 
 **Notes:**
-- Default port is 8765
+- Default port is 6563
 - Server provides REST API for configuration access
 - Used by POCS and other PANOPTES components
 

@@ -43,7 +43,7 @@ src/panoptes/utils/
 
 ## Critical Info
 
-**Config Server:** Port 8765 (check if in use)  
+**Config Server:** Port 6563 (check if in use)  
 **Test Config:** `tests/testing.yaml`  
 **Timing:** Never cancel - env setup (1-3 min), tests (2-5 min), deps (5-8 min)
 
