@@ -86,6 +86,18 @@ The config server and client use the following environment variables:
 | `PANOPTES_CONFIG_FILE` | The YAML configuration file to load (used by CLI). | |
 | `PANOPTES_DEBUG` | Enables verbose logging if set. | `False` |
 
+Telemetry Server
+----------------
+
+After installing with the `telemetry` option as above, type:
+
+```bash
+panoptes-telemetry-server run --system-dir /tmp/panoptes-telemetry
+```
+
+The telemetry server writes append-only NDJSON events to a rotated `system` stream and, when a run is
+active, to a per-run `telemetry.ndjson` file. The system stream rotates on the local-day noon boundary.
+
 ### Development with UV
 
 This project uses UV for fast Python package and environment management with modern PEP 735 dependency groups.
