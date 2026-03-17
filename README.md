@@ -101,6 +101,11 @@ panoptes-utils telemetry run --system-dir /tmp/panoptes-telemetry
 The telemetry server writes append-only NDJSON events to a rotated `system` stream and, when a run is
 active, to a per-run `telemetry.ndjson` file. The system stream rotates on the local-day noon boundary.
 
+Use `start_run` when you want subsequent telemetry to be associated with a specific observing run.
+Before a run is active, events posted without an explicit `stream` are written to the `system` stream.
+After `POST /run/start` or `TelemetryClient.start_run(...)`, the default event destination switches to
+the `run` stream until the run is stopped.
+
 Example local workflow with `httpie`:
 
 ```bash
@@ -113,7 +118,8 @@ http :6562/ready
 # Record a system event.
 http POST :6562/event type=weather data:='{"sky":"clear","wind_mps":2.1}'
 
-# Start a run and then emit a run-scoped event.
+# Start a run. From this point on, events without an explicit stream
+# automatically go to the run stream.
 http POST :6562/run/start run_dir=/tmp/panoptes-run-001 meta:='{"run_id":"001"}'
 
 http POST :6562/event type=status data:='{"state":"running"}'
@@ -134,7 +140,11 @@ client = TelemetryClient()
 
 print(client.ready())
 
+# Before start_run(), the default stream is `system`.
 client.post_event("weather", {"sky": "clear", "wind_mps": 2.1}, meta={"source": "demo"})
+
+# start_run() activates the run stream and sets the default destination for
+# subsequent post_event() calls to that run.
 client.start_run("/tmp/panoptes-run-001", meta={"run_id": "001"})
 client.post_event("status", {"state": "running"})
 
