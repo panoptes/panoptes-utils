@@ -8,8 +8,8 @@ import pytest
 from typer.testing import CliRunner
 
 from panoptes.utils import error
+from panoptes.utils.cli.image import solve_fits
 from panoptes.utils.cli.main import app
-from panoptes.utils.cli.image import cr2_to_jpg, cr2_to_fits, solve_fits
 
 
 @pytest.fixture(scope="module")
