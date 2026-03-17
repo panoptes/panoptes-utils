@@ -5,7 +5,7 @@
 ### Added
 
 * Documented environment variables used by the config server and client in the `README.md`. #336
- * Added a `panoptes-utils telemetry` daemon command with append-only NDJSON logging for system/run streams, noon-boundary system rotation, and `/current` snapshot support. #XXX
+ * Added a `panoptes-utils telemetry` daemon command and Python client with append-only NDJSON logging for system/run streams, noon-boundary system rotation, and `/current` snapshot support. #XXX
 
 ### Fixed
 

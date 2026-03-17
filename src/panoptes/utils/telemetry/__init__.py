@@ -1,5 +1,6 @@
 """Telemetry utilities for PANOPTES."""
 
+from panoptes.utils.telemetry.client import TelemetryClient, TelemetryClientError
 from panoptes.utils.telemetry.server import (
     TelemetryService,
     create_app,
@@ -9,6 +10,8 @@ from panoptes.utils.telemetry.server import (
 )
 
 __all__ = [
+    "TelemetryClient",
+    "TelemetryClientError",
     "TelemetryService",
     "create_app",
     "get_system_day_key",

@@ -101,34 +101,47 @@ panoptes-utils telemetry run --system-dir /tmp/panoptes-telemetry
 The telemetry server writes append-only NDJSON events to a rotated `system` stream and, when a run is
 active, to a per-run `telemetry.ndjson` file. The system stream rotates on the local-day noon boundary.
 
-Example local workflow:
+Example local workflow with `httpie`:
 
 ```bash
 # Start the server in one terminal.
 panoptes-utils telemetry run --system-dir /tmp/panoptes-telemetry
 
 # Check readiness from another terminal.
-curl http://localhost:6562/ready
+http :6562/ready
 
 # Record a system event.
-curl -X POST http://localhost:6562/event \
-  -H "Content-Type: application/json" \
-  -d '{"type":"weather","data":{"sky":"clear","wind_mps":2.1}}'
+http POST :6562/event type=weather data:='{"sky":"clear","wind_mps":2.1}'
 
 # Start a run and then emit a run-scoped event.
-curl -X POST http://localhost:6562/run/start \
-  -H "Content-Type: application/json" \
-  -d '{"run_dir":"/tmp/panoptes-run-001","meta":{"run_id":"001"}}'
+http POST :6562/run/start run_dir=/tmp/panoptes-run-001 meta:='{"run_id":"001"}'
 
-curl -X POST http://localhost:6562/event \
-  -H "Content-Type: application/json" \
-  -d '{"type":"status","data":{"state":"running"}}'
+http POST :6562/event type=status data:='{"state":"running"}'
 
 # Inspect the materialized current view.
-curl http://localhost:6562/current
+http :6562/current
 
 # Stop the server cleanly.
 panoptes-utils telemetry stop
+```
+
+Example local workflow with Python:
+
+```python
+from panoptes.utils.telemetry import TelemetryClient
+
+client = TelemetryClient()
+
+print(client.ready())
+
+client.post_event("weather", {"sky": "clear", "wind_mps": 2.1}, meta={"source": "demo"})
+client.start_run("/tmp/panoptes-run-001", meta={"run_id": "001"})
+client.post_event("status", {"state": "running"})
+
+print(client.current())
+
+client.stop_run()
+client.shutdown()
 ```
 
 Environment variables:
