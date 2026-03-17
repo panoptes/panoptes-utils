@@ -551,6 +551,8 @@ def function_name(param1: str, param2: int) -> bool:
 
 When making changes, update:
 - **`CHANGELOG.md`** for all PRs (required)
+- Changelog entries should be categorized under appropriate sections (Added, Changed, Fixed, Removed) and reference PR numbers.
+- Changelog entries should be clear and concise, describing the change and its impact, ideally less than one line per PR.
 - Inline code comments for complex logic
 - Docstrings for API changes
 - Sphinx docs in `docs/` for major features
