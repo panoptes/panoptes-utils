@@ -174,6 +174,8 @@ panoptes-config-server run --config-file tests/testing.yaml
 Command-line tools built with Typer.
 
 **When modifying:**
+- Prefer Typer for new CLI commands and additions going forward.
+- Prefer adding new CLI surfaces under `panoptes-utils` subcommands in `src/panoptes/utils/cli/` rather than creating new standalone console scripts, unless there is a strong compatibility reason not to.
 - Use Typer decorators and type hints
 - Provide clear help text and examples
 - Test commands manually and with unit tests
