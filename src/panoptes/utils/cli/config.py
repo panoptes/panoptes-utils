@@ -117,7 +117,7 @@ def run(
     except KeyboardInterrupt:
         logger.info(f"Config server interrupted, shutting down {server_process.pid}")
         server_process.terminate()
-    except Exception as e:  # pragma: no cover
+    except Exception as e:
         logger.error(f"Unable to start config server {e!r}")
 
 
