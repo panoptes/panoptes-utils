@@ -12,6 +12,7 @@
 
 ### Fixed
 
+* Fixed test suite hang caused by `patch("panoptes.utils.cli.config.time.sleep")` leaking the global `time.sleep` patch under `pytest-cov`; patching the module-level `time` reference instead restores isolation. #337
 * Unified CLI logging behavior: `DEBUG` level output is now silenced by default in all CLI tools (`panoptes-config-server` and `panoptes-utils`) and only enabled when the `--verbose` flag is provided. #336
 
 ### Changed
