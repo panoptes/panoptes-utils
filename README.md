@@ -28,7 +28,7 @@ pip install panoptes-utils
 Full options for install:
 
 ```bash
-pip install "panoptes-utils[config,docs,images,testing,social]"
+pip install "panoptes-utils[config,docs,images,telemetry]"
 ```
 
 See the full documentation at: https://panoptes-utils.readthedocs.io
@@ -61,7 +61,10 @@ subcommand is `image`, which includes commands for converting `cr2` files into
 The `panoptes-utils image watch <path>` command will watch the given path for
 new files and convert them to `jpg` and/or `fits` files as they are added.
 
-See `panoptes-utils --help` and `panoptes-utils image --help` for details.
+The telemetry server is also available under the main CLI as `panoptes-utils telemetry`.
+
+See `panoptes-utils --help`, `panoptes-utils image --help`, and `panoptes-utils telemetry --help`
+for details.
 
 
 Config Server
@@ -92,11 +95,49 @@ Telemetry Server
 After installing with the `telemetry` option as above, type:
 
 ```bash
-panoptes-telemetry-server run --system-dir /tmp/panoptes-telemetry
+panoptes-utils telemetry run --system-dir /tmp/panoptes-telemetry
 ```
 
 The telemetry server writes append-only NDJSON events to a rotated `system` stream and, when a run is
 active, to a per-run `telemetry.ndjson` file. The system stream rotates on the local-day noon boundary.
+
+Example local workflow:
+
+```bash
+# Start the server in one terminal.
+panoptes-utils telemetry run --system-dir /tmp/panoptes-telemetry
+
+# Check readiness from another terminal.
+curl http://localhost:6562/ready
+
+# Record a system event.
+curl -X POST http://localhost:6562/event \
+  -H "Content-Type: application/json" \
+  -d '{"type":"weather","data":{"sky":"clear","wind_mps":2.1}}'
+
+# Start a run and then emit a run-scoped event.
+curl -X POST http://localhost:6562/run/start \
+  -H "Content-Type: application/json" \
+  -d '{"run_dir":"/tmp/panoptes-run-001","meta":{"run_id":"001"}}'
+
+curl -X POST http://localhost:6562/event \
+  -H "Content-Type: application/json" \
+  -d '{"type":"status","data":{"state":"running"}}'
+
+# Inspect the materialized current view.
+curl http://localhost:6562/current
+
+# Stop the server cleanly.
+panoptes-utils telemetry stop
+```
+
+Environment variables:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PANOPTES_TELEMETRY_HOST` | The host address for the telemetry server. | `localhost` |
+| `PANOPTES_TELEMETRY_PORT` | The port number for the telemetry server. | `6562` |
+| `PANOPTES_TELEMETRY_SYSTEM_DIR` | Directory for rotated system NDJSON logs. | `telemetry/` |
 
 ### Development with UV
 

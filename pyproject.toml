@@ -85,7 +85,6 @@ telemetry = [
 
 [project.scripts]
 panoptes-config-server = "panoptes.utils.config.cli:config_server_cli"
-panoptes-telemetry-server = "panoptes.utils.cli.telemetry:telemetry_server_cli"
 panoptes-utils = "panoptes.utils.cli.main:app"
 
 [dependency-groups]

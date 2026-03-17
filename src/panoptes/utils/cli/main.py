@@ -3,7 +3,7 @@ import sys
 import typer
 from loguru import logger
 
-from panoptes.utils.cli import image
+from panoptes.utils.cli import image, telemetry
 
 app = typer.Typer()
 
@@ -24,6 +24,7 @@ def main(verbose: bool = False):
 
 
 app.add_typer(image.app, name="image", help="Process an image.")
+app.add_typer(telemetry.app, name="telemetry", help="Run the telemetry server.")
 
 if __name__ == "__main__":
     app()
