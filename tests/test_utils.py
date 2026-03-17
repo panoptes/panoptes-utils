@@ -16,10 +16,10 @@ def test_bad_load_module():
 def test_load_c_library():
     # Called without a `path` this will use find_library to locate libc.
     libc = load_c_library("c")
-    assert libc._name[:4] == "libc"
+    assert "libc" in Path(libc._name).name
 
     libc = load_c_library("c", mode=None)
-    assert libc._name[:4] == "libc"
+    assert "libc" in Path(libc._name).name
 
 
 def test_load_c_library_fail():
