@@ -53,50 +53,73 @@ apt-get update && apt-get install --no-install-recommends --yes \
 Command Line
 ------------
 
-The `panoptes-utils` command line tool is available for use with subcommands
-corresponding to the modules in this library. Currently, the only implemented
-subcommand is `image`, which includes commands for converting `cr2` files into
-`jpg` and/or `fits` files as well as for plate-solving `fits` images.
+The `panoptes-utils` command provides subcommands for image processing, configuration management,
+and telemetry. Use `panoptes-utils --help` or `panoptes-utils <subcommand> --help` for full
+option details.
 
-The `panoptes-utils image watch <path>` command will watch the given path for
-new files and convert them to `jpg` and/or `fits` files as they are added.
+### `image` — Image processing
 
-The telemetry server is also available under the main CLI as `panoptes-utils telemetry`.
-
-See `panoptes-utils --help`, `panoptes-utils image --help`, and `panoptes-utils telemetry --help`
-for details.
-
-
-Config Server
--------------
-
-There is a simple key-value configuration server available as part of the module.
-
-After installing with the `config` option as above, type:
+Convert and plate-solve astronomical images:
 
 ```bash
-panoptes-config-server run --config-file <path-to-file.yaml>
+# Watch a directory and auto-process new files
+panoptes-utils image watch <path>
+
+# Convert a CR2 to FITS
+panoptes-utils image cr2 to-fits <file.cr2>
+
+# Plate-solve a FITS file
+panoptes-utils image fits solve <file.fits>
 ```
 
-### Environment Variables
+### `config` — Configuration server
 
-The config server and client use the following environment variables:
+Requires the `config` extra (`pip install "panoptes-utils[config]"`).
+
+Start a local key-value configuration server backed by a YAML file:
+
+```bash
+# Start the server
+panoptes-utils config run --config-file <path-to-file.yaml>
+
+# Read a value (returns entire config if no key given)
+panoptes-utils config get location.elevation
+
+# Update a value
+panoptes-utils config set name "My Observatory"
+
+# Stop the server
+panoptes-utils config stop
+```
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `PANOPTES_CONFIG_HOST` | The host address for the config server. | `localhost` |
-| `PANOPTES_CONFIG_PORT` | The port number for the config server. | `6563` |
-| `PANOPTES_CONFIG_FILE` | The YAML configuration file to load (used by CLI). | |
-| `PANOPTES_DEBUG` | Enables verbose logging if set. | `False` |
+| `PANOPTES_CONFIG_HOST` | Config server host address | `localhost` |
+| `PANOPTES_CONFIG_PORT` | Config server port | `6563` |
+| `PANOPTES_CONFIG_FILE` | YAML config file to load (CLI only) | — |
 
-Telemetry Server
-----------------
+### `telemetry` — Telemetry server
 
-After installing with the `telemetry` option as above, start the server:
+Requires the `telemetry` extra (`pip install "panoptes-utils[telemetry]"`).
+
+Start a telemetry server for recording and querying observatory events:
 
 ```bash
+# Start the server
 panoptes-utils telemetry run
+
+# Display current readings (add --follow for live updates)
+panoptes-utils telemetry current --follow
+
+# Stop the server
+panoptes-utils telemetry stop
 ```
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PANOPTES_TELEMETRY_HOST` | Telemetry server host address | `localhost` |
+| `PANOPTES_TELEMETRY_PORT` | Telemetry server port | `6562` |
+| `PANOPTES_TELEMETRY_SITE_DIR` | Directory for rotated NDJSON site logs | `telemetry` |
 
 The public telemetry model is intentionally simple: there is one telemetry feed,
 and `start_run()` optionally activates a run context. When a run is active,
@@ -131,7 +154,7 @@ client.stop_run()
 client.shutdown()
 ```
 
-For server internals, HTTP API examples, and environment variables, see the
+For server internals and HTTP API examples, see the
 [Telemetry Server documentation](https://panoptes-utils.readthedocs.io/en/latest/telemetry.html).
 
 ### Development with UV

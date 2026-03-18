@@ -31,8 +31,6 @@ classifiers = [
 dependencies = [
     "Deprecated",
     "astropy",
-    "click>=8.2.1",
-    "click-spinner",
     "loguru",
     "numpy>=2",
     "pyserial>=3.4",
@@ -85,7 +83,6 @@ telemetry = [
 ]
 
 [project.scripts]
-panoptes-config-server = "panoptes.utils.config.cli:config_server_cli"
 panoptes-utils = "panoptes.utils.cli.main:app"
 
 [dependency-groups]
