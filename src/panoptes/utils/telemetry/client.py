@@ -31,11 +31,9 @@ class TelemetryClient:
     common lifecycle: check readiness, optionally start a run, emit events, inspect
     the current materialized view, and stop the run or the server.
 
-    `start_run` is important because it switches the server's default event target
-    from the always-available `site` stream to the run-specific `run` stream.
-    After `start_run`, calls to `post_event(...)` without an explicit `stream=...`
-    are written to `<run_dir>/telemetry.ndjson` and stamped with `meta.run_id`
-    until `stop_run()` is called.
+    `start_run` activates a run context. After that, `post_event(...)` calls are
+    associated with the active run and stamped with `meta.run_id` until
+    `stop_run()` is called.
     """
 
     def __init__(
@@ -110,32 +108,28 @@ class TelemetryClient:
         self,
         event_type: str,
         data: Any,
-        stream: str | None = None,
         make_current: bool = True,
         meta: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Post a telemetry event."""
+        """Post a telemetry event to the current telemetry context."""
 
         payload = {
             "type": event_type,
             "data": data,
-            "stream": stream,
             "make_current": make_current,
             "meta": meta or {},
         }
         return self._request("POST", "/event", json=payload)
 
-    def current(self, stream: str | None = None) -> dict[str, Any]:
-        """Return the current snapshot for a telemetry stream."""
+    def current(self) -> dict[str, Any]:
+        """Return the current snapshot for the public telemetry feed."""
 
-        params = {"stream": stream} if stream is not None else None
-        return self._request("GET", "/current", params=params)
+        return self._request("GET", "/current")
 
-    def current_event(self, event_type: str, stream: str | None = None) -> dict[str, Any]:
+    def current_event(self, event_type: str) -> dict[str, Any]:
         """Return the current envelope for a single event type."""
 
-        params = {"stream": stream} if stream is not None else None
-        return self._request("GET", f"/current/{event_type}", params=params)
+        return self._request("GET", f"/current/{event_type}")
 
     def shutdown(self) -> dict[str, Any]:
         """Request telemetry server shutdown."""

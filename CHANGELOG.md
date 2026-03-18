@@ -5,7 +5,7 @@
 ### Added
 
 * Documented environment variables used by the config server and client in the `README.md`. #336
-* Added a `panoptes-utils telemetry` daemon command and Python client with append-only NDJSON logging for site/run streams, noon-boundary site rotation, and `/current` snapshot support. #338
+* Added a `panoptes-utils telemetry` daemon command, Python client, and dedicated telemetry server documentation page with append-only NDJSON logging and `/current` snapshot support. #338
 
 ### Fixed
 
@@ -19,6 +19,7 @@
 
 * Migrated config server from Flask+gevent to FastAPI+uvicorn for improved performance and modern async support. #336
 * Config server CLI `run` command now defaults to `--load-local` (previously `--no-load-local`) so any locally saved config overrides are applied on startup. #336
+* Simplified the public telemetry model so users interact with a single telemetry feed plus optional run context, while site/run storage remains an internal detail. #338
 
 ## 0.2.54 - 2026-02-13
 

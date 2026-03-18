@@ -16,7 +16,7 @@ from threading import Lock
 from typing import Any, Literal
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import FastAPI, HTTPException, Request
 from loguru import logger
 from pydantic import BaseModel, Field
 
@@ -35,7 +35,7 @@ if system() == "Darwin":
 logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
 logging.getLogger("uvicorn.error").setLevel(logging.WARNING)
 
-StreamName = Literal["site", "run"]
+StorageTarget = Literal["site", "run"]
 
 
 def utc_iso_z(now: datetime | None = None) -> str:
@@ -108,7 +108,6 @@ class EventRequest(BaseModel):
 
     type: str
     data: Any
-    stream: StreamName | None = None
     make_current: bool = True
     meta: dict[str, Any] = Field(default_factory=dict)
 
@@ -133,11 +132,11 @@ class TelemetryService:
         self.site_dir.mkdir(parents=True, exist_ok=True)
         self._now_provider = now_provider or (lambda: datetime.now().astimezone())
         self._lock = Lock()
-        self._current: dict[StreamName, dict[str, dict[str, Any]]] = {
+        self._current: dict[StorageTarget, dict[str, dict[str, Any]]] = {
             "site": {},
             "run": {},
         }
-        self._seq: dict[StreamName, int] = {
+        self._seq: dict[StorageTarget, int] = {
             "site": 0,
             "run": 0,
         }
@@ -177,7 +176,7 @@ class TelemetryService:
         meta: dict[str, Any] | None = None,
         run_id: str | None = None,
     ) -> dict[str, Any]:
-        """Start a new run stream.
+        """Start a new telemetry run context.
 
         Args:
             run_dir: Directory that will contain ``telemetry.ndjson``. Relative paths
@@ -214,7 +213,7 @@ class TelemetryService:
             return self._active_run.as_dict()
 
     def stop_run(self) -> dict[str, Any]:
-        """Stop the active run stream.
+        """Stop the active telemetry run context.
 
         Returns:
             The run metadata that was active before stopping.
@@ -233,7 +232,7 @@ class TelemetryService:
             return stopped_run
 
     def append_event(self, request: EventRequest) -> dict[str, Any]:
-        """Append an event to the selected stream and update the current view.
+        """Append an event to the current telemetry target and update the current view.
 
         Args:
             request: Event request payload.
@@ -243,41 +242,45 @@ class TelemetryService:
         """
 
         with self._lock:
-            stream = self._resolve_stream(request.stream)
+            target = self._current_target()
             now = self._now_provider()
             event_meta = copy.deepcopy(request.meta)
-            if stream == "run" and self._active_run is not None:
+            if target == "run" and self._active_run is not None:
                 event_meta["run_id"] = self._active_run.run_id
             envelope = {
-                "seq": self._seq[stream] + 1,
+                "seq": self._seq[target] + 1,
                 "ts": utc_iso_z(now),
-                "stream": stream,
+                "stream": target,
                 "type": request.type,
                 "data": request.data,
                 "meta": event_meta,
             }
-            self._seq[stream] = envelope["seq"]
+            self._seq[target] = envelope["seq"]
 
-            output_path = self._stream_path(stream, now)
+            output_path = self._stream_path(target, now)
             output_path.parent.mkdir(parents=True, exist_ok=True)
             with output_path.open("a", encoding="utf-8") as output_file:
                 output_file.write(json.dumps(envelope, separators=(",", ":")) + "\n")
 
             if request.make_current:
-                self._current[stream][request.type] = copy.deepcopy(envelope)
+                self._current[target][request.type] = copy.deepcopy(envelope)
 
-            return envelope
+            return self._public_event(envelope)
 
-    def current_snapshot(self, stream: StreamName | None = None) -> dict[str, Any]:
-        """Return the materialized current view for a stream."""
+    def current_snapshot(self) -> dict[str, Any]:
+        """Return the materialized current view for the public telemetry feed."""
 
         with self._lock:
-            selected_stream = self._resolve_stream(stream)
+            merged_current = copy.deepcopy(self._current["site"])
+            merged_current.update(copy.deepcopy(self._current["run"]))
             return {
-                "current": copy.deepcopy(self._current[selected_stream]),
+                "current": {
+                    event_type: self._public_event(envelope)
+                    for event_type, envelope in merged_current.items()
+                },
             }
 
-    def current_event(self, event_type: str, stream: StreamName | None = None) -> dict[str, Any]:
+    def current_event(self, event_type: str) -> dict[str, Any]:
         """Return the current envelope for a single event type.
 
         Raises:
@@ -285,22 +288,14 @@ class TelemetryService:
         """
 
         with self._lock:
-            selected_stream = self._resolve_stream(stream)
-            try:
-                return copy.deepcopy(self._current[selected_stream][event_type])
-            except KeyError as error:
-                raise TelemetryNotFoundError(
-                    f"No current event for type {event_type!r} in {selected_stream!r} stream"
-                ) from error
+            if event_type in self._current["run"]:
+                return self._public_event(self._current["run"][event_type])
+            if event_type in self._current["site"]:
+                return self._public_event(self._current["site"][event_type])
+            raise TelemetryNotFoundError(f"No current event for type {event_type!r}")
 
-    def _resolve_stream(self, requested_stream: StreamName | None) -> StreamName:
-        if requested_stream is None:
-            return "run" if self._active_run is not None else "site"
-
-        if requested_stream == "run" and self._active_run is None:
-            raise TelemetryConflictError("Run stream is unavailable because no run is active")
-
-        return requested_stream
+    def _current_target(self) -> StorageTarget:
+        return "run" if self._active_run is not None else "site"
 
     def _resolve_run_dir(self, run_dir: str | Path | None, run_id: str) -> Path:
         if run_dir is None:
@@ -322,7 +317,7 @@ class TelemetryService:
         width = max(3, max(len(str(run_id)) for run_id in numeric_run_ids))
         return str(max(numeric_run_ids) + 1).zfill(width)
 
-    def _stream_path(self, stream: StreamName, now: datetime) -> Path:
+    def _stream_path(self, stream: StorageTarget, now: datetime) -> Path:
         if stream == "site":
             return self.site_dir / f"site_{get_site_day_key(now)}.ndjson"
 
@@ -330,6 +325,12 @@ class TelemetryService:
             raise TelemetryConflictError("Run stream is unavailable because no run is active")
 
         return self._active_run.run_dir / "telemetry.ndjson"
+
+    @staticmethod
+    def _public_event(envelope: dict[str, Any]) -> dict[str, Any]:
+        public_envelope = copy.deepcopy(envelope)
+        public_envelope.pop("stream", None)
+        return public_envelope
 
 
 def create_app(service: TelemetryService) -> FastAPI:
@@ -376,21 +377,13 @@ def create_app(service: TelemetryService) -> FastAPI:
             raise HTTPException(status_code=409, detail=str(error)) from error
 
     @app.get("/current")
-    def get_current(stream: StreamName | None = Query(default=None)) -> dict[str, Any]:
-        try:
-            return service.current_snapshot(stream)
-        except TelemetryConflictError as error:
-            raise HTTPException(status_code=409, detail=str(error)) from error
+    def get_current() -> dict[str, Any]:
+        return service.current_snapshot()
 
     @app.get("/current/{event_type}")
-    def get_current_type(
-        event_type: str,
-        stream: StreamName | None = Query(default=None),
-    ) -> dict[str, Any]:
+    def get_current_type(event_type: str) -> dict[str, Any]:
         try:
-            return service.current_event(event_type, stream)
-        except TelemetryConflictError as error:
-            raise HTTPException(status_code=409, detail=str(error)) from error
+            return service.current_event(event_type)
         except TelemetryNotFoundError as error:
             raise HTTPException(status_code=404, detail=str(error)) from error
 

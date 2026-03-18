@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-import pytest
 from fastapi.testclient import TestClient
 
-from panoptes.utils.telemetry import TelemetryClient, TelemetryClientError
+from panoptes.utils.telemetry import TelemetryClient
 from panoptes.utils.telemetry.server import TelemetryService, create_app
 
 
@@ -31,7 +30,6 @@ def test_telemetry_client_posts_and_reads_current(tmp_path):
         current = client.current()
         current_weather = client.current_event("weather")
 
-        assert event["stream"] == "site"
         assert current["current"]["weather"] == event
         assert current_weather == event
 
@@ -50,7 +48,6 @@ def test_telemetry_client_manages_runs(tmp_path):
 
         assert started["run_dir"] == str(run_dir)
         assert started["run_id"] == "002"
-        assert event["stream"] == "run"
         assert event["meta"]["run_id"] == "002"
         assert stopped["run_dir"] == str(run_dir)
 
@@ -70,15 +67,20 @@ def test_telemetry_client_can_start_run_without_arguments(tmp_path):
         assert started["run_dir"] == str(site_dir / "002")
 
 
-def test_telemetry_client_raises_useful_error(tmp_path):
+def test_telemetry_client_current_merges_site_and_run_context(tmp_path):
     fixed_now = datetime(2026, 3, 17, 14, 45, tzinfo=UTC)
     app = create_app(TelemetryService(tmp_path / "site", now_provider=lambda: fixed_now))
 
     with TestClient(app) as test_client:
         client = TelemetryClient(base_url="http://testserver", session=test_client)
 
-        with pytest.raises(TelemetryClientError) as error_info:
-            client.post_event("status", {"state": "idle"}, stream="run")
+        site_weather = client.post_event("weather", {"sky": "clear"})
+        client.start_run(run_id="001")
+        run_status = client.post_event("status", {"state": "idle"})
 
-        assert error_info.value.status_code == 409
-        assert error_info.value.detail == "Run stream is unavailable because no run is active"
+        assert client.current() == {
+            "current": {
+                "weather": site_weather,
+                "status": run_status,
+            },
+        }

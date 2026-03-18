@@ -34,7 +34,6 @@ def test_post_event_defaults_to_site_and_updates_current(tmp_path):
 
     assert response.status_code == 200
     payload = response.json()
-    assert payload["stream"] == "site"
     assert payload["seq"] == 1
     assert payload["ts"].endswith("Z")
 
@@ -48,10 +47,10 @@ def test_post_event_defaults_to_site_and_updates_current(tmp_path):
 
     output_path = site_dir / "site_20260317.ndjson"
     assert output_path.exists()
-    assert _read_ndjson(output_path) == [payload]
+    assert _read_ndjson(output_path) == [{**payload, "stream": "site"}]
 
 
-def test_run_events_default_to_run_stream(tmp_path):
+def test_run_events_use_active_run_context(tmp_path):
     fixed_now = datetime(2026, 3, 17, 13, 45, tzinfo=timezone(timedelta(hours=-7)))
     run_dir = tmp_path / "run-001"
     client = TestClient(create_app(TelemetryService(tmp_path / "site", now_provider=lambda: fixed_now)))
@@ -61,12 +60,11 @@ def test_run_events_default_to_run_stream(tmp_path):
 
     assert start_response.status_code == 200
     assert event_response.status_code == 200
-    assert event_response.json()["stream"] == "run"
     assert event_response.json()["meta"]["run_id"] == "001"
 
     output_path = run_dir / "telemetry.ndjson"
     assert output_path.exists()
-    assert _read_ndjson(output_path) == [event_response.json()]
+    assert _read_ndjson(output_path) == [{**event_response.json(), "stream": "run"}]
 
 
 def test_relative_run_dir_is_resolved_under_site_dir(tmp_path):
@@ -112,16 +110,6 @@ def test_run_event_meta_uses_active_run_id(tmp_path):
     assert event_response.json()["meta"] == {"run_id": "run-123", "source": "test"}
 
 
-def test_posting_run_stream_without_active_run_returns_conflict(tmp_path):
-    fixed_now = datetime(2026, 3, 17, 13, 45, tzinfo=UTC)
-    client = TestClient(create_app(TelemetryService(tmp_path / "site", now_provider=lambda: fixed_now)))
-
-    response = client.post("/event", json={"type": "status", "data": {"state": "idle"}, "stream": "run"})
-
-    assert response.status_code == 409
-    assert response.json()["detail"] == "Run stream is unavailable because no run is active"
-
-
 def test_current_returns_full_snapshot(tmp_path):
     fixed_now = datetime(2026, 3, 17, 14, 0, tzinfo=UTC)
     client = TestClient(create_app(TelemetryService(tmp_path / "site", now_provider=lambda: fixed_now)))
@@ -141,6 +129,26 @@ def test_current_returns_full_snapshot(tmp_path):
     }
     assert weather_response.status_code == 200
     assert weather_response.json() == first
+
+
+def test_current_merges_site_and_run_context(tmp_path):
+    fixed_now = datetime(2026, 3, 17, 14, 5, tzinfo=UTC)
+    run_dir = tmp_path / "run-001"
+    client = TestClient(create_app(TelemetryService(tmp_path / "site", now_provider=lambda: fixed_now)))
+
+    site_weather = client.post("/event", json={"type": "weather", "data": {"sky": "clear"}}).json()
+    client.post("/run/start", json={"run_dir": str(run_dir), "run_id": "001"})
+    run_status = client.post("/event", json={"type": "status", "data": {"state": "running"}}).json()
+
+    current_response = client.get("/current")
+
+    assert current_response.status_code == 200
+    assert current_response.json() == {
+        "current": {
+            "weather": site_weather,
+            "status": run_status,
+        },
+    }
 
 
 def test_site_rotation_uses_previous_date_before_noon():
