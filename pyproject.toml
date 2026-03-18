@@ -38,6 +38,7 @@ dependencies = [
     "pyserial>=3.4",
     "pytest-loguru",
     "python-dateutil",
+    "rich",
     "requests",
     "ruamel.yaml",
     "typer",
@@ -78,6 +79,10 @@ images = [
     "sep",
     "watchfiles",
 ]
+telemetry = [
+    "fastapi>=0.115",
+    "uvicorn>=0.34",
+]
 
 [project.scripts]
 panoptes-config-server = "panoptes.utils.config.cli:config_server_cli"
@@ -86,6 +91,7 @@ panoptes-utils = "panoptes.utils.cli.main:app"
 [dependency-groups]
 testing = [
     "coverage",
+    "httpx",
     "pycodestyle",
     "pytest",
     "pytest-cov",

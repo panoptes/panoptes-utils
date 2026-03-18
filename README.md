@@ -28,7 +28,7 @@ pip install panoptes-utils
 Full options for install:
 
 ```bash
-pip install "panoptes-utils[config,docs,images,testing,social]"
+pip install "panoptes-utils[config,docs,images,telemetry]"
 ```
 
 See the full documentation at: https://panoptes-utils.readthedocs.io
@@ -61,7 +61,10 @@ subcommand is `image`, which includes commands for converting `cr2` files into
 The `panoptes-utils image watch <path>` command will watch the given path for
 new files and convert them to `jpg` and/or `fits` files as they are added.
 
-See `panoptes-utils --help` and `panoptes-utils image --help` for details.
+The telemetry server is also available under the main CLI as `panoptes-utils telemetry`.
+
+See `panoptes-utils --help`, `panoptes-utils image --help`, and `panoptes-utils telemetry --help`
+for details.
 
 
 Config Server
@@ -85,6 +88,51 @@ The config server and client use the following environment variables:
 | `PANOPTES_CONFIG_PORT` | The port number for the config server. | `6563` |
 | `PANOPTES_CONFIG_FILE` | The YAML configuration file to load (used by CLI). | |
 | `PANOPTES_DEBUG` | Enables verbose logging if set. | `False` |
+
+Telemetry Server
+----------------
+
+After installing with the `telemetry` option as above, start the server:
+
+```bash
+panoptes-utils telemetry run
+```
+
+The public telemetry model is intentionally simple: there is one telemetry feed,
+and `start_run()` optionally activates a run context. When a run is active,
+subsequent events are automatically associated with that run and stamped with
+`meta["run_id"]`.
+
+Example local workflow with Python:
+
+```python
+from panoptes.utils.telemetry import TelemetryClient
+
+client = TelemetryClient()
+
+print(client.ready())
+
+# Before start_run(), events are recorded without any active run context.
+client.post_event("weather", {"sky": "clear", "wind_mps": 2.1}, meta={"source": "demo"})
+
+# start_run() activates the run context for subsequent events.
+client.start_run(run_id="001")
+event = client.post_event("status", {"state": "running"})
+print(event["meta"]["run_id"])
+client.stop_run()
+
+# Or let the server create the next run automatically.
+next_run = client.start_run()
+print(next_run["run_id"], next_run["run_dir"])
+
+print(client.current()["current"])
+
+client.stop_run()
+client.shutdown()
+```
+
+For server internals, HTTP API examples, and environment variables, see the
+[Telemetry Server documentation](https://panoptes-utils.readthedocs.io/en/latest/telemetry.html).
 
 ### Development with UV
 

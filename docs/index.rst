@@ -14,6 +14,7 @@ Contents
 
     CLI <cli>
     Config Server <config-server>
+    Telemetry Server <telemetry>
     Module Reference <api/modules>
     Changelog <changelog>
     Authors <authors>
