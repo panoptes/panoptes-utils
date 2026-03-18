@@ -2,6 +2,7 @@ import sys
 
 import typer
 from loguru import logger
+from rich import print
 
 from panoptes.utils.cli import image
 
@@ -38,7 +39,7 @@ else:
     @telemetry_app.callback()
     def telemetry_main() -> None:
         """Placeholder telemetry command when optional dependencies are missing."""
-        typer.echo(
+        print(
             "Telemetry support is not available. To enable it, install the 'telemetry' extra:\n"
             "  pip install 'panoptes-utils[telemetry]'"
         )

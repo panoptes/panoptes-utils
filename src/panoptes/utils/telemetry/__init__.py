@@ -1,9 +1,9 @@
 """Telemetry utilities for PANOPTES."""
 
 from importlib import import_module
-from typing import Any, List
+from typing import Any
 
-__all__: List[str] = [
+__all__: list[str] = [
     "TelemetryClient",
     "TelemetryClientError",
     "TelemetryService",
@@ -60,7 +60,7 @@ def __getattr__(name: str) -> Any:
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
-def __dir__() -> List[str]:
+def __dir__() -> list[str]:
     """Return the list of available attributes for this module."""
     # Combine the default module attributes with our public API.
     return sorted(set(globals().keys()) | set(__all__))
