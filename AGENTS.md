@@ -95,6 +95,14 @@ panoptes-utils/
 @pytest.mark.slow             # Tests that take longer to run
 ```
 
+**Interactive image doctests:**
+- `src/panoptes/utils/images/plot.py` and `src/panoptes/utils/images/misc.py` contain doctest examples that call `fig.show()` / `plt.show()`.
+- These can open blocking plot windows during `uv run pytest` because doctests are enabled for `src/`.
+- Unless you are actively working on those plotting/doc examples, prefer skipping them during local validation, e.g.:
+  ```bash
+  uv run pytest --ignore=src/panoptes/utils/images/plot.py --ignore=src/panoptes/utils/images/misc.py
+  ```
+
 ### 4. Dependencies
 
 **Adding Dependencies:**
@@ -166,6 +174,9 @@ panoptes-config-server run --config-file tests/testing.yaml
 Command-line tools built with Typer.
 
 **When modifying:**
+- Prefer Typer for new CLI commands and additions going forward.
+- Prefer adding new CLI surfaces under `panoptes-utils` subcommands in `src/panoptes/utils/cli/` rather than creating new standalone console scripts, unless there is a strong compatibility reason not to.
+- Prefer `from rich import print` for user-facing CLI output instead of `typer.echo` or `typer.secho`.
 - Use Typer decorators and type hints
 - Provide clear help text and examples
 - Test commands manually and with unit tests
