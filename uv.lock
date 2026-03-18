@@ -187,15 +187,6 @@ wheels = [
 ]
 
 [[package]]
-name = "click-spinner"
-version = "0.1.10"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/af/3a/7dbc558fcf0ae9e2e8b7ccc52daeb4eaf32b21f851497f5b409e1638dcee/click-spinner-0.1.10.tar.gz", hash = "sha256:87eacf9d7298973a25d7615ef57d4782aebf913a532bba4b28a37e366e975daf", size = 18720 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/93/2a/04893832bfeddc2d40a7de2e8153b3085f12d63507d91a9cf0157dc3a1c2/click_spinner-0.1.10-py2.py3-none-any.whl", hash = "sha256:d1ffcff1fdad9882396367f15fb957bcf7f5c64ab91927dee2127e0d2991ee84", size = 3986 },
-]
-
-[[package]]
 name = "colorama"
 version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -914,8 +905,6 @@ name = "panoptes-utils"
 source = { editable = "." }
 dependencies = [
     { name = "astropy" },
-    { name = "click" },
-    { name = "click-spinner" },
     { name = "deprecated" },
     { name = "loguru" },
     { name = "numpy" },
@@ -996,8 +985,6 @@ testing = [
 [package.metadata]
 requires-dist = [
     { name = "astropy" },
-    { name = "click", specifier = ">=8.2.1" },
-    { name = "click-spinner" },
     { name = "deprecated" },
     { name = "fastapi", marker = "extra == 'config'", specifier = ">=0.115" },
     { name = "fastapi", marker = "extra == 'telemetry'", specifier = ">=0.115" },
