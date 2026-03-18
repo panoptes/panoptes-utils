@@ -95,6 +95,14 @@ panoptes-utils/
 @pytest.mark.slow             # Tests that take longer to run
 ```
 
+**Interactive image doctests:**
+- `src/panoptes/utils/images/plot.py` and `src/panoptes/utils/images/misc.py` contain doctest examples that call `fig.show()` / `plt.show()`.
+- These can open blocking plot windows during `uv run pytest` because doctests are enabled for `src/`.
+- Unless you are actively working on those plotting/doc examples, prefer skipping them during local validation, e.g.:
+  ```bash
+  uv run pytest --ignore=src/panoptes/utils/images/plot.py --ignore=src/panoptes/utils/images/misc.py
+  ```
+
 ### 4. Dependencies
 
 **Adding Dependencies:**
@@ -166,6 +174,9 @@ panoptes-config-server run --config-file tests/testing.yaml
 Command-line tools built with Typer.
 
 **When modifying:**
+- Prefer Typer for new CLI commands and additions going forward.
+- Prefer adding new CLI surfaces under `panoptes-utils` subcommands in `src/panoptes/utils/cli/` rather than creating new standalone console scripts, unless there is a strong compatibility reason not to.
+- Prefer `from rich import print` for user-facing CLI output instead of `typer.echo` or `typer.secho`.
 - Use Typer decorators and type hints
 - Provide clear help text and examples
 - Test commands manually and with unit tests
@@ -401,13 +412,20 @@ panoptes-config-server --host 0.0.0.0 --port 8765 run --config-file tests/testin
     git merge --no-ff release-${NEW_VERSION} -m "Merge release-${NEW_VERSION} into develop"
     ```
 
-13. **Push `develop` and tags to origin:**
+13. **Tag `develop` with next development version:**
+    ```bash
+    # Set next development version (example: v0.2.50 -> v0.2.51.dev0)
+    NEXT_DEV_VERSION="v0.2.51.dev0"
+    git tag -a ${NEXT_DEV_VERSION} -m "Start development for ${NEXT_DEV_VERSION}"
+    ```
+
+14. **Push `develop` and tags to origin:**
     ```bash
     git push origin develop
     git push origin ${NEXT_DEV_VERSION}
     ```
 
-14. **Clean up release branch:**
+15. **Clean up release branch:**
     ```bash
     git branch -d release-${NEW_VERSION}
     ```
@@ -544,6 +562,8 @@ def function_name(param1: str, param2: int) -> bool:
 
 When making changes, update:
 - **`CHANGELOG.md`** for all PRs (required)
+- Changelog entries should be categorized under appropriate sections (Added, Changed, Fixed, Removed) and reference PR numbers.
+- Changelog entries should be clear and concise, describing the change and its impact, ideally less than one line per PR.
 - Inline code comments for complex logic
 - Docstrings for API changes
 - Sphinx docs in `docs/` for major features
