@@ -4,6 +4,14 @@
 
 ### Added
 
+### Fixed
+
+### Changed
+
+## 0.2.55 - 2026-03-18
+
+### Added
+
 * Documented environment variables used by the config server and client in the `README.md`. #336
 * Added `panoptes-utils telemetry` `run`, `stop`, and `current` commands, a Python client, and a dedicated telemetry server documentation page with append-only NDJSON logging and `/current` snapshot support. #338
 
