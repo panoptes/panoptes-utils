@@ -32,7 +32,7 @@ class TelemetryClient:
     the current materialized view, and stop the run or the server.
 
     `start_run` is important because it switches the server's default event target
-    from the always-available `system` stream to the run-specific `run` stream.
+    from the always-available `site` stream to the run-specific `run` stream.
     After `start_run`, calls to `post_event(...)` without an explicit `stream=...`
     are written to `<run_dir>/telemetry.ndjson` and stamped with `meta.run_id`
     until `stop_run()` is called.
@@ -59,7 +59,7 @@ class TelemetryClient:
         ...             payload = {"run_dir": json["run_dir"], "run_id": self.run_id, "meta": json["meta"]}
         ...             return FakeResponse(200, payload)
         ...         if path == "/event":
-        ...             stream = json["stream"] or ("run" if self.run_active else "system")
+        ...             stream = json["stream"] or ("run" if self.run_active else "site")
         ...             meta = dict(json["meta"])
         ...             if stream == "run":
         ...                 meta["run_id"] = self.run_id
@@ -76,7 +76,7 @@ class TelemetryClient:
         >>> client.ready()
         {'ready': True, 'run_active': False}
         >>> client.post_event("weather", {"sky": "clear"})["stream"]
-        'system'
+        'site'
         >>> client.start_run("/tmp/panoptes-run-001", run_id="001", meta={"observer": "demo"})
         {'run_dir': '/tmp/panoptes-run-001', 'run_id': '001', 'meta': {'observer': 'demo', 'run_id': '001'}}
         >>> client.post_event("status", {"state": "running"})["meta"]["run_id"]
@@ -129,14 +129,16 @@ class TelemetryClient:
 
     def start_run(
         self,
-        run_dir: str,
+        run_dir: str | None = None,
         run_id: str | None = None,
         meta: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Start a telemetry run.
 
-        If `run_id` is omitted, the server will use `meta["run_id"]` or the
-        run directory name.
+        Relative `run_dir` values are resolved by the server under its configured
+        `site_dir`. If `run_dir` is omitted, the server uses `site_dir/run_id`.
+        If `run_id` is also omitted, the server derives the next numeric run ID
+        from existing run directories under `site_dir`.
         """
 
         payload_meta = dict(meta or {})

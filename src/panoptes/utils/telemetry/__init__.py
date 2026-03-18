@@ -4,7 +4,7 @@ from panoptes.utils.telemetry.client import TelemetryClient, TelemetryClientErro
 from panoptes.utils.telemetry.server import (
     TelemetryService,
     create_app,
-    get_system_day_key,
+    get_site_day_key,
     telemetry_server,
     utc_iso_z,
 )
@@ -14,7 +14,7 @@ __all__ = [
     "TelemetryClientError",
     "TelemetryService",
     "create_app",
-    "get_system_day_key",
+    "get_site_day_key",
     "telemetry_server",
     "utc_iso_z",
 ]

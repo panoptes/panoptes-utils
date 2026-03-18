@@ -95,34 +95,40 @@ Telemetry Server
 After installing with the `telemetry` option as above, type:
 
 ```bash
-panoptes-utils telemetry run --system-dir /tmp/panoptes-telemetry
+panoptes-utils telemetry run --site-dir /tmp/panoptes-telemetry
 ```
 
-The telemetry server writes append-only NDJSON events to a rotated `system` stream and, when a run is
-active, to a per-run `telemetry.ndjson` file. The system stream rotates on the local-day noon boundary.
+The telemetry server writes append-only NDJSON events to a rotated `site` stream and, when a run is
+active, to a per-run `telemetry.ndjson` file. The site stream rotates on the local-day noon boundary.
 
 Use `start_run` when you want subsequent telemetry to be associated with a specific observing run.
-Before a run is active, events posted without an explicit `stream` are written to the `system` stream.
+Before a run is active, events posted without an explicit `stream` are written to the `site` stream.
 After `POST /run/start` or `TelemetryClient.start_run(...)`, the default event destination switches to
 the `run` stream until the run is stopped. The active `run_id` is also stamped onto
 subsequent run-scoped events as `meta.run_id`. If you do not provide a `run_id`,
-the server uses the run directory name.
+the server uses the run directory name. Relative `run_dir` values are resolved
+under the server's configured `site_dir`, and if you provide neither `run_dir`
+nor `run_id`, the server creates the next numeric run directory under `site_dir`
+(for example `001`, `002`, `003`).
 
 Example local workflow with `httpie`:
 
 ```bash
 # Start the server in one terminal.
-panoptes-utils telemetry run --system-dir /tmp/panoptes-telemetry
+panoptes-utils telemetry run --site-dir /tmp/panoptes-telemetry
 
 # Check readiness from another terminal.
 http :6562/ready
 
-# Record a system event.
+# Record a site event.
 http POST :6562/event type=weather data:='{"sky":"clear","wind_mps":2.1}'
 
-# Start a run. From this point on, events without an explicit stream
+# Start a run explicitly. From this point on, events without an explicit stream
 # automatically go to the run stream and are stamped with meta.run_id=001.
 http POST :6562/run/start run_dir=/tmp/panoptes-run-001 run_id=001
+
+# Or let the server derive the next numeric run under the configured site_dir.
+http POST :6562/run/start
 
 http POST :6562/event type=status data:='{"state":"running"}'
 
@@ -142,7 +148,7 @@ client = TelemetryClient()
 
 print(client.ready())
 
-# Before start_run(), the default stream is `system`.
+# Before start_run(), the default stream is `site`.
 client.post_event("weather", {"sky": "clear", "wind_mps": 2.1}, meta={"source": "demo"})
 
 # start_run() activates the run stream and sets the default destination for
@@ -151,6 +157,10 @@ client.post_event("weather", {"sky": "clear", "wind_mps": 2.1}, meta={"source": 
 client.start_run("/tmp/panoptes-run-001", run_id="001")
 event = client.post_event("status", {"state": "running"})
 print(event["meta"]["run_id"])
+
+# Or let the server create the next run automatically under site_dir.
+next_run = client.start_run()
+print(next_run["run_id"], next_run["run_dir"])
 
 print(client.current()["current"])
 
@@ -164,7 +174,7 @@ Environment variables:
 |----------|-------------|---------|
 | `PANOPTES_TELEMETRY_HOST` | The host address for the telemetry server. | `localhost` |
 | `PANOPTES_TELEMETRY_PORT` | The port number for the telemetry server. | `6562` |
-| `PANOPTES_TELEMETRY_SYSTEM_DIR` | Directory for rotated system NDJSON logs. | `telemetry/` |
+| `PANOPTES_TELEMETRY_SITE_DIR` | Directory for rotated site NDJSON logs. | `telemetry/` |
 
 ### Development with UV
 

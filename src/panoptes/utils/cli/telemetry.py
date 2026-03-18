@@ -39,12 +39,12 @@ def run(
         envvar="PANOPTES_TELEMETRY_PORT",
         help="Port number to bind the telemetry server to.",
     ),
-    system_dir: Path = typer.Option(
+    site_dir: Path = typer.Option(
         Path("telemetry"),
-        envvar="PANOPTES_TELEMETRY_SYSTEM_DIR",
+        envvar="PANOPTES_TELEMETRY_SITE_DIR",
         file_okay=False,
         dir_okay=True,
-        help="Directory for rotated system telemetry NDJSON files.",
+        help="Directory for rotated site telemetry NDJSON files.",
     ),
     heartbeat: float = typer.Option(2.0, help="Heartbeat interval in seconds."),
     startup_timeout: float = typer.Option(
@@ -58,7 +58,7 @@ def run(
     client_host = "localhost" if bind_host == "0.0.0.0" else bind_host
 
     server_process = telemetry_server(
-        system_dir=system_dir,
+        site_dir=site_dir,
         host=bind_host,
         port=port,
         auto_start=False,

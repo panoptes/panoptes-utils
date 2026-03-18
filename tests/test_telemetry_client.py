@@ -11,7 +11,7 @@ from panoptes.utils.telemetry.server import TelemetryService, create_app
 
 def test_telemetry_client_ready_and_health(tmp_path):
     fixed_now = datetime(2026, 3, 17, 14, 30, tzinfo=UTC)
-    app = create_app(TelemetryService(tmp_path / "system", now_provider=lambda: fixed_now))
+    app = create_app(TelemetryService(tmp_path / "site", now_provider=lambda: fixed_now))
 
     with TestClient(app) as test_client:
         client = TelemetryClient(base_url="http://testserver", session=test_client)
@@ -23,7 +23,7 @@ def test_telemetry_client_ready_and_health(tmp_path):
 
 def test_telemetry_client_posts_and_reads_current(tmp_path):
     fixed_now = datetime(2026, 3, 17, 14, 35, tzinfo=UTC)
-    app = create_app(TelemetryService(tmp_path / "system", now_provider=lambda: fixed_now))
+    app = create_app(TelemetryService(tmp_path / "site", now_provider=lambda: fixed_now))
 
     with TestClient(app) as test_client:
         client = TelemetryClient(base_url="http://testserver", session=test_client)
@@ -31,7 +31,7 @@ def test_telemetry_client_posts_and_reads_current(tmp_path):
         current = client.current()
         current_weather = client.current_event("weather")
 
-        assert event["stream"] == "system"
+        assert event["stream"] == "site"
         assert current["current"]["weather"] == event
         assert current_weather == event
 
@@ -39,7 +39,7 @@ def test_telemetry_client_posts_and_reads_current(tmp_path):
 def test_telemetry_client_manages_runs(tmp_path):
     fixed_now = datetime(2026, 3, 17, 14, 40, tzinfo=UTC)
     run_dir = tmp_path / "run-002"
-    app = create_app(TelemetryService(tmp_path / "system", now_provider=lambda: fixed_now))
+    app = create_app(TelemetryService(tmp_path / "site", now_provider=lambda: fixed_now))
 
     with TestClient(app) as test_client:
         client = TelemetryClient(base_url="http://testserver", session=test_client)
@@ -55,9 +55,24 @@ def test_telemetry_client_manages_runs(tmp_path):
         assert stopped["run_dir"] == str(run_dir)
 
 
+def test_telemetry_client_can_start_run_without_arguments(tmp_path):
+    fixed_now = datetime(2026, 3, 17, 14, 42, tzinfo=UTC)
+    site_dir = tmp_path / "site"
+    (site_dir / "001").mkdir(parents=True)
+    app = create_app(TelemetryService(site_dir, now_provider=lambda: fixed_now))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        started = client.start_run()
+
+        assert started["run_id"] == "002"
+        assert started["run_dir"] == str(site_dir / "002")
+
+
 def test_telemetry_client_raises_useful_error(tmp_path):
     fixed_now = datetime(2026, 3, 17, 14, 45, tzinfo=UTC)
-    app = create_app(TelemetryService(tmp_path / "system", now_provider=lambda: fixed_now))
+    app = create_app(TelemetryService(tmp_path / "site", now_provider=lambda: fixed_now))
 
     with TestClient(app) as test_client:
         client = TelemetryClient(base_url="http://testserver", session=test_client)

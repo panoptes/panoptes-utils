@@ -33,7 +33,7 @@ if system() in {"Darwin", "Windows"}:
 logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
 logging.getLogger("uvicorn.error").setLevel(logging.WARNING)
 
-StreamName = Literal["system", "run"]
+StreamName = Literal["site", "run"]
 
 
 def utc_iso_z(now: datetime | None = None) -> str:
@@ -43,14 +43,14 @@ def utc_iso_z(now: datetime | None = None) -> str:
     return current.astimezone(UTC).isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
 
-def get_system_day_key(local_dt: datetime) -> str:
-    """Return the system stream day key using the local-time noon boundary.
+def get_site_day_key(local_dt: datetime) -> str:
+    """Return the site stream day key using the local-time noon boundary.
 
     Args:
         local_dt: A timezone-aware datetime in the machine's local timezone.
 
     Returns:
-        The ``YYYYMMDD`` day key for the system stream file.
+        The ``YYYYMMDD`` day key for the site stream file.
 
     Raises:
         ValueError: If ``local_dt`` is naive.
@@ -96,7 +96,7 @@ class ActiveRun:
 class RunStartRequest(BaseModel):
     """Request body for ``POST /run/start``."""
 
-    run_dir: str
+    run_dir: str | None = None
     run_id: str | None = None
     meta: dict[str, Any] = Field(default_factory=dict)
 
@@ -116,27 +116,27 @@ class TelemetryService:
 
     def __init__(
         self,
-        system_dir: str | Path,
+        site_dir: str | Path,
         now_provider: Callable[[], datetime] | None = None,
     ) -> None:
         """Create a telemetry service.
 
         Args:
-            system_dir: Base directory for rotated system stream NDJSON files.
+            site_dir: Base directory for rotated site stream NDJSON files.
             now_provider: Callable returning the current local datetime. Defaults to
                 ``datetime.now().astimezone()``.
         """
 
-        self.system_dir = Path(system_dir).expanduser()
-        self.system_dir.mkdir(parents=True, exist_ok=True)
+        self.site_dir = Path(site_dir).expanduser()
+        self.site_dir.mkdir(parents=True, exist_ok=True)
         self._now_provider = now_provider or (lambda: datetime.now().astimezone())
         self._lock = Lock()
         self._current: dict[StreamName, dict[str, dict[str, Any]]] = {
-            "system": {},
+            "site": {},
             "run": {},
         }
         self._seq: dict[StreamName, int] = {
-            "system": 0,
+            "site": 0,
             "run": 0,
         }
         self._active_run: ActiveRun | None = None
@@ -171,17 +171,20 @@ class TelemetryService:
 
     def start_run(
         self,
-        run_dir: str | Path,
+        run_dir: str | Path | None = None,
         meta: dict[str, Any] | None = None,
         run_id: str | None = None,
     ) -> dict[str, Any]:
         """Start a new run stream.
 
         Args:
-            run_dir: Directory that will contain ``telemetry.ndjson``.
+            run_dir: Directory that will contain ``telemetry.ndjson``. Relative paths
+                are resolved under ``site_dir``. If omitted, ``site_dir/run_id``
+                is used.
             meta: Optional run metadata to expose via the API.
             run_id: Optional identifier for the run. If omitted, one is taken from
-                ``meta["run_id"]`` or the run directory name.
+                ``meta["run_id"]``, the run directory name, or the next numeric run
+                directory under ``site_dir``.
 
         Returns:
             The active run metadata.
@@ -194,10 +197,10 @@ class TelemetryService:
             if self._active_run is not None:
                 raise TelemetryConflictError("A run is already active")
 
-            run_path = Path(run_dir).expanduser()
-            run_path.mkdir(parents=True, exist_ok=True)
             run_meta = copy.deepcopy(meta or {})
-            resolved_run_id = str(run_id or run_meta.get("run_id") or run_path.name)
+            resolved_run_id = str(run_id or run_meta.get("run_id") or self._derive_next_run_id())
+            run_path = self._resolve_run_dir(run_dir, resolved_run_id)
+            run_path.mkdir(parents=True, exist_ok=True)
             run_meta["run_id"] = resolved_run_id
             self._current["run"] = {}
             self._active_run = ActiveRun(
@@ -290,16 +293,36 @@ class TelemetryService:
 
     def _resolve_stream(self, requested_stream: StreamName | None) -> StreamName:
         if requested_stream is None:
-            return "run" if self._active_run is not None else "system"
+            return "run" if self._active_run is not None else "site"
 
         if requested_stream == "run" and self._active_run is None:
             raise TelemetryConflictError("Run stream is unavailable because no run is active")
 
         return requested_stream
 
+    def _resolve_run_dir(self, run_dir: str | Path | None, run_id: str) -> Path:
+        if run_dir is None:
+            return self.site_dir / run_id
+
+        run_path = Path(run_dir).expanduser()
+        if not run_path.is_absolute():
+            run_path = self.site_dir / run_path
+
+        return run_path
+
+    def _derive_next_run_id(self) -> str:
+        numeric_run_ids = [
+            int(path.name) for path in self.site_dir.iterdir() if path.is_dir() and path.name.isdigit()
+        ]
+        if not numeric_run_ids:
+            return "001"
+
+        width = max(3, max(len(str(run_id)) for run_id in numeric_run_ids))
+        return str(max(numeric_run_ids) + 1).zfill(width)
+
     def _stream_path(self, stream: StreamName, now: datetime) -> Path:
-        if stream == "system":
-            return self.system_dir / f"system_{get_system_day_key(now)}.ndjson"
+        if stream == "site":
+            return self.site_dir / f"site_{get_site_day_key(now)}.ndjson"
 
         if self._active_run is None:
             raise TelemetryConflictError("Run stream is unavailable because no run is active")
@@ -329,8 +352,9 @@ def create_app(service: TelemetryService) -> FastAPI:
             raise HTTPException(status_code=404, detail=str(error)) from error
 
     @app.post("/run/start")
-    def start_run(request: RunStartRequest) -> dict[str, Any]:
+    def start_run(request: RunStartRequest | None = None) -> dict[str, Any]:
         try:
+            request = request or RunStartRequest()
             return service.start_run(request.run_dir, request.meta, request.run_id)
         except TelemetryConflictError as error:
             raise HTTPException(status_code=409, detail=str(error)) from error
@@ -379,7 +403,7 @@ def create_app(service: TelemetryService) -> FastAPI:
 
 
 def telemetry_server(
-    system_dir: str | Path | None = None,
+    site_dir: str | Path | None = None,
     host: str | None = None,
     port: str | int | None = None,
     auto_start: bool = True,
@@ -388,7 +412,7 @@ def telemetry_server(
     """Start the telemetry server in a separate process.
 
     Args:
-        system_dir: Base directory for system stream NDJSON files.
+        site_dir: Base directory for site stream NDJSON files.
         host: Host address to bind to. Defaults to ``localhost`` or the
             ``PANOPTES_TELEMETRY_HOST`` environment variable.
         port: Port number to bind to. Defaults to ``6562`` or the
@@ -400,14 +424,14 @@ def telemetry_server(
         The child process that hosts the telemetry API.
     """
 
-    telemetry_dir = Path(system_dir or os.getenv("PANOPTES_TELEMETRY_SYSTEM_DIR", "telemetry"))
+    telemetry_dir = Path(site_dir or os.getenv("PANOPTES_TELEMETRY_SITE_DIR", "telemetry"))
     bind_host = host or os.getenv("PANOPTES_TELEMETRY_HOST", "localhost")
     bind_port = int(port or os.getenv("PANOPTES_TELEMETRY_PORT", 6562))
     app = create_app(TelemetryService(telemetry_dir))
 
     def start_server(host: str = "localhost", port: int = 6562) -> None:
         try:
-            logger.info(f"Starting telemetry server on {host}:{port} with system_dir={telemetry_dir!s}")
+            logger.info(f"Starting telemetry server on {host}:{port} with site_dir={telemetry_dir!s}")
             config = uvicorn.Config(
                 app,
                 host=host,
