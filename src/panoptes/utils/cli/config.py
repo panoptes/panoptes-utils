@@ -7,12 +7,10 @@ import time
 import typer
 from loguru import logger
 from rich import print
-from rich.console import Console
 
 from panoptes.utils.config.client import get_config, server_is_running, set_config
 
 app = typer.Typer()
-console = Console()
 
 
 @app.command("run")
@@ -42,7 +40,15 @@ def run(
 ) -> None:
     """Run the config server and block until it stops."""
 
-    from panoptes.utils.config import server
+    try:
+        from panoptes.utils.config import server
+    except ImportError as exc:
+        logger.error(
+            "Config server dependencies are not installed. "
+            "Install the 'config' extra, e.g. `pip install 'panoptes-utils[config]'`, "
+            "to use `panoptes-utils config run`."
+        )
+        raise typer.Exit(code=1) from exc
 
     bind_host = host
     client_host = "localhost" if bind_host in (None, "0.0.0.0") else bind_host
@@ -93,6 +99,13 @@ def run(
         if server_process.is_alive():
             server_process.terminate()
             server_process.join(30)
+    finally:
+        # Ensure the server process is always reaped to avoid zombies.
+        if server_process.is_alive():
+            logger.info(f"Config server process {server_process.pid} still running at shutdown, terminating")
+            server_process.terminate()
+        # A second join after earlier joins is safe and ensures the process handle is cleaned up.
+        server_process.join(30)
 
 
 @app.command("stop")
