@@ -1,12 +1,10 @@
 # CHANGELOG
 
-## Unreleased
-
-### Added
+## 0.3.1 - 2026-03-18
 
 ### Fixed
 
-### Changed
+* Fix namespace package configuration in `pyproject.toml` to allow correct installation and coexistence with other `panoptes` namespace packages (e.g. `panoptes-pocs`).
 
 ## 0.3.0 - 2026-03-18
 
