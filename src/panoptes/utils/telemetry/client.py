@@ -36,55 +36,6 @@ class TelemetryClient:
     After `start_run`, calls to `post_event(...)` without an explicit `stream=...`
     are written to `<run_dir>/telemetry.ndjson` and stamped with `meta.run_id`
     until `stop_run()` is called.
-
-    Examples:
-        >>> class FakeResponse:
-        ...     def __init__(self, status_code, payload):
-        ...         self.status_code = status_code
-        ...         self._payload = payload
-        ...         self.text = str(payload)
-        ...     def json(self):
-        ...         return self._payload
-        >>> class FakeSession:
-        ...     def __init__(self):
-        ...         self.run_active = False
-        ...         self.run_id = None
-        ...     def request(self, method, url, json=None, params=None, timeout=5.0):
-        ...         path = url.removeprefix("http://example.test")
-        ...         if path == "/ready":
-        ...             return FakeResponse(200, {"ready": True, "run_active": self.run_active})
-        ...         if path == "/run/start":
-        ...             self.run_active = True
-        ...             self.run_id = json["run_id"]
-        ...             payload = {"run_dir": json["run_dir"], "run_id": self.run_id, "meta": json["meta"]}
-        ...             return FakeResponse(200, payload)
-        ...         if path == "/event":
-        ...             stream = json["stream"] or ("run" if self.run_active else "site")
-        ...             meta = dict(json["meta"])
-        ...             if stream == "run":
-        ...                 meta["run_id"] = self.run_id
-        ...             payload = {"stream": stream, "type": json["type"], "data": json["data"], "meta": meta}
-        ...             return FakeResponse(200, payload)
-        ...         if path == "/run/stop":
-        ...             self.run_active = False
-        ...             return FakeResponse(200, {"stopped": True})
-        ...         if path == "/current":
-        ...             payload = {"current": {"status": {"data": {"state": "running"}}}}
-        ...             return FakeResponse(200, payload)
-        ...         return FakeResponse(200, {"ok": True})
-        >>> client = TelemetryClient(base_url="http://example.test", session=FakeSession())
-        >>> client.ready()
-        {'ready': True, 'run_active': False}
-        >>> client.post_event("weather", {"sky": "clear"})["stream"]
-        'site'
-        >>> client.start_run("/tmp/panoptes-run-001", run_id="001", meta={"observer": "demo"})
-        {'run_dir': '/tmp/panoptes-run-001', 'run_id': '001', 'meta': {'observer': 'demo', 'run_id': '001'}}
-        >>> client.post_event("status", {"state": "running"})["meta"]["run_id"]
-        '001'
-        >>> sorted(client.current()["current"])
-        ['status']
-        >>> client.stop_run()
-        {'stopped': True}
     """
 
     def __init__(

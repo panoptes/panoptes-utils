@@ -38,6 +38,7 @@ dependencies = [
     "pyserial>=3.4",
     "pytest-loguru",
     "python-dateutil",
+    "rich",
     "requests",
     "ruamel.yaml",
     "typer",

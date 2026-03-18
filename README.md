@@ -95,7 +95,7 @@ Telemetry Server
 After installing with the `telemetry` option as above, type:
 
 ```bash
-panoptes-utils telemetry run --site-dir /tmp/panoptes-telemetry
+panoptes-utils telemetry run
 ```
 
 The telemetry server writes append-only NDJSON events to a rotated `site` stream and, when a run is
@@ -115,7 +115,7 @@ Example local workflow with `httpie`:
 
 ```bash
 # Start the server in one terminal.
-panoptes-utils telemetry run --site-dir /tmp/panoptes-telemetry
+panoptes-utils telemetry run
 
 # Check readiness from another terminal.
 http :6562/ready
@@ -125,7 +125,7 @@ http POST :6562/event type=weather data:='{"sky":"clear","wind_mps":2.1}'
 
 # Start a run explicitly. From this point on, events without an explicit stream
 # automatically go to the run stream and are stamped with meta.run_id=001.
-http POST :6562/run/start run_dir=/tmp/panoptes-run-001 run_id=001
+http POST :6562/run/start run_id=001
 
 # Or let the server derive the next numeric run under the configured site_dir.
 http POST :6562/run/start
@@ -154,7 +154,7 @@ client.post_event("weather", {"sky": "clear", "wind_mps": 2.1}, meta={"source": 
 # start_run() activates the run stream and sets the default destination for
 # subsequent post_event() calls to that run. The server also stamps
 # each run event with meta["run_id"].
-client.start_run("/tmp/panoptes-run-001", run_id="001")
+client.start_run(run_id="001")
 event = client.post_event("status", {"state": "running"})
 print(event["meta"]["run_id"])
 

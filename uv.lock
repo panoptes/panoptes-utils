@@ -923,6 +923,7 @@ dependencies = [
     { name = "pytest-loguru" },
     { name = "python-dateutil" },
     { name = "requests" },
+    { name = "rich" },
     { name = "ruamel-yaml" },
     { name = "typer" },
 ]
@@ -1016,6 +1017,7 @@ requires-dist = [
     { name = "pyyaml", marker = "extra == 'config'" },
     { name = "requests" },
     { name = "requests", marker = "extra == 'config'" },
+    { name = "rich" },
     { name = "ruamel-yaml" },
     { name = "scalpl", marker = "extra == 'config'" },
     { name = "scipy", marker = "extra == 'images'" },

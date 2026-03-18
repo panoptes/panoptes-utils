@@ -8,6 +8,7 @@ from pathlib import Path
 import requests
 import typer
 from loguru import logger
+from rich import print
 
 from panoptes.utils.telemetry.server import telemetry_server
 
@@ -65,9 +66,9 @@ def run(
     )
 
     try:
-        typer.echo("Starting telemetry server. Ctrl-c to stop")
+        print("Starting telemetry server. Ctrl-c to stop")
         server_process.start()
-        typer.echo(
+        print(
             f"Telemetry server started on server_process.pid={server_process.pid!r}. "
             f"Waiting for readiness on {client_host}:{port}"
         )
@@ -117,7 +118,7 @@ def stop(
     logger.info(f"Shutting down telemetry server on {host}:{port}")
     response = requests.post(f"http://{host}:{port}/shutdown", timeout=5)
     response.raise_for_status()
-    typer.echo(response.json())
+    print(response.json())
 
 
 if __name__ == "__main__":
