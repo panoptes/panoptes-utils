@@ -41,7 +41,6 @@ def test_post_event_defaults_to_system_and_updates_current(tmp_path):
     current_response = client.get("/current")
     assert current_response.status_code == 200
     assert current_response.json() == {
-        "stream": "system",
         "current": {
             "weather": payload,
         },
@@ -63,10 +62,29 @@ def test_run_events_default_to_run_stream(tmp_path):
     assert start_response.status_code == 200
     assert event_response.status_code == 200
     assert event_response.json()["stream"] == "run"
+    assert event_response.json()["meta"]["run_id"] == "001"
 
     output_path = run_dir / "telemetry.ndjson"
     assert output_path.exists()
     assert _read_ndjson(output_path) == [event_response.json()]
+
+
+def test_run_event_meta_uses_active_run_id(tmp_path):
+    fixed_now = datetime(2026, 3, 17, 13, 50, tzinfo=timezone(timedelta(hours=-7)))
+    run_dir = tmp_path / "run-override"
+    client = TestClient(create_app(TelemetryService(tmp_path / "system", now_provider=lambda: fixed_now)))
+
+    start_response = client.post("/run/start", json={"run_dir": str(run_dir), "run_id": "run-123"})
+    event_response = client.post(
+        "/event",
+        json={"type": "status", "data": {"state": "running"}, "meta": {"run_id": "wrong", "source": "test"}},
+    )
+
+    assert start_response.status_code == 200
+    assert start_response.json()["run_id"] == "run-123"
+    assert start_response.json()["meta"]["run_id"] == "run-123"
+    assert event_response.status_code == 200
+    assert event_response.json()["meta"] == {"run_id": "run-123", "source": "test"}
 
 
 def test_posting_run_stream_without_active_run_returns_conflict(tmp_path):
@@ -91,7 +109,6 @@ def test_current_returns_full_snapshot(tmp_path):
 
     assert current_response.status_code == 200
     assert current_response.json() == {
-        "stream": "system",
         "current": {
             "weather": first,
             "power": second,

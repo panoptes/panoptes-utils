@@ -44,12 +44,14 @@ def test_telemetry_client_manages_runs(tmp_path):
     with TestClient(app) as test_client:
         client = TelemetryClient(base_url="http://testserver", session=test_client)
 
-        started = client.start_run(str(run_dir), meta={"run_id": "002"})
+        started = client.start_run(str(run_dir), run_id="002")
         event = client.post_event("status", {"state": "running"})
         stopped = client.stop_run()
 
         assert started["run_dir"] == str(run_dir)
+        assert started["run_id"] == "002"
         assert event["stream"] == "run"
+        assert event["meta"]["run_id"] == "002"
         assert stopped["run_dir"] == str(run_dir)
 
 

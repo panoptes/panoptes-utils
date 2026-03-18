@@ -25,7 +25,67 @@ class TelemetryClientError(RuntimeError):
 
 
 class TelemetryClient:
-    """Simple Python client for the telemetry server."""
+    """Simple Python client for the telemetry server.
+
+    The client wraps the telemetry HTTP API with small convenience methods for the
+    common lifecycle: check readiness, optionally start a run, emit events, inspect
+    the current materialized view, and stop the run or the server.
+
+    `start_run` is important because it switches the server's default event target
+    from the always-available `system` stream to the run-specific `run` stream.
+    After `start_run`, calls to `post_event(...)` without an explicit `stream=...`
+    are written to `<run_dir>/telemetry.ndjson` and stamped with `meta.run_id`
+    until `stop_run()` is called.
+
+    Examples:
+        >>> class FakeResponse:
+        ...     def __init__(self, status_code, payload):
+        ...         self.status_code = status_code
+        ...         self._payload = payload
+        ...         self.text = str(payload)
+        ...     def json(self):
+        ...         return self._payload
+        >>> class FakeSession:
+        ...     def __init__(self):
+        ...         self.run_active = False
+        ...         self.run_id = None
+        ...     def request(self, method, url, json=None, params=None, timeout=5.0):
+        ...         path = url.removeprefix("http://example.test")
+        ...         if path == "/ready":
+        ...             return FakeResponse(200, {"ready": True, "run_active": self.run_active})
+        ...         if path == "/run/start":
+        ...             self.run_active = True
+        ...             self.run_id = json["run_id"]
+        ...             payload = {"run_dir": json["run_dir"], "run_id": self.run_id, "meta": json["meta"]}
+        ...             return FakeResponse(200, payload)
+        ...         if path == "/event":
+        ...             stream = json["stream"] or ("run" if self.run_active else "system")
+        ...             meta = dict(json["meta"])
+        ...             if stream == "run":
+        ...                 meta["run_id"] = self.run_id
+        ...             payload = {"stream": stream, "type": json["type"], "data": json["data"], "meta": meta}
+        ...             return FakeResponse(200, payload)
+        ...         if path == "/run/stop":
+        ...             self.run_active = False
+        ...             return FakeResponse(200, {"stopped": True})
+        ...         if path == "/current":
+        ...             payload = {"current": {"status": {"data": {"state": "running"}}}}
+        ...             return FakeResponse(200, payload)
+        ...         return FakeResponse(200, {"ok": True})
+        >>> client = TelemetryClient(base_url="http://example.test", session=FakeSession())
+        >>> client.ready()
+        {'ready': True, 'run_active': False}
+        >>> client.post_event("weather", {"sky": "clear"})["stream"]
+        'system'
+        >>> client.start_run("/tmp/panoptes-run-001", run_id="001", meta={"observer": "demo"})
+        {'run_dir': '/tmp/panoptes-run-001', 'run_id': '001', 'meta': {'observer': 'demo', 'run_id': '001'}}
+        >>> client.post_event("status", {"state": "running"})["meta"]["run_id"]
+        '001'
+        >>> sorted(client.current()["current"])
+        ['status']
+        >>> client.stop_run()
+        {'stopped': True}
+    """
 
     def __init__(
         self,
@@ -67,10 +127,26 @@ class TelemetryClient:
 
         return self._request("GET", "/run")
 
-    def start_run(self, run_dir: str, meta: dict[str, Any] | None = None) -> dict[str, Any]:
-        """Start a telemetry run."""
+    def start_run(
+        self,
+        run_dir: str,
+        run_id: str | None = None,
+        meta: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Start a telemetry run.
 
-        return self._request("POST", "/run/start", json={"run_dir": run_dir, "meta": meta or {}})
+        If `run_id` is omitted, the server will use `meta["run_id"]` or the
+        run directory name.
+        """
+
+        payload_meta = dict(meta or {})
+        if run_id is not None:
+            payload_meta["run_id"] = run_id
+        return self._request(
+            "POST",
+            "/run/start",
+            json={"run_dir": run_dir, "run_id": run_id, "meta": payload_meta},
+        )
 
     def stop_run(self) -> dict[str, Any]:
         """Stop the current telemetry run."""

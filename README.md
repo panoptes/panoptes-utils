@@ -104,7 +104,9 @@ active, to a per-run `telemetry.ndjson` file. The system stream rotates on the l
 Use `start_run` when you want subsequent telemetry to be associated with a specific observing run.
 Before a run is active, events posted without an explicit `stream` are written to the `system` stream.
 After `POST /run/start` or `TelemetryClient.start_run(...)`, the default event destination switches to
-the `run` stream until the run is stopped.
+the `run` stream until the run is stopped. The active `run_id` is also stamped onto
+subsequent run-scoped events as `meta.run_id`. If you do not provide a `run_id`,
+the server uses the run directory name.
 
 Example local workflow with `httpie`:
 
@@ -119,12 +121,12 @@ http :6562/ready
 http POST :6562/event type=weather data:='{"sky":"clear","wind_mps":2.1}'
 
 # Start a run. From this point on, events without an explicit stream
-# automatically go to the run stream.
-http POST :6562/run/start run_dir=/tmp/panoptes-run-001 meta:='{"run_id":"001"}'
+# automatically go to the run stream and are stamped with meta.run_id=001.
+http POST :6562/run/start run_dir=/tmp/panoptes-run-001 run_id=001
 
 http POST :6562/event type=status data:='{"state":"running"}'
 
-# Inspect the materialized current view.
+# Inspect the materialized current view keyed by event type.
 http :6562/current
 
 # Stop the server cleanly.
@@ -144,11 +146,13 @@ print(client.ready())
 client.post_event("weather", {"sky": "clear", "wind_mps": 2.1}, meta={"source": "demo"})
 
 # start_run() activates the run stream and sets the default destination for
-# subsequent post_event() calls to that run.
-client.start_run("/tmp/panoptes-run-001", meta={"run_id": "001"})
-client.post_event("status", {"state": "running"})
+# subsequent post_event() calls to that run. The server also stamps
+# each run event with meta["run_id"].
+client.start_run("/tmp/panoptes-run-001", run_id="001")
+event = client.post_event("status", {"state": "running"})
+print(event["meta"]["run_id"])
 
-print(client.current())
+print(client.current()["current"])
 
 client.stop_run()
 client.shutdown()

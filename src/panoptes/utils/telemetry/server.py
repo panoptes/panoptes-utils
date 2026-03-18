@@ -78,6 +78,7 @@ class ActiveRun:
     """Metadata describing the currently active run."""
 
     run_dir: Path
+    run_id: str
     meta: dict[str, Any] = field(default_factory=dict)
     started_at: str = ""
 
@@ -86,6 +87,7 @@ class ActiveRun:
 
         return {
             "run_dir": str(self.run_dir),
+            "run_id": self.run_id,
             "meta": copy.deepcopy(self.meta),
             "started_at": self.started_at,
         }
@@ -95,6 +97,7 @@ class RunStartRequest(BaseModel):
     """Request body for ``POST /run/start``."""
 
     run_dir: str
+    run_id: str | None = None
     meta: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -166,12 +169,19 @@ class TelemetryService:
 
             return self._active_run.as_dict()
 
-    def start_run(self, run_dir: str | Path, meta: dict[str, Any] | None = None) -> dict[str, Any]:
+    def start_run(
+        self,
+        run_dir: str | Path,
+        meta: dict[str, Any] | None = None,
+        run_id: str | None = None,
+    ) -> dict[str, Any]:
         """Start a new run stream.
 
         Args:
             run_dir: Directory that will contain ``telemetry.ndjson``.
             meta: Optional run metadata to expose via the API.
+            run_id: Optional identifier for the run. If omitted, one is taken from
+                ``meta["run_id"]`` or the run directory name.
 
         Returns:
             The active run metadata.
@@ -186,10 +196,14 @@ class TelemetryService:
 
             run_path = Path(run_dir).expanduser()
             run_path.mkdir(parents=True, exist_ok=True)
+            run_meta = copy.deepcopy(meta or {})
+            resolved_run_id = str(run_id or run_meta.get("run_id") or run_path.name)
+            run_meta["run_id"] = resolved_run_id
             self._current["run"] = {}
             self._active_run = ActiveRun(
                 run_dir=run_path,
-                meta=copy.deepcopy(meta or {}),
+                run_id=resolved_run_id,
+                meta=run_meta,
                 started_at=utc_iso_z(self._now_provider()),
             )
             return self._active_run.as_dict()
@@ -226,13 +240,16 @@ class TelemetryService:
         with self._lock:
             stream = self._resolve_stream(request.stream)
             now = self._now_provider()
+            event_meta = copy.deepcopy(request.meta)
+            if stream == "run" and self._active_run is not None:
+                event_meta["run_id"] = self._active_run.run_id
             envelope = {
                 "seq": self._seq[stream] + 1,
                 "ts": utc_iso_z(now),
                 "stream": stream,
                 "type": request.type,
                 "data": request.data,
-                "meta": copy.deepcopy(request.meta),
+                "meta": event_meta,
             }
             self._seq[stream] = envelope["seq"]
 
@@ -252,7 +269,6 @@ class TelemetryService:
         with self._lock:
             selected_stream = self._resolve_stream(stream)
             return {
-                "stream": selected_stream,
                 "current": copy.deepcopy(self._current[selected_stream]),
             }
 
@@ -315,7 +331,7 @@ def create_app(service: TelemetryService) -> FastAPI:
     @app.post("/run/start")
     def start_run(request: RunStartRequest) -> dict[str, Any]:
         try:
-            return service.start_run(request.run_dir, request.meta)
+            return service.start_run(request.run_dir, request.meta, request.run_id)
         except TelemetryConflictError as error:
             raise HTTPException(status_code=409, detail=str(error)) from error
 
