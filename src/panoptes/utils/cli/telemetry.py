@@ -3,13 +3,17 @@
 from __future__ import annotations
 
 import time
+from copy import deepcopy
 from pathlib import Path
+from typing import Any
 
 import requests
 import typer
 from loguru import logger
 from rich import print
+from rich.json import JSON
 
+from panoptes.utils.telemetry import TelemetryClient
 from panoptes.utils.telemetry.server import telemetry_server
 
 app = typer.Typer()
@@ -26,6 +30,20 @@ def _server_is_ready(host: str, port: int) -> bool:
 
     payload = response.json()
     return bool(payload.get("ready"))
+
+
+def _render_payload(payload: dict[str, Any]) -> None:
+    """Render a JSON payload in a readable form."""
+
+    print(JSON.from_data(payload))
+
+
+def _get_current_payload(client: TelemetryClient, event_type: str | None) -> dict[str, Any]:
+    """Fetch the current telemetry payload."""
+
+    if event_type is not None:
+        return client.current_event(event_type)
+    return client.current()
 
 
 @app.command("run")
@@ -119,6 +137,56 @@ def stop(
     response = requests.post(f"http://{host}:{port}/shutdown", timeout=5)
     response.raise_for_status()
     print(response.json())
+
+
+@app.command("current")
+def current(
+    event_type: str | None = typer.Argument(
+        None,
+        help="Optional event type to fetch instead of the full current telemetry snapshot.",
+    ),
+    host: str = typer.Option(
+        "localhost",
+        envvar="PANOPTES_TELEMETRY_HOST",
+        help="Host address of the telemetry server.",
+    ),
+    port: int = typer.Option(
+        6562,
+        envvar="PANOPTES_TELEMETRY_PORT",
+        help="Port number of the telemetry server.",
+    ),
+    follow: bool = typer.Option(
+        False,
+        "--follow",
+        "-f",
+        help="Poll repeatedly and print updated readings as they change.",
+    ),
+    interval: float = typer.Option(
+        2.0,
+        min=0.1,
+        help="Polling interval in seconds when following current telemetry.",
+    ),
+) -> None:
+    """Display the current telemetry reading."""
+
+    client = TelemetryClient(host=host, port=port)
+    last_payload: dict[str, Any] | None = None
+
+    try:
+        while True:
+            payload = _get_current_payload(client, event_type)
+            if last_payload != payload:
+                if last_payload is not None:
+                    print()
+                _render_payload(payload)
+                last_payload = deepcopy(payload)
+
+            if not follow:
+                break
+
+            time.sleep(interval)
+    except KeyboardInterrupt:
+        print("[yellow]Stopped following telemetry.[/yellow]")
 
 
 if __name__ == "__main__":

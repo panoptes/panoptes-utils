@@ -34,6 +34,24 @@ Stop it cleanly:
 
     panoptes-utils telemetry stop
 
+Inspect the current reading:
+
+.. code-block:: bash
+
+    panoptes-utils telemetry current
+
+Follow live updates by polling for changes:
+
+.. code-block:: bash
+
+    panoptes-utils telemetry current --follow
+
+Fetch one event type only:
+
+.. code-block:: bash
+
+    panoptes-utils telemetry current status
+
 Python client example
 ---------------------
 
