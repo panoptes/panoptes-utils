@@ -6,6 +6,7 @@
 
 * Documented environment variables used by the config server and client in the `README.md`. #336
 * Added `panoptes-utils telemetry` daemon/current commands, a Python client, and a dedicated telemetry server documentation page with append-only NDJSON logging and `/current` snapshot support. #338
+* Added `panoptes-utils telemetry run --verbose` to enable DEBUG-level telemetry server logging, including one line per received event. #338
 
 ### Fixed
 

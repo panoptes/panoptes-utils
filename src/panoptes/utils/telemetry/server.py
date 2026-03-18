@@ -6,6 +6,7 @@ import copy
 import json
 import logging
 import os
+import sys
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, time, timedelta
@@ -265,6 +266,14 @@ class TelemetryService:
             if request.make_current:
                 self._current[target][request.type] = copy.deepcopy(envelope)
 
+            logger.debug(
+                "Telemetry event received: type={event_type} target={target} seq={seq} run_id={run_id!r}",
+                event_type=request.type,
+                target=target,
+                seq=envelope["seq"],
+                run_id=event_meta.get("run_id"),
+            )
+
             return self._public_event(envelope)
 
     def current_snapshot(self) -> dict[str, Any]:
@@ -405,6 +414,7 @@ def telemetry_server(
     port: str | int | None = None,
     auto_start: bool = True,
     access_logs: bool | None = None,
+    verbose: bool = False,
 ) -> Process:
     """Start the telemetry server in a separate process.
 
@@ -416,6 +426,7 @@ def telemetry_server(
             ``PANOPTES_TELEMETRY_PORT`` environment variable.
         auto_start: Whether to start the child process immediately.
         access_logs: Whether to enable uvicorn access logs.
+        verbose: Whether to enable DEBUG-level server logging.
 
     Returns:
         The child process that hosts the telemetry API.
@@ -428,6 +439,8 @@ def telemetry_server(
 
     def start_server(host: str = "localhost", port: int = 6562) -> None:
         try:
+            logger.remove()
+            logger.add(sys.stderr, level="DEBUG" if verbose else "INFO")
             logger.info(f"Starting telemetry server on {host}:{port} with site_dir={telemetry_dir!s}")
             config = uvicorn.Config(
                 app,
@@ -446,7 +459,11 @@ def telemetry_server(
             logger.warning(f"Problem starting telemetry server: {error!r}")
             return None
 
-    server_process = Process(target=start_server, daemon=True, kwargs={"host": bind_host, "port": bind_port})
+    server_process = Process(
+        target=start_server,
+        daemon=True,
+        kwargs={"host": bind_host, "port": bind_port},
+    )
     if auto_start:
         server_process.start()
     return server_process

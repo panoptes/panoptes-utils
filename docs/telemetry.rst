@@ -28,6 +28,12 @@ Start the telemetry server:
 
     panoptes-utils telemetry run
 
+Enable verbose server logging, including one debug log line per incoming event:
+
+.. code-block:: bash
+
+    panoptes-utils telemetry run --verbose
+
 Stop it cleanly:
 
 .. code-block:: bash
@@ -45,6 +51,9 @@ Follow live updates by polling for changes:
 .. code-block:: bash
 
     panoptes-utils telemetry current --follow
+
+This uses a live Rich display that refreshes in place when the current reading
+changes.
 
 Fetch one event type only:
 

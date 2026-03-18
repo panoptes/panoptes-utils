@@ -5,7 +5,7 @@ from datetime import UTC, datetime, timedelta, timezone
 
 from fastapi.testclient import TestClient
 
-from panoptes.utils.telemetry.server import TelemetryService, create_app, get_site_day_key
+from panoptes.utils.telemetry.server import EventRequest, TelemetryService, create_app, get_site_day_key
 
 
 def _read_ndjson(path):
@@ -149,6 +149,25 @@ def test_current_merges_site_and_run_context(tmp_path):
             "status": run_status,
         },
     }
+
+
+def test_append_event_emits_debug_log(tmp_path, monkeypatch):
+    fixed_now = datetime(2026, 3, 17, 14, 10, tzinfo=UTC)
+    service = TelemetryService(tmp_path / "site", now_provider=lambda: fixed_now)
+    debug_calls: list[tuple[str, tuple[object, ...], dict[str, object]]] = []
+
+    def fake_debug(message: str, *args: object, **kwargs: object) -> None:
+        debug_calls.append((message, args, kwargs))
+
+    monkeypatch.setattr("panoptes.utils.telemetry.server.logger.debug", fake_debug)
+
+    service.append_event(EventRequest(type="weather", data={"sky": "clear"}))
+
+    assert len(debug_calls) == 1
+    assert debug_calls[0][0].startswith("Telemetry event received:")
+    assert debug_calls[0][2]["event_type"] == "weather"
+    assert debug_calls[0][2]["target"] == "site"
+    assert debug_calls[0][2]["seq"] == 1
 
 
 def test_site_rotation_uses_previous_date_before_noon():

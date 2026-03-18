@@ -11,12 +11,18 @@ import requests
 import typer
 from loguru import logger
 from rich import print
+from rich.console import Console, Group
 from rich.json import JSON
+from rich.live import Live
+from rich.markdown import Markdown
+from rich.panel import Panel
+from rich.table import Table
 
 from panoptes.utils.telemetry import TelemetryClient
 from panoptes.utils.telemetry.server import telemetry_server
 
 app = typer.Typer()
+console = Console()
 
 
 def _server_is_ready(host: str, port: int) -> bool:
@@ -32,10 +38,94 @@ def _server_is_ready(host: str, port: int) -> bool:
     return bool(payload.get("ready"))
 
 
-def _render_payload(payload: dict[str, Any]) -> None:
-    """Render a JSON payload in a readable form."""
+def _payload_panel(
+    payload: dict[str, Any],
+    event_type: str | None = None,
+    *,
+    follow: bool = False,
+    interval: float | None = None,
+) -> Panel:
+    """Build a rich panel for the current telemetry payload."""
 
-    print(JSON.from_data(payload))
+    title = "Current telemetry"
+    if event_type is not None:
+        title = f"Current telemetry: {event_type}"
+
+    subtitle = None
+    if follow and interval is not None:
+        subtitle = f"live refresh every {interval:g}s"
+
+    body = _render_payload(payload)
+
+    return Panel(
+        body,
+        title=title,
+        subtitle=subtitle,
+        border_style="cyan",
+    )
+
+
+def _render_payload(payload: dict[str, Any]):
+    """Render telemetry payloads with structured envelope fields plus JSON payloads."""
+
+    current_payload = payload.get("current")
+    if isinstance(current_payload, dict):
+        event_panels = [
+            _event_panel(event_type, event_payload)
+            for event_type, event_payload in current_payload.items()
+            if isinstance(event_payload, dict)
+        ]
+        if not event_panels:
+            return Markdown("_No current telemetry values_")
+        return Group(*event_panels)
+
+    return _event_panel(str(payload.get("type", "event")), payload)
+
+
+def _event_panel(event_name: str, event_payload: dict[str, Any]) -> Panel:
+    """Render one telemetry event envelope."""
+
+    envelope_items: list[tuple[str, str]] = []
+    for key in ("type", "seq", "ts"):
+        value = event_payload.get(key)
+        if value is not None:
+            envelope_items.append((key, str(value)))
+
+    meta_payload = event_payload.get("meta")
+    if isinstance(meta_payload, dict):
+        for key, value in sorted(meta_payload.items()):
+            envelope_items.append((f"meta.{key}", str(value)))
+
+    summary = Table.grid(expand=True, padding=(0, 2))
+    summary.add_column(style="bold cyan", ratio=1)
+    summary.add_column(ratio=2)
+    summary.add_column(style="bold cyan", ratio=1)
+    summary.add_column(ratio=2)
+
+    for index in range(0, len(envelope_items), 2):
+        left_key, left_value = envelope_items[index]
+        if index + 1 < len(envelope_items):
+            right_key, right_value = envelope_items[index + 1]
+        else:
+            right_key, right_value = "", ""
+        summary.add_row(left_key, left_value, right_key, right_value)
+
+    sections: list[object] = [summary]
+
+    data_payload = event_payload.get("data")
+    if data_payload is not None:
+        sections.extend(
+            [
+                Markdown("**data**"),
+                JSON.from_data(data_payload),
+            ]
+        )
+
+    return Panel(
+        Group(*sections),
+        title=event_name,
+        border_style="blue",
+    )
 
 
 def _get_current_payload(client: TelemetryClient, event_type: str | None) -> dict[str, Any]:
@@ -70,6 +160,11 @@ def run(
         30.0,
         help="Seconds to wait for the telemetry server to become ready before giving up.",
     ),
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        help="Enable DEBUG-level telemetry server logging, including one log line per event.",
+    ),
 ) -> None:
     """Run the telemetry server and wait for readiness."""
 
@@ -81,6 +176,7 @@ def run(
         host=bind_host,
         port=port,
         auto_start=False,
+        verbose=verbose,
     )
 
     try:
@@ -172,19 +268,25 @@ def current(
     client = TelemetryClient(host=host, port=port)
     last_payload: dict[str, Any] | None = None
 
+    if not follow:
+        payload = _get_current_payload(client, event_type)
+        console.print(_payload_panel(payload, event_type))
+        return
+
     try:
-        while True:
-            payload = _get_current_payload(client, event_type)
-            if last_payload != payload:
-                if last_payload is not None:
-                    print()
-                _render_payload(payload)
-                last_payload = deepcopy(payload)
-
-            if not follow:
-                break
-
-            time.sleep(interval)
+        initial_payload = _get_current_payload(client, event_type)
+        last_payload = deepcopy(initial_payload)
+        with Live(
+            _payload_panel(initial_payload, event_type, follow=True, interval=interval),
+            console=console,
+            refresh_per_second=max(4, int(1 / interval)),
+        ) as live:
+            while True:
+                time.sleep(interval)
+                payload = _get_current_payload(client, event_type)
+                if last_payload != payload:
+                    live.update(_payload_panel(payload, event_type, follow=True, interval=interval))
+                    last_payload = deepcopy(payload)
     except KeyboardInterrupt:
         print("[yellow]Stopped following telemetry.[/yellow]")
 
