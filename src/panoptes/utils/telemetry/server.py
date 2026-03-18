@@ -256,12 +256,13 @@ class TelemetryService:
                 "data": request.data,
                 "meta": event_meta,
             }
-            self._seq[target] = envelope["seq"]
 
             output_path = self._stream_path(target, now)
             output_path.parent.mkdir(parents=True, exist_ok=True)
             with output_path.open("a", encoding="utf-8") as output_file:
                 output_file.write(json.dumps(envelope, separators=(",", ":")) + "\n")
+
+            self._seq[target] = envelope["seq"]
 
             if request.make_current:
                 self._current[target][request.type] = copy.deepcopy(envelope)

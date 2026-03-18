@@ -11,6 +11,7 @@
 
 * Unified CLI logging behavior: `DEBUG` level output is now silenced by default in all CLI tools (`panoptes-config-server` and `panoptes-utils`) and only enabled when the `--verbose` flag is provided. #336
 * Config server CLI `run` command now waits up to 30 seconds (configurable via `--startup-timeout`) for the server socket to be ready before entering the monitoring loop. #336
+* Fixed telemetry sequence allocation so failed event writes do not create permanent gaps in the sequence. #338
 
 ### Changed
 

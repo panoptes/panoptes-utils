@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from datetime import UTC, datetime, timedelta, timezone
+from pathlib import Path
 
 from fastapi.testclient import TestClient
 
@@ -168,6 +169,40 @@ def test_append_event_emits_debug_log(tmp_path, monkeypatch):
     assert debug_calls[0][2]["event_type"] == "weather"
     assert debug_calls[0][2]["target"] == "site"
     assert debug_calls[0][2]["seq"] == 1
+
+
+def test_append_event_does_not_advance_sequence_on_write_failure(tmp_path, monkeypatch):
+    fixed_now = datetime(2026, 3, 17, 14, 12, tzinfo=UTC)
+    service = TelemetryService(tmp_path / "site", now_provider=lambda: fixed_now)
+    original_open = Path.open
+    write_attempts = {"count": 0}
+
+    def fake_open(
+        path: Path,
+        *args: object,
+        **kwargs: object,
+    ):
+        if path.name.endswith(".ndjson"):
+            write_attempts["count"] += 1
+            if write_attempts["count"] == 2:
+                raise OSError("disk full")
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", fake_open)
+
+    first_event = service.append_event(EventRequest(type="weather", data={"sky": "clear"}))
+
+    try:
+        service.append_event(EventRequest(type="weather", data={"sky": "cloudy"}))
+    except OSError as error:
+        assert str(error) == "disk full"
+    else:  # pragma: no cover
+        raise AssertionError("expected append_event to propagate write failure")
+
+    third_event = service.append_event(EventRequest(type="weather", data={"sky": "windy"}))
+
+    assert first_event["seq"] == 1
+    assert third_event["seq"] == 2
 
 
 def test_site_rotation_uses_previous_date_before_noon():
