@@ -7,9 +7,8 @@ from rich import print
 from panoptes.utils.cli import image
 
 try:
-    # Import a module that requires the "config" extra to make the guard effective.
-    from panoptes.utils.config import server as _config_server  # noqa: F401
     from panoptes.utils.cli import config as config_cli
+    from panoptes.utils.config import server as _config_server  # noqa: F401  # requires "config" extra
 except ImportError:
     config_cli = None
 
