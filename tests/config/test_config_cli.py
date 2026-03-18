@@ -17,9 +17,11 @@ def cli_config_port():
     return 12345
 
 
-@pytest.mark.skip("Not working")
 def test_cli_server(runner, config_path, cli_config_port):
     def run_cli():
+        # Typer/Click runner handles some of the sys.argv but for a full server 
+        # subprocess we use the runner.invoke which is usually synchronous.
+        # Here we are running it in a Process, which can be tricky with CliRunner.
         result = runner.invoke(
             app,
             [
@@ -41,24 +43,26 @@ def test_cli_server(runner, config_path, cli_config_port):
     # Let the server start.
     time.sleep(5)
 
-    result = runner.invoke(
-        app,
-        [
-            "get",
-            "name",
-            "--port",
-            str(cli_config_port),
-        ],
-    )
-    assert result.exit_code == 0
-    assert "Testing PANOPTES Unit" in result.stdout
+    try:
+        result = runner.invoke(
+            app,
+            [
+                "get",
+                "name",
+                "--port",
+                str(cli_config_port),
+            ],
+        )
+        assert result.exit_code == 0
+        assert "Testing PANOPTES Unit" in result.stdout
+    finally:
+        proc.terminate()
+        proc.join(30)
 
-    proc.terminate()
-    proc.join(30)
 
-
-@pytest.mark.skip("Not working")
-def test_config_server_cli(runner, cli_server, cli_config_port):
+def test_config_server_cli(runner):
+    # Use the default port (8765) from conftest.py
+    cli_config_port = 8765
     result = runner.invoke(app, ["get", "name", "--port", str(cli_config_port)])
     assert result.exit_code == 0
     assert "Testing PANOPTES Unit" in result.stdout
