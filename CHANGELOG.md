@@ -8,6 +8,8 @@
 
 ### Changed
 
+* Converted the config server CLI from Click to Typer and moved it from the standalone `panoptes-config-server` command to `panoptes-utils config` (subcommands: `run`, `stop`, `get`, `set`). Removed `click` and `click-spinner` from core dependencies. Updated README to consolidate all CLI subcommands (`image`, `config`, `telemetry`) under a single "Command Line" section with per-subcommand env var tables.
+
 ## 0.2.55 - 2026-03-18
 
 ### Added
