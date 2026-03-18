@@ -22,12 +22,14 @@ from pydantic import BaseModel, Field
 
 from panoptes.utils import __version__
 
-if system() in {"Darwin", "Windows"}:
+if system() == "Darwin":
     import multiprocessing
 
     try:
-        multiprocessing.set_start_method("fork")
-    except RuntimeError:
+        if "fork" in multiprocessing.get_all_start_methods():
+            multiprocessing.set_start_method("fork")
+    except (RuntimeError, ValueError):
+        # Ignore if the start method is already set or unsupported.
         pass
 
 logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
@@ -395,8 +397,10 @@ def create_app(service: TelemetryService) -> FastAPI:
     @app.post("/shutdown")
     def shutdown(request: Request) -> dict[str, bool]:
         server = getattr(request.app.state, "uvicorn_server", None)
-        if server is not None:
-            server.should_exit = True
+        if server is None:
+            raise HTTPException(status_code=409, detail="Server shutdown not available")
+
+        server.should_exit = True
         return {"shutting_down": True}
 
     return app
