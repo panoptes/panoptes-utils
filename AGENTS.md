@@ -117,7 +117,7 @@ panoptes-utils/
   - `docs`: Documentation building
 
 **Optional Dependencies:**
-- `config`: Flask, gevent, scalpl for configuration server
+- `config`: fastapi, uvicorn, scalpl for configuration server
 - `images`: matplotlib, photutils, pillow for image processing
 - `testing`: pytest, coverage, and testing tools
 - `docs`: Sphinx and documentation tools
@@ -152,9 +152,9 @@ panoptes-utils/
 The configuration system provides centralized configuration management through a client-server architecture.
 
 **Components:**
-- `server.py`: Flask-based configuration server
+- `server.py`: FastAPI+uvicorn configuration server
 - `client.py`: Configuration client for accessing server
-- `cli.py`: Command-line interface for starting server
+- CLI is now under `panoptes-utils config` (see `src/panoptes/utils/cli/config.py`)
 
 **When modifying:**
 - Understand client-server communication protocol
@@ -164,7 +164,7 @@ The configuration system provides centralized configuration management through a
 
 **Starting the config server:**
 ```bash
-panoptes-config-server run --config-file tests/testing.yaml
+panoptes-utils config run --config-file tests/testing.yaml
 ```
 
 ### CLI Module
@@ -184,7 +184,7 @@ Command-line tools built with Typer.
 
 **Available commands:**
 - `panoptes-utils image`: Image processing commands
-- `panoptes-config-server`: Configuration server management
+- `panoptes-utils config`: Configuration server management
 
 ### Image Processing Module
 
@@ -244,10 +244,10 @@ The configuration server provides a REST API for centralized configuration manag
 **Starting the config server locally:**
 ```bash
 # For development
-panoptes-config-server run --config-file tests/testing.yaml
+panoptes-utils config run --config-file tests/testing.yaml
 
 # With custom host/port
-panoptes-config-server --host 0.0.0.0 --port 8765 run --config-file tests/testing.yaml
+panoptes-utils config run --host 0.0.0.0 --port 8765 --config-file tests/testing.yaml
 ```
 
 **Notes:**
@@ -705,7 +705,7 @@ uv run ruff format --check .
 uv build
 
 # Start config server
-panoptes-config-server run --config-file tests/testing.yaml
+panoptes-utils config run --config-file tests/testing.yaml
 
 # View CLI help
 panoptes-utils --help

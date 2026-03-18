@@ -7,6 +7,11 @@ from rich import print
 from panoptes.utils.cli import image
 
 try:
+    from panoptes.utils.cli import config as config_cli
+except ImportError:
+    config_cli = None
+
+try:
     from panoptes.utils.cli import telemetry
 except ImportError:
     telemetry = None
@@ -30,6 +35,21 @@ def main(verbose: bool = False):
 
 
 app.add_typer(image.app, name="image", help="Process an image.")
+
+if config_cli is not None:
+    app.add_typer(config_cli.app, name="config", help="Manage the config server.")
+else:
+    _config_app = typer.Typer(help="Config commands require optional dependencies.")
+
+    @_config_app.callback()
+    def _config_main() -> None:
+        """Placeholder config command when optional dependencies are missing."""
+        print(
+            "Config support is not available. To enable it, install the 'config' extra:\n"
+            "  pip install 'panoptes-utils[config]'"
+        )
+
+    app.add_typer(_config_app, name="config", help="Manage the config server.")
 
 if telemetry is not None:
     app.add_typer(telemetry.app, name="telemetry", help="Run the telemetry server.")
