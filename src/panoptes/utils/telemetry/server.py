@@ -185,7 +185,7 @@ class TelemetryService:
                 is used.
             meta: Optional run metadata to expose via the API.
             run_id: Optional identifier for the run. If omitted, one is taken from
-                ``meta["run_id"]``, the run directory name, or the next numeric run
+                ``meta["run_id"]`` or, if that is not provided, the next numeric run
                 directory under ``site_dir``.
 
         Returns:
@@ -402,6 +402,11 @@ def create_app(service: TelemetryService) -> FastAPI:
         server = getattr(request.app.state, "uvicorn_server", None)
         if server is None:
             raise HTTPException(status_code=409, detail="Server shutdown not available")
+
+        client = request.client
+        client_host = getattr(client, "host", None)
+        if client_host not in {"127.0.0.1", "::1", "localhost"}:
+            raise HTTPException(status_code=403, detail="Server shutdown is restricted to loopback clients")
 
         server.should_exit = True
         return {"shutting_down": True}
