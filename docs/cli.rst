@@ -16,11 +16,47 @@ tasks.  The subcommands are available via the help menu:
 .. code-block:: bash
 
     $ panoptes-utils --help
-    Usage: panoptes-utils [options] <command> [<args>]
+    Usage: panoptes-utils [OPTIONS] COMMAND [ARGS]...
+
+      PANOPTES Utilities CLI.
+
     Options:
-      --help  Show this message and exit.
+      --verbose / --no-verbose  [default: no-verbose]
+      --help                    Show this message and exit.
+
     Commands:
+      config    Manage the config server.
       image     Process an image.
+      telemetry  Run the telemetry server.
+
+.. note::
+
+    The ``config`` subcommand requires the ``config`` extra
+    (``pip install "panoptes-utils[config]"``).
+
+    The ``telemetry`` subcommand requires the ``telemetry`` extra
+    (``pip install "panoptes-utils[telemetry]"``).
+
+config
+======
+
+See :ref:`config-server` for full documentation of the config subcommand.
+
+Quick reference:
+
+.. code-block:: bash
+
+    # Start the config server
+    panoptes-utils config run --config-file /path/to/config.yaml
+
+    # Read a value
+    panoptes-utils config get location.elevation
+
+    # Update a value
+    panoptes-utils config set name "My Observatory"
+
+    # Stop the server
+    panoptes-utils config stop
 
 image
 =====
