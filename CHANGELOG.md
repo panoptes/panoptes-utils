@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 0.3.2 - 2026-03-20
+
+### Changed
+
+* **Repository Workflow Migration:** Transitioned from a triangular `develop`/`main` workflow to a single-remote model. `main` is now the primary development and release branch. #XXX
+* Updated CI workflows, badges, and internal documentation (`CONTRIBUTING.md`, `AGENTS.md`) to reflect the new workflow.
+* Deleted the legacy `develop` branch and removed it from all CI triggers.
+
 ## 0.3.1 - 2026-03-18
 
 ### Fixed
