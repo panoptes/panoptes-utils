@@ -128,7 +128,7 @@ def crop_data(
         >>> from panoptes.utils.images.plot import add_colorbar, get_palette
         >>> from panoptes.utils.images.fits import getdata
         >>>
-        >>> fits_url = 'https://github.com/panoptes/panoptes-utils/raw/develop/tests/data/solved.fits.fz'
+        >>> fits_url = 'https://github.com/panoptes/panoptes-utils/raw/main/tests/data/solved.fits.fz'
         >>> data, header = getdata(fits_url, header=True)
         >>> wcs = WCS(header)
         >>> # Crop a portion of the image by WCS and get Cutout2d object.
@@ -192,7 +192,7 @@ def mask_saturated(
         >>> from panoptes.utils.images.plot import add_colorbar, get_palette
         >>> from panoptes.utils.images.fits import getdata
         >>>
-        >>> fits_url = 'https://github.com/panoptes/panoptes-utils/raw/develop/tests/data/solved.fits.fz'
+        >>> fits_url = 'https://github.com/panoptes/panoptes-utils/raw/main/tests/data/solved.fits.fz'
         >>> data, header = getdata(fits_url, header=True)
         >>> wcs = WCS(header)
         >>> # Crop a portion of the image by WCS and get Cutout2d object.
