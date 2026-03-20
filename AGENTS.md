@@ -366,9 +366,10 @@ panoptes-utils config run --host 0.0.0.0 --port 8765 --config-file tests/testing
    git checkout main
    git pull origin main
    ```
-   - Tag the release commit and push.
+   - Tag the release commit and push. **The tag message should include the relevant changelog entries for this release.**
    ```bash
-   git tag -a ${NEW_VERSION} -m "Release ${NEW_VERSION}"
+   # Extract relevant changelog entries first
+   git tag -a ${NEW_VERSION} -m "Release ${NEW_VERSION}" -m "$(cat CHANGELOG.md | sed -n "/^## ${NEW_VERSION#v}/,/^## /p" | sed '1d;$d')"
    git push origin ${NEW_VERSION}
    ```
 
@@ -394,6 +395,7 @@ panoptes-utils config run --host 0.0.0.0 --port 8765 --config-file tests/testing
 - Parse version from `git describe --tags --abbrev=0`
 - Calculate next version based on changelog entries or commit messages
 - Extract date automatically: `date +%Y-%m-%d`
+- **Extract changelog entries for the release description:** Use the content under the version header in `CHANGELOG.md`.
 - Validate version format matches `vX.Y.Z` pattern
 - Ensure CHANGELOG has proper section headers before merging
 - Verify all tests pass before tagging
