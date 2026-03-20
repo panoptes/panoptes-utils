@@ -59,9 +59,9 @@ Indices and tables
 
 .. |PyPI version| image:: https://badge.fury.io/py/panoptes-utils.svg
    :target: https://badge.fury.io/py/panoptes-utils
-.. |Build Status| image:: https://travis-ci.com/panoptes/panoptes-utils.svg?branch=develop
+.. |Build Status| image:: https://travis-ci.com/panoptes/panoptes-utils.svg?branch=main
    :target: https://travis-ci.com/panoptes/panoptes-utils
-.. |codecov| image:: https://codecov.io/gh/panoptes/panoptes-utils/branch/develop/graph/badge.svg
+.. |codecov| image:: https://codecov.io/gh/panoptes/panoptes-utils/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/panoptes/panoptes-utils
 .. |Documentation Status| image:: https://readthedocs.org/projects/panoptes-utils/badge/?version=latest
    :target: https://panoptes-utils.readthedocs.io/en/latest/?badge=latest
