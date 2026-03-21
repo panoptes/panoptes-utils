@@ -7,6 +7,7 @@
 * **Repository Workflow Migration:** Transitioned from a triangular `develop`/`main` workflow to a single-remote model. `main` is now the primary development and release branch. #XXX
 * Updated CI workflows, badges, and internal documentation (`CONTRIBUTING.md`, `AGENTS.md`) to reflect the new workflow.
 * Deleted the legacy `develop` branch and removed it from all CI triggers.
+* Added documentation for standard serialization tools (`to_json`, `from_json`, `serialize_all_objects`) to `AGENTS.md` and `GEMINI.md`.
 
 ## 0.3.1 - 2026-03-18
 

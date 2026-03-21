@@ -17,6 +17,9 @@ This document provides specific instructions for the Gemini CLI agent. For all g
 - **Validation:** Always run tests using `uv run pytest` after any modification. Note the specific testing markers and plot-blocking doctests mentioned in `AGENTS.md`.
 - **Changelog:** Rigorously follow the `CHANGELOG.md` update requirements specified in the "Making Changes" section of `AGENTS.md`.
 
+### Utility Awareness
+- **Search Before Implementation:** Always check `panoptes.utils` for existing functionality. Specifically, use `panoptes.utils.serializers` for any data transmission or persistence tasks to ensure astronomical types (Quantities, Times) are handled correctly and consistently.
+
 ## Quick Links
 - [AGENTS.md](AGENTS.md) - Full project guidelines.
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Development workflow.
