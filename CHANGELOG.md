@@ -6,6 +6,7 @@
 
 * Updated `docs/config-server.rst` to replace outdated `panoptes-config-server` references with the current `panoptes-utils config` subcommand, reflect the FastAPI/uvicorn backend, document all CLI options and environment variables, and add a `stop` command section.
 * Updated `docs/cli.rst` to reflect the current `panoptes-utils --help` output, including `config` and `telemetry` subcommands, and cross-reference the config server documentation.
+* Updated `docs/index.rst` to use current GHA and Codecov badges.
 
 ## 0.3.1 - 2026-03-18
 
