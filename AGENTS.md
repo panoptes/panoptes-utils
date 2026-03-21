@@ -227,6 +227,23 @@ Serial device communication utilities.
 - Test with simulator/mock devices
 - Consider thread safety
 
+### Serialization Module
+
+**Location:** `src/panoptes/utils/serializers.py`
+
+Utilities for standard data serialization, handling astronomical objects like `astropy.units.Quantity` and `astropy.time.Time`.
+
+**Key Functions:**
+- `to_json(obj)`: Converts Python objects (including dicts with Quantities) to a JSON string. Quantities are serialized as strings (e.g., `"42.0 deg"`).
+- `from_json(msg)`: Converts a JSON string back to Python objects. It automatically reconstructs `Quantity` objects for common units (`deg`, `m`, `s`).
+- `serialize_all_objects(obj)`: Recursively serializes all objects in a collection (dict or list) into JSON-safe primitives. Useful for preparing data for FastAPI responses.
+- `to_yaml` / `from_yaml`: Similar utilities for YAML format.
+
+**When modifying or using:**
+- ALWAYS prefer these utilities for network communication or state persistence.
+- Note that `from_json` automatic reconstruction is limited to specific units; for others, you may need manual conversion using `astropy.units`.
+- `serialize_all_objects` is the idiomatic way to prepare complex objects for transmission over REST/FastAPI.
+
 ## Configuration
 
 **Configuration files:** `tests/testing.yaml` (for testing)
