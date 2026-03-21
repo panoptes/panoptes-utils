@@ -57,11 +57,11 @@ Indices and tables
 .. _Logger: #logger
 .. _POCS Environment: https://pocs.readthedocs.io/en/latest/#pocs-environment
 
-.. |PyPI version| image:: https://badge.fury.io/py/panoptes-utils.svg
-   :target: https://badge.fury.io/py/panoptes-utils
-.. |Build Status| image:: https://travis-ci.com/panoptes/panoptes-utils.svg?branch=develop
-   :target: https://travis-ci.com/panoptes/panoptes-utils
-.. |codecov| image:: https://codecov.io/gh/panoptes/panoptes-utils/branch/develop/graph/badge.svg
+.. |GHA Status| image:: https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fpanoptes%2Fpanoptes-utils%2Fbadge%3Fref%3Ddevelop&style=flat
+   :target: https://actions-badge.atrox.dev/panoptes/panoptes-utils/goto?ref=develop
+.. |codecov| image:: https://codecov.io/gh/panoptes/panoptes-utils/graph/badge.svg?token=YCzESBa7rK
    :target: https://codecov.io/gh/panoptes/panoptes-utils
 .. |Documentation Status| image:: https://readthedocs.org/projects/panoptes-utils/badge/?version=latest
    :target: https://panoptes-utils.readthedocs.io/en/latest/?badge=latest
+.. |PyPI version| image:: https://badge.fury.io/py/panoptes-utils.svg
+   :target: https://badge.fury.io/py/panoptes-utils
