@@ -75,7 +75,7 @@ def config_server(
     """
     global _pocs_config, _pocs_cut, _server_config
 
-    logger.info(f"Starting panoptes-config-server with config_file={config_file!r}")
+    logger.info(f"Starting panoptes-utils config server with config_file={config_file!r}")
     try:
         config = load_config(config_files=config_file, load_local=load_local, parse=False)
     except ParserError as e:
