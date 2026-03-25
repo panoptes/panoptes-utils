@@ -1,0 +1,21 @@
+panoptes.utils.serial package
+=============================
+
+Submodules
+----------
+
+panoptes.utils.serial.device module
+-----------------------------------
+
+.. automodule:: panoptes.utils.serial.device
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: panoptes.utils.serial
+   :members:
+   :show-inheritance:
+   :undoc-members:

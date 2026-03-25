@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>panoptes.utils.serial.device &#8212; panoptes-utils 0.2.54.dev47+g4dc3dd891.d20260318 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/basic_mod.css?v=9b2032db" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/plot_directive.css" />
+    <script src="../../../../_static/documentation_options.js?v=d2a0aebe"></script>
+    <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <script src="../../../../_static/js/petite-vue.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body data-dark_mode_code_blocks="true">
+
+<div id="top_nav">
+    
+
+    <nav>
+        
+            
+        
+
+        <p id="toggle_sidebar">
+            <a href="#" title="Toggle sidebar">|||</a>
+        </p>
+        <h1><a href="../../../../index.html" title="Go to homepage">panoptes-utils 0.2.54.dev47+g4dc3dd891.d20260318 documentation</a></h1>
+
+        <a id="mode_toggle" href="#" @click.prevent="handleClick" :title="mode">
+    <template v-if="mode == 'light'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_light"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><circle cx="39.311" cy="39.524" r="15.734" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.212,4.901c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901l-0,9.614c-0,2.705 2.196,4.901 4.9,4.901c2.705,0 4.901,-2.196 4.901,-4.901l0,-9.614Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M67.48,18.073c1.913,-1.912 1.913,-5.018 0,-6.931c-1.912,-1.912 -5.018,-1.912 -6.931,0l-6.798,6.799c-1.912,1.912 -1.912,5.018 0,6.931c1.913,1.912 5.018,1.912 6.931,-0l6.798,-6.799Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.728,61.108c1.912,-1.913 1.912,-5.018 -0,-6.931c-1.913,-1.913 -5.019,-1.913 -6.931,-0l-6.799,6.798c-1.912,1.913 -1.912,5.019 0,6.931c1.913,1.913 5.019,1.913 6.931,0l6.799,-6.798Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.682,54.177c-1.913,-1.913 -5.018,-1.913 -6.931,-0c-1.912,1.913 -1.912,5.018 0,6.931l6.798,6.798c1.913,1.913 5.019,1.913 6.931,0c1.913,-1.912 1.913,-5.018 0,-6.931l-6.798,-6.798Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M4.901,34.623c-2.705,0 -4.901,2.196 -4.901,4.901c0,2.705 2.196,4.901 4.901,4.901l9.614,0c2.705,0 4.901,-2.196 4.901,-4.901c0,-2.705 -2.196,-4.901 -4.901,-4.901l-9.614,0Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.212,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901l-0,9.614c-0,2.705 2.196,4.901 4.9,4.901c2.705,-0 4.901,-2.196 4.901,-4.901l0,-9.614Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M18.929,11.142c-1.912,-1.912 -5.018,-1.912 -6.931,0c-1.912,1.913 -1.912,5.019 0,6.931l6.799,6.799c1.912,1.912 5.018,1.912 6.931,-0c1.912,-1.913 1.912,-5.019 -0,-6.931l-6.799,-6.799Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.108,34.623c-2.705,0 -4.901,2.196 -4.901,4.901c-0,2.705 2.196,4.901 4.901,4.901l9.614,0c2.705,0 4.901,-2.196 4.901,-4.901c-0,-2.705 -2.196,-4.901 -4.901,-4.901l-9.614,0Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+
+    <template v-if="mode == 'dark'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_dark"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><circle cx="39.311" cy="39.524" r="15.734" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.212,14.515c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,0 -4.901,2.196 -4.901,4.901c0,2.705 2.197,4.901 4.901,4.901c2.705,0 4.901,-2.196 4.901,-4.901Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M60.662,24.892c1.902,-1.902 1.902,-4.99 0,-6.892l-0.04,-0.039c-1.901,-1.902 -4.989,-1.902 -6.891,-0c-1.901,1.901 -1.901,4.989 0,6.891l0.04,0.04c1.902,1.901 4.989,1.901 6.891,-0Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.732,61.103c1.91,-1.91 1.91,-5.011 0,-6.921l-0.009,-0.01c-1.91,-1.91 -5.012,-1.91 -6.921,-0c-1.91,1.91 -1.91,5.011 -0,6.921l0.01,0.01c1.909,1.91 5.011,1.91 6.92,-0Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.672,54.167c-1.907,-1.907 -5.004,-1.907 -6.911,0l-0.02,0.02c-1.907,1.907 -1.907,5.004 0,6.911c1.907,1.907 5.004,1.907 6.911,-0l0.02,-0.02c1.907,-1.907 1.907,-5.004 0,-6.911Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M14.52,34.623c-2.702,0 -4.896,2.194 -4.896,4.896l0,0.01c0,2.702 2.194,4.896 4.896,4.896c2.702,0 4.896,-2.194 4.896,-4.896l-0,-0.01c-0,-2.702 -2.194,-4.896 -4.896,-4.896Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.212,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.901,2.196 -4.901,4.901c0,2.704 2.197,4.9 4.901,4.9c2.705,0 4.901,-2.196 4.901,-4.9Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M25.73,17.943c-1.911,-1.911 -5.015,-1.911 -6.926,0l-0.005,0.005c-1.911,1.911 -1.911,5.015 0,6.926c1.911,1.911 5.015,1.911 6.926,0l0.005,-0.005c1.911,-1.911 1.911,-5.014 -0,-6.926Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.098,34.623c-2.699,0 -4.891,2.192 -4.891,4.892l-0,0.019c-0,2.699 2.192,4.891 4.891,4.891c2.7,0 4.892,-2.192 4.892,-4.891l0,-0.019c0,-2.7 -2.192,-4.892 -4.892,-4.892Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+
+    <template v-if="mode == 'darkest'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_darkest"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><path d="M39.315,23.791c8.684,-0 15.734,7.05 15.734,15.733c0,8.684 -7.05,15.734 -15.734,15.734c-8.683,0 -15.733,-7.05 -15.733,-15.734c-0,-8.683 7.05,-15.733 15.733,-15.733Zm0,4.737c6.069,0 10.997,4.927 10.997,10.996c-0,6.069 -4.928,10.996 -10.997,10.996c-6.068,0 -10.996,-4.927 -10.996,-10.996c0,-6.069 4.928,-10.996 10.996,-10.996Z" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.216,14.515c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,0 -4.9,2.196 -4.9,4.901c-0,2.705 2.196,4.901 4.9,4.901c2.705,0 4.901,-2.196 4.901,-4.901Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M60.666,24.892c1.902,-1.902 1.902,-4.99 0,-6.892l-0.04,-0.039c-1.901,-1.902 -4.989,-1.902 -6.891,-0c-1.901,1.901 -1.901,4.989 0,6.891l0.04,0.04c1.902,1.901 4.99,1.901 6.891,-0Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.737,61.103c1.909,-1.91 1.909,-5.011 -0,-6.921l-0.01,-0.01c-1.91,-1.91 -5.011,-1.91 -6.921,-0c-1.91,1.91 -1.91,5.011 -0,6.921l0.01,0.01c1.91,1.91 5.011,1.91 6.921,-0Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.676,54.167c-1.907,-1.907 -5.004,-1.907 -6.911,0l-0.02,0.02c-1.907,1.907 -1.907,5.004 0,6.911c1.907,1.907 5.004,1.907 6.911,-0l0.02,-0.02c1.907,-1.907 1.907,-5.004 0,-6.911Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M14.524,34.623c-2.702,0 -4.896,2.194 -4.896,4.896l0,0.01c0,2.702 2.194,4.896 4.896,4.896c2.702,0 4.896,-2.194 4.896,-4.896l0,-0.01c0,-2.702 -2.194,-4.896 -4.896,-4.896Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.216,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901c-0,2.704 2.196,4.9 4.9,4.9c2.705,0 4.901,-2.196 4.901,-4.9Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M25.734,17.943c-1.911,-1.911 -5.015,-1.911 -6.926,0l-0.005,0.005c-1.911,1.911 -1.911,5.015 0,6.926c1.911,1.911 5.015,1.911 6.926,0l0.005,-0.005c1.911,-1.911 1.911,-5.014 0,-6.926Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.103,34.623c-2.7,0 -4.892,2.192 -4.892,4.892l-0,0.019c-0,2.699 2.192,4.891 4.892,4.891c2.699,0 4.891,-2.192 4.891,-4.891l0,-0.019c0,-2.7 -2.192,-4.892 -4.891,-4.892Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+</a>
+
+<script>
+(function() {
+    const LOCAL_STORAGE_KEY = 'piccoloThemeMode'
+
+    var initialMode = localStorage.getItem(LOCAL_STORAGE_KEY)
+
+    if (initialMode) {
+        // Make sure the value in local storage is valid
+        if (['light', 'dark', 'darkest'].indexOf(initialMode) == -1) {
+            initialMode = 'light'
+            localStorage.setItem(LOCAL_STORAGE_KEY, initialMode)
+        }
+    } else {
+        // Check if the client prefers dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            initialMode = 'dark'
+        } else {
+            initialMode = 'light'
+        }
+        localStorage.setItem(LOCAL_STORAGE_KEY, initialMode)
+    }
+
+    document.documentElement.dataset.mode = initialMode
+
+    PetiteVue.createApp({
+        'mode': initialMode,
+        handleClick() {
+            let currentMode = this.mode
+
+            if (currentMode == 'light') {
+                this.mode = 'dark'
+            } else if (currentMode == 'dark') {
+                this.mode = 'darkest'
+            } else if (currentMode == 'darkest') {
+                this.mode = 'light'
+            }
+
+            document.documentElement.dataset.mode = this.mode
+            localStorage.setItem(LOCAL_STORAGE_KEY, this.mode)
+
+            console.log(this.mode)
+        }
+    }).mount('#mode_toggle')
+})()
+</script>
+            <p class="mobile_search_link">
+                <a href="../../../../search.html" title="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 65 64" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2">
+                        <path d="M14.873 40.009c-2.315-3.943-3.642-8.532-3.642-13.429C11.231 11.91 23.141 0 37.811 0s26.58 11.91 26.58 26.58-11.91 26.58-26.58 26.58a26.44 26.44 0 0 1-14.277-4.161L9.739 62.794a3.12 3.12 0 0 1-4.413 0L.913 58.382c-1.217-1.218-1.217-3.196 0-4.413l13.96-13.96zM37.811 8.054c10.225 0 18.526 8.301 18.526 18.526s-8.301 18.526-18.526 18.526-18.526-8.301-18.526-18.526S27.586 8.054 37.811 8.054z" fill="#fff" />
+                    </svg>
+                </a>
+            </p>
+        
+
+        <div class="searchbox_wrapper">
+            
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../config-server.html">Config Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../telemetry.html">Telemetry Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">Module Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for panoptes.utils.serial.device</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">suppress</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">serial</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">serial.threaded</span><span class="w"> </span><span class="kn">import</span> <span class="n">LineReader</span><span class="p">,</span> <span class="n">ReaderThread</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">serial.tools.list_ports</span><span class="w"> </span><span class="kn">import</span> <span class="n">comports</span> <span class="k">as</span> <span class="n">get_comports</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">panoptes.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">error</span>
+
+
+<div class="viewcode-block" id="SerialDeviceDefaults">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.serial.html#panoptes.utils.serial.device.SerialDeviceDefaults">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SerialDeviceDefaults</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass for the serial port defaults.</span>
+
+<span class="sd">    This can be instantiated with changed values and then passed to the serial</span>
+<span class="sd">    device via the `apply_settings` method.</span>
+
+<span class="sd">    Values are:</span>
+
+<span class="sd">        write_timeout, inter_byte_timeout, dsrdtr, baudrate,</span>
+<span class="sd">        timeout, parity, bytesize, rtscts, stopbits, xonxoff</span>
+
+<span class="sd">    See https://pyserial.readthedocs.io/en/latest/pyserial_api.html#serial.Serial.get_settings</span>
+
+<span class="sd">    .. doctest:</span>
+
+<span class="sd">        &gt;&gt;&gt; import serial</span>
+<span class="sd">        &gt;&gt;&gt; from panoptes.utils.serial.device import SerialDeviceDefaults</span>
+<span class="sd">        &gt;&gt;&gt; serial_settings = SerialDeviceDefaults(baudrate=115200)</span>
+<span class="sd">        &gt;&gt;&gt; serial_settings  # doctest: +NORMALIZE_WHITESPACE</span>
+<span class="sd">        SerialDeviceDefaults(baudrate=115200, timeout=1.0, write_timeout=1.0,</span>
+<span class="sd">                             bytesize=8, parity=&#39;N&#39;, stopbits=1,</span>
+<span class="sd">                             xonxoff=False, rtscts=False, dsrdtr=False)</span>
+
+<span class="sd">        &gt;&gt;&gt; # Create a serial device and apply changed settings.</span>
+<span class="sd">        &gt;&gt;&gt; ser0 = serial.Serial()</span>
+<span class="sd">        &gt;&gt;&gt; serial_settings.write_timeout = 2.5</span>
+<span class="sd">        &gt;&gt;&gt; serial_settings.baudrate = 9600</span>
+<span class="sd">        &gt;&gt;&gt; ser0.apply_settings(serial_settings.to_dict())</span>
+<span class="sd">        &gt;&gt;&gt; ser0.write_timeout</span>
+<span class="sd">        2.5</span>
+<span class="sd">        &gt;&gt;&gt; ser0.baudrate</span>
+<span class="sd">        9600</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">baudrate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9600</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">write_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">bytesize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">EIGHTBITS</span>
+    <span class="n">parity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">PARITY_NONE</span>
+    <span class="n">stopbits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">STOPBITS_ONE</span>
+    <span class="n">xonxoff</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">rtscts</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">dsrdtr</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="SerialDeviceDefaults.to_dict">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.serial.html#panoptes.utils.serial.device.SerialDeviceDefaults.to_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return fields as dict.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">field</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dataclass_fields__</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="get_serial_port_info">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.serial.html#panoptes.utils.serial.device.get_serial_port_info">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_serial_port_info</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the serial ports defined on the system sorted by device name.</span>
+
+<span class="sd">    .. doctest::</span>
+
+<span class="sd">        &gt;&gt;&gt; from panoptes.utils.serial.device import get_serial_port_info</span>
+<span class="sd">        &gt;&gt;&gt; devices = get_serial_port_info()</span>
+<span class="sd">        &gt;&gt;&gt; devices             # doctest: +SKIP</span>
+<span class="sd">        [&lt;serial.tools.list_ports_linux.SysFS object at 0x7f6c9cbd9460&gt;]</span>
+<span class="sd">        &gt;&gt;&gt; devices[0].hwid     # doctest: +SKIP</span>
+<span class="sd">        &#39;USB VID:PID=2886:802D SER=3C788B875337433838202020FF122204 LOCATION=3-5:1.0&#39;</span>
+
+<span class="sd">    Returns: a list of PySerial&#39;s ListPortInfo objects. See:</span>
+<span class="sd">        https://github.com/pyserial/pyserial/blob/master/serial/tools/list_ports_common.py</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">get_comports</span><span class="p">(</span><span class="n">include_links</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;device&quot;</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="find_serial_port">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.serial.html#panoptes.utils.serial.device.find_serial_port">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_serial_port</span><span class="p">(</span><span class="n">vendor_id</span><span class="p">,</span> <span class="n">product_id</span><span class="p">,</span> <span class="n">return_all</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finds the serial port that matches the given vendor and product id.</span>
+
+<span class="sd">    .. doctest::</span>
+
+<span class="sd">        &gt;&gt;&gt; from panoptes.utils.serial.device import find_serial_port</span>
+<span class="sd">        &gt;&gt;&gt; vendor_id = 0x2a03  # arduino</span>
+<span class="sd">        &gt;&gt;&gt; product_id = 0x0043 # Uno Rev 3</span>
+<span class="sd">        &gt;&gt;&gt; find_serial_port(vendor_id, product_id)  # doctest: +SKIP</span>
+<span class="sd">        &#39;/dev/ttyACM0&#39;</span>
+
+<span class="sd">        &gt;&gt;&gt; # Raises error when not found.</span>
+<span class="sd">        &gt;&gt;&gt; find_serial_port(0x1234, 0x4321)</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">          ...</span>
+<span class="sd">        panoptes.utils.error.NotFound: NotFound: No serial ports...</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        vendor_id (int): The vendor id, can be hex or int.</span>
+<span class="sd">        product_id (int): The product id, can be hex or int.</span>
+<span class="sd">        return_all (bool): If more than one serial port matches, return all devices, default False.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str or list: Either the path to the detected port or a list of all comports that match.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get all serial ports.</span>
+    <span class="n">matched_ports</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">get_serial_port_info</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">vid</span> <span class="o">==</span> <span class="n">vendor_id</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">pid</span> <span class="o">==</span> <span class="n">product_id</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matched_ports</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">matched_ports</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">device</span>
+    <span class="k">elif</span> <span class="n">return_all</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">matched_ports</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">NotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No serial ports for vendor_id=</span><span class="si">{</span><span class="n">vendor_id</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2"> and product_id=</span><span class="si">{</span><span class="n">product_id</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SerialDevice">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.serial.html#panoptes.utils.serial.device.SerialDevice">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SerialDevice</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A SerialDevice class with helper methods for serial communications.</span>
+
+<span class="sd">    The device need not exist at the time this is called, in which case</span>
+<span class="sd">    is_connected will be false.</span>
+
+<span class="sd">    The serial device settings can be passed as a dictionary. See SerialDeviceDefaults</span>
+<span class="sd">    for possible values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">port</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">reader_callback</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">serial_settings</span><span class="p">:</span> <span class="n">SerialDeviceDefaults</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">reader_queue_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A SerialDevice class with helper methods for serial communications.</span>
+
+<span class="sd">        The device need not exist at the time this is called, in which case</span>
+<span class="sd">        is_connected will be false.</span>
+
+<span class="sd">        The serial device settings can be passed as a dictionary. See SerialDeviceDefaults</span>
+<span class="sd">        for possible values.</span>
+
+<span class="sd">        .. doctest::</span>
+
+<span class="sd">            &gt;&gt;&gt; from panoptes.utils.serial.device import SerialDevice</span>
+<span class="sd">            &gt;&gt;&gt; dev0 = SerialDevice(port=&#39;loop://&#39;, name=&#39;My device&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; dev0.is_connected</span>
+<span class="sd">            True</span>
+<span class="sd">            &gt;&gt;&gt; str(dev0)</span>
+<span class="sd">            &#39;My device on port=loop:// [9600/8-N-1]&#39;</span>
+<span class="sd">            &gt;&gt;&gt; dev0.write(&#39;Hello World!&#39;)  # doctest: +SKIP</span>
+<span class="sd">            &gt;&gt;&gt; len(dev0.readings) # doctest: +SKIP</span>
+<span class="sd">            1</span>
+<span class="sd">            &gt;&gt;&gt; dev0.readings[0] == &#39;Hello World!&#39; # doctest: +SKIP</span>
+<span class="sd">            True</span>
+
+<span class="sd">            &gt;&gt;&gt; # We can also pass a custom callback.</span>
+<span class="sd">            &gt;&gt;&gt; from panoptes.utils.serializers import from_json, to_json</span>
+<span class="sd">            &gt;&gt;&gt; dev1 = SerialDevice(port=&#39;loop://&#39;, reader_callback=from_json)</span>
+<span class="sd">            &gt;&gt;&gt; str(dev1)</span>
+<span class="sd">            &#39;SerialDevice loop:// [9600/8-N-1]&#39;</span>
+<span class="sd">            &gt;&gt;&gt; dev1.write(to_json(dict(message=&#39;Hello JSON World!&#39;)))  # doctest: +SKIP</span>
+<span class="sd">            &gt;&gt;&gt; len(dev0.readings)  # doctest: +SKIP</span>
+<span class="sd">            1</span>
+<span class="sd">            &gt;&gt;&gt; dev0.readings[0]  # doctest: +SKIP</span>
+<span class="sd">            &#39;{&quot;message&quot;: &quot;Hello JSON World!&quot;}&#39;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            port (str): The port (e.g. /dev/tty123 or socket://host:port) to which to</span>
+<span class="sd">                open a connection.</span>
+<span class="sd">            name (str): Name of this object. Defaults to the name of the port.</span>
+<span class="sd">            reader_callback (Callable): A callback from the reader thread. This should</span>
+<span class="sd">                accept and return a single parameter. The return item will get appended</span>
+<span class="sd">                to the `readings` deque.</span>
+<span class="sd">            serial_settings (dict): The settings to apply to the serial device. See</span>
+<span class="sd">                docstring for details.</span>
+<span class="sd">            reader_queue_size (int, optional): The size of the deque for readings,</span>
+<span class="sd">                default 50.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the serial parameters are invalid (e.g. a negative baudrate).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">readings</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="n">reader_queue_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader_thread</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reader_callback</span> <span class="o">=</span> <span class="n">reader_callback</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">serial</span><span class="p">:</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">serial_for_url</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SerialDevice for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> created. Connected=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">serial_settings</span> <span class="o">=</span> <span class="n">serial_settings</span> <span class="ow">or</span> <span class="n">SerialDeviceDefaults</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">serial_settings</span><span class="p">,</span> <span class="n">SerialDeviceDefaults</span><span class="p">):</span>
+            <span class="n">serial_settings</span> <span class="o">=</span> <span class="n">serial_settings</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Applying settings to serial class: </span><span class="si">{</span><span class="n">serial_settings</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">serial</span><span class="o">.</span><span class="n">apply_settings</span><span class="p">(</span><span class="n">serial_settings</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_stream_reader</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Name of the port.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">serial</span><span class="o">.</span><span class="n">port</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;True if serial port is open, False otherwise.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">serial</span><span class="o">.</span><span class="n">is_open</span>
+
+<div class="viewcode-block" id="SerialDevice.connect">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.serial.html#panoptes.utils.serial.device.SerialDevice.connect">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Connect to device and add default reader.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">serial</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_stream_reader</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SerialDevice.disconnect">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.serial.html#panoptes.utils.serial.device.SerialDevice.disconnect">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Disconnect from the device and reset the reader thread.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">serial</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reader_thread</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="SerialDevice.write">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.serial.html#panoptes.utils.serial.device.SerialDevice.write">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write to the serial device.</span>
+
+<span class="sd">        Note that this expects unicode and will handle adding a newline at the</span>
+<span class="sd">        end.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader_thread</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">write_line</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_stream_reader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a reader to the device.&quot;&quot;&quot;</span>
+
+        <span class="n">callback</span> <span class="o">=</span> <span class="n">callback</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reader_callback</span>
+
+        <span class="c1"># Set up a custom threaded reader class that calls user callback.</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">CustomReader</span><span class="p">(</span><span class="n">LineReader</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Custom LineReader for handling serial device data with callbacks.&quot;&quot;&quot;</span>
+
+            <span class="c1"># Use `this` so `self` still refers to device instance.</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">connection_made</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">transport</span><span class="p">):</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;Called when connection is established.</span>
+
+<span class="sd">                Args:</span>
+<span class="sd">                    transport: The transport object for the connection.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="nb">super</span><span class="p">(</span><span class="n">LineReader</span><span class="p">,</span> <span class="n">this</span><span class="p">)</span><span class="o">.</span><span class="n">connection_made</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">connection_lost</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">exc</span><span class="p">):</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;Called when connection is lost.</span>
+
+<span class="sd">                Args:</span>
+<span class="sd">                    exc: Exception that caused connection loss, if any.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Disconnected from </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">handle_line</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;Handle incoming line of data from serial device.</span>
+
+<span class="sd">                Args:</span>
+<span class="sd">                    data: Raw data received from the serial device.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">callback</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="n">callback</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">readings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error with callback: </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader_thread</span> <span class="o">=</span> <span class="n">ReaderThread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">serial</span><span class="p">,</span> <span class="n">CustomReader</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return string representation of the serial device.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Device name, port, and serial settings summary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">:</span>
+            <span class="n">full_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SerialDevice </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">full_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> on port=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">serial</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+            <span class="n">serial_summary</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">baudrate</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">bytesize</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">parity</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">stopbits</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">full_name</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">serial_summary</span><span class="si">}</span><span class="s2">]&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the serial device on delete.</span>
+
+<span class="sd">        This is to avoid leaving a file or device open if there are multiple references</span>
+<span class="sd">        to the serial.Serial object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If an exception is thrown when running __init__, then self.serial may not have</span>
+        <span class="c1"># been set, in which case reading that field will generate a AttributeError.</span>
+        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">serial</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">serial</span><span class="o">.</span><span class="n">is_open</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">serial</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="clearer"></div>
+    </div>
+    <div class="button_nav_wrapper">
+        <div class="button_nav">
+            <div class="left">
+                
+            </div>
+
+            <div class="right">
+                
+            </div>
+        </div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2022, PANOPTES Team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    </div>
+
+<p id="theme_credit">Styled using the <a href="https://github.com/piccolo-orm/piccolo_theme">Piccolo Theme</a></p>
+  </body>
+</html>

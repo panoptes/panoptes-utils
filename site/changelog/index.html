@@ -1,0 +1,1538 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../api/">
+      
+      
+        <link rel="next" href="../authors/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Changelog - panoptes-utils</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#changelog" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="panoptes-utils" class="md-header__button md-logo" aria-label="panoptes-utils" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            panoptes-utils
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Changelog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="panoptes-utils" class="md-nav__button md-logo" aria-label="panoptes-utils" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    panoptes-utils
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config-server/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Config Server
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry Server
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../authors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="changelog">Changelog</h1>
+<h1 id="changelog_1">CHANGELOG</h1>
+<h2 id="040-2026-03-24">0.4.0 - 2026-03-24</h2>
+<h3 id="changed">Changed</h3>
+<ul>
+<li><strong>Documentation Migration:</strong> Transitioned from Sphinx/reStructuredText to MkDocs/Markdown with the Material theme. #343</li>
+<li>Updated <code>AGENTS.md</code> and <code>GEMINI.md</code> to mandate the use of Markdown and MkDocs for all future documentation.</li>
+<li>Added GitHub Actions workflow for automated documentation deployment to GitHub Pages.</li>
+</ul>
+<h2 id="032-2026-03-20">0.3.2 - 2026-03-20</h2>
+<h3 id="changed_1">Changed</h3>
+<ul>
+<li><strong>Repository Workflow Migration:</strong> Transitioned from a triangular <code>develop</code>/<code>main</code> workflow to a single-remote model. <code>main</code> is now the primary development and release branch. #XXX</li>
+<li>Updated CI workflows, badges, and internal documentation (<code>CONTRIBUTING.md</code>, <code>AGENTS.md</code>) to reflect the new workflow.</li>
+<li>Deleted the legacy <code>develop</code> branch and removed it from all CI triggers.</li>
+<li>Added documentation for standard serialization tools (<code>to_json</code>, <code>from_json</code>, <code>serialize_all_objects</code>) to <code>AGENTS.md</code> and <code>GEMINI.md</code>.</li>
+</ul>
+<h2 id="031-2026-03-18">0.3.1 - 2026-03-18</h2>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li>Fix namespace package configuration in <code>pyproject.toml</code> to allow correct installation and coexistence with other <code>panoptes</code> namespace packages (e.g. <code>panoptes-pocs</code>).</li>
+</ul>
+<h2 id="030-2026-03-18">0.3.0 - 2026-03-18</h2>
+<h3 id="added">Added</h3>
+<ul>
+<li>Added Gemini CLI agent guidelines in <code>GEMINI.md</code>.</li>
+</ul>
+<h3 id="changed_2">Changed</h3>
+<ul>
+<li>Converted the config server CLI from Click to Typer and moved it from the standalone <code>panoptes-config-server</code> command to <code>panoptes-utils config</code> (subcommands: <code>run</code>, <code>stop</code>, <code>get</code>, <code>set</code>). Removed <code>click</code> and <code>click-spinner</code> from core dependencies. Updated README to consolidate all CLI subcommands (<code>image</code>, <code>config</code>, <code>telemetry</code>) under a single "Command Line" section with per-subcommand env var tables.</li>
+</ul>
+<h2 id="0255-2026-03-18">0.2.55 - 2026-03-18</h2>
+<h3 id="added_1">Added</h3>
+<ul>
+<li>Documented environment variables used by the config server and client in the <code>README.md</code>. #336</li>
+<li>Added <code>panoptes-utils telemetry</code> <code>run</code>, <code>stop</code>, and <code>current</code> commands, a Python client, and a dedicated telemetry server documentation page with append-only NDJSON logging and <code>/current</code> snapshot support. #338</li>
+</ul>
+<h3 id="fixed_1">Fixed</h3>
+<ul>
+<li>Unified CLI logging behavior: <code>DEBUG</code> level output is now silenced by default in all CLI tools (<code>panoptes-config-server</code> and <code>panoptes-utils</code>) and only enabled when the <code>--verbose</code> flag is provided. #336</li>
+<li>Config server CLI <code>run</code> command now waits up to 30 seconds (configurable via <code>--startup-timeout</code>) for the server socket to be ready before entering the monitoring loop. #336</li>
+</ul>
+<h3 id="changed_3">Changed</h3>
+<ul>
+<li>Migrated config server from Flask+gevent to FastAPI+uvicorn for improved performance and modern async support. #336</li>
+<li>Config server CLI <code>run</code> command now defaults to <code>--load-local</code> (previously <code>--no-load-local</code>) so any locally saved config overrides are applied on startup. #336</li>
+</ul>
+<h2 id="0254-2026-02-13">0.2.54 - 2026-02-13</h2>
+<h3 id="added_2">Added</h3>
+<ul>
+<li>AI agent guidelines document (<code>AGENTS.md</code>) with comprehensive development workflow and coding standards. #331</li>
+<li>CHANGELOG update requirement to contributor guidelines in <code>AGENTS.md</code>. #331</li>
+</ul>
+<h3 id="changed_4">Changed</h3>
+<ul>
+<li>Migrated build system from Hatch to UV for faster dependency management and better PEP 735 support. #XXX</li>
+<li>Updated all documentation and CI workflows to use UV commands instead of Hatch. #XXX</li>
+<li>Moved testing dependencies from <code>[project.optional-dependencies]</code> to <code>[dependency-groups]</code> for modern dependency management. #XXX</li>
+<li>Updated <code>.gitignore</code> to exclude auto-generated <code>_version.py</code> files from setuptools-scm. #XXX</li>
+<li>Line-length configuration from 100 to 110 characters in <code>pyproject.toml</code> and documentation. #331</li>
+</ul>
+<h3 id="removed">Removed</h3>
+<ul>
+<li>Removed <code>click&lt;8.3</code> pin as it was only needed for Hatch compatibility. #XXX</li>
+</ul>
+<h2 id="0253-2025-10-21">0.2.53 - 2025-10-21</h2>
+<h2 id="added_3">Added</h2>
+<ul>
+<li><code>panoptes.utils.images.fits.detect_sources</code>, which uses the <code>sep</code> package to detect sources in a FITS image. Should mostly be considered a "quick-look" function as it doesn't do anything smart with the background and bayer array. #329</li>
+</ul>
+<h2 id="0252-2025-10-17">0.2.52 - 2025-10-17</h2>
+<h3 id="added_4">Added</h3>
+<ul>
+<li>Type hints to most functions and methods. #326</li>
+<li>Docstrings to all major public functions and classes. #324</li>
+</ul>
+<h3 id="changed_5">Changed</h3>
+<ul>
+<li>Renamed <code>ObservationPathInfo</code> to <code>ImagePathInfo</code> to better reflect its purpose. #328</li>
+<li>Updated <code>panoptes.utils.images.fits.extract_metadata</code> to include more metadata fields, including plate-solved
+  information. Extracted metadata now matches what was being performed via the pipeline on the cloud. #328</li>
+<li>Trying to load an invalid config file will now result in an error instead of silently failing. #327</li>
+<li>Pinned <code>click</code> dependency to <code>&lt;8.3</code> to avoid issues with <code>hatch</code>. #325</li>
+</ul>
+<h2 id="0250-2025-08-16">0.2.50 - 2025-08-16</h2>
+<ul>
+<li>Hotfix for GHA release action</li>
+</ul>
+<h2 id="0249-2025-08-16">0.2.49 - 2025-08-16</h2>
+<h3 id="updated">Updated</h3>
+<ul>
+<li><strong>Minimum python version set to <code>3.12</code></strong></li>
+<li>Using <code>hatch</code> for build tools</li>
+<li>All config items moved to <code>pyproject.toml</code></li>
+<li><strong>Minimum numpy version to to <code>&gt;2</code></strong></li>
+<li>Formatting and linting fixes with <code>ruff</code> (via <code>hatch</code>).</li>
+<li>Convert remaining <code>.rst</code> docs to <code>.md</code>.</li>
+<li>Remove old <code>sitecustomize.py</code> file for multi-threaded test coverage.</li>
+</ul>
+<h2 id="0248-2025-04-04">0.2.48 - 2025-04-04</h2>
+<h3 id="updated_1">Updated</h3>
+<ul>
+<li>Change <code>print</code> to <code>logger</code> when making a jpg from a cr2.</li>
+<li>Updates to get_quantity_value to support astropy v7 and numpy values.</li>
+</ul>
+<h2 id="0247-2025-04-02">0.2.47 - 2025-04-02</h2>
+<h3 id="fixed_2">Fixed</h3>
+<ul>
+<li>Fixes for <code>get_quantity_value</code></li>
+</ul>
+<h2 id="0246-2025-04-02">0.2.46 - 2025-04-02</h2>
+<h3 id="updated_2">Updated</h3>
+<ul>
+<li>Updated to <code>python 3.12</code>.</li>
+<li>Removed deprecated call to <code>resolve_name</code>.</li>
+</ul>
+<h2 id="0242-2023-08-30">0.2.42 - 2023-08-30</h2>
+<h3 id="fixed_3">Fixed</h3>
+<ul>
+<li>Fixed the config_server on osx.</li>
+</ul>
+<h2 id="0241-2023-05-17">0.2.41 - 2023-05-17</h2>
+<h3 id="fixed_4">Fixed</h3>
+<ul>
+<li>Added <code>tox</code> to <code>testing</code> install option to fix auto PyPi builds.</li>
+</ul>
+<h2 id="0239-2023-05-17">0.2.39 - 2023-05-17</h2>
+<h3 id="fixed_5">Fixed</h3>
+<ul>
+<li>Config server not properly saving entries to local file.</li>
+</ul>
+<h2 id="0238-2022-08-16">0.2.38 - 2022-08-16</h2>
+<h3 id="fixed_6">Fixed</h3>
+<ul>
+<li>Config server doesn't initially parse config file so it doesn't need to deserialize on response.</li>
+</ul>
+<h2 id="0237-2022-08-09">0.2.37 - 2022-08-09</h2>
+<h3 id="added_5">Added</h3>
+<ul>
+<li>The <code>panoptes-utils image watch &lt;PATH&gt;</code> command with default processing that will convert <code>CR2</code> files to <code>JPG</code>
+  and <code>FITS</code> and then plate-solve the <code>FITS</code> files.</li>
+<li>GHA downloads a <code>CR2</code> file for testing.</li>
+<li>Plot directives for documentation.</li>
+</ul>
+<h3 id="changed_6">Changed</h3>
+<ul>
+<li>Testing now includes <code>--test-solve</code> for plate-solving in GHA.</li>
+<li>Local tests only uses <code>memory</code> database.</li>
+<li>Rearranged some functions in the <code>panoptes.utils.images</code> namespace.</li>
+</ul>
+<h3 id="removed_1">Removed</h3>
+<ul>
+<li>Unused stamp plotting functions.</li>
+<li>Testing of config servers on GHA.</li>
+<li><code>CountdownTimer.is_non_blocking</code> predicate that wasn't being used.</li>
+<li>Extra serial protocol handlers.</li>
+</ul>
+<h2 id="0236">0.2.36</h2>
+<h3 id="added_6">Added</h3>
+<ul>
+<li><code>panoptes-utils</code> cli with sub-commands for converting CR2 to FITS and for plate-solving FITS.</li>
+</ul>
+<h3 id="changed_7">Changed</h3>
+<ul>
+<li>Updating <code>pyscaffold</code> to <code>4.2.3</code>, which allows for <code>pyproject.toml</code> and <code>tox</code> usage.</li>
+<li>Updating example SerialDevice notebook and fixing deps.</li>
+</ul>
+<h3 id="fixed_7">Fixed</h3>
+<ul>
+<li>Config server can now run on arbitrary ports better.</li>
+</ul>
+<h3 id="removed_2">Removed</h3>
+<ul>
+<li>Removing unused functions: <code>DelaySigTerm</code>, <code>strings_to_params</code>.</li>
+</ul>
+<h2 id="0235">0.2.35</h2>
+<h3 id="fixed_8">Fixed</h3>
+<ul>
+<li>Fixes to support 420 namespaces and pyscaffold.</li>
+<li>Don't deserialize all strings as dates unless they actually look like a date.</li>
+</ul>
+<h2 id="0234">0.2.34</h2>
+<h3 id="breaking">Breaking</h3>
+<ul>
+<li>This release removes the Docker components from the repository, pushing some of the dependencies to <code>POCS</code>. This is
+  an attempt to make this module slimmer and more useful.</li>
+<li>The <code>astrometry.net</code> plate solving tests have been removed since we no longer build and test against a Docker image.
+  The plate solving will continue to transition to the self-contained <code>plate-solver</code> repository.</li>
+</ul>
+<h2 id="0233">0.2.33</h2>
+<h3 id="added_7">Added</h3>
+<ul>
+<li>New <code>panoptes.utils.serial.device.SerialDevice</code> that will replace the <code>rs232.SerialData</code>. New class uses the
+  threaded reader with optional callback for better asynchronous reading from a serial device. Example notebook
+  included. #274</li>
+<li><code>ObservationPathInfo</code> allows for easy parsing of the standard PANOPTES file name scheme, as provided by
+  <code>PATH_MATCHER</code>. #282</li>
+<li><code>extract_metadata</code> pulls FITS headers into a common dictionary structure. #282</li>
+<li>Docker updates: Add <code>PYTHONUNBUFFERED</code> to docker files; Remove <code>version</code> and <code>deploy</code> keys from docker compose
+  files. #284</li>
+</ul>
+<h3 id="changed_8">Changed</h3>
+<ul>
+<li>The serial protocol handlers were moved to the <code>panoptes.utils.serial.handlers</code> namespace. #274</li>
+<li>Testing Dockerfile has <code>privileged</code> permission to get device <code>loop</code>. #275</li>
+<li>Dockerfile: update <code>conda</code> in Dockerfile before installing environment; install <code>panoptes-utils</code> module in
+  user-editable mode. #277</li>
+<li>Dockerfile: use <code>condaforge/miniforge3</code> as the base, which reduces image size. Push multi-stage builds for better
+  caching. #278, #279</li>
+<li>Consistent multi-stage names in Dockerfile; added <code>jupyter_console</code>. #280</li>
+<li>Change behavior of <code>parse_config_directories</code> so the <code>base</code> entry must always exist or be missing (in which case
+  the cwd is used). Remove the <code>must_exist</code> param. #283</li>
+</ul>
+<h3 id="fixed_9">Fixed</h3>
+<ul>
+<li>Don't nest storage objects for the <code>PanFileDB</code>. #280</li>
+</ul>
+<h2 id="0232-2020-03-19">0.2.32 - 2020-03-19</h2>
+<h3 id="added_8">Added</h3>
+<ul>
+<li><code>panoptes.utils.rs232.find_serial_port()</code> can be used to look up a serial port from the vendor and product hex ids.
+  #269</li>
+</ul>
+<h3 id="changed_9">Changed</h3>
+<ul>
+<li><code>panoptes.utils.config.config.client.get_config()</code> changed so <code>default</code> is the second parameter and function made
+  less noisy overall. #272</li>
+<li>Updated to <code>Pillow&gt;=8.1.1</code> for dependabot alert. #273.</li>
+</ul>
+<h3 id="removed_3">Removed</h3>
+<ul>
+<li><code>panoptes.utils.logging</code> which is just replaced by <code>from loguru import logger</code>. # 272</li>
+</ul>
+<h2 id="0232-2020-02-28">0.2.32 - 2020-02-28</h2>
+<h3 id="added_9">Added</h3>
+<ul>
+<li>Added an <code>RGB</code> IntEnum for easy iterating and consistent array access of rgb data. #265</li>
+<li>Added <code>save_rgb_bg_fits</code> that will save a FITS files with seven extensions: combined rgb map, and then the
+  background and rms maps for each color. #265</li>
+</ul>
+<h3 id="changed_10">Changed</h3>
+<ul>
+<li><code>get_rgb_background</code> only accepts a <code>data</code> argument and a filename can no longer be passed. #265</li>
+<li>Updated defaults for <code>get_rgb_background</code>. #265</li>
+<li><code>get_stamp_slice</code> has <code>as_slices</code> param added with default <code>True</code> for legacy behavior. If <code>False</code> then just
+  the four points are returned. #265</li>
+<li>Test coverage will skip <code>noqa</code> markers and pytest will run all tests. #265</li>
+<li>Added <code>ruamel.yaml</code> to base dependencies instead of just <code>config</code> extras. #265</li>
+</ul>
+<h3 id="fixed_10">Fixed</h3>
+<ul>
+<li>The <code>timeout</code> parameter is now passed from <code>get_solve_field</code> to <code>solve_field</code>. #266</li>
+</ul>
+<h2 id="0231-2020-01-31">0.2.31 - 2020-01-31</h2>
+<h3 id="added_10">Added</h3>
+<ul>
+<li>
+<p>Docker musical chairs:</p>
+<ul>
+<li>Add Dockerfile to be <code>panoptes-utils</code> but don't use for testing. (#264)</li>
+<li>Generic <code>panoptes-utils</code> with <code>panoptes-config-server</code> as default command example. (#264)</li>
+<li>Move conda <code>environment</code> file into <code>docker</code> folder. (#264)</li>
+</ul>
+</li>
+</ul>
+<h3 id="bugs-fixed">Bugs Fixed</h3>
+<ul>
+<li><code>parse_config_directories</code> no longer modifies dictionary in place. (#264)</li>
+</ul>
+<h3 id="changed_11">Changed</h3>
+<ul>
+<li>Clean out the Contributing guide to point to POCS. (#264)</li>
+<li>Removing <code>pillow&lt;7</code> requirement. (#264)</li>
+</ul>
+<h3 id="removed_4">Removed</h3>
+<ul>
+<li>Removing unused new cli experiment. (#264)</li>
+<li>Removed all <code>PANDIR</code> and <code>PANLOG</code> references. Closes #263. (#264)</li>
+<li>Removed <code>astroplan</code> from dependencies. (#264)</li>
+</ul>
+<h2 id="0230-2021-01-14">0.2.30 - 2021-01-14</h2>
+<h3 id="added_11">Added</h3>
+<ul>
+<li>Conda environment file (@wtgee #260)</li>
+<li>A cli script for <code>panoptes-utils</code>. This will eventually take over the <code>panoptes-config-server</code> and any other
+  simple commands needed. For now can use <code>panoptes-utils tests run</code> for building and running tests.</li>
+</ul>
+<h3 id="changed_12">Changed</h3>
+<ul>
+<li>Updated testing to use specific docker image. Updated run script for more specific options on starting testing config
+  server. (@wtgee #260)</li>
+<li>Different <code>extras</code> install options: <code>config</code>, <code>docs</code>, <code>images</code>, <code>testing</code>, and <code>social</code>. (@wtgee #260)</li>
+<li>Use <code>loguru</code> for logging directly in all files, rather than needless import. (@wtgee #260)</li>
+<li>Make the <code>CountdownTimer.sleep()</code> less noisy. (#259)</li>
+</ul>
+<h3 id="fixed_11">Fixed</h3>
+<ul>
+<li>Plate solving extras option parsing correctly. (@wtgee #260)</li>
+<li>Explicit imports for some of the utils. (@wtgee #260)</li>
+</ul>
+<h3 id="removed_5">Removed</h3>
+<ul>
+<li>Remove Docker services except for testing. (@wtgee #260)</li>
+<li>
+<p>Removed unused files: (@wtgee #260)</p>
+</li>
+<li>
+<p>Example data fetching notebook removed.</p>
+</li>
+<li>Hotspot script removed.</li>
+<li>Data (astrometry index and IERS) download removed.</li>
+<li><code>wait-for-it.sh</code> script removed.</li>
+<li>TheSkyX utils moving to POCS directly.</li>
+<li>Removed <code>moving_average</code>.</li>
+<li>Removed pipeline functions for getting <code>image_id</code> and <code>sequence_id</code>.</li>
+</ul>
+<h2 id="0229-2020-10-21">0.2.29 - 2020-10-21</h2>
+<h3 id="added_12">Added</h3>
+<ul>
+<li>Added <code>oh-my-zsh</code> install file directly to ease some issues with GCP builds. (@wtgee #257)</li>
+<li>Added <code>source-extractor</code> to dependencies but with no custom config files. (@wtgee #257)</li>
+<li>
+<p>Config Server:</p>
+<ul>
+<li>Option to start a heartbeat or not. (@wtgee #248)</li>
+</ul>
+</li>
+</ul>
+<h3 id="changed_13">Changed</h3>
+<ul>
+<li>Reverting back to <code>python=3.7</code> for compatibility w/ GCP notebooks. (@wtgee #255)</li>
+<li>Freezing <code>astropy&lt;=4.0.1</code> while we wait for <code>astroplan</code> to get pushed. (@wtgee #255)</li>
+<li>Changed the horizon module to use numpy interpolation so we don't need to explicitly install scipy. (@wtgee #248)</li>
+<li><code>altaz_to_radec</code> accepts astropy quantities. (@wtgee #250)</li>
+<li>Downloaded helper script doesn't have <code>python3</code> hardcoded. (@wtgee #250)</li>
+<li>
+<p>Docker Tools (@wtgee #248):</p>
+<ul>
+<li>Conda environment built from <code>resources/environment.yaml</code>. (@wtgee #252)</li>
+<li>Adds a "developer" dockerfile and compose file to install things for developers. (@wtgee #248)</li>
+<li>Docker CMD will run ipython. (@wtgee #248)</li>
+<li>docker-compose file will start a jupyter-lab instance. (@wtgee #248)</li>
+</ul>
+</li>
+</ul>
+<h3 id="fixed_12">Fixed</h3>
+<ul>
+<li>Fixed the <code>oh-my-zsh</code> path for Docker install. (@wtgee #256)</li>
+<li>Return testing output from docker container, passint exit status. (@wtgee #256)</li>
+</ul>
+<h3 id="removed_6">Removed</h3>
+<ul>
+<li>The <code>stars</code> module, which has been moved to <code>panoptes-pipeline</code>. (@wtgee #251)</li>
+<li>The <code>metadata</code> module, which has been moved to <code>panoptes-pipeline</code>. (@wtgee #252)</li>
+<li>
+<p>Docker Tools (@wtgee #248):</p>
+<ul>
+<li>Remove <code>source-extractor</code> from <code>panoptes-utils</code> and move to <code>panoptes-pipeline</code>. (@wtgee #252)</li>
+<li>Remove <code>imagemagick</code> from <code>panoptes-utils</code>. This is used for adding titles to JPGs. (@wtgee #252)</li>
+<li>Don't install a separate conda environment, just use the base to help reduce image size, complexity. (@wtgee #252)</li>
+<li>Cleanup unused dependencies. (@wtgee @252)</li>
+</ul>
+</li>
+<li>
+<p>Testing:</p>
+<ul>
+<li>Adios travis! (@wtgee #252)</li>
+</ul>
+</li>
+</ul>
+<h2 id="0228-2020-09-15">0.2.28 - 2020-09-15</h2>
+<h3 id="added_13">Added</h3>
+<ul>
+<li>Add bit_depth argument to mask_saturated, no longer convert to float64 by default (@AnthonyHorton #244)</li>
+</ul>
+<h3 id="changed_14">Changed</h3>
+<ul>
+<li>Single cloudbuild file for both <code>panoptes-base</code> and <code>panoptes-utils</code>. (#242)</li>
+<li>Add <code>astropy</code> channel.</li>
+<li>Remove the miniforge installer from the docker image and clean up build args. (@wtgee #245)</li>
+<li>Changed relative to absolute imports. (@wtgee #246)</li>
+</ul>
+<h2 id="0227-2020-09-12">0.2.27 - 2020-09-12</h2>
+<h3 id="added_14">Added</h3>
+<ul>
+<li>
+<p>Config server startup controlled via envvars, incorporating <code>python-dotenv</code> (@wtgee #241):</p>
+<ul>
+<li><code>PANOPTES_CONFIG_HOST</code> and <code>PANOPTES_CONFIG_PORT</code></li>
+<li><code>PANOPTES_CONFIG_FILE</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="changed_15">Changed</h3>
+<ul>
+<li>
+<p>Config server updates (@wtgee #241):</p>
+<ul>
+<li>Config server with project dir mounted can be started via <code>docker/docker-testing.yaml</code>.</li>
+<li>Config server flask instances are run on <code>gevent</code> wsgi server instead of development server.</li>
+<li><code>host</code> and <code>port</code> are specified at the top-level command, e.g.
+  <code>panoptes-config-server --host foobar --port 9999 get</code>.</li>
+<li><code>host</code> and <code>port</code> respect the above envvars above.</li>
+<li>Options changed from <code>auto-save</code> and <code>ignore-local</code> to <code>save-local</code> and <code>load-local</code>.</li>
+<li><code>run</code> command adds the<code>config_server.running=True</code> entry to the server.</li>
+<li><code>stop</code> command added that sets <code>config_server.running=False</code> to break loop.</li>
+</ul>
+</li>
+<li>
+<p>Testing  (@wtgee #241):</p>
+<ul>
+<li>All testing is started from <code>scripts/test-software.sh</code>.</li>
+<li>The <code>panoptes-config-server</code> is started as an external service, not in the pytest conf.</li>
+<li>Added a <code>tests/env</code> file that is used by the docker compose file for setting vars inside the running containers.</li>
+<li>Config server uses <code>tests/testing.yaml</code> for all testing.</li>
+<li>Testing logs are stored in <code>./logs</code>, relative to the project root outside the container.</li>
+<li>Coverage file is stored in <code>/var/panoptes/logs</code>.</li>
+<li>A <code>scripts/wait-for-it.sh</code> script added to check that config server is running properly before starting tests.</li>
+</ul>
+</li>
+</ul>
+<h3 id="fixed_13">Fixed</h3>
+<ul>
+<li><code>scripts/setup-local-environment.sh</code> properly uses new base image if requested. (@wtgee #241)</li>
+<li>Docker images: fixed the created <code>ssh</code> directory for <code>$PANUSER</code>. (@wtgee #240)</li>
+</ul>
+<h2 id="0226-2020-08-21">0.2.26 - 2020-08-21</h2>
+<p>This release is mostly cleanup and testing of our autobuild features.</p>
+<h3 id="changed_16">Changed</h3>
+<ul>
+<li>Splitting the <code>panoptes-base</code> files into separate folder. (#238)</li>
+<li>Consolidate the GitHub Actions for building and publishing a release package. (#239)</li>
+</ul>
+<h3 id="fixed_14">Fixed</h3>
+<ul>
+<li>Fix Github Actions for building releases. (#238)</li>
+</ul>
+<h2 id="0225-2020-08-20">0.2.25 - 2020-08-20</h2>
+<h3 id="added_15">Added</h3>
+<ul>
+<li>
+<p>Google Cloud Build of Docker images.</p>
+<ul>
+<li><code>panoptes-base</code> and <code>panoptes-utils</code> are built for each PR as well as on merges to <code>develop</code> and
+  <code>master</code>. (#237)</li>
+</ul>
+</li>
+<li>
+<p>GitHub Actions</p>
+<ul>
+<li>If a semantically tagged branch is pushed to GH, a release will automatically be generated and a package will be
+  built and sent to PyPi. (#237)</li>
+</ul>
+</li>
+</ul>
+<h3 id="changed_17">Changed</h3>
+<ul>
+<li>Changelog fixes. (#237)</li>
+</ul>
+<h2 id="0223-2020-08-16">0.2.23 - 2020-08-16</h2>
+<h3 id="changed_18">Changed</h3>
+<ul>
+<li>
+<p>Simplified docker images. (#227)</p>
+<ul>
+<li>Consolidation of Dockerfile to support images:</li>
+<li><code>panoptes-base</code> serves as a base image for all docker services.</li>
+<li><code>panoptes-utils:latest</code> installs editable <code>panoptes-utils</code> module from github <code>develop</code> branch.</li>
+<li><code>panoptes-utils:develop</code> is used for testing and can be built locally with the
+  <code>docker/setup-local-environment.sh</code> script.</li>
+<li>Tests on GH and Travis use the <code>docker/setup-local-environment.sh</code> script for building test images.</li>
+<li><code>miniforge &lt;https://github.com/conda-forge/miniforge&gt;</code>_ used to install a <code>conda</code> environment with
+  <code>conda-forge</code> as default channels. Forces 64bit support.</li>
+<li>Multi-arch builds are supported on <code>gcr.io</code> via the <code>cloudbuild.yaml</code> file. Built with <code>buildx</code> plugin to
+  docker. Currently <code>linux/amd64</code> and <code>linux/arm64</code>.</li>
+<li>Extra zsh plugins in the docker image.</li>
+<li>Properly disable auto-update of zsh.</li>
+<li>Cleanup of entrypoint for better loading of environment.</li>
+</ul>
+</li>
+</ul>
+<h3 id="fixes">Fixes</h3>
+<ul>
+<li><code>Pillow</code> fights.</li>
+</ul>
+<h2 id="removes">Removes</h2>
+<ul>
+<li>Dependencies: <code>pyarrow</code> too hard to build on arm. <code>hvplot</code> and <code>holoviews</code> not needed in default install.</li>
+</ul>
+<h2 id="0222-2020-07-25">0.2.22 - 2020-07-25</h2>
+<h3 id="changed_19">Changed</h3>
+<ul>
+<li>Changed <code>dir</code> to <code>directory</code> in disk space check. (#226)</li>
+<li>Pass the git folder to the build context when making local docker images. (#226)</li>
+</ul>
+<h2 id="0221-2020-07-05">0.2.21 - 2020-07-05</h2>
+<h3 id="added_16">Added</h3>
+<ul>
+<li>Added <code>arm64</code> build for Docker based off <code>ubuntu</code> image. (#223)</li>
+</ul>
+<h3 id="changed_20">Changed</h3>
+<ul>
+<li>
+<p>Docker</p>
+<ul>
+<li>Changed base image to <code>ubuntu</code>. (#223)</li>
+<li><code>amd64</code> and <code>arm64</code> images built by default. (#223)</li>
+<li>Ubuntu has changed <code>sextractor</code> to <code>source-extractor</code> (yay). (#223)</li>
+</ul>
+</li>
+<li>
+<p>Config Server</p>
+<ul>
+<li>Better parsing of directories entry in config server. (#222)</li>
+<li>Make config server less noisy. (#222)</li>
+</ul>
+</li>
+<li>
+<p>Bump PyYaml to latest for security warning. (#222)</p>
+</li>
+<li>Remove pendulum because too hard to build on <code>arm processors &lt;https://github.com/sdispater/pendulum/issues/457&gt;</code>_. (
+  #223)</li>
+</ul>
+<h2 id="0220-2020-06-09">0.2.20 - 2020-06-09</h2>
+<p>Moving to python 3.8.</p>
+<h3 id="changed_21">Changed</h3>
+<ul>
+<li><strong>Breaking</strong> Python minimum version changed to <code>3.8</code>. (#217)</li>
+<li>Running pytest locally will generate coverage report in terminal. (#218)</li>
+<li>Lots of documentation. (#218)</li>
+<li>Removing the environment section from the readme. (#218)</li>
+<li>
+<p>Config Server (#217)</p>
+<ul>
+<li>Better logging.</li>
+<li>Cleaning up doctests.</li>
+<li>Removing all dynamic server items from this repo as they are not needed.</li>
+<li>Wait for config_server to start.</li>
+<li>Fixing starting within fixture.</li>
+<li>Config items no longer assume any defaults for either directories or files. A config file name is always required
+  and it should always be an absolute path. (#218)</li>
+<li>Adding test file for config items. (#218)</li>
+<li><code>panoptes-config-server</code> re-worked and now includes <code>run</code>, <code>get</code>, and <code>set</code> subcomamnds. (#221)</li>
+</ul>
+</li>
+<li>
+<p>Testing (#218)</p>
+<ul>
+<li>Log files are rotated for each testing run.</li>
+<li>Fix env vars (mostly need to make sure the <code>export</code> option exists in the <code>env</code> file.</li>
+<li>Pytest commands moved to <code>setup.cfg</code> instead of <code>run-tests.sh</code></li>
+<li>Remove old markers</li>
+<li>Setting <code>--strict-markers</code> options.</li>
+<li>Add <code>astrometry</code> marker for tests requiring solve and <code>theskyx</code> marker for running alongside TheSkyX.</li>
+<li>Coverage reports generated in xml and output in terminal.</li>
+</ul>
+</li>
+<li>
+<p>Serializers update. (#217)</p>
+<ul>
+<li>Make the parsing and serializing functions public.</li>
+<li>Use pendulum for parsing times instead of astropy Time.</li>
+<li>Better naming of public functions. (#218)</li>
+</ul>
+</li>
+</ul>
+<h2 id="0219-2020-06-04">0.2.19 - 2020-06-04</h2>
+<p>Straight past <code>0.2.19</code>.</p>
+<h3 id="changed_22">Changed</h3>
+<ul>
+<li>Removed <code>bin/panoptes-config-server</code> and created an entry_point in <code>setup.cfg</code>. (#212)</li>
+<li>Removed old developer items in favor of those in <code>panoptes-pocs</code>. (#212)</li>
+<li>Consolidate docker files, consistent naming with other repos. (#210, #212)</li>
+</ul>
+<h2 id="0217-2020-05-30">0.2.17 - 2020-05-30</h2>
+<p><code>0.2.16</code> was released with an error and this is a hotfix.</p>
+<h3 id="added_17">Added</h3>
+<ul>
+<li>Added CR2 file testing to GitHub Actions. (#125, #205)</li>
+<li>A <code>wait_for_events</code> generic utility, mostly pulled from POCS. (#92, #206)<ul>
+<li>Supports single <code>callback</code> that can be used for interrupting, custom logging, etc. (#208)</li>
+</ul>
+</li>
+</ul>
+<h3 id="changed_23">Changed</h3>
+<ul>
+<li>Remove the <code>validate_collection</code> requirement from the database types, making any collection is now valid. (#204)</li>
+<li>Rearrange some of the <code>panoptes.utils.database</code> modules. (#204)</li>
+</ul>
+<h3 id="removed_7">Removed</h3>
+<ul>
+<li>Remove <code>error.InvalidCollection</code>. (#204)</li>
+<li>Unused items in <code>conftest.py</code>. (#204)</li>
+</ul>
+<h2 id="0215-2020-05-26">0.2.15 - 2020-05-26</h2>
+<h3 id="changed_24">Changed</h3>
+<ul>
+<li>
+<p>Convert to <code>pyscaffold</code>_. (#198)</p>
+<ul>
+<li>Proper namespace package <code>panoptes</code>.</li>
+<li>Move items to <code>src</code> folder.</li>
+<li>Fix version number.</li>
+<li>Fix build.</li>
+<li>Fix documentation #27.</li>
+<li>Move all project config to <code>setup.cfg</code>.</li>
+<li>Base Docker image is run by root only.</li>
+<li>Added a <code>testing</code> Dockerfile and cleaned up <code>latest</code> and <code>develop</code>.</li>
+</ul>
+</li>
+</ul>
+<h3 id="removed_8">Removed</h3>
+<ul>
+<li><strong>Breaking</strong> Removing all zmq based messaging services. (#200)</li>
+</ul>
+<h2 id="0214-2020-05-23">0.2.14 - 2020-05-23</h2>
+<h3 id="added_18">Added</h3>
+<ul>
+<li>Add snappy decompression for parquet; <code>pyarrow</code> instead of <code>fastparquet</code> (#193)</li>
+<li>Password-less sudo for panoptes user on dev docker image (#193)</li>
+<li><code>get_metadata</code> has an optional progress bar. (#194)</li>
+<li>
+<p>Add <code>bayer.get_stamp_slice</code> for getting a stamp slice while respecting the superpixel. This was removed awhile ago
+  and has been re-added and improved. (#196)</p>
+<ul>
+<li>Adjusting the offsets so the center pixel is always::</li>
+</ul>
+<p>G2 B
+  R G1</p>
+</li>
+</ul>
+<h3 id="bug-fixes">Bug fixes</h3>
+<ul>
+<li>Fix time-based search (#193)</li>
+<li>Fix the build (#197)<ul>
+<li>Removed <code>versioneer</code> in favor of <code>setuptools-scm</code> for workin version numbers.</li>
+<li>Removed the MANIFEST.in</li>
+<li>Added a simple <code>pyproject.toml</code>.</li>
+</ul>
+</li>
+</ul>
+<h3 id="changed_25">Changed</h3>
+<ul>
+<li><strong>Breaking</strong> Only support getting stars directly from the WCS, not the footprint. (#194)<ul>
+<li><code>get_stars_from_footprint</code> -&gt; <code>get_stars_from_wcs</code></li>
+<li>Better logging</li>
+<li>Consistent column names for dtypes</li>
+<li>Vmag bin comes from sql.</li>
+<li>Allow for different RA/Dec column names.</li>
+<li>Better catalog match function.</li>
+</ul>
+</li>
+<li><code>sextractor</code> param changes. (#194)</li>
+<li><strong>Breaking</strong> <code>panoptes.utils.logger</code> -&gt; <code>panoptes.utils.logger</code> so we can <code>from panoptes.utils import logger</code> (
+  #197)</li>
+<li><strong>Breaking</strong> The <code>panoptes.utils.data.assets</code> module was removed and the
+  <code>Downloader</code> class is placed directly within the <code>scripts/download-data.py</code> file. (#197)</li>
+<li>The <code>panopes-utils</code> module is not installed in editable mode in the <code>latest</code> docker image. (#197)<ul>
+<li>Slight clean up of latest.Dockerfile</li>
+</ul>
+</li>
+</ul>
+<h2 id="0213-2020-05-14">0.2.13 - 2020-05-14</h2>
+<h3 id="bug-fixes_1">Bug fixes</h3>
+<ul>
+<li>Fix some passing of options between <code>get_solve_field</code> and <code>solve_field</code> that was leading to double parameter
+  issues. (#189)</li>
+</ul>
+<h3 id="changed_26">Changed</h3>
+<ul>
+<li>The <code>panoptes.utils.data</code> functions use static versions of the file rather than firestore. (#192)</li>
+<li>Updated development environment (#191)</li>
+<li><code>get_metadata</code> filter the fields at the parquet level. (#194)</li>
+</ul>
+<h2 id="0212-2020-04-29">0.2.12 - 2020-04-29</h2>
+<p>Quick release to get the <code>panoptes.utils.sources</code> into the package.</p>
+<h3 id="bug-fixes_2">Bug fixes</h3>
+<ul>
+<li><code>panoptes.utils.sources</code> not included in package. (#187, #188)</li>
+</ul>
+<h3 id="changed_27">Changed</h3>
+<ul>
+<li>Ability to pass credentials to underlying google client functions. (#187)</li>
+</ul>
+<h2 id="0211-2020-04-29">0.2.11 - 2020-04-29</h2>
+<h3 id="added_19">Added</h3>
+<ul>
+<li>Data<ul>
+<li>Added basic data access components for getting observation and image metadata. (#178, #181)</li>
+<li>Added a <code>search_observations</code> function for searching by various criteria. (#181)<ul>
+<li>Uses anonymous credentials to connect to firestore.</li>
+<li>Added a basic notebook demonstrating features.</li>
+</ul>
+</li>
+<li>Adding <code>holoviews</code> and <code>hvplot</code> as required dependencies.</li>
+</ul>
+</li>
+</ul>
+<h3 id="bug-fixes_3">Bug fixes</h3>
+<ul>
+<li>FITS Utils fixes:<ul>
+<li>Fix docstring return types for some functions. (#173)</li>
+<li><code>fpack</code>/<code>funpack</code> and <code>get_solve_field</code> were not properly overwriting FITS files
+  under certain conditions when an uncompressed file of the same name was present alongside
+  the compressed version. (#175)</li>
+<li>Properly pass <code>args</code> and <code>kwargs</code> to <code>astropy.io.fits.getdata</code>. (#180)</li>
+</ul>
+</li>
+</ul>
+<h3 id="changed_28">Changed</h3>
+<ul>
+<li>Docker<ul>
+<li>Changed developer tag from <code>dev</code> to <code>develop</code>. (#174)</li>
+</ul>
+</li>
+<li>FITS Utils changes (#173):<ul>
+<li>Uncompressed file is always used for solve because we were occasionally seeing odd errors as described in
+  dstndstn/astrometry.net#182. (#173)</li>
+<li>:warning: <code>get_solve_field</code> will <code>overwrite</code> by default.</li>
+<li>Better log output for solving.</li>
+<li>Better checking for solved file at end (via <code>is_celestial</code>).</li>
+<li>Cleanup the cleanup of solve files, removing <code>remove_extras</code> option.</li>
+<li>Pass <code>kwargs</code> to underlying <code>writeto</code> method for <code>write_fits</code>. Needed for, e.g. <code>overwrite</code>.</li>
+<li>Allow additional options to be passed to solve field functions without having to override all options. (#180)</li>
+<li>Changed default options in <code>get_solve_field</code> to use <code>scale-low</code> and <code>scale-high</code> instead of <code>radius</code> (
+  which
+  requires an <code>ra</code> and <code>dec</code>). (#180)</li>
+</ul>
+</li>
+<li>Changed <code>bin/panoptes-dev</code> -&gt; <code>bin/panoptes-develop</code> for naming consistency. (#175)</li>
+<li>Data<ul>
+<li><strong>BREAKING</strong> The <code>panoptes.utils.data.py</code> has moved into the <code>panoptes.utils.data</code> namespace with the relevant
+  existing <code>Downloader</code> class placed in the <code>assets.py</code> module. (#181)</li>
+<li>Changed the <code>get_data</code> (and images and observations equivalent) to <code>get_metadata</code>. (#181)</li>
+</ul>
+</li>
+</ul>
+<h3 id="removed_9">Removed</h3>
+<p>FITS Utils removals (#173):</p>
+<ul>
+<li>Removing unused and confusing <code>improve_wcs</code>.</li>
+<li>PanLogger class moved to POCS. (#186)</li>
+</ul>
+<h2 id="0210-2020-04-13">0.2.10 - 2020-04-13</h2>
+<h3 id="added_20">Added</h3>
+<ul>
+<li><code>get_stars_from_footpr  int</code> can accept a <code>WCS</code> directly instead of just the output from <code>calc_footprint()</code>. (
+  #164)</li>
+<li>Ability to create different tags for the docker image. The <code>develop</code> directory is now used to create a <code>develop</code>
+  image and is provided along with <code>latest</code>. (#165)</li>
+<li><code>get_rgb_backgrounds(return_separate-True)</code> will now return the <code>Background2D</code> objects. (#166)</li>
+<li>Added BigQuery pandas dependencies. (#168)</li>
+<li>Added a developer image at <code>panoptes-utils:dev</code>, which is also auto-built along with the <code>latest</code> in the
+  cloudbuild. Offers a <code>jupyter-lab</code> instance along with a number of plotting modules. Can be easily started via
+  <code>panoptes-dev</code>. (#170, #171)</li>
+</ul>
+<h3 id="bug-fixes_4">Bug fixes</h3>
+<ul>
+<li><code>image_id_from_path</code> and <code>sequence_id_from_path</code> can recognize a zero in the <code>camera_id</code> and <code>None</code> when no
+  match. (#163)</li>
+<li>Fixed the bigquery client param for star lookup. (#164)</li>
+<li>Unquote paths before id matching. (#169)</li>
+<li>Do WCS match for all unmatched sources, not just matched sources. (#172)</li>
+</ul>
+<h3 id="changed_29">Changed</h3>
+<ul>
+<li>Docker entrypoint no longer tries to activate service account if <code>$GOOGLE_APPLICATION_CREDENTIALS</code> is found. The
+  python client libraries will recognize the env var so this means we can avoid installing <code>gcloud</code> utilities just to
+  activate. (#165)</li>
+<li>The <code>sources</code> module does not require a BigQuery client to be passed but can start it's own. A warning is given if
+  <code>$GOOGLE_APPLICATION_CREDENTIALS</code> is not found. (#167)</li>
+<li><code>lookup_point_sources</code> updates: default vmag range expanded so less false positive matches [4,18). (#168)</li>
+<li>Removed TOC from changelog. (#170)</li>
+<li>Sextractor param changes: (#171)<ul>
+<li>Threshold for detection changed from 3 pixels to 10 pixels.</li>
+<li>Seeing changed from 0.7 arcsec to 15.3 arcsec. (Isn't used.)</li>
+<li>Removed <code>class_star</code> from sextractor results.</li>
+</ul>
+</li>
+</ul>
+<h2 id="029-2020-03-27">0.2.9 - 2020-03-27</h2>
+<p>Pointless version bump because of issue with <code>PyPi &lt;https://github.com/pypa/packaging-problems/issues/74&gt;</code>_.</p>
+<h2 id="028-2020-03-27">0.2.8 - 2020-03-27</h2>
+<p>Thanks first-time contributer @preethi524! :tada:</p>
+<h3 id="changed_30">Changed</h3>
+<ul>
+<li>Ability to return separate RGB backgrounds. (#162)</li>
+<li>Increase coverage. (#161)</li>
+</ul>
+<h2 id="027-2020-03-22-hotfix">0.2.7 - 2020-03-22 (hotfix)</h2>
+<h3 id="added_21">Added</h3>
+<ul>
+<li>Basic serialization of <code>Exception</code>. (#160)</li>
+</ul>
+<h3 id="bug-fixes_5">Bug fixes</h3>
+<ul>
+<li>Add <code>args</code> and <code>kwargs</code> to <code>get_rgb_background</code>. (#160)</li>
+</ul>
+<h2 id="026-2020-03-22">0.2.6 - 2020-03-22</h2>
+<h3 id="added_22">Added</h3>
+<ul>
+<li><code>get_rgb_background</code> added to the <code>bayer</code> module. (#158)</li>
+<li><code>getwcs</code> thin-wrapper added to <code>fits</code> module. (#158)</li>
+<li>Added <code>sources</code> utils. (#158)</li>
+</ul>
+<h3 id="bug-fixes_6">Bug fixes</h3>
+<ul>
+<li>Changed scope of test data files to <code>function</code>. (#158)</li>
+</ul>
+<h3 id="changed_31">Changed</h3>
+<pre><code>* Change to `python:3.8-slim-buster` for base image. Only `amd64` support for now. (#155)
+* Simplified docker files. (#155)
+* Switching from Travis to GHA: (#155)
+* Travis builds docker image before testing.
+* Travis doesn't upload coverage.
+* Don't update module inside container during entrypoint.
+* Fixed user permissions for $HOME and $PANDIR. (#155)
+* The docker container only really likes it when user id `1000` is running the system.
+* Remove GCP Cloud SQL proxy support.
+* Installed `sextractor`. (#158)
+* Added `pandas`. (#158)
+* Default `panoptes` user has password `panoptes`. (#158)
+</code></pre>
+<h3 id="removed_10">Removed</h3>
+<ul>
+<li>Docker (#155)</li>
+<li>Remove anaconda</li>
+<li>Polar alignment utils (#156)</li>
+</ul>
+<h2 id="025-2020-03-18">0.2.5 - 2020-03-18</h2>
+<h3 id="added_23">Added</h3>
+<ul>
+<li>Github Actions testing and coverage upload. (#145)<ul>
+<li>Log files for testing are created as an artifact.</li>
+</ul>
+</li>
+<li><code>PanLogger</code> helper class added. Mostly handles formatting but can also track handlers. (#145)</li>
+</ul>
+<h3 id="bug-fixes_7">Bug fixes</h3>
+<ul>
+<li>Fixed top-level namespace so we can have other <code>panoptes</code> repos. (#150, fixes #137)</li>
+</ul>
+<h3 id="changed_32">Changed</h3>
+<ul>
+<li>Data files for testing are copied before tests. Allows for reuse of unsolved fits file. (#144)</li>
+<li>Fix astrometry data file directories in Docker images. (#144)</li>
+</ul>
+<h3 id="removed_11">Removed</h3>
+<ul>
+<li>The docker image no longer updates <code>panoptes-utils</code> when using <code>run-tests.sh</code>. (#145)</li>
+</ul>
+<h2 id="024-2020-03-11">0.2.4 - 2020-03-11</h2>
+<h3 id="changed_33">Changed</h3>
+<ul>
+<li>Disallow zipped packages, which also interfere with namespace (#142)</li>
+</ul>
+<h3 id="removed_12">Removed</h3>
+<ul>
+<li><code>photutils</code> dependency for rectangular apertures in the <code>show_stamps</code> method.</li>
+</ul>
+<h2 id="023-2020-03-08">0.2.3 - 2020-03-08</h2>
+<p>Small point release to correct namespace and remove some bloat.</p>
+<h3 id="changed_34">Changed</h3>
+<ul>
+<li>Fixed top-level namespace so we can have other <code>panoptes</code> repos. (#137)</li>
+</ul>
+<h3 id="removed_13">Removed</h3>
+<ul>
+<li>Dependencies that will be deprecated soon and are causing bloat: <code>photutils</code>, <code>scikit-image</code>. (#138)</li>
+</ul>
+<h3 id="changed_35">Changed</h3>
+<ul>
+<li>Fixed top-level namespace so we can have other <code>panoptes</code> repos (#137, #150).</li>
+</ul>
+<h2 id="022-2020-03-05">0.2.2 - 2020-03-05</h2>
+<p>Mostly some cleanup from the <code>v0.2.0</code> release based on integrating all the changes into POCS.</p>
+<h3 id="bug-fixes_8">Bug fixes</h3>
+<ul>
+<li>Misc bugs introduced as part of last release, including to <code>download-data.py</code> script.</li>
+<li>Custom exceptions now properly pass <code>kwargs</code> through to parent (#135).</li>
+</ul>
+<h3 id="changed_36">Changed</h3>
+<ul>
+<li>New script for downloading data, <code>scripts/download-data.py</code>. This helped resolve some issues with the relative
+  imports introduced in <code>v0.2.0</code> and is cleaner. (#129)</li>
+<li>All dependencies are smashed into one "feature" in <code>setup.py</code> to make <code>pip-tools</code> work well. This will fix the
+  docker image problems introduced in <code>v0.2.1</code>. (#136)</li>
+</ul>
+<h3 id="removed_14">Removed</h3>
+<ul>
+<li>The <code>get_root_logger</code> and associated tests (#134).</li>
+</ul>
+<h2 id="020-2020-03-04">0.2.0 - 2020-03-04</h2>
+<p>First big overhaul of the repository. Pulls in features that were duplicated or scattered across
+<code>POCS &lt;https://github.com/panoptes/POCS.git&gt;</code><em> and <code>PIAA &lt;https://github.com/panoptes/PIAA.git&gt;</code></em>. Removes a lot of code
+that wasn't being used or was otherwise clutter. Overhauls the logging system to use <a href="https://github.com/Delgan/loguru">
+<code>loguru</code></a> so things are simplified. Updates to documentation.</p>
+<h3 id="added_24">Added</h3>
+<ul>
+<li>Config Server</li>
+<li>See the description in the <a href="https://github.com/panoptes/panoptes-utils/blob/main/README.md">README</a></li>
+<li><code>Versioneer &lt;https://github.com/warner/python-versioneer&gt;</code>_ for version strings (#123).</li>
+<li>Read the docs config (#123).</li>
+</ul>
+<h3 id="bug-fixes_9">Bug fixes</h3>
+<ul>
+<li>IERS Mirror (#65, #67)</li>
+</ul>
+<h3 id="changed_37">Changed</h3>
+<ul>
+<li>Docker updates</li>
+<li>See #68 and #75 for list.</li>
+<li>Logging:</li>
+<li>Switch to <code>loguru &lt;https://github.com/Delgan/loguru&gt;</code>_. This simplifies our logging system. Also gives us access to
+  the <code>trace</code> (lower than <code>debug</code>, good for hardware and other debug we don't need to see during operation) and
+  <code>success</code> (higher than <code>info</code>) levels, which would be nice to start implementing. (#123)</li>
+<li>Consistent use of relative imports. (#123)</li>
+<li>Documentation updates. (#97, #119, #120, #123)</li>
+<li>Repo cleanup. (#97, #123)</li>
+<li>Using GitHub Actions for testing. (#100, #101)</li>
+<li>Using <code>pip-tools &lt;https://github.com/jazzband/pip-tools&gt;</code>_ for dependency management.</li>
+</ul>
+<h2 id="010-2020-03-04">0.1.0 - 2020-03-04</h2>
+<p>Changes and cleanup on the way to a (more) stable release. See <code>0.2.0</code> for list of changes.</p>
+<h2 id="008-2019-06-29">0.0.8 - 2019-06-29</h2>
+<p>Bringing things in line with updates to <code>POCS</code> for docker and <code>panoptes-utils</code> use.</p>
+<h3 id="added_25">Added</h3>
+<ul>
+<li>Serial handlers move to panoptes-utils from POCS.</li>
+<li>Tests and coverage.</li>
+<li><code>improve_wcs</code> (moved from PIAA).</li>
+<li><code>~utils.fits.getdata</code> to match other fits convenience functions, allowing for fpack files.</li>
+</ul>
+<h4 id="bug-fixes_10">Bug fixes</h4>
+<ul>
+<li>
+<p>Serialization fixes.</p>
+<ul>
+<li>Use our serialization everywhere (e.g. messaging)</li>
+<li>Closes #panoptes/POCS/issues/818</li>
+<li>Closes #panoptes/POCS/issues/103</li>
+</ul>
+</li>
+</ul>
+<h3 id="changed_38">Changed</h3>
+<ul>
+<li>
+<p>Setup/Install:</p>
+<ul>
+<li>Scripts are renamed to have <code>panoptes</code> prefix.</li>
+<li>Scripts are installed as part of setup.</li>
+<li>Script improvements to make more robust and portable.</li>
+</ul>
+</li>
+<li>
+<p>Docker Updates:</p>
+<ul>
+<li>Don't use anaconda.</li>
+</ul>
+</li>
+<li>
+<p>Testing:</p>
+<ul>
+<li>Overhaul of config_server use in testing.</li>
+<li>Testing config file is separated from any regular config files.</li>
+</ul>
+</li>
+<li>
+<p>Logging:</p>
+<ul>
+<li>Silence some 3rd party logs.</li>
+</ul>
+</li>
+</ul>
+<h2 id="007-2019-05-26">0.0.7 - 2019-05-26</h2>
+<h3 id="added_26">Added</h3>
+<ul>
+<li>Added bayer utilities. :camera:</li>
+<li>Added Cloud SQL utilities. :cloud:</li>
+</ul>
+<h3 id="changed_39">Changed</h3>
+<ul>
+<li><strong>Breaking</strong> Changed namespace so no underscores, i.e. <code>from panoptes.utils import time</code>.</li>
+<li>
+<p>Docker updates:</p>
+<ul>
+<li>Use slim python images and not anaconda on amd64.</li>
+<li>Adding zsh as default shell along with some customizations.</li>
+<li>Entrypoint script properly authenticates to google cloud if possible.</li>
+<li>Added amd64 only build scripts.</li>
+</ul>
+</li>
+</ul>
+<h2 id="006-2019-04-29">0.0.6 - 2019-04-29</h2>
+<h3 id="added_27">Added</h3>
+<ul>
+<li>
+<p>Docker containers created:</p>
+<ul>
+<li><code>panoptes-base</code> for base OS and system packages, including astrometry.net and friends.</li>
+<li><code>panoptes-utils</code> for container containing base utilities.</li>
+<li>Script for building containers in GCR.</li>
+</ul>
+</li>
+<li>
+<p>Consistent JSON and YAML serializers.</p>
+</li>
+<li>Configuration Server (Flask/JSON microservice).</li>
+</ul>
+<h3 id="changed_40">Changed</h3>
+<ul>
+<li><strong>Minimum Python version is 3.6</strong></li>
+<li>Default PanDB type is changed to <code>memory</code>.</li>
+<li>Documentation updates.</li>
+<li>Bux fixes and code improvements.</li>
+</ul>
+<h2 id="005-2019-04-09">0.0.5 - 2019-04-09</h2>
+<h3 id="added_28">Added</h3>
+<ul>
+<li>Added a change log. Yay.</li>
+</ul>
+<h3 id="changed_41">Changed</h3>
+<ul>
+<li>Drop <code>orjson</code> and revert to <code>json</code> for the JSON serializers.</li>
+</ul>
+<p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
+and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

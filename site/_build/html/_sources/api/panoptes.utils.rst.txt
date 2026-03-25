@@ -1,0 +1,82 @@
+panoptes.utils package
+======================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   panoptes.utils.cli
+   panoptes.utils.config
+   panoptes.utils.database
+   panoptes.utils.images
+   panoptes.utils.serial
+   panoptes.utils.telemetry
+
+Submodules
+----------
+
+panoptes.utils.error module
+---------------------------
+
+.. automodule:: panoptes.utils.error
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+panoptes.utils.horizon module
+-----------------------------
+
+.. automodule:: panoptes.utils.horizon
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+panoptes.utils.library module
+-----------------------------
+
+.. automodule:: panoptes.utils.library
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+panoptes.utils.rs232 module
+---------------------------
+
+.. automodule:: panoptes.utils.rs232
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+panoptes.utils.serializers module
+---------------------------------
+
+.. automodule:: panoptes.utils.serializers
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+panoptes.utils.time module
+--------------------------
+
+.. automodule:: panoptes.utils.time
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+panoptes.utils.utils module
+---------------------------
+
+.. automodule:: panoptes.utils.utils
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: panoptes.utils
+   :members:
+   :show-inheritance:
+   :undoc-members:

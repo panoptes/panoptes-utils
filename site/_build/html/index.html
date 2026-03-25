@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PANOPTES Utilities &#8212; panoptes-utils 0.2.54.dev47+g4dc3dd891.d20260318 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="_static/basic_mod.css?v=9b2032db" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css?v=7f9a90b1" />
+    <script src="_static/documentation_options.js?v=d2a0aebe"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <script src="_static/js/petite-vue.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Command Line Utils" href="cli.html" /> 
+  </head><body data-dark_mode_code_blocks="true">
+
+<div id="top_nav">
+    
+
+    <nav>
+        
+            
+        
+
+        <p id="toggle_sidebar">
+            <a href="#" title="Toggle sidebar">|||</a>
+        </p>
+        <h1><a href="#" title="Go to homepage">panoptes-utils 0.2.54.dev47+g4dc3dd891.d20260318 documentation</a></h1>
+
+        <a id="mode_toggle" href="#" @click.prevent="handleClick" :title="mode">
+    <template v-if="mode == 'light'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_light"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><circle cx="39.311" cy="39.524" r="15.734" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.212,4.901c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901l-0,9.614c-0,2.705 2.196,4.901 4.9,4.901c2.705,0 4.901,-2.196 4.901,-4.901l0,-9.614Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M67.48,18.073c1.913,-1.912 1.913,-5.018 0,-6.931c-1.912,-1.912 -5.018,-1.912 -6.931,0l-6.798,6.799c-1.912,1.912 -1.912,5.018 0,6.931c1.913,1.912 5.018,1.912 6.931,-0l6.798,-6.799Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.728,61.108c1.912,-1.913 1.912,-5.018 -0,-6.931c-1.913,-1.913 -5.019,-1.913 -6.931,-0l-6.799,6.798c-1.912,1.913 -1.912,5.019 0,6.931c1.913,1.913 5.019,1.913 6.931,0l6.799,-6.798Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.682,54.177c-1.913,-1.913 -5.018,-1.913 -6.931,-0c-1.912,1.913 -1.912,5.018 0,6.931l6.798,6.798c1.913,1.913 5.019,1.913 6.931,0c1.913,-1.912 1.913,-5.018 0,-6.931l-6.798,-6.798Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M4.901,34.623c-2.705,0 -4.901,2.196 -4.901,4.901c0,2.705 2.196,4.901 4.901,4.901l9.614,0c2.705,0 4.901,-2.196 4.901,-4.901c0,-2.705 -2.196,-4.901 -4.901,-4.901l-9.614,0Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.212,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901l-0,9.614c-0,2.705 2.196,4.901 4.9,4.901c2.705,-0 4.901,-2.196 4.901,-4.901l0,-9.614Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M18.929,11.142c-1.912,-1.912 -5.018,-1.912 -6.931,0c-1.912,1.913 -1.912,5.019 0,6.931l6.799,6.799c1.912,1.912 5.018,1.912 6.931,-0c1.912,-1.913 1.912,-5.019 -0,-6.931l-6.799,-6.799Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.108,34.623c-2.705,0 -4.901,2.196 -4.901,4.901c-0,2.705 2.196,4.901 4.901,4.901l9.614,0c2.705,0 4.901,-2.196 4.901,-4.901c-0,-2.705 -2.196,-4.901 -4.901,-4.901l-9.614,0Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+
+    <template v-if="mode == 'dark'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_dark"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><circle cx="39.311" cy="39.524" r="15.734" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.212,14.515c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,0 -4.901,2.196 -4.901,4.901c0,2.705 2.197,4.901 4.901,4.901c2.705,0 4.901,-2.196 4.901,-4.901Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M60.662,24.892c1.902,-1.902 1.902,-4.99 0,-6.892l-0.04,-0.039c-1.901,-1.902 -4.989,-1.902 -6.891,-0c-1.901,1.901 -1.901,4.989 0,6.891l0.04,0.04c1.902,1.901 4.989,1.901 6.891,-0Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.732,61.103c1.91,-1.91 1.91,-5.011 0,-6.921l-0.009,-0.01c-1.91,-1.91 -5.012,-1.91 -6.921,-0c-1.91,1.91 -1.91,5.011 -0,6.921l0.01,0.01c1.909,1.91 5.011,1.91 6.92,-0Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.672,54.167c-1.907,-1.907 -5.004,-1.907 -6.911,0l-0.02,0.02c-1.907,1.907 -1.907,5.004 0,6.911c1.907,1.907 5.004,1.907 6.911,-0l0.02,-0.02c1.907,-1.907 1.907,-5.004 0,-6.911Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M14.52,34.623c-2.702,0 -4.896,2.194 -4.896,4.896l0,0.01c0,2.702 2.194,4.896 4.896,4.896c2.702,0 4.896,-2.194 4.896,-4.896l-0,-0.01c-0,-2.702 -2.194,-4.896 -4.896,-4.896Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.212,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.901,2.196 -4.901,4.901c0,2.704 2.197,4.9 4.901,4.9c2.705,0 4.901,-2.196 4.901,-4.9Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M25.73,17.943c-1.911,-1.911 -5.015,-1.911 -6.926,0l-0.005,0.005c-1.911,1.911 -1.911,5.015 0,6.926c1.911,1.911 5.015,1.911 6.926,0l0.005,-0.005c1.911,-1.911 1.911,-5.014 -0,-6.926Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.098,34.623c-2.699,0 -4.891,2.192 -4.891,4.892l-0,0.019c-0,2.699 2.192,4.891 4.891,4.891c2.7,0 4.892,-2.192 4.892,-4.891l0,-0.019c0,-2.7 -2.192,-4.892 -4.892,-4.892Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+
+    <template v-if="mode == 'darkest'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_darkest"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><path d="M39.315,23.791c8.684,-0 15.734,7.05 15.734,15.733c0,8.684 -7.05,15.734 -15.734,15.734c-8.683,0 -15.733,-7.05 -15.733,-15.734c-0,-8.683 7.05,-15.733 15.733,-15.733Zm0,4.737c6.069,0 10.997,4.927 10.997,10.996c-0,6.069 -4.928,10.996 -10.997,10.996c-6.068,0 -10.996,-4.927 -10.996,-10.996c0,-6.069 4.928,-10.996 10.996,-10.996Z" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.216,14.515c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,0 -4.9,2.196 -4.9,4.901c-0,2.705 2.196,4.901 4.9,4.901c2.705,0 4.901,-2.196 4.901,-4.901Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M60.666,24.892c1.902,-1.902 1.902,-4.99 0,-6.892l-0.04,-0.039c-1.901,-1.902 -4.989,-1.902 -6.891,-0c-1.901,1.901 -1.901,4.989 0,6.891l0.04,0.04c1.902,1.901 4.99,1.901 6.891,-0Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.737,61.103c1.909,-1.91 1.909,-5.011 -0,-6.921l-0.01,-0.01c-1.91,-1.91 -5.011,-1.91 -6.921,-0c-1.91,1.91 -1.91,5.011 -0,6.921l0.01,0.01c1.91,1.91 5.011,1.91 6.921,-0Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.676,54.167c-1.907,-1.907 -5.004,-1.907 -6.911,0l-0.02,0.02c-1.907,1.907 -1.907,5.004 0,6.911c1.907,1.907 5.004,1.907 6.911,-0l0.02,-0.02c1.907,-1.907 1.907,-5.004 0,-6.911Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M14.524,34.623c-2.702,0 -4.896,2.194 -4.896,4.896l0,0.01c0,2.702 2.194,4.896 4.896,4.896c2.702,0 4.896,-2.194 4.896,-4.896l0,-0.01c0,-2.702 -2.194,-4.896 -4.896,-4.896Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.216,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901c-0,2.704 2.196,4.9 4.9,4.9c2.705,0 4.901,-2.196 4.901,-4.9Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M25.734,17.943c-1.911,-1.911 -5.015,-1.911 -6.926,0l-0.005,0.005c-1.911,1.911 -1.911,5.015 0,6.926c1.911,1.911 5.015,1.911 6.926,0l0.005,-0.005c1.911,-1.911 1.911,-5.014 0,-6.926Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.103,34.623c-2.7,0 -4.892,2.192 -4.892,4.892l-0,0.019c-0,2.699 2.192,4.891 4.892,4.891c2.699,0 4.891,-2.192 4.891,-4.891l0,-0.019c0,-2.7 -2.192,-4.892 -4.891,-4.892Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+</a>
+
+<script>
+(function() {
+    const LOCAL_STORAGE_KEY = 'piccoloThemeMode'
+
+    var initialMode = localStorage.getItem(LOCAL_STORAGE_KEY)
+
+    if (initialMode) {
+        // Make sure the value in local storage is valid
+        if (['light', 'dark', 'darkest'].indexOf(initialMode) == -1) {
+            initialMode = 'light'
+            localStorage.setItem(LOCAL_STORAGE_KEY, initialMode)
+        }
+    } else {
+        // Check if the client prefers dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            initialMode = 'dark'
+        } else {
+            initialMode = 'light'
+        }
+        localStorage.setItem(LOCAL_STORAGE_KEY, initialMode)
+    }
+
+    document.documentElement.dataset.mode = initialMode
+
+    PetiteVue.createApp({
+        'mode': initialMode,
+        handleClick() {
+            let currentMode = this.mode
+
+            if (currentMode == 'light') {
+                this.mode = 'dark'
+            } else if (currentMode == 'dark') {
+                this.mode = 'darkest'
+            } else if (currentMode == 'darkest') {
+                this.mode = 'light'
+            }
+
+            document.documentElement.dataset.mode = this.mode
+            localStorage.setItem(LOCAL_STORAGE_KEY, this.mode)
+
+            console.log(this.mode)
+        }
+    }).mount('#mode_toggle')
+})()
+</script>
+            <p class="mobile_search_link">
+                <a href="search.html" title="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 65 64" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2">
+                        <path d="M14.873 40.009c-2.315-3.943-3.642-8.532-3.642-13.429C11.231 11.91 23.141 0 37.811 0s26.58 11.91 26.58 26.58-11.91 26.58-26.58 26.58a26.44 26.44 0 0 1-14.277-4.161L9.739 62.794a3.12 3.12 0 0 1-4.413 0L.913 58.382c-1.217-1.218-1.217-3.196 0-4.413l13.96-13.96zM37.811 8.054c10.225 0 18.526 8.301 18.526 18.526s-8.301 18.526-18.526 18.526-18.526-8.301-18.526-18.526S27.586 8.054 37.811 8.054z" fill="#fff" />
+                    </svg>
+                </a>
+            </p>
+        
+
+        <div class="searchbox_wrapper">
+            
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config-server.html">Config Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="telemetry.html">Telemetry Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/modules.html">Module Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="panoptes-utilities">
+<h1>PANOPTES Utilities<a class="headerlink" href="#panoptes-utilities" title="Link to this heading">¶</a></h1>
+<section id="id1">
+<h2>PANOPTES Utilities<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<p align="center">
+<img src="https://www.gitbook.com/cdn-cgi/image/width=256,dpr=2,height=40,fit=contain,format=auto/https%3A%2F%2F1730110767-files.gitbook.io%2F~%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FDWxHUx4DyP5m2IEPanYp%252Flogo%252FKkSF3LQc9Zy10M3n5SQa%252F271B3C3C-4A2D-4679-884D-9892825C87E7.png%3Falt%3Dmedia%26token%3D6e7b448f-6f22-4afa-9c1c-2b3449b5f411" alt="PANOPTES Logo" />
+</p>
+<br>
+<p><a class="reference external" href="https://actions-badge.atrox.dev/panoptes/panoptes-utils/goto?ref=develop"><img alt="GHA Status" src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fpanoptes%2Fpanoptes-utils%2Fbadge%3Fref%3Ddevelop&amp;style=flat" /></a>
+<a class="reference external" href="https://codecov.io/gh/panoptes/panoptes-utils"><img alt="codecov" src="https://codecov.io/gh/panoptes/panoptes-utils/graph/badge.svg?token=YCzESBa7rK" /></a>
+<a class="reference external" href="https://panoptes-utils.readthedocs.io/en/latest/?badge=latest"><img alt="Documentation Status" src="https://readthedocs.org/projects/panoptes-utils/badge/?version=latest" /></a>
+<a class="reference external" href="https://badge.fury.io/py/panoptes-utils"><img alt="PyPI version" src="https://badge.fury.io/py/panoptes-utils.svg" /></a></p>
+<p>Utility functions for use within the <a class="reference external" href="https://projectpanoptes.org">Project PANOPTES</a> ecosystem and for general
+astronomical processing.</p>
+<p>This library defines a number of modules that contain useful functions as well as a few services.</p>
+<section id="install">
+<h3>Install<a class="headerlink" href="#install" title="Link to this heading">¶</a></h3>
+<p>To install type:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>panoptes-utils
+</pre></div>
+</div>
+<p>Full options for install:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;panoptes-utils[config,docs,images,telemetry]&quot;</span>
+</pre></div>
+</div>
+<p>See the full documentation at: https://panoptes-utils.readthedocs.io</p>
+</section>
+<section id="dependencies">
+<h3>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h3>
+<p>There are a few system dependencies depending on what functionality you will be using.</p>
+<p>In particular, the plate solving requires <code class="docutils literal notranslate"><span class="pre">astrometry.net</span></code> and the appropriate index files.</p>
+<p>Use the following on a debian-based system (e.g. Ubuntu) to easily install all dependencies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>apt-get<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>--no-install-recommends<span class="w"> </span>--yes<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>libffi-dev<span class="w"> </span>libssl-dev<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>astrometry.net<span class="w"> </span>astrometry-data-tycho2<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>dcraw<span class="w"> </span>exiftool<span class="w"> </span>libcfitsio-dev<span class="w"> </span>libcfitsio-bin<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>libfreetype6-dev<span class="w"> </span>libpng-dev<span class="w"> </span>libjpeg-dev<span class="w"> </span>libffi-dev
+</pre></div>
+</div>
+</section>
+<section id="command-line">
+<h3>Command Line<a class="headerlink" href="#command-line" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">panoptes-utils</span></code> command line tool is available for use with subcommands
+corresponding to the modules in this library. Currently, the only implemented
+subcommand is <code class="docutils literal notranslate"><span class="pre">image</span></code>, which includes commands for converting <code class="docutils literal notranslate"><span class="pre">cr2</span></code> files into
+<code class="docutils literal notranslate"><span class="pre">jpg</span></code> and/or <code class="docutils literal notranslate"><span class="pre">fits</span></code> files as well as for plate-solving <code class="docutils literal notranslate"><span class="pre">fits</span></code> images.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">panoptes-utils</span> <span class="pre">image</span> <span class="pre">watch</span> <span class="pre">&lt;path&gt;</span></code> command will watch the given path for
+new files and convert them to <code class="docutils literal notranslate"><span class="pre">jpg</span></code> and/or <code class="docutils literal notranslate"><span class="pre">fits</span></code> files as they are added.</p>
+<p>The telemetry server is also available under the main CLI as <code class="docutils literal notranslate"><span class="pre">panoptes-utils</span> <span class="pre">telemetry</span></code>.</p>
+<p>See <code class="docutils literal notranslate"><span class="pre">panoptes-utils</span> <span class="pre">--help</span></code>, <code class="docutils literal notranslate"><span class="pre">panoptes-utils</span> <span class="pre">image</span> <span class="pre">--help</span></code>, and <code class="docutils literal notranslate"><span class="pre">panoptes-utils</span> <span class="pre">telemetry</span> <span class="pre">--help</span></code>
+for details.</p>
+</section>
+<section id="config-server">
+<h3>Config Server<a class="headerlink" href="#config-server" title="Link to this heading">¶</a></h3>
+<p>There is a simple key-value configuration server available as part of the module.</p>
+<p>After installing with the <code class="docutils literal notranslate"><span class="pre">config</span></code> option as above, type:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>panoptes-config-server<span class="w"> </span>run<span class="w"> </span>--config-file<span class="w"> </span>&lt;path-to-file.yaml&gt;
+</pre></div>
+</div>
+<section id="environment-variables">
+<h4>Environment Variables<a class="headerlink" href="#environment-variables" title="Link to this heading">¶</a></h4>
+<p>The config server and client use the following environment variables:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PANOPTES_CONFIG_HOST</span></code></p></td>
+<td><p>The host address for the config server.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">localhost</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PANOPTES_CONFIG_PORT</span></code></p></td>
+<td><p>The port number for the config server.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">6563</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PANOPTES_CONFIG_FILE</span></code></p></td>
+<td><p>The YAML configuration file to load (used by CLI).</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PANOPTES_DEBUG</span></code></p></td>
+<td><p>Enables verbose logging if set.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="telemetry-server">
+<h3>Telemetry Server<a class="headerlink" href="#telemetry-server" title="Link to this heading">¶</a></h3>
+<p>After installing with the <code class="docutils literal notranslate"><span class="pre">telemetry</span></code> option as above, start the server:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>panoptes-utils<span class="w"> </span>telemetry<span class="w"> </span>run
+</pre></div>
+</div>
+<p>The public telemetry model is intentionally simple: there is one telemetry feed,
+and <code class="docutils literal notranslate"><span class="pre">start_run()</span></code> optionally activates a run context. When a run is active,
+subsequent events are automatically associated with that run and stamped with
+<code class="docutils literal notranslate"><span class="pre">meta[&quot;run_id&quot;]</span></code>.</p>
+<p>Example local workflow with Python:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">panoptes.utils.telemetry</span><span class="w"> </span><span class="kn">import</span> <span class="n">TelemetryClient</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">TelemetryClient</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">ready</span><span class="p">())</span>
+
+<span class="c1"># Before start_run(), events are recorded without any active run context.</span>
+<span class="n">client</span><span class="o">.</span><span class="n">post_event</span><span class="p">(</span><span class="s2">&quot;weather&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;sky&quot;</span><span class="p">:</span> <span class="s2">&quot;clear&quot;</span><span class="p">,</span> <span class="s2">&quot;wind_mps&quot;</span><span class="p">:</span> <span class="mf">2.1</span><span class="p">},</span> <span class="n">meta</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;demo&quot;</span><span class="p">})</span>
+
+<span class="c1"># start_run() activates the run context for subsequent events.</span>
+<span class="n">client</span><span class="o">.</span><span class="n">start_run</span><span class="p">(</span><span class="n">run_id</span><span class="o">=</span><span class="s2">&quot;001&quot;</span><span class="p">)</span>
+<span class="n">event</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post_event</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;running&quot;</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;run_id&quot;</span><span class="p">])</span>
+<span class="n">client</span><span class="o">.</span><span class="n">stop_run</span><span class="p">()</span>
+
+<span class="c1"># Or let the server create the next run automatically.</span>
+<span class="n">next_run</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">start_run</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">next_run</span><span class="p">[</span><span class="s2">&quot;run_id&quot;</span><span class="p">],</span> <span class="n">next_run</span><span class="p">[</span><span class="s2">&quot;run_dir&quot;</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">current</span><span class="p">()[</span><span class="s2">&quot;current&quot;</span><span class="p">])</span>
+
+<span class="n">client</span><span class="o">.</span><span class="n">stop_run</span><span class="p">()</span>
+<span class="n">client</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For server internals, HTTP API examples, and environment variables, see the
+<a class="reference external" href="https://panoptes-utils.readthedocs.io/en/latest/telemetry.html">Telemetry Server documentation</a>.</p>
+<section id="development-with-uv">
+<h4>Development with UV<a class="headerlink" href="#development-with-uv" title="Link to this heading">¶</a></h4>
+<p>This project uses UV for fast Python package and environment management with modern PEP 735 dependency groups.</p>
+<p>Prerequisites:</p>
+<ul class="simple">
+<li><p>Python 3.12+</p></li>
+<li><p>UV: https://docs.astral.sh/uv/ (install via <code class="docutils literal notranslate"><span class="pre">curl</span> <span class="pre">-LsSf</span> <span class="pre">https://astral.sh/uv/install.sh</span> <span class="pre">|</span> <span class="pre">sh</span></code> or <code class="docutils literal notranslate"><span class="pre">pipx</span> <span class="pre">install</span> <span class="pre">uv</span></code>).</p></li>
+</ul>
+<p>Basic workflow:</p>
+<ul>
+<li><p>Create and sync a dev environment with all dependencies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install all optional extras and dev dependencies (recommended for development)</span>
+uv<span class="w"> </span>sync<span class="w"> </span>--all-extras<span class="w"> </span>--group<span class="w"> </span>dev
+
+<span class="c1"># Or install only base dependencies</span>
+uv<span class="w"> </span>sync
+
+<span class="c1"># Activate the virtual environment</span>
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+<span class="c1"># or run commands without activating using `uv run ...`</span>
+</pre></div>
+</div>
+</li>
+<li><p>Install specific dependency groups as needed:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install testing dependencies</span>
+uv<span class="w"> </span>sync<span class="w"> </span>--group<span class="w"> </span>testing
+
+<span class="c1"># Install linting tools</span>
+uv<span class="w"> </span>sync<span class="w"> </span>--group<span class="w"> </span>lint
+
+<span class="c1"># Install all dev dependencies (includes testing + lint)</span>
+uv<span class="w"> </span>sync<span class="w"> </span>--group<span class="w"> </span>dev
+</pre></div>
+</div>
+</li>
+<li><p>Install specific optional extras as needed (choose any):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Examples: config, images, docs, examples</span>
+uv<span class="w"> </span>sync<span class="w"> </span>--extra<span class="w"> </span>config<span class="w"> </span>--extra<span class="w"> </span>images<span class="w"> </span>--extra<span class="w"> </span>docs
+
+<span class="c1"># Or install all extras</span>
+uv<span class="w"> </span>sync<span class="w"> </span>--all-extras
+</pre></div>
+</div>
+</li>
+<li><p>Run tests:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># All tests with coverage, using pytest options from pyproject.toml</span>
+uv<span class="w"> </span>run<span class="w"> </span>pytest
+
+<span class="c1"># Single test file</span>
+uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_utils.py
+</pre></div>
+</div>
+</li>
+<li><p>Lint / style checks:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lint with Ruff</span>
+uv<span class="w"> </span>run<span class="w"> </span>ruff<span class="w"> </span>check<span class="w"> </span>.
+
+<span class="c1"># Auto-fix linting issues</span>
+uv<span class="w"> </span>run<span class="w"> </span>ruff<span class="w"> </span>check<span class="w"> </span>--fix<span class="w"> </span>.
+
+<span class="c1"># Format code with Ruff</span>
+uv<span class="w"> </span>run<span class="w"> </span>ruff<span class="w"> </span>format<span class="w"> </span>.
+
+<span class="c1"># Check formatting without making changes</span>
+uv<span class="w"> </span>run<span class="w"> </span>ruff<span class="w"> </span>format<span class="w"> </span>--check<span class="w"> </span>.
+</pre></div>
+</div>
+</li>
+<li><p>Build the package (wheel and sdist):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>build
+</pre></div>
+</div>
+</li>
+<li><p>Run the CLI locally (Typer app):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>panoptes-utils<span class="w"> </span>--help
+</pre></div>
+</div>
+</li>
+<li><p>Versioning:
+Version is derived from git tags via setuptools-scm. To produce a new version, create and push a tag (e.g., <code class="docutils literal notranslate"><span class="pre">v0.1.0</span></code>).</p></li>
+</ul>
+<section id="testing">
+<h5>[Testing]<a class="headerlink" href="#testing" title="Link to this heading">¶</a></h5>
+<p>To test the software, prefer running via UV so the right environment and options are used:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>pytest
+</pre></div>
+</div>
+<p>By default all tests will be run. If you want to run one specific test, give the specific filename as an argument to <code class="docutils literal notranslate"><span class="pre">pytest</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_mount.py
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+</section>
+<section id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config-server.html">Config Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="telemetry.html">Telemetry Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/modules.html">Module Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+</div>
+</section>
+<section id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+    
+        <div id="show_right_sidebar">
+            <p><a class="toggle_right_sidebar" href="#"><span class="icon">&lt;</span><span>Page contents</span></a></p>
+        </div>
+
+        <div id="right_sidebar">
+            <p><a class="toggle_right_sidebar" href="#"><span class="icon">&gt;</span><span>Page contents:</span></a></p>
+            <div class="page_toc">
+                <ul>
+<li><a class="reference internal" href="#">PANOPTES Utilities</a><ul>
+<li><a class="reference internal" href="#id1">PANOPTES Utilities</a><ul>
+<li><a class="reference internal" href="#install">Install</a></li>
+<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li><a class="reference internal" href="#command-line">Command Line</a></li>
+<li><a class="reference internal" href="#config-server">Config Server</a><ul>
+<li><a class="reference internal" href="#environment-variables">Environment Variables</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#telemetry-server">Telemetry Server</a><ul>
+<li><a class="reference internal" href="#development-with-uv">Development with UV</a><ul>
+<li><a class="reference internal" href="#testing">[Testing]</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#contents">Contents</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+
+            </div>
+        </div>
+    
+
+      <div class="clearer"></div>
+    </div>
+    <div class="button_nav_wrapper">
+        <div class="button_nav">
+            <div class="left">
+                
+            </div>
+
+            <div class="right">
+                
+                    <a href="cli.html"><span>Command Line Utils</span><span class="icon">&gt;</span></a>
+                
+            </div>
+        </div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2022, PANOPTES Team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    </div>
+
+<p id="theme_credit">Styled using the <a href="https://github.com/piccolo-orm/piccolo_theme">Piccolo Theme</a></p>
+  </body>
+</html>

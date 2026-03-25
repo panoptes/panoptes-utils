@@ -888,7 +888,7 @@ that wasn't being used or was otherwise clutter. Overhauls the logging system to
 ### Added
 
 * Config Server
-* See the description in the [README](README.md)
+* See the description in the [README](https://github.com/panoptes/panoptes-utils/blob/main/README.md)
 * `Versioneer <https://github.com/warner/python-versioneer>`_ for version strings (#123).
 * Read the docs config (#123).
 

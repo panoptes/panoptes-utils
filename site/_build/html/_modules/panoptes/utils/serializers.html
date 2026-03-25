@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>panoptes.utils.serializers &#8212; panoptes-utils 0.2.54.dev47+g4dc3dd891.d20260318 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic_mod.css?v=9b2032db" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <script src="../../../_static/documentation_options.js?v=d2a0aebe"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <script src="../../../_static/js/petite-vue.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body data-dark_mode_code_blocks="true">
+
+<div id="top_nav">
+    
+
+    <nav>
+        
+            
+        
+
+        <p id="toggle_sidebar">
+            <a href="#" title="Toggle sidebar">|||</a>
+        </p>
+        <h1><a href="../../../index.html" title="Go to homepage">panoptes-utils 0.2.54.dev47+g4dc3dd891.d20260318 documentation</a></h1>
+
+        <a id="mode_toggle" href="#" @click.prevent="handleClick" :title="mode">
+    <template v-if="mode == 'light'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_light"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><circle cx="39.311" cy="39.524" r="15.734" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.212,4.901c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901l-0,9.614c-0,2.705 2.196,4.901 4.9,4.901c2.705,0 4.901,-2.196 4.901,-4.901l0,-9.614Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M67.48,18.073c1.913,-1.912 1.913,-5.018 0,-6.931c-1.912,-1.912 -5.018,-1.912 -6.931,0l-6.798,6.799c-1.912,1.912 -1.912,5.018 0,6.931c1.913,1.912 5.018,1.912 6.931,-0l6.798,-6.799Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.728,61.108c1.912,-1.913 1.912,-5.018 -0,-6.931c-1.913,-1.913 -5.019,-1.913 -6.931,-0l-6.799,6.798c-1.912,1.913 -1.912,5.019 0,6.931c1.913,1.913 5.019,1.913 6.931,0l6.799,-6.798Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.682,54.177c-1.913,-1.913 -5.018,-1.913 -6.931,-0c-1.912,1.913 -1.912,5.018 0,6.931l6.798,6.798c1.913,1.913 5.019,1.913 6.931,0c1.913,-1.912 1.913,-5.018 0,-6.931l-6.798,-6.798Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M4.901,34.623c-2.705,0 -4.901,2.196 -4.901,4.901c0,2.705 2.196,4.901 4.901,4.901l9.614,0c2.705,0 4.901,-2.196 4.901,-4.901c0,-2.705 -2.196,-4.901 -4.901,-4.901l-9.614,0Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.212,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901l-0,9.614c-0,2.705 2.196,4.901 4.9,4.901c2.705,-0 4.901,-2.196 4.901,-4.901l0,-9.614Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M18.929,11.142c-1.912,-1.912 -5.018,-1.912 -6.931,0c-1.912,1.913 -1.912,5.019 0,6.931l6.799,6.799c1.912,1.912 5.018,1.912 6.931,-0c1.912,-1.913 1.912,-5.019 -0,-6.931l-6.799,-6.799Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.108,34.623c-2.705,0 -4.901,2.196 -4.901,4.901c-0,2.705 2.196,4.901 4.901,4.901l9.614,0c2.705,0 4.901,-2.196 4.901,-4.901c-0,-2.705 -2.196,-4.901 -4.901,-4.901l-9.614,0Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+
+    <template v-if="mode == 'dark'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_dark"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><circle cx="39.311" cy="39.524" r="15.734" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.212,14.515c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,0 -4.901,2.196 -4.901,4.901c0,2.705 2.197,4.901 4.901,4.901c2.705,0 4.901,-2.196 4.901,-4.901Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M60.662,24.892c1.902,-1.902 1.902,-4.99 0,-6.892l-0.04,-0.039c-1.901,-1.902 -4.989,-1.902 -6.891,-0c-1.901,1.901 -1.901,4.989 0,6.891l0.04,0.04c1.902,1.901 4.989,1.901 6.891,-0Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.732,61.103c1.91,-1.91 1.91,-5.011 0,-6.921l-0.009,-0.01c-1.91,-1.91 -5.012,-1.91 -6.921,-0c-1.91,1.91 -1.91,5.011 -0,6.921l0.01,0.01c1.909,1.91 5.011,1.91 6.92,-0Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.672,54.167c-1.907,-1.907 -5.004,-1.907 -6.911,0l-0.02,0.02c-1.907,1.907 -1.907,5.004 0,6.911c1.907,1.907 5.004,1.907 6.911,-0l0.02,-0.02c1.907,-1.907 1.907,-5.004 0,-6.911Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M14.52,34.623c-2.702,0 -4.896,2.194 -4.896,4.896l0,0.01c0,2.702 2.194,4.896 4.896,4.896c2.702,0 4.896,-2.194 4.896,-4.896l-0,-0.01c-0,-2.702 -2.194,-4.896 -4.896,-4.896Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.212,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.901,2.196 -4.901,4.901c0,2.704 2.197,4.9 4.901,4.9c2.705,0 4.901,-2.196 4.901,-4.9Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M25.73,17.943c-1.911,-1.911 -5.015,-1.911 -6.926,0l-0.005,0.005c-1.911,1.911 -1.911,5.015 0,6.926c1.911,1.911 5.015,1.911 6.926,0l0.005,-0.005c1.911,-1.911 1.911,-5.014 -0,-6.926Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.098,34.623c-2.699,0 -4.891,2.192 -4.891,4.892l-0,0.019c-0,2.699 2.192,4.891 4.891,4.891c2.7,0 4.892,-2.192 4.892,-4.891l0,-0.019c0,-2.7 -2.192,-4.892 -4.892,-4.892Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+
+    <template v-if="mode == 'darkest'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_darkest"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><path d="M39.315,23.791c8.684,-0 15.734,7.05 15.734,15.733c0,8.684 -7.05,15.734 -15.734,15.734c-8.683,0 -15.733,-7.05 -15.733,-15.734c-0,-8.683 7.05,-15.733 15.733,-15.733Zm0,4.737c6.069,0 10.997,4.927 10.997,10.996c-0,6.069 -4.928,10.996 -10.997,10.996c-6.068,0 -10.996,-4.927 -10.996,-10.996c0,-6.069 4.928,-10.996 10.996,-10.996Z" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.216,14.515c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,0 -4.9,2.196 -4.9,4.901c-0,2.705 2.196,4.901 4.9,4.901c2.705,0 4.901,-2.196 4.901,-4.901Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M60.666,24.892c1.902,-1.902 1.902,-4.99 0,-6.892l-0.04,-0.039c-1.901,-1.902 -4.989,-1.902 -6.891,-0c-1.901,1.901 -1.901,4.989 0,6.891l0.04,0.04c1.902,1.901 4.99,1.901 6.891,-0Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.737,61.103c1.909,-1.91 1.909,-5.011 -0,-6.921l-0.01,-0.01c-1.91,-1.91 -5.011,-1.91 -6.921,-0c-1.91,1.91 -1.91,5.011 -0,6.921l0.01,0.01c1.91,1.91 5.011,1.91 6.921,-0Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.676,54.167c-1.907,-1.907 -5.004,-1.907 -6.911,0l-0.02,0.02c-1.907,1.907 -1.907,5.004 0,6.911c1.907,1.907 5.004,1.907 6.911,-0l0.02,-0.02c1.907,-1.907 1.907,-5.004 0,-6.911Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M14.524,34.623c-2.702,0 -4.896,2.194 -4.896,4.896l0,0.01c0,2.702 2.194,4.896 4.896,4.896c2.702,0 4.896,-2.194 4.896,-4.896l0,-0.01c0,-2.702 -2.194,-4.896 -4.896,-4.896Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.216,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901c-0,2.704 2.196,4.9 4.9,4.9c2.705,0 4.901,-2.196 4.901,-4.9Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M25.734,17.943c-1.911,-1.911 -5.015,-1.911 -6.926,0l-0.005,0.005c-1.911,1.911 -1.911,5.015 0,6.926c1.911,1.911 5.015,1.911 6.926,0l0.005,-0.005c1.911,-1.911 1.911,-5.014 0,-6.926Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.103,34.623c-2.7,0 -4.892,2.192 -4.892,4.892l-0,0.019c-0,2.699 2.192,4.891 4.892,4.891c2.699,0 4.891,-2.192 4.891,-4.891l0,-0.019c0,-2.7 -2.192,-4.892 -4.891,-4.892Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+</a>
+
+<script>
+(function() {
+    const LOCAL_STORAGE_KEY = 'piccoloThemeMode'
+
+    var initialMode = localStorage.getItem(LOCAL_STORAGE_KEY)
+
+    if (initialMode) {
+        // Make sure the value in local storage is valid
+        if (['light', 'dark', 'darkest'].indexOf(initialMode) == -1) {
+            initialMode = 'light'
+            localStorage.setItem(LOCAL_STORAGE_KEY, initialMode)
+        }
+    } else {
+        // Check if the client prefers dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            initialMode = 'dark'
+        } else {
+            initialMode = 'light'
+        }
+        localStorage.setItem(LOCAL_STORAGE_KEY, initialMode)
+    }
+
+    document.documentElement.dataset.mode = initialMode
+
+    PetiteVue.createApp({
+        'mode': initialMode,
+        handleClick() {
+            let currentMode = this.mode
+
+            if (currentMode == 'light') {
+                this.mode = 'dark'
+            } else if (currentMode == 'dark') {
+                this.mode = 'darkest'
+            } else if (currentMode == 'darkest') {
+                this.mode = 'light'
+            }
+
+            document.documentElement.dataset.mode = this.mode
+            localStorage.setItem(LOCAL_STORAGE_KEY, this.mode)
+
+            console.log(this.mode)
+        }
+    }).mount('#mode_toggle')
+})()
+</script>
+            <p class="mobile_search_link">
+                <a href="../../../search.html" title="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 65 64" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2">
+                        <path d="M14.873 40.009c-2.315-3.943-3.642-8.532-3.642-13.429C11.231 11.91 23.141 0 37.811 0s26.58 11.91 26.58 26.58-11.91 26.58-26.58 26.58a26.44 26.44 0 0 1-14.277-4.161L9.739 62.794a3.12 3.12 0 0 1-4.413 0L.913 58.382c-1.217-1.218-1.217-3.196 0-4.413l13.96-13.96zM37.811 8.054c10.225 0 18.526 8.301 18.526 18.526s-8.301 18.526-18.526 18.526-18.526-8.301-18.526-18.526S27.586 8.054 37.811 8.054z" fill="#fff" />
+                    </svg>
+                </a>
+            </p>
+        
+
+        <div class="searchbox_wrapper">
+            
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli.html">CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../config-server.html">Config Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../telemetry.html">Telemetry Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">Module Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for panoptes.utils.serializers</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">suppress</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">IO</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">TextIO</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">Time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dateutil.parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">isoparse</span> <span class="k">as</span> <span class="n">date_parse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ruamel.yaml</span><span class="w"> </span><span class="kn">import</span> <span class="n">YAML</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ruamel.yaml.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">panoptes.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">error</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">panoptes.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_file_input</span>
+
+
+<div class="viewcode-block" id="StringYAML">
+<a class="viewcode-back" href="../../../api/panoptes.utils.html#panoptes.utils.serializers.StringYAML">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StringYAML</span><span class="p">(</span><span class="n">YAML</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;YAML class that can dump to a string.</span>
+
+<span class="sd">    By default the YAML parser doesn&#39;t serialize directly to a string. This</span>
+<span class="sd">    class is a small wrapper to output StreamIO as a string if no stream is</span>
+<span class="sd">    provided.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="StringYAML.dump">
+<a class="viewcode-back" href="../../../api/panoptes.utils.html#panoptes.utils.serializers.StringYAML.dump">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">stream</span><span class="p">:</span> <span class="n">IO</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ANN001, ANN003</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;YAML class that can dump to a string.</span>
+
+<span class="sd">        By default the YAML parser doesn&#39;t serialize directly to a string. This</span>
+<span class="sd">        class is a small wrapper to output StreamIO as a string if no stream is</span>
+<span class="sd">        provided.</span>
+
+<span class="sd">        See https://yaml.readthedocs.io/en/latest/example.html#output-of-dump-as-a-string.</span>
+
+<span class="sd">        Note:</span>
+
+<span class="sd">            This class should not be used directly but instead is instantiated as</span>
+<span class="sd">            part of the yaml convenience methods below.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (`object`): An object, usually dict-like.</span>
+<span class="sd">            stream (`None` | stream, optional): A stream object to write the YAML.</span>
+<span class="sd">                If default `None`, return value as string.</span>
+<span class="sd">            **kwargs: Keywords passed to the `dump` function.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `str`: The serialized object string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inefficient</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">stream</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">inefficient</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">stream</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">yaml</span> <span class="o">=</span> <span class="n">YAML</span><span class="p">()</span>
+        <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">inefficient</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">stream</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="to_json">
+<a class="viewcode-back" href="../../../api/panoptes.utils.html#panoptes.utils.serializers.to_json">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_json</span><span class="p">(</span>
+    <span class="n">obj</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">BinaryIO</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">append</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># noqa: ANN001, ANN003</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a Python object to a JSON string.</span>
+
+<span class="sd">    Will handle `datetime` objects as well as `astropy.unit.Quantity` objects.</span>
+<span class="sd">    Astropy quantities will be converted to a dict: `{&quot;value&quot;: val, &quot;unit&quot;: unit}`.</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    .. doctest::</span>
+
+<span class="sd">        &gt;&gt;&gt; from panoptes.utils.serializers import to_json</span>
+<span class="sd">        &gt;&gt;&gt; from astropy import units as u</span>
+<span class="sd">        &gt;&gt;&gt; config = { &quot;name&quot;: &quot;Mauna Loa&quot;, &quot;elevation&quot;: 3397 * u.meter }</span>
+<span class="sd">        &gt;&gt;&gt; to_json(config)</span>
+<span class="sd">        &#39;{&quot;name&quot;: &quot;Mauna Loa&quot;, &quot;elevation&quot;: &quot;3397.0 m&quot;}&#39;</span>
+
+<span class="sd">        &gt;&gt;&gt; to_json({&quot;numpy_array&quot;: np.arange(10)})</span>
+<span class="sd">        &#39;{&quot;numpy_array&quot;: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}&#39;</span>
+
+<span class="sd">        &gt;&gt;&gt; from panoptes.utils.time import current_time</span>
+<span class="sd">        &gt;&gt;&gt; to_json({&quot;current_time&quot;: current_time()})       # doctest: +SKIP</span>
+<span class="sd">        &#39;{&quot;current_time&quot;: &quot;2019-04-08 22:19:28.402198&quot;}&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        obj (`object`): The object to be converted to JSON, usually a dict.</span>
+<span class="sd">        filename: Path to file for saving. Can be a string path,</span>
+<span class="sd">                 pathlib.Path object, or open filehandle.</span>
+<span class="sd">        append (`bool`, optional): Append to `filename`, default True. Setting</span>
+<span class="sd">            False will clobber the file.</span>
+<span class="sd">        **kwargs: Keyword arguments passed to `json.dumps`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        `str`: The JSON string representation of the object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">json_str</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">serialize_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">InvalidSerialization</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Normalize the file input to a string path</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">normalize_file_input</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span>
+        <span class="k">if</span> <span class="n">append</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">fn</span><span class="p">:</span>
+            <span class="n">fn</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json_str</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">json_str</span></div>
+
+
+
+<div class="viewcode-block" id="from_json">
+<a class="viewcode-back" href="../../../api/panoptes.utils.html#panoptes.utils.serializers.from_json">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a JSON string into a Python object.</span>
+
+<span class="sd">    Astropy quanitites will be converted from a ``{&quot;value&quot;: val, &quot;unit&quot;: unit}``</span>
+<span class="sd">    format. Additionally, the following units will be converted if the value ends</span>
+<span class="sd">    with the exact string:</span>
+
+<span class="sd">        * deg</span>
+<span class="sd">        * m</span>
+<span class="sd">        * s</span>
+
+<span class="sd">    Time-like values are *not* parsed, however see example below.</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    .. doctest::</span>
+
+<span class="sd">        &gt;&gt;&gt; from panoptes.utils.serializers import from_json</span>
+<span class="sd">        &gt;&gt;&gt; config_str = &#39;{&quot;name&quot;:&quot;Mauna Loa&quot;,&quot;elevation&quot;:{&quot;value&quot;:3397.0,&quot;unit&quot;:&quot;m&quot;}}&#39;</span>
+<span class="sd">        &gt;&gt;&gt; from_json(config_str)</span>
+<span class="sd">        {&#39;name&#39;: &#39;Mauna Loa&#39;, &#39;elevation&#39;: &lt;Quantity 3397. m&gt;}</span>
+
+<span class="sd">        # Invalid values will be returned as is.</span>
+<span class="sd">        &gt;&gt;&gt; from_json(&#39;{&quot;horizon&quot;:{&quot;value&quot;:42.0,&quot;unit&quot;:&quot;degr&quot;}}&#39;)</span>
+<span class="sd">        {&#39;horizon&#39;: {&#39;value&#39;: 42.0, &#39;unit&#39;: &#39;degr&#39;}}</span>
+
+<span class="sd">        # The following will convert if final string:</span>
+<span class="sd">        &gt;&gt;&gt; from_json(&#39;{&quot;horizon&quot;: &quot;42.0 deg&quot;}&#39;)</span>
+<span class="sd">        {&#39;horizon&#39;: &lt;Quantity 42. deg&gt;}</span>
+
+<span class="sd">        &gt;&gt;&gt; from_json(&#39;{&quot;elevation&quot;: &quot;1000 m&quot;}&#39;)</span>
+<span class="sd">        {&#39;elevation&#39;: &lt;Quantity 1000. m&gt;}</span>
+
+<span class="sd">        &gt;&gt;&gt; from_json(&#39;{&quot;readout_time&quot;: &quot;10 s&quot;}&#39;)</span>
+<span class="sd">        {&#39;readout_time&#39;: &lt;Quantity 10. s&gt;}</span>
+
+<span class="sd">        # Be careful with short unit names in extended format!</span>
+<span class="sd">        &gt;&gt;&gt; horizon = from_json(&#39;{&quot;horizon&quot;:{&quot;value&quot;:42.0,&quot;unit&quot;:&quot;d&quot;}}&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; horizon[&#39;horizon&#39;]</span>
+<span class="sd">        &lt;Quantity 42. d&gt;</span>
+<span class="sd">        &gt;&gt;&gt; horizon[&#39;horizon&#39;].decompose()</span>
+<span class="sd">        &lt;Quantity 3628800. s&gt;</span>
+
+<span class="sd">        &gt;&gt;&gt; from panoptes.utils.time import current_time</span>
+<span class="sd">        &gt;&gt;&gt; time_str = to_json({&quot;current_time&quot;: current_time().datetime})</span>
+<span class="sd">        &gt;&gt;&gt; from_json(time_str)[&#39;current_time&#39;]         # doctest: +SKIP</span>
+<span class="sd">        2019-04-08T06:43:28.232406</span>
+
+<span class="sd">        &gt;&gt;&gt; from astropy.time import Time</span>
+<span class="sd">        &gt;&gt;&gt; Time(from_json(time_str)[&#39;current_time&#39;])   # doctest: +SKIP</span>
+<span class="sd">        &lt;Time object: scale=&#39;utc&#39; format=&#39;isot&#39; value=2019-04-08T06:43:28.232&gt;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        msg (`str`): The JSON string representation of the object.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        `dict`: The loaded object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">new_obj</span> <span class="o">=</span> <span class="n">deserialize_all_objects</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">InvalidDeserialization</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s2"> Message: </span><span class="si">{</span><span class="n">msg</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_obj</span></div>
+
+
+
+<div class="viewcode-block" id="to_yaml">
+<a class="viewcode-back" href="../../../api/panoptes.utils.html#panoptes.utils.serializers.to_yaml">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_yaml</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># noqa: ANN001, ANN003</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize a Python object to a YAML string.</span>
+
+<span class="sd">    This will properly serialize the following:</span>
+
+<span class="sd">        * `datetime.datetime`</span>
+<span class="sd">        * `astropy.time.Time`</span>
+<span class="sd">        * `astropy.units.Quantity`</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Also see the examples `from_yaml`.</span>
+
+<span class="sd">    .. doctest::</span>
+
+<span class="sd">        &gt;&gt;&gt; import os</span>
+<span class="sd">        &gt;&gt;&gt; os.environ[&#39;POCSTIME&#39;] = &#39;1999-12-31 23:49:49&#39;</span>
+<span class="sd">        &gt;&gt;&gt; from panoptes.utils.time import current_time</span>
+<span class="sd">        &gt;&gt;&gt; t0 = current_time()</span>
+<span class="sd">        &gt;&gt;&gt; t0</span>
+<span class="sd">        &lt;Time object: scale=&#39;utc&#39; format=&#39;iso&#39; value=1999-12-31 23:49:49.000&gt;</span>
+
+<span class="sd">        &gt;&gt;&gt; to_yaml({&#39;astropy time -&gt; astropy time&#39;: t0})</span>
+<span class="sd">        &quot;astropy time -&gt; astropy time: &#39;1999-12-31T23:49:49.000&#39;\\n&quot;</span>
+
+<span class="sd">        &gt;&gt;&gt; to_yaml({&#39;datetime -&gt; astropy time&#39;: t0.datetime})</span>
+<span class="sd">        &quot;datetime -&gt; astropy time: &#39;1999-12-31T23:49:49.000&#39;\\n&quot;</span>
+
+<span class="sd">        &gt;&gt;&gt; # Can pass a `stream` parameter to save to file</span>
+<span class="sd">        &gt;&gt;&gt; with open(&#39;temp.yaml&#39;, &#39;w&#39;) as f:           # doctest: +SKIP</span>
+<span class="sd">        ...     to_yaml({&#39;my_object&#39;: 42}, stream=f)</span>
+
+
+<span class="sd">    Args:</span>
+<span class="sd">        obj (`dict`): The object to be converted to be serialized.</span>
+<span class="sd">        **kwargs: Arguments passed to `ruamel.yaml.dump`. See Examples.</span>
+
+
+<span class="sd">    Returns:</span>
+<span class="sd">        `str`: The YAML string representation of the object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">yaml</span> <span class="o">=</span> <span class="n">StringYAML</span><span class="p">()</span>
+
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">serialize_all_objects</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="from_yaml">
+<a class="viewcode-back" href="../../../api/panoptes.utils.html#panoptes.utils.serializers.from_yaml">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_yaml</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a YAML string into a Python object.</span>
+
+<span class="sd">    This is a thin-wrapper around `ruamel.YAML.load` that also parses the results</span>
+<span class="sd">    looking for `astropy.units.Quantity` objects.</span>
+
+<span class="sd">    Comments are preserved as long as the object remains YAML (lost on conversion</span>
+<span class="sd">    to JSON, for example).</span>
+
+<span class="sd">    See `from_json` for examples of astropy unit parsing.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Note how comments in the YAML are preserved.</span>
+
+<span class="sd">    .. doctest::</span>
+
+<span class="sd">        &gt;&gt;&gt; config_str = &#39;&#39;&#39;name: Testing PANOPTES Unit</span>
+<span class="sd">        ... pan_id: PAN000</span>
+<span class="sd">        ...</span>
+<span class="sd">        ... location:</span>
+<span class="sd">        ...   latitude: 19.54 deg</span>
+<span class="sd">        ...   longitude: -155.58 deg</span>
+<span class="sd">        ...   name: Mauna Loa Observatory  # Can be anything</span>
+<span class="sd">        ... &#39;&#39;&#39;</span>
+
+<span class="sd">        &gt;&gt;&gt; config = from_yaml(config_str)</span>
+<span class="sd">        &gt;&gt;&gt; config[&#39;location&#39;][&#39;latitude&#39;]</span>
+<span class="sd">        &lt;Quantity 19.54 deg&gt;</span>
+
+<span class="sd">        &gt;&gt;&gt; yaml_config = to_yaml(config)</span>
+<span class="sd">        &gt;&gt;&gt; yaml_config                  # doctest: +SKIP</span>
+<span class="sd">        &#39;&#39;&#39; name: Testing PANOPTES Unit</span>
+<span class="sd">        ... pan_id: PAN000  # CHANGE NAME</span>
+<span class="sd">        ...</span>
+<span class="sd">        ... location:</span>
+<span class="sd">        ...   latitude: 19.54 deg</span>
+<span class="sd">        ...   longitude: value: -155.58 deg</span>
+<span class="sd">        ...   name: Mauna Loa Observatory  # Can be anything</span>
+<span class="sd">        ... &#39;&#39;&#39;</span>
+<span class="sd">        &gt;&gt;&gt; yaml_config == config_str</span>
+<span class="sd">        True</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        msg (`str`): The YAML string representation of the object.</span>
+<span class="sd">        parse (`bool`): If objects should be parsed via `_parse_all_objects`, default True.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        `collections.OrderedDict`: The ordered dict representing the YAML string, with appropriate</span>
+<span class="sd">            object deserialization.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">YAML</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">parse</span><span class="p">:</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">deserialize_all_objects</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">obj</span></div>
+
+
+
+<div class="viewcode-block" id="deserialize_all_objects">
+<a class="viewcode-back" href="../../../api/panoptes.utils.html#panoptes.utils.serializers.deserialize_all_objects">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">deserialize_all_objects</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>  <span class="c1"># noqa: ANN001, ANN201</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Recursively parse the incoming object for various data types.</span>
+
+<span class="sd">    This will currently attempt to parse and return, in the following order:</span>
+
+<span class="sd">    If ``obj`` is a dict with exactly two keys named ``unit`` and ``value``,</span>
+<span class="sd">    then attempt to parse into a valid ``astropy.unit.Quantity``.</span>
+
+<span class="sd">    A boolean.</span>
+
+<span class="sd">    A `datetime.datetime` object as parsed by `dateutil.parser.parse`.</span>
+
+<span class="sd">    If a string ending with any of ``[&#39;m&#39;, &#39;deg&#39;, &#39;s&#39;]``, an ``astropy.unit.Quantity``</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        See the `to/from_json/yaml` methods, which use this function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        obj (`dict` or `str` or `object`): Object to check for quantities.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        `dict`: Same as `obj` but with objects converted to quantities.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="s2">&quot;value&quot;</span> <span class="ow">in</span> <span class="n">obj</span> <span class="ow">and</span> <span class="s2">&quot;unit&quot;</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">obj</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">obj</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">deserialize_all_objects</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="c1"># Try to parse as quantity if certain type</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span> <span class="o">&gt;</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">IndexError</span><span class="p">):</span>
+            <span class="n">units_string</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">rsplit</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Get the final word</span>
+            <span class="k">if</span> <span class="n">units_string</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;deg&quot;</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">]:</span>
+                <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="c1"># Try to parse a ISO-8061 datetime string.</span>
+    <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">date_parse</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">obj</span></div>
+
+
+
+<div class="viewcode-block" id="serialize_object">
+<a class="viewcode-back" href="../../../api/panoptes.utils.html#panoptes.utils.serializers.serialize_object">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">serialize_object</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>  <span class="c1"># noqa: ANN001, ANN201</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize the given object.</span>
+
+<span class="sd">    This is a custom serializer function used by ``to_json`` to serialize</span>
+<span class="sd">    individual objects.  Also called in a loop by ``serialize_all_objects``.</span>
+
+<span class="sd">    &gt;&gt;&gt; from panoptes.utils.serializers import serialize_object</span>
+<span class="sd">    &gt;&gt;&gt; from dateutil.parser import parse as date_parse</span>
+<span class="sd">    &gt;&gt;&gt; from astropy import units as u</span>
+
+<span class="sd">    &gt;&gt;&gt; serialize_object(42 * u.meter)</span>
+<span class="sd">    &#39;42.0 m&#39;</span>
+
+<span class="sd">    &gt;&gt;&gt; party_time = date_parse(&#39;1999-12-31 11:59:59&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; type(party_time)</span>
+<span class="sd">     &lt;class &#39;datetime.datetime&#39;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; serialize_object(party_time)</span>
+<span class="sd">    &#39;1999-12-31T11:59:59.000&#39;</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        See the `to/from_json/yaml` methods, which use this function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        obj (any): The object to be serialized.</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Astropy Quantity.</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="c1"># Astropy Time-like (including datetime).</span>
+    <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">Time</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="n">Time</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Time</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">isot</span>
+
+    <span class="c1"># Numpy array.</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="c1"># Exceptions - if not a class object, then `issubclass` raises a `TypeError`,</span>
+    <span class="c1"># so we ignore those and let the object pass through.</span>
+    <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">obj</span></div>
+
+
+
+<div class="viewcode-block" id="serialize_all_objects">
+<a class="viewcode-back" href="../../../api/panoptes.utils.html#panoptes.utils.serializers.serialize_all_objects">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">serialize_all_objects</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>  <span class="c1"># noqa: ANN001, ANN201</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Iterate the ``obj`` items and serialize each value.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        See the `to/from_json/yaml` methods, which use this function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        obj (dict): The dictionary object to be iterated.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: The same as ``obj`` but with the values serialized.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">obj</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">serialize_all_objects</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">obj</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">serialize_object</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">obj</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="clearer"></div>
+    </div>
+    <div class="button_nav_wrapper">
+        <div class="button_nav">
+            <div class="left">
+                
+            </div>
+
+            <div class="right">
+                
+            </div>
+        </div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2022, PANOPTES Team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    </div>
+
+<p id="theme_credit">Styled using the <a href="https://github.com/piccolo-orm/piccolo_theme">Piccolo Theme</a></p>
+  </body>
+</html>

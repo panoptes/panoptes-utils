@@ -1,0 +1,12 @@
+panoptes namespace
+==================
+
+.. py:module:: panoptes
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   panoptes.utils

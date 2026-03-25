@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>panoptes.utils.config package &#8212; panoptes-utils 0.2.54.dev47+g4dc3dd891.d20260318 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic_mod.css?v=9b2032db" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css?v=7f9a90b1" />
+    <script src="../_static/documentation_options.js?v=d2a0aebe"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/petite-vue.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="panoptes.utils.database package" href="panoptes.utils.database.html" />
+    <link rel="prev" title="panoptes.utils.cli namespace" href="panoptes.utils.cli.html" /> 
+  </head><body data-dark_mode_code_blocks="true">
+
+<div id="top_nav">
+    
+
+    <nav>
+        
+            
+        
+
+        <p id="toggle_sidebar">
+            <a href="#" title="Toggle sidebar">|||</a>
+        </p>
+        <h1><a href="../index.html" title="Go to homepage">panoptes-utils 0.2.54.dev47+g4dc3dd891.d20260318 documentation</a></h1>
+
+        <a id="mode_toggle" href="#" @click.prevent="handleClick" :title="mode">
+    <template v-if="mode == 'light'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_light"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><circle cx="39.311" cy="39.524" r="15.734" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.212,4.901c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901l-0,9.614c-0,2.705 2.196,4.901 4.9,4.901c2.705,0 4.901,-2.196 4.901,-4.901l0,-9.614Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M67.48,18.073c1.913,-1.912 1.913,-5.018 0,-6.931c-1.912,-1.912 -5.018,-1.912 -6.931,0l-6.798,6.799c-1.912,1.912 -1.912,5.018 0,6.931c1.913,1.912 5.018,1.912 6.931,-0l6.798,-6.799Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.728,61.108c1.912,-1.913 1.912,-5.018 -0,-6.931c-1.913,-1.913 -5.019,-1.913 -6.931,-0l-6.799,6.798c-1.912,1.913 -1.912,5.019 0,6.931c1.913,1.913 5.019,1.913 6.931,0l6.799,-6.798Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.682,54.177c-1.913,-1.913 -5.018,-1.913 -6.931,-0c-1.912,1.913 -1.912,5.018 0,6.931l6.798,6.798c1.913,1.913 5.019,1.913 6.931,0c1.913,-1.912 1.913,-5.018 0,-6.931l-6.798,-6.798Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M4.901,34.623c-2.705,0 -4.901,2.196 -4.901,4.901c0,2.705 2.196,4.901 4.901,4.901l9.614,0c2.705,0 4.901,-2.196 4.901,-4.901c0,-2.705 -2.196,-4.901 -4.901,-4.901l-9.614,0Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.212,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901l-0,9.614c-0,2.705 2.196,4.901 4.9,4.901c2.705,-0 4.901,-2.196 4.901,-4.901l0,-9.614Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M18.929,11.142c-1.912,-1.912 -5.018,-1.912 -6.931,0c-1.912,1.913 -1.912,5.019 0,6.931l6.799,6.799c1.912,1.912 5.018,1.912 6.931,-0c1.912,-1.913 1.912,-5.019 -0,-6.931l-6.799,-6.799Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.108,34.623c-2.705,0 -4.901,2.196 -4.901,4.901c-0,2.705 2.196,4.901 4.901,4.901l9.614,0c2.705,0 4.901,-2.196 4.901,-4.901c-0,-2.705 -2.196,-4.901 -4.901,-4.901l-9.614,0Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+
+    <template v-if="mode == 'dark'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_dark"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><circle cx="39.311" cy="39.524" r="15.734" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.212,14.515c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,0 -4.901,2.196 -4.901,4.901c0,2.705 2.197,4.901 4.901,4.901c2.705,0 4.901,-2.196 4.901,-4.901Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M60.662,24.892c1.902,-1.902 1.902,-4.99 0,-6.892l-0.04,-0.039c-1.901,-1.902 -4.989,-1.902 -6.891,-0c-1.901,1.901 -1.901,4.989 0,6.891l0.04,0.04c1.902,1.901 4.989,1.901 6.891,-0Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.732,61.103c1.91,-1.91 1.91,-5.011 0,-6.921l-0.009,-0.01c-1.91,-1.91 -5.012,-1.91 -6.921,-0c-1.91,1.91 -1.91,5.011 -0,6.921l0.01,0.01c1.909,1.91 5.011,1.91 6.92,-0Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.672,54.167c-1.907,-1.907 -5.004,-1.907 -6.911,0l-0.02,0.02c-1.907,1.907 -1.907,5.004 0,6.911c1.907,1.907 5.004,1.907 6.911,-0l0.02,-0.02c1.907,-1.907 1.907,-5.004 0,-6.911Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M14.52,34.623c-2.702,0 -4.896,2.194 -4.896,4.896l0,0.01c0,2.702 2.194,4.896 4.896,4.896c2.702,0 4.896,-2.194 4.896,-4.896l-0,-0.01c-0,-2.702 -2.194,-4.896 -4.896,-4.896Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.212,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.901,2.196 -4.901,4.901c0,2.704 2.197,4.9 4.901,4.9c2.705,0 4.901,-2.196 4.901,-4.9Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M25.73,17.943c-1.911,-1.911 -5.015,-1.911 -6.926,0l-0.005,0.005c-1.911,1.911 -1.911,5.015 0,6.926c1.911,1.911 5.015,1.911 6.926,0l0.005,-0.005c1.911,-1.911 1.911,-5.014 -0,-6.926Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.098,34.623c-2.699,0 -4.891,2.192 -4.891,4.892l-0,0.019c-0,2.699 2.192,4.891 4.891,4.891c2.7,0 4.892,-2.192 4.892,-4.891l0,-0.019c0,-2.7 -2.192,-4.892 -4.892,-4.892Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+
+    <template v-if="mode == 'darkest'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_darkest"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><path d="M39.315,23.791c8.684,-0 15.734,7.05 15.734,15.733c0,8.684 -7.05,15.734 -15.734,15.734c-8.683,0 -15.733,-7.05 -15.733,-15.734c-0,-8.683 7.05,-15.733 15.733,-15.733Zm0,4.737c6.069,0 10.997,4.927 10.997,10.996c-0,6.069 -4.928,10.996 -10.997,10.996c-6.068,0 -10.996,-4.927 -10.996,-10.996c0,-6.069 4.928,-10.996 10.996,-10.996Z" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.216,14.515c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,0 -4.9,2.196 -4.9,4.901c-0,2.705 2.196,4.901 4.9,4.901c2.705,0 4.901,-2.196 4.901,-4.901Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M60.666,24.892c1.902,-1.902 1.902,-4.99 0,-6.892l-0.04,-0.039c-1.901,-1.902 -4.989,-1.902 -6.891,-0c-1.901,1.901 -1.901,4.989 0,6.891l0.04,0.04c1.902,1.901 4.99,1.901 6.891,-0Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.737,61.103c1.909,-1.91 1.909,-5.011 -0,-6.921l-0.01,-0.01c-1.91,-1.91 -5.011,-1.91 -6.921,-0c-1.91,1.91 -1.91,5.011 -0,6.921l0.01,0.01c1.91,1.91 5.011,1.91 6.921,-0Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.676,54.167c-1.907,-1.907 -5.004,-1.907 -6.911,0l-0.02,0.02c-1.907,1.907 -1.907,5.004 0,6.911c1.907,1.907 5.004,1.907 6.911,-0l0.02,-0.02c1.907,-1.907 1.907,-5.004 0,-6.911Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M14.524,34.623c-2.702,0 -4.896,2.194 -4.896,4.896l0,0.01c0,2.702 2.194,4.896 4.896,4.896c2.702,0 4.896,-2.194 4.896,-4.896l0,-0.01c0,-2.702 -2.194,-4.896 -4.896,-4.896Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.216,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901c-0,2.704 2.196,4.9 4.9,4.9c2.705,0 4.901,-2.196 4.901,-4.9Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M25.734,17.943c-1.911,-1.911 -5.015,-1.911 -6.926,0l-0.005,0.005c-1.911,1.911 -1.911,5.015 0,6.926c1.911,1.911 5.015,1.911 6.926,0l0.005,-0.005c1.911,-1.911 1.911,-5.014 0,-6.926Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.103,34.623c-2.7,0 -4.892,2.192 -4.892,4.892l-0,0.019c-0,2.699 2.192,4.891 4.892,4.891c2.699,0 4.891,-2.192 4.891,-4.891l0,-0.019c0,-2.7 -2.192,-4.892 -4.891,-4.892Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+</a>
+
+<script>
+(function() {
+    const LOCAL_STORAGE_KEY = 'piccoloThemeMode'
+
+    var initialMode = localStorage.getItem(LOCAL_STORAGE_KEY)
+
+    if (initialMode) {
+        // Make sure the value in local storage is valid
+        if (['light', 'dark', 'darkest'].indexOf(initialMode) == -1) {
+            initialMode = 'light'
+            localStorage.setItem(LOCAL_STORAGE_KEY, initialMode)
+        }
+    } else {
+        // Check if the client prefers dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            initialMode = 'dark'
+        } else {
+            initialMode = 'light'
+        }
+        localStorage.setItem(LOCAL_STORAGE_KEY, initialMode)
+    }
+
+    document.documentElement.dataset.mode = initialMode
+
+    PetiteVue.createApp({
+        'mode': initialMode,
+        handleClick() {
+            let currentMode = this.mode
+
+            if (currentMode == 'light') {
+                this.mode = 'dark'
+            } else if (currentMode == 'dark') {
+                this.mode = 'darkest'
+            } else if (currentMode == 'darkest') {
+                this.mode = 'light'
+            }
+
+            document.documentElement.dataset.mode = this.mode
+            localStorage.setItem(LOCAL_STORAGE_KEY, this.mode)
+
+            console.log(this.mode)
+        }
+    }).mount('#mode_toggle')
+})()
+</script>
+            <p class="mobile_search_link">
+                <a href="../search.html" title="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 65 64" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2">
+                        <path d="M14.873 40.009c-2.315-3.943-3.642-8.532-3.642-13.429C11.231 11.91 23.141 0 37.811 0s26.58 11.91 26.58 26.58-11.91 26.58-26.58 26.58a26.44 26.44 0 0 1-14.277-4.161L9.739 62.794a3.12 3.12 0 0 1-4.413 0L.913 58.382c-1.217-1.218-1.217-3.196 0-4.413l13.96-13.96zM37.811 8.054c10.225 0 18.526 8.301 18.526 18.526s-8.301 18.526-18.526 18.526-18.526-8.301-18.526-18.526S27.586 8.054 37.811 8.054z" fill="#fff" />
+                    </svg>
+                </a>
+            </p>
+        
+
+        <div class="searchbox_wrapper">
+            
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../config-server.html">Config Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../telemetry.html">Telemetry Server</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Module Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="panoptes.html">panoptes namespace</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="panoptes.utils.html">panoptes.utils package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="panoptes-utils-config-package">
+<h1>panoptes.utils.config package<a class="headerlink" href="#panoptes-utils-config-package" title="Link to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-panoptes.utils.config.cli">
+<span id="panoptes-utils-config-cli-module"></span><h2>panoptes.utils.config.cli module<a class="headerlink" href="#module-panoptes.utils.config.cli" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-panoptes.utils.config.client">
+<span id="panoptes-utils-config-client-module"></span><h2>panoptes.utils.config.client module<a class="headerlink" href="#module-panoptes.utils.config.client" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="panoptes.utils.config.client.get_config">
+<span class="sig-prename descclassname"><span class="pre">panoptes.utils.config.client.</span></span><span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'get-config'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/panoptes/utils/config/client.html#get_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#panoptes.utils.config.client.get_config" title="Link to this definition">¶</a></dt>
+<dd><p>Get a config item from the config server.</p>
+<p>Return the config entry for the given <code class="docutils literal notranslate"><span class="pre">key</span></code>. If <code class="docutils literal notranslate"><span class="pre">key=None</span></code> (default), return
+the entire config.</p>
+<p>Nested keys can be specified as a string, as per <a class="reference external" href="https://pypi.org/project/scalpl/">scalpl</a>.</p>
+<p>Examples:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_config</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+<span class="go">&#39;Testing PANOPTES Unit&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_config</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;location.horizon&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity 30. deg&gt;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># With no parsing, the raw string (including quotes) is returned.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_config</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;location.horizon&#39;</span><span class="p">,</span> <span class="n">parse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">&#39;&quot;30 deg&quot;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_config</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;cameras.devices[1].model&#39;</span><span class="p">)</span>
+<span class="go">&#39;canon_gphoto2&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Returns `None` if key is not found.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">foobar</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;foobar&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">foobar</span> <span class="ow">is</span> <span class="kc">None</span>
+<span class="go">True</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># But you can supply a default.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_config</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;foobar&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;baz&#39;</span><span class="p">)</span>
+<span class="go">&#39;baz&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># key and default are first two parameters.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_config</span><span class="p">(</span><span class="s1">&#39;foobar&#39;</span><span class="p">,</span> <span class="s1">&#39;baz&#39;</span><span class="p">)</span>
+<span class="go">&#39;baz&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Can use Quantities as well.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_config</span><span class="p">(</span><span class="s1">&#39;foobar&#39;</span><span class="p">,</span> <span class="mi">42</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span>
+<span class="go">&lt;Quantity 42. m&gt;</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>By default all calls to this function will log at the <cite>trace</cite> level because
+there are some calls (e.g. during POCS operation) that will be quite noisy.</p>
+<p>Setting <cite>verbose=True</cite> changes those to <cite>debug</cite> log levels for an individual
+call.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The key to update, see Examples in <a class="reference internal" href="#panoptes.utils.config.client.get_config" title="panoptes.utils.config.client.get_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_config()</span></code></a> for details.</p></li>
+<li><p><strong>default</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – The config server port, defaults to 6563.</p></li>
+<li><p><strong>host</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – The config server host. First checks for PANOPTES_CONFIG_HOST
+env var, defaults to ‘localhost’.</p></li>
+<li><p><strong>port</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3.13/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – The config server port. First checks for PANOPTES_CONFIG_HOST
+env var, defaults to 6563.</p></li>
+<li><p><strong>endpoint</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – The relative url endpoint to use for getting
+the config items, default ‘get-config’. See <cite>server_is_running()</cite>
+for example of usage.</p></li>
+<li><p><strong>parse</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – If response should be parsed by
+<a class="reference internal" href="panoptes.utils.html#panoptes.utils.serializers.from_json" title="panoptes.utils.serializers.from_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">panoptes.utils.serializers.from_json()</span></code></a>, default True.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Determines the output log level, defaults to
+True (i.e. <cite>debug</cite> log level). See notes for details.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The corresponding config entry.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.13/library/exceptions.html#Exception" title="(in Python v3.13)"><strong>Exception</strong></a> – Raised if the config server is not available.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="panoptes.utils.config.client.server_is_running">
+<span class="sig-prename descclassname"><span class="pre">panoptes.utils.config.client.</span></span><span class="sig-name descname"><span class="pre">server_is_running</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/panoptes/utils/config/client.html#server_is_running"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#panoptes.utils.config.client.server_is_running" title="Link to this definition">¶</a></dt>
+<dd><p>Thin-wrapper to check server.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="panoptes.utils.config.client.set_config">
+<span class="sig-prename descclassname"><span class="pre">panoptes.utils.config.client.</span></span><span class="sig-name descname"><span class="pre">set_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/panoptes/utils/config/client.html#set_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#panoptes.utils.config.client.set_config" title="Link to this definition">¶</a></dt>
+<dd><p>Set config item in config server.</p>
+<p>Given a <cite>key</cite> entry, update the config to match. The <cite>key</cite> is a dot accessible
+string, as given by <a class="reference external" href="https://pypi.org/project/scalpl/">scalpl</a>. See Examples in
+<a class="reference internal" href="#panoptes.utils.config.client.get_config" title="panoptes.utils.config.client.get_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_config()</span></code></a> for details.</p>
+<p>Examples:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Can use astropy units.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">set_config</span><span class="p">(</span><span class="s1">&#39;location.horizon&#39;</span><span class="p">,</span> <span class="mi">35</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">)</span>
+<span class="go">{&#39;location.horizon&#39;: &lt;Quantity 35. deg&gt;}</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_config</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;location.horizon&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity 35. deg&gt;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># String equivalent works for &#39;deg&#39;, &#39;m&#39;, &#39;s&#39;.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">set_config</span><span class="p">(</span><span class="s1">&#39;location.horizon&#39;</span><span class="p">,</span> <span class="s1">&#39;30 deg&#39;</span><span class="p">)</span>
+<span class="go">{&#39;location.horizon&#39;: &lt;Quantity 30. deg&gt;}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The key to update, see Examples in <a class="reference internal" href="#panoptes.utils.config.client.get_config" title="panoptes.utils.config.client.get_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_config()</span></code></a> for details.</p></li>
+<li><p><strong>new_value</strong> (<em>scalar</em><em>|</em><a class="reference external" href="https://docs.python.org/3.13/library/functions.html#object" title="(in Python v3.13)"><em>object</em></a>) – The new value for the key, can be any serializable object.</p></li>
+<li><p><strong>host</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – The config server host. First checks for PANOPTES_CONFIG_HOST
+env var, defaults to ‘localhost’.</p></li>
+<li><p><strong>port</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3.13/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – The config server port. First checks for PANOPTES_CONFIG_HOST
+env var, defaults to 6563.</p></li>
+<li><p><strong>parse</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – If response should be parsed by
+<a class="reference internal" href="panoptes.utils.html#panoptes.utils.serializers.from_json" title="panoptes.utils.serializers.from_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">panoptes.utils.serializers.from_json()</span></code></a>, default True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated config entry.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.13/library/exceptions.html#Exception" title="(in Python v3.13)"><strong>Exception</strong></a> – Raised if the config server is not available.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-panoptes.utils.config.helpers">
+<span id="panoptes-utils-config-helpers-module"></span><h2>panoptes.utils.config.helpers module<a class="headerlink" href="#module-panoptes.utils.config.helpers" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="panoptes.utils.config.helpers.load_config">
+<span class="sig-prename descclassname"><span class="pre">panoptes.utils.config.helpers.</span></span><span class="sig-name descname"><span class="pre">load_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.13/library/pathlib.html#pathlib.Path" title="(in Python v3.13)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.13/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.13/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_local</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.13/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></span></span><a class="reference internal" href="../_modules/panoptes/utils/config/helpers.html#load_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#panoptes.utils.config.helpers.load_config" title="Link to this definition">¶</a></dt>
+<dd><p>Loads configuration information from one or more YAML files.</p>
+<p>This function is used by the config server; normal config usage should
+be via a running config server.</p>
+<p>If no options are passed to <cite>config_files</cite>, the default <cite>$PANOPTES_CONFIG_FILE</cite>
+will be loaded. Multiple files can be specified and are loaded in order,
+with later files overwriting values from earlier ones. Local versions of files
+(named <cite>&lt;name&gt;_local.yaml</cite>) can override built-in versions if present.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config_files</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><em>Path</em><em> | </em><em>List</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – A path or list of paths to config files.
+If None, uses the default config file. Files are loaded in order.</p></li>
+<li><p><strong>parse</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to parse objects such as dates and astropy units.
+Defaults to True.</p></li>
+<li><p><strong>load_local</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to load local override files (ending with <cite>_local.yaml</cite>)
+if present. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of configuration items.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ruamel.yaml.parser.ParserError</strong> – If a YAML file cannot be parsed.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3.13/library/exceptions.html#IOError" title="(in Python v3.13)"><strong>IOError</strong></a> – If a config file cannot be read.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3.13/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – If a config file contains invalid data types.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Local files are automatically loaded if they exist alongside the specified config path.
+Local files can be ignored by setting <cite>load_local=False</cite>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="panoptes.utils.config.helpers.parse_config_directories">
+<span class="sig-prename descclassname"><span class="pre">panoptes.utils.config.helpers.</span></span><span class="sig-name descname"><span class="pre">parse_config_directories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></span></span><a class="reference internal" href="../_modules/panoptes/utils/config/helpers.html#parse_config_directories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#panoptes.utils.config.helpers.parse_config_directories" title="Link to this definition">¶</a></dt>
+<dd><p>Parse the config dictionary for common objects.</p>
+<p>Given a <cite>base</cite> entry that corresponds to the absolute path of a directory,
+prepend the <cite>base</cite> to all other relative directory entries.</p>
+<p>The <cite>base</cite> directory must exist or an exception is rasied.</p>
+<p>If the <cite>base</cite> entry is not given the current working directory is used.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dirs_config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;/tmp&#39;</span><span class="p">,</span> <span class="n">foo</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="n">baz</span><span class="o">=</span><span class="s1">&#39;bam&#39;</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="s1">&#39;/app&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_config_directories</span><span class="p">(</span><span class="n">dirs_config</span><span class="p">)</span>
+<span class="go">{&#39;base&#39;: &#39;/tmp&#39;, &#39;foo&#39;: &#39;/tmp/bar&#39;, &#39;baz&#39;: &#39;/tmp/bam&#39;, &#39;app&#39;: &#39;/app&#39;}</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># If base doesn&#39;t exist an exception is raised.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dirs_config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;/panoptes&#39;</span><span class="p">,</span> <span class="n">foo</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="n">baz</span><span class="o">=</span><span class="s1">&#39;bam&#39;</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="s1">&#39;/app&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_config_directories</span><span class="p">(</span><span class="n">dirs_config</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">panoptes.utils.error.NotFound</span>: <span class="n">NotFound: Base directory does not exist: /panoptes</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>directories</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – The dictionary of directory information. Usually comes
+from the “directories” entry in the config.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The same directory but with relative directories resolved.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="panoptes.utils.html#panoptes.utils.error.NotFound" title="panoptes.utils.error.NotFound"><strong>panoptes.utils.error.NotFound</strong></a> – if the ‘base’ entry is given but does not exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="panoptes.utils.config.helpers.save_config">
+<span class="sig-prename descclassname"><span class="pre">panoptes.utils.config.helpers.</span></span><span class="sig-name descname"><span class="pre">save_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.13/library/pathlib.html#pathlib.Path" title="(in Python v3.13)"><span class="pre">Path</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.13/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.13/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/panoptes/utils/config/helpers.html#save_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#panoptes.utils.config.helpers.save_config" title="Link to this definition">¶</a></dt>
+<dd><p>Save config to local yaml file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>save_path</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Path to save, can be relative or absolute. See Notes in
+<code class="docutils literal notranslate"><span class="pre">load_config</span></code>.</p></li>
+<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Config to save.</p></li>
+<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – True if file should be updated, False
+to generate a warning for existing config. Defaults to True
+for updates.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>If the save was successful.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.13/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.13/library/exceptions.html#FileExistsError" title="(in Python v3.13)"><strong>FileExistsError</strong></a> – If the local path already exists and <code class="docutils literal notranslate"><span class="pre">overwrite=False</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-panoptes.utils.config.server">
+<span id="panoptes-utils-config-server-module"></span><h2>panoptes.utils.config.server module<a class="headerlink" href="#module-panoptes.utils.config.server" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="panoptes.utils.config.server.config_server">
+<span class="sig-prename descclassname"><span class="pre">panoptes.utils.config.server.</span></span><span class="sig-name descname"><span class="pre">config_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_local</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_local</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_logs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_logs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'logger'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/panoptes/utils/config/server.html#config_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#panoptes.utils.config.server.config_server" title="Link to this definition">¶</a></dt>
+<dd><p>Start the config server in a separate process.</p>
+<p>A convenience function to start the config server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config_file</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><em>None</em>) – The absolute path to the config file to load.</p></li>
+<li><p><strong>host</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – The config server host. First checks for PANOPTES_CONFIG_HOST
+env var, defaults to ‘localhost’.</p></li>
+<li><p><strong>port</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3.13/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – The config server port. First checks for
+PANOPTES_CONFIG_PORT env var, defaults to 6563.</p></li>
+<li><p><strong>load_local</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – If local config files should be used when loading,
+default True.</p></li>
+<li><p><strong>save_local</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – If setting new values should auto-save to local file,
+default False.</p></li>
+<li><p><strong>auto_start</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – If server process should be started automatically,
+default True.</p></li>
+<li><p><strong>access_logs</strong> (<a class="reference external" href="https://docs.python.org/3.13/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em> or </em><em>None</em><em>, </em><em>optional</em>) – Controls uvicorn access logs. <code class="docutils literal notranslate"><span class="pre">True</span></code> enables
+them; the default <code class="docutils literal notranslate"><span class="pre">None</span></code>/<code class="docutils literal notranslate"><span class="pre">False</span></code> turns them off.</p></li>
+<li><p><strong>error_logs</strong> – Unused; kept for backward compatibility.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The process running the config server.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.13/library/multiprocessing.html#multiprocessing.Process" title="(in Python v3.13)">multiprocessing.Process</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="panoptes.utils.config.server.get_config_entry">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">panoptes.utils.config.server.</span></span><span class="sig-name descname"><span class="pre">get_config_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Request</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">JSONResponse</span></span></span><a class="reference internal" href="../_modules/panoptes/utils/config/server.html#get_config_entry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#panoptes.utils.config.server.get_config_entry" title="Link to this definition">¶</a></dt>
+<dd><p>Get config entries from server.</p>
+<p>Endpoint that responds to GET and POST requests and returns
+configuration item corresponding to provided key or entire
+configuration. The key entries should be specified in dot-notation,
+with the names corresponding to the entries stored in the configuration
+file. See the <a class="reference external" href="https://pypi.org/project/scalpl/">scalpl</a> documentation
+for details on the dot-notation.</p>
+<p>The endpoint should receive a JSON document with a single key named <code class="docutils literal notranslate"><span class="pre">&quot;key&quot;</span></code>
+and a value that corresponds to the desired key within the configuration.</p>
+<p>For example, take the following configuration:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="s1">&#39;location&#39;</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="s1">&#39;elevation&#39;</span><span class="o">:</span><span class="w"> </span><span class="mf">3400.0</span><span class="p">,</span>
+<span class="w">        </span><span class="s1">&#39;latitude&#39;</span><span class="o">:</span><span class="w"> </span><span class="mf">19.55</span><span class="p">,</span>
+<span class="w">        </span><span class="s1">&#39;longitude&#39;</span><span class="o">:</span><span class="w"> </span><span class="mf">155.12</span><span class="p">,</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To get the corresponding value for the elevation, pass a JSON document similar to:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;{&quot;key&quot;: &quot;location.elevation&quot;}&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The json string for the requested object if object is found in config.
+Otherwise a json string with <code class="docutils literal notranslate"><span class="pre">status</span></code> and <code class="docutils literal notranslate"><span class="pre">msg</span></code> keys will be returned.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="panoptes.utils.config.server.heartbeat">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">panoptes.utils.config.server.</span></span><span class="sig-name descname"><span class="pre">heartbeat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Request</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">JSONResponse</span></span></span><a class="reference internal" href="../_modules/panoptes/utils/config/server.html#heartbeat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#panoptes.utils.config.server.heartbeat" title="Link to this definition">¶</a></dt>
+<dd><p>A simple echo service to be used for a heartbeat.</p>
+<p>Defaults to looking for the ‘config_server.running’ bool value, although a
+different <code class="docutils literal notranslate"><span class="pre">key</span></code> can be specified in the request body.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="panoptes.utils.config.server.reset_config">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">panoptes.utils.config.server.</span></span><span class="sig-name descname"><span class="pre">reset_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Request</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">JSONResponse</span></span></span><a class="reference internal" href="../_modules/panoptes/utils/config/server.html#reset_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#panoptes.utils.config.server.reset_config" title="Link to this definition">¶</a></dt>
+<dd><p>Reset the configuration.</p>
+<p>An endpoint that accepts a POST method. The json request object
+must contain the key <code class="docutils literal notranslate"><span class="pre">reset</span></code> (with any value).</p>
+<p>The method will reset the configuration to the original configuration files that were
+used, skipping the local (and saved file).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the server was originally started with a local version of the file, those will
+be skipped upon reload. This is not ideal but hopefully this method is not used too
+much.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A json string object containing the keys <code class="docutils literal notranslate"><span class="pre">success</span></code> and <code class="docutils literal notranslate"><span class="pre">msg</span></code> that indicate
+success or failure.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="panoptes.utils.config.server.set_config_entry">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">panoptes.utils.config.server.</span></span><span class="sig-name descname"><span class="pre">set_config_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Request</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">JSONResponse</span></span></span><a class="reference internal" href="../_modules/panoptes/utils/config/server.html#set_config_entry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#panoptes.utils.config.server.set_config_entry" title="Link to this definition">¶</a></dt>
+<dd><p>Sets an item in the config.</p>
+<p>Endpoint that responds to GET and POST requests and sets a
+configuration item corresponding to the provided key.</p>
+<p>The key entries should be specified in dot-notation, with the names
+corresponding to the entries stored in the configuration file. See
+the <a class="reference external" href="https://pypi.org/project/scalpl/">scalpl</a> documentation for details
+on the dot-notation.</p>
+<p>The endpoint should receive a JSON document with a single key named <code class="docutils literal notranslate"><span class="pre">&quot;key&quot;</span></code>
+and a value that corresponds to the desired key within the configuration.</p>
+<p>For example, take the following configuration:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="s1">&#39;location&#39;</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="s1">&#39;elevation&#39;</span><span class="o">:</span><span class="w"> </span><span class="mf">3400.0</span><span class="p">,</span>
+<span class="w">        </span><span class="s1">&#39;latitude&#39;</span><span class="o">:</span><span class="w"> </span><span class="mf">19.55</span><span class="p">,</span>
+<span class="w">        </span><span class="s1">&#39;longitude&#39;</span><span class="o">:</span><span class="w"> </span><span class="mf">155.12</span><span class="p">,</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To set the corresponding value for the elevation, pass a JSON document similar to:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;{&quot;location.elevation&quot;: &quot;1000 m&quot;}&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>If method is successful, returned json string will be a copy of the set values.
+On failure, a json string with <code class="docutils literal notranslate"><span class="pre">status</span></code> and <code class="docutils literal notranslate"><span class="pre">msg</span></code> keys will be returned.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.13/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-panoptes.utils.config">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-panoptes.utils.config" title="Link to this heading">¶</a></h2>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+    
+        <div id="show_right_sidebar">
+            <p><a class="toggle_right_sidebar" href="#"><span class="icon">&lt;</span><span>Page contents</span></a></p>
+        </div>
+
+        <div id="right_sidebar">
+            <p><a class="toggle_right_sidebar" href="#"><span class="icon">&gt;</span><span>Page contents:</span></a></p>
+            <div class="page_toc">
+                <ul>
+<li><a class="reference internal" href="#">panoptes.utils.config package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-panoptes.utils.config.cli">panoptes.utils.config.cli module</a></li>
+<li><a class="reference internal" href="#module-panoptes.utils.config.client">panoptes.utils.config.client module</a><ul>
+<li><a class="reference internal" href="#panoptes.utils.config.client.get_config"><code class="docutils literal notranslate"><span class="pre">get_config()</span></code></a></li>
+<li><a class="reference internal" href="#panoptes.utils.config.client.server_is_running"><code class="docutils literal notranslate"><span class="pre">server_is_running()</span></code></a></li>
+<li><a class="reference internal" href="#panoptes.utils.config.client.set_config"><code class="docutils literal notranslate"><span class="pre">set_config()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-panoptes.utils.config.helpers">panoptes.utils.config.helpers module</a><ul>
+<li><a class="reference internal" href="#panoptes.utils.config.helpers.load_config"><code class="docutils literal notranslate"><span class="pre">load_config()</span></code></a></li>
+<li><a class="reference internal" href="#panoptes.utils.config.helpers.parse_config_directories"><code class="docutils literal notranslate"><span class="pre">parse_config_directories()</span></code></a></li>
+<li><a class="reference internal" href="#panoptes.utils.config.helpers.save_config"><code class="docutils literal notranslate"><span class="pre">save_config()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-panoptes.utils.config.server">panoptes.utils.config.server module</a><ul>
+<li><a class="reference internal" href="#panoptes.utils.config.server.config_server"><code class="docutils literal notranslate"><span class="pre">config_server()</span></code></a></li>
+<li><a class="reference internal" href="#panoptes.utils.config.server.get_config_entry"><code class="docutils literal notranslate"><span class="pre">get_config_entry()</span></code></a></li>
+<li><a class="reference internal" href="#panoptes.utils.config.server.heartbeat"><code class="docutils literal notranslate"><span class="pre">heartbeat()</span></code></a></li>
+<li><a class="reference internal" href="#panoptes.utils.config.server.reset_config"><code class="docutils literal notranslate"><span class="pre">reset_config()</span></code></a></li>
+<li><a class="reference internal" href="#panoptes.utils.config.server.set_config_entry"><code class="docutils literal notranslate"><span class="pre">set_config_entry()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-panoptes.utils.config">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+            </div>
+        </div>
+    
+
+      <div class="clearer"></div>
+    </div>
+    <div class="button_nav_wrapper">
+        <div class="button_nav">
+            <div class="left">
+                
+                <a href="panoptes.utils.cli.html">
+                    <span class="icon">&lt;</span><span>panoptes.utils.cli namespace</span></a>
+                
+            </div>
+
+            <div class="right">
+                
+                    <a href="panoptes.utils.database.html"><span>panoptes.utils.database package</span><span class="icon">&gt;</span></a>
+                
+            </div>
+        </div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2022, PANOPTES Team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    </div>
+
+<p id="theme_credit">Styled using the <a href="https://github.com/piccolo-orm/piccolo_theme">Piccolo Theme</a></p>
+  </body>
+</html>

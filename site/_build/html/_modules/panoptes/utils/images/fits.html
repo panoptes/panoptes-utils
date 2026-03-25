@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>panoptes.utils.images.fits &#8212; panoptes-utils 0.2.54.dev47+g4dc3dd891.d20260318 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/basic_mod.css?v=9b2032db" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/plot_directive.css" />
+    <script src="../../../../_static/documentation_options.js?v=d2a0aebe"></script>
+    <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <script src="../../../../_static/js/petite-vue.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body data-dark_mode_code_blocks="true">
+
+<div id="top_nav">
+    
+
+    <nav>
+        
+            
+        
+
+        <p id="toggle_sidebar">
+            <a href="#" title="Toggle sidebar">|||</a>
+        </p>
+        <h1><a href="../../../../index.html" title="Go to homepage">panoptes-utils 0.2.54.dev47+g4dc3dd891.d20260318 documentation</a></h1>
+
+        <a id="mode_toggle" href="#" @click.prevent="handleClick" :title="mode">
+    <template v-if="mode == 'light'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_light"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><circle cx="39.311" cy="39.524" r="15.734" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.212,4.901c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901l-0,9.614c-0,2.705 2.196,4.901 4.9,4.901c2.705,0 4.901,-2.196 4.901,-4.901l0,-9.614Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M67.48,18.073c1.913,-1.912 1.913,-5.018 0,-6.931c-1.912,-1.912 -5.018,-1.912 -6.931,0l-6.798,6.799c-1.912,1.912 -1.912,5.018 0,6.931c1.913,1.912 5.018,1.912 6.931,-0l6.798,-6.799Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.728,61.108c1.912,-1.913 1.912,-5.018 -0,-6.931c-1.913,-1.913 -5.019,-1.913 -6.931,-0l-6.799,6.798c-1.912,1.913 -1.912,5.019 0,6.931c1.913,1.913 5.019,1.913 6.931,0l6.799,-6.798Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.682,54.177c-1.913,-1.913 -5.018,-1.913 -6.931,-0c-1.912,1.913 -1.912,5.018 0,6.931l6.798,6.798c1.913,1.913 5.019,1.913 6.931,0c1.913,-1.912 1.913,-5.018 0,-6.931l-6.798,-6.798Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M4.901,34.623c-2.705,0 -4.901,2.196 -4.901,4.901c0,2.705 2.196,4.901 4.901,4.901l9.614,0c2.705,0 4.901,-2.196 4.901,-4.901c0,-2.705 -2.196,-4.901 -4.901,-4.901l-9.614,0Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.212,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901l-0,9.614c-0,2.705 2.196,4.901 4.9,4.901c2.705,-0 4.901,-2.196 4.901,-4.901l0,-9.614Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M18.929,11.142c-1.912,-1.912 -5.018,-1.912 -6.931,0c-1.912,1.913 -1.912,5.019 0,6.931l6.799,6.799c1.912,1.912 5.018,1.912 6.931,-0c1.912,-1.913 1.912,-5.019 -0,-6.931l-6.799,-6.799Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.108,34.623c-2.705,0 -4.901,2.196 -4.901,4.901c-0,2.705 2.196,4.901 4.901,4.901l9.614,0c2.705,0 4.901,-2.196 4.901,-4.901c-0,-2.705 -2.196,-4.901 -4.901,-4.901l-9.614,0Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+
+    <template v-if="mode == 'dark'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_dark"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><circle cx="39.311" cy="39.524" r="15.734" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.212,14.515c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,0 -4.901,2.196 -4.901,4.901c0,2.705 2.197,4.901 4.901,4.901c2.705,0 4.901,-2.196 4.901,-4.901Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M60.662,24.892c1.902,-1.902 1.902,-4.99 0,-6.892l-0.04,-0.039c-1.901,-1.902 -4.989,-1.902 -6.891,-0c-1.901,1.901 -1.901,4.989 0,6.891l0.04,0.04c1.902,1.901 4.989,1.901 6.891,-0Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.732,61.103c1.91,-1.91 1.91,-5.011 0,-6.921l-0.009,-0.01c-1.91,-1.91 -5.012,-1.91 -6.921,-0c-1.91,1.91 -1.91,5.011 -0,6.921l0.01,0.01c1.909,1.91 5.011,1.91 6.92,-0Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.672,54.167c-1.907,-1.907 -5.004,-1.907 -6.911,0l-0.02,0.02c-1.907,1.907 -1.907,5.004 0,6.911c1.907,1.907 5.004,1.907 6.911,-0l0.02,-0.02c1.907,-1.907 1.907,-5.004 0,-6.911Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M14.52,34.623c-2.702,0 -4.896,2.194 -4.896,4.896l0,0.01c0,2.702 2.194,4.896 4.896,4.896c2.702,0 4.896,-2.194 4.896,-4.896l-0,-0.01c-0,-2.702 -2.194,-4.896 -4.896,-4.896Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.212,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.901,2.196 -4.901,4.901c0,2.704 2.197,4.9 4.901,4.9c2.705,0 4.901,-2.196 4.901,-4.9Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M25.73,17.943c-1.911,-1.911 -5.015,-1.911 -6.926,0l-0.005,0.005c-1.911,1.911 -1.911,5.015 0,6.926c1.911,1.911 5.015,1.911 6.926,0l0.005,-0.005c1.911,-1.911 1.911,-5.014 -0,-6.926Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.098,34.623c-2.699,0 -4.891,2.192 -4.891,4.892l-0,0.019c-0,2.699 2.192,4.891 4.891,4.891c2.7,0 4.892,-2.192 4.892,-4.891l0,-0.019c0,-2.7 -2.192,-4.892 -4.892,-4.892Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+
+    <template v-if="mode == 'darkest'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_darkest"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><path d="M39.315,23.791c8.684,-0 15.734,7.05 15.734,15.733c0,8.684 -7.05,15.734 -15.734,15.734c-8.683,0 -15.733,-7.05 -15.733,-15.734c-0,-8.683 7.05,-15.733 15.733,-15.733Zm0,4.737c6.069,0 10.997,4.927 10.997,10.996c-0,6.069 -4.928,10.996 -10.997,10.996c-6.068,0 -10.996,-4.927 -10.996,-10.996c0,-6.069 4.928,-10.996 10.996,-10.996Z" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.216,14.515c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,0 -4.9,2.196 -4.9,4.901c-0,2.705 2.196,4.901 4.9,4.901c2.705,0 4.901,-2.196 4.901,-4.901Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M60.666,24.892c1.902,-1.902 1.902,-4.99 0,-6.892l-0.04,-0.039c-1.901,-1.902 -4.989,-1.902 -6.891,-0c-1.901,1.901 -1.901,4.989 0,6.891l0.04,0.04c1.902,1.901 4.99,1.901 6.891,-0Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.737,61.103c1.909,-1.91 1.909,-5.011 -0,-6.921l-0.01,-0.01c-1.91,-1.91 -5.011,-1.91 -6.921,-0c-1.91,1.91 -1.91,5.011 -0,6.921l0.01,0.01c1.91,1.91 5.011,1.91 6.921,-0Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.676,54.167c-1.907,-1.907 -5.004,-1.907 -6.911,0l-0.02,0.02c-1.907,1.907 -1.907,5.004 0,6.911c1.907,1.907 5.004,1.907 6.911,-0l0.02,-0.02c1.907,-1.907 1.907,-5.004 0,-6.911Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M14.524,34.623c-2.702,0 -4.896,2.194 -4.896,4.896l0,0.01c0,2.702 2.194,4.896 4.896,4.896c2.702,0 4.896,-2.194 4.896,-4.896l0,-0.01c0,-2.702 -2.194,-4.896 -4.896,-4.896Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.216,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901c-0,2.704 2.196,4.9 4.9,4.9c2.705,0 4.901,-2.196 4.901,-4.9Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M25.734,17.943c-1.911,-1.911 -5.015,-1.911 -6.926,0l-0.005,0.005c-1.911,1.911 -1.911,5.015 0,6.926c1.911,1.911 5.015,1.911 6.926,0l0.005,-0.005c1.911,-1.911 1.911,-5.014 0,-6.926Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.103,34.623c-2.7,0 -4.892,2.192 -4.892,4.892l-0,0.019c-0,2.699 2.192,4.891 4.892,4.891c2.699,0 4.891,-2.192 4.891,-4.891l0,-0.019c0,-2.7 -2.192,-4.892 -4.891,-4.892Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+</a>
+
+<script>
+(function() {
+    const LOCAL_STORAGE_KEY = 'piccoloThemeMode'
+
+    var initialMode = localStorage.getItem(LOCAL_STORAGE_KEY)
+
+    if (initialMode) {
+        // Make sure the value in local storage is valid
+        if (['light', 'dark', 'darkest'].indexOf(initialMode) == -1) {
+            initialMode = 'light'
+            localStorage.setItem(LOCAL_STORAGE_KEY, initialMode)
+        }
+    } else {
+        // Check if the client prefers dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            initialMode = 'dark'
+        } else {
+            initialMode = 'light'
+        }
+        localStorage.setItem(LOCAL_STORAGE_KEY, initialMode)
+    }
+
+    document.documentElement.dataset.mode = initialMode
+
+    PetiteVue.createApp({
+        'mode': initialMode,
+        handleClick() {
+            let currentMode = this.mode
+
+            if (currentMode == 'light') {
+                this.mode = 'dark'
+            } else if (currentMode == 'dark') {
+                this.mode = 'darkest'
+            } else if (currentMode == 'darkest') {
+                this.mode = 'light'
+            }
+
+            document.documentElement.dataset.mode = this.mode
+            localStorage.setItem(LOCAL_STORAGE_KEY, this.mode)
+
+            console.log(this.mode)
+        }
+    }).mount('#mode_toggle')
+})()
+</script>
+            <p class="mobile_search_link">
+                <a href="../../../../search.html" title="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 65 64" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2">
+                        <path d="M14.873 40.009c-2.315-3.943-3.642-8.532-3.642-13.429C11.231 11.91 23.141 0 37.811 0s26.58 11.91 26.58 26.58-11.91 26.58-26.58 26.58a26.44 26.44 0 0 1-14.277-4.161L9.739 62.794a3.12 3.12 0 0 1-4.413 0L.913 58.382c-1.217-1.218-1.217-3.196 0-4.413l13.96-13.96zM37.811 8.054c10.225 0 18.526 8.301 18.526 18.526s-8.301 18.526-18.526 18.526-18.526-8.301-18.526-18.526S27.586 8.054 37.811 8.054z" fill="#fff" />
+                    </svg>
+                </a>
+            </p>
+        
+
+        <div class="searchbox_wrapper">
+            
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../config-server.html">Config Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../telemetry.html">Telemetry Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">Module Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for panoptes.utils.images.fits</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">re</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pattern</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">TextIO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sep</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.coordinates</span><span class="w"> </span><span class="kn">import</span> <span class="n">EarthLocation</span><span class="p">,</span> <span class="n">HADec</span><span class="p">,</span> <span class="n">SkyCoord</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">fits</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">Time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImageNormalize</span><span class="p">,</span> <span class="n">LogStretch</span><span class="p">,</span> <span class="n">PercentileInterval</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.wcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">WCS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dateutil.parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse</span> <span class="k">as</span> <span class="n">parse_date</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dateutil.tz</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.backends.backend_agg</span><span class="w"> </span><span class="kn">import</span> <span class="n">FigureCanvasAgg</span> <span class="k">as</span> <span class="n">FigureCanvas</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.figure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Figure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">panoptes.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">error</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">panoptes.utils.images.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">mask_saturated</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">panoptes.utils.images.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">add_colorbar</span><span class="p">,</span> <span class="n">get_palette</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">panoptes.utils.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">flatten_time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">panoptes.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_file_input</span>
+
+<span class="n">PATH_MATCHER</span><span class="p">:</span> <span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;^</span>
+<span class="sd">                                (?P&lt;pre_info&gt;.*)?                       # Anything before unit_id</span>
+<span class="sd">                                (?P&lt;unit_id&gt;PAN\d{3})                   # unit_id   - PAN + 3 digits</span>
+<span class="sd">                                /?(?P&lt;field_name&gt;.*)?                   # Legacy field name - any</span>
+<span class="sd">                                /(?P&lt;camera_id&gt;[a-gA-G0-9]{6})          # camera_id - 6 digits</span>
+<span class="sd">                                /(?P&lt;sequence_time&gt;[0-9]{8}T[0-9]{6})   # Observation start time</span>
+<span class="sd">                                /(?P&lt;image_time&gt;[0-9]{8}T[0-9]{6})      # Image start time</span>
+<span class="sd">                                (?P&lt;post_info&gt;.*)?                      # Anything after (file ext)</span>
+<span class="sd">                                $&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="ImagePathInfo">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.ImagePathInfo">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ImagePathInfo</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse the location path for an image.</span>
+
+<span class="sd">    This is a small dataclass that offers some convenience methods for dealing</span>
+<span class="sd">    with a path based on the image id.</span>
+
+<span class="sd">    This would usually be instantiated via `path`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from panoptes.utils.images.fits import ImagePathInfo  # noqa</span>
+<span class="sd">    &gt;&gt;&gt; bucket_path = &#39;gs://panoptes-images-background/PAN012/Hd189733/358d0f/20180824T035917/20180824T040118.fits&#39;</span>
+<span class="sd">    &gt;&gt;&gt; path_info = ImagePathInfo(path=bucket_path)</span>
+
+<span class="sd">    &gt;&gt;&gt; path_info.id</span>
+<span class="sd">    &#39;PAN012_358d0f_20180824T035917_20180824T040118&#39;</span>
+
+<span class="sd">    &gt;&gt;&gt; path_info.unit_id</span>
+<span class="sd">    &#39;PAN012&#39;</span>
+
+<span class="sd">    &gt;&gt;&gt; path_info.sequence_id</span>
+<span class="sd">    &#39;PAN012_358d0f_20180824T035917&#39;</span>
+
+<span class="sd">    &gt;&gt;&gt; path_info.image_id</span>
+<span class="sd">    &#39;PAN012_358d0f_20180824T040118&#39;</span>
+
+<span class="sd">    &gt;&gt;&gt; path_info.as_path(base=&#39;/tmp&#39;, ext=&#39;jpg&#39;)</span>
+<span class="sd">    PosixPath(&#39;/tmp/PAN012/358d0f/20180824T035917/20180824T040118.jpg&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; ImagePathInfo(path=&#39;foobar&#39;)</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">      ...</span>
+<span class="sd">    ValueError: Invalid path received: self.path=&#39;foobar&#39;</span>
+
+<span class="sd">    &gt;&gt;&gt; # Works from a fits file directly, which reads header.</span>
+<span class="sd">    &gt;&gt;&gt; fits_fn = getfixture(&#39;unsolved_fits_file&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; path_info = ImagePathInfo.from_fits(fits_fn)</span>
+<span class="sd">    &gt;&gt;&gt; path_info.unit_id</span>
+<span class="sd">    &#39;PAN001&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">unit_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">camera_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">sequence_time</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">datetime</span> <span class="o">|</span> <span class="n">Time</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">image_time</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">datetime</span> <span class="o">|</span> <span class="n">Time</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the path when provided upon initialization.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">path_match</span> <span class="o">=</span> <span class="n">PATH_MATCHER</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">path_match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid path received: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">unit_id</span> <span class="o">=</span> <span class="n">path_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;unit_id&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">camera_id</span> <span class="o">=</span> <span class="n">path_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;camera_id&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_name</span> <span class="o">=</span> <span class="n">path_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;field_name&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sequence_time</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="n">parse_date</span><span class="p">(</span><span class="n">path_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;sequence_time&quot;</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">image_time</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="n">parse_date</span><span class="p">(</span><span class="n">path_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;image_time&quot;</span><span class="p">)))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Full path info joined with underscores&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_full_id</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sequence_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The sequence id.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unit_id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">flatten_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_time</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">image_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The matched image id.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unit_id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">flatten_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_time</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<div class="viewcode-block" id="ImagePathInfo.as_path">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.ImagePathInfo.as_path">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ext</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a Path object.&quot;&quot;&quot;</span>
+        <span class="n">image_str</span> <span class="o">=</span> <span class="n">flatten_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_time</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">image_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">image_str</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="n">full_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera_id</span><span class="p">,</span> <span class="n">flatten_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_time</span><span class="p">),</span> <span class="n">image_str</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">base</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">full_path</span> <span class="o">=</span> <span class="n">base</span> <span class="o">/</span> <span class="n">full_path</span>
+
+        <span class="k">return</span> <span class="n">full_path</span></div>
+
+
+<div class="viewcode-block" id="ImagePathInfo.get_full_id">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.ImagePathInfo.get_full_id">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_full_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the full path id with the given separator.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sep</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">unit_id</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">camera_id</span><span class="p">,</span>
+                <span class="n">flatten_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_time</span><span class="p">),</span>
+                <span class="n">flatten_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_time</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ImagePathInfo.from_fits_header">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.ImagePathInfo.from_fits_header">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_fits_header</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create ObservationPathInfo from FITS header.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            header: FITS header containing observation metadata.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ImagePathInfo: New instance with path information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">new_instance</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;FILENAME&quot;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">sequence_id</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="s2">&quot;SEQID&quot;</span><span class="p">]</span>
+            <span class="n">image_id</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="s2">&quot;IMAGEID&quot;</span><span class="p">]</span>
+            <span class="n">unit_id</span><span class="p">,</span> <span class="n">camera_id</span><span class="p">,</span> <span class="n">sequence_time</span> <span class="o">=</span> <span class="n">sequence_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">image_time</span> <span class="o">=</span> <span class="n">image_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+
+            <span class="n">new_instance</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
+                <span class="n">unit_id</span><span class="o">=</span><span class="n">unit_id</span><span class="p">,</span>
+                <span class="n">camera_id</span><span class="o">=</span><span class="n">camera_id</span><span class="p">,</span>
+                <span class="n">sequence_time</span><span class="o">=</span><span class="n">Time</span><span class="p">(</span><span class="n">parse_date</span><span class="p">(</span><span class="n">sequence_time</span><span class="p">)),</span>
+                <span class="n">image_time</span><span class="o">=</span><span class="n">Time</span><span class="p">(</span><span class="n">parse_date</span><span class="p">(</span><span class="n">image_time</span><span class="p">)),</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_instance</span></div>
+
+
+<div class="viewcode-block" id="ImagePathInfo.from_fits">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.ImagePathInfo.from_fits">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_fits</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fits_file</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create ObservationPathInfo from FITS file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fits_file: Path to FITS file or file-like object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ImagePathInfo: New instance with path information from file header.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_fits_header</span><span class="p">(</span><span class="n">getheader</span><span class="p">(</span><span class="n">fits_file</span><span class="p">))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="solve_field">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.solve_field">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">solve_field</span><span class="p">(</span><span class="n">fname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">solve_opts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plate solves an image.</span>
+
+<span class="sd">    Note: This is a low-level wrapper around the underlying `solve-field`</span>
+<span class="sd">        program. See `get_solve_field` for more typical usage and examples.</span>
+
+
+<span class="sd">    Args:</span>
+<span class="sd">        fname: Filename to solve in .fits extension. Can be a string path,</span>
+<span class="sd">               pathlib.Path object, or open filehandle.</span>
+<span class="sd">        timeout(int, optional):     Timeout for the solve-field command,</span>
+<span class="sd">                                    defaults to 60 seconds.</span>
+<span class="sd">        solve_opts(list, optional): List of options for solve-field.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Normalize the file input to a string path</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="n">normalize_file_input</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="n">solve_field_script</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s2">&quot;solve-field&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">solve_field_script</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">InvalidSystemCommand</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find solve-field, is astrometry.net installed?&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Add the options for solving the field</span>
+    <span class="k">if</span> <span class="n">solve_opts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="n">solve_opts</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Default options</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;--guess-scale&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--cpulimit&quot;</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">timeout</span><span class="p">),</span>
+            <span class="s2">&quot;--no-verify&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--crpix-center&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--temp-axy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--index-xyls&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--solved&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--match&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--rdls&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--corr&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--downsample&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;4&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--no-plots&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;ra&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--ra&quot;</span><span class="p">)</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ra&quot;</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="s2">&quot;dec&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--dec&quot;</span><span class="p">)</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dec&quot;</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="s2">&quot;radius&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--radius&quot;</span><span class="p">)</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;radius&quot;</span><span class="p">)))</span>
+
+    <span class="c1"># Gather all the kwargs that start with `--` and are not already present.</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Adding kwargs: </span><span class="si">{</span><span class="n">kwargs</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_modify_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Modify option string based on value type.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            opt: Option name.</span>
+<span class="sd">            val: Option value.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Formatted option string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="n">opt_string</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">opt_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">opt</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="n">opt_string</span>
+
+    <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">_modify_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">opt</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;--&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">opt</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">options</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">solve_field_script</span><span class="p">]</span> <span class="o">+</span> <span class="n">options</span> <span class="o">+</span> <span class="p">[</span><span class="n">fname</span><span class="p">]</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Solving with: </span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">proc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">universal_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">PanError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem plate-solving in solve_field: </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">proc</span></div>
+
+
+
+<div class="viewcode-block" id="get_solve_field">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.get_solve_field">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_solve_field</span><span class="p">(</span>
+    <span class="n">fname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">BinaryIO</span><span class="p">,</span>
+    <span class="n">replace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convenience function to wait for `solve_field` to finish.</span>
+
+<span class="sd">    This function merely passes the `fname` of the image to be solved along to `solve_field`,</span>
+<span class="sd">    which returns a subprocess.Popen object. This function then waits for that command</span>
+<span class="sd">    to complete, populates a dictonary with the EXIF informaiton and returns. This is often</span>
+<span class="sd">    more useful than the raw `solve_field` function.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; from panoptes.utils.images import fits as fits_utils</span>
+
+<span class="sd">    &gt;&gt;&gt; # Get our fits filename.</span>
+<span class="sd">    &gt;&gt;&gt; fits_fn = getfixture(&#39;unsolved_fits_file&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; # Perform the solve.</span>
+<span class="sd">    &gt;&gt;&gt; solve_info = fits_utils.get_solve_field(fits_fn)  # doctest: +SKIP</span>
+
+<span class="sd">    &gt;&gt;&gt; # Show solved filename.</span>
+<span class="sd">    &gt;&gt;&gt; solve_info[&#39;solved_fits_file&#39;]  # doctest: +SKIP</span>
+<span class="sd">    &#39;.../unsolved.fits&#39;</span>
+
+<span class="sd">    &gt;&gt;&gt; # Pass a suggested location.</span>
+<span class="sd">    &gt;&gt;&gt; ra = 15.23</span>
+<span class="sd">    &gt;&gt;&gt; dec = 90</span>
+<span class="sd">    &gt;&gt;&gt; radius = 5 # deg</span>
+<span class="sd">    &gt;&gt;&gt; solve_info = fits_utils.solve_field(fits_fn, ra=ra, dec=dec, radius=radius)  # doctest: +SKIP</span>
+
+<span class="sd">    &gt;&gt;&gt; # Pass kwargs to `solve-field` program.</span>
+<span class="sd">    &gt;&gt;&gt; solve_kwargs = {&#39;--pnm&#39;: &#39;/tmp/awesome.bmp&#39;}</span>
+<span class="sd">    &gt;&gt;&gt; solve_info = fits_utils.get_solve_field(fits_fn, skip_solved=False, **solve_kwargs) # doctest: +SKIP</span>
+<span class="sd">    &gt;&gt;&gt; assert os.path.exists(&#39;/tmp/awesome.bmp&#39;) # doctest: +SKIP</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fname: Name of FITS file to be solved. Can be a string path,</span>
+<span class="sd">               pathlib.Path object, or open filehandle.</span>
+<span class="sd">        replace (bool, optional): Saves the WCS back to the original file,</span>
+<span class="sd">            otherwise output base filename with `.new` extension. Default True.</span>
+<span class="sd">        overwrite (bool, optional): Clobber file, default True. Required if `replace=True`.</span>
+<span class="sd">        timeout (int, optional): The timeout for solving, default 30 seconds.</span>
+<span class="sd">        **kwargs ({dict}): Options to pass to `solve_field` should start with `--`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: Keyword information from the solved field.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">skip_solved</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;skip_solved&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Normalize the file input to a string path</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="n">normalize_file_input</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="n">out_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">header</span> <span class="o">=</span> <span class="n">getheader</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="n">wcs</span> <span class="o">=</span> <span class="n">WCS</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+
+    <span class="c1"># Check for solved file</span>
+    <span class="k">if</span> <span class="n">skip_solved</span> <span class="ow">and</span> <span class="n">wcs</span><span class="o">.</span><span class="n">is_celestial</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping solved file (use skip_solved=False to solve again): </span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">out_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+        <span class="n">out_dict</span><span class="p">[</span><span class="s2">&quot;solved_fits_file&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fname</span>
+        <span class="k">return</span> <span class="n">out_dict</span>
+
+    <span class="c1"># Set a default radius of 15</span>
+    <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;--overwrite&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># Use unpacked version of file.</span>
+    <span class="n">was_compressed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.fz&quot;</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Uncompressing </span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">funpack</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using </span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2"> for solving&quot;</span><span class="p">)</span>
+        <span class="n">was_compressed</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Use solve arguments: </span><span class="si">{</span><span class="n">kwargs</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">proc</span> <span class="o">=</span> <span class="n">solve_field</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Timeout plus a small buffer.</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">errs</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="p">(</span><span class="n">timeout</span><span class="p">))</span>
+    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">TimeoutExpired</span><span class="p">:</span>
+        <span class="n">proc</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">errs</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">Timeout</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Timeout while solving: </span><span class="si">{</span><span class="n">output</span><span class="si">!r}</span><span class="s2"> </span><span class="si">{</span><span class="n">errs</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Returncode: </span><span class="si">{</span><span class="n">proc</span><span class="o">.</span><span class="n">returncode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="p">[</span><span class="n">output</span><span class="p">,</span> <span class="n">errs</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">log</span> <span class="ow">and</span> <span class="n">log</span> <span class="o">&gt;</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output on </span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">log</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">SolveError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;solve-field not found: </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">new_fname</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.fits&quot;</span><span class="p">,</span> <span class="s2">&quot;.new&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">replace</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Overwriting original </span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">new_fname</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">new_fname</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">getheader</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="n">header</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;COMMENT&quot;</span><span class="p">,</span> <span class="n">ignore_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">remove_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">header</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;HISTORY&quot;</span><span class="p">,</span> <span class="n">ignore_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">remove_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">out_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Can&#39;t read fits header for: </span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Check it was solved.</span>
+    <span class="k">if</span> <span class="n">WCS</span><span class="p">(</span><span class="n">header</span><span class="p">)</span><span class="o">.</span><span class="n">is_celestial</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">SolveError</span><span class="p">(</span><span class="s2">&quot;File not properly solved, no WCS header present.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Remove WCS file.</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.fits&quot;</span><span class="p">,</span> <span class="s2">&quot;.wcs&quot;</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">was_compressed</span> <span class="ow">and</span> <span class="n">replace</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Compressing plate-solved </span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">fpack</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="n">out_dict</span><span class="p">[</span><span class="s2">&quot;solved_fits_file&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fname</span>
+
+    <span class="k">return</span> <span class="n">out_dict</span></div>
+
+
+
+<div class="viewcode-block" id="detect_sources">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.detect_sources">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">detect_sources</span><span class="p">(</span>
+    <span class="n">fits_fname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">BinaryIO</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">NDArray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">subtract_background</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">background_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">extract_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Detect sources in a FITS file.</span>
+
+<span class="sd">    Uses `sep` to detect sources in a FITS file. You can pass either a FITS</span>
+<span class="sd">    filename (or file-like object) or a pre-loaded data array via the `data`</span>
+<span class="sd">    parameter.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Unsolved FITS (no WCS needed for detection):</span>
+
+<span class="sd">    &gt;&gt;&gt; from panoptes.utils.images import fits as fits_utils</span>
+<span class="sd">    &gt;&gt;&gt; fits_fn = getfixture(&#39;unsolved_fits_file&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; objs = fits_utils.detect_sources(fits_fn)</span>
+<span class="sd">    &gt;&gt;&gt; print(len(objs))</span>
+<span class="sd">    1087</span>
+<span class="sd">    &gt;&gt;&gt; # sep returns a structured array with standard fields</span>
+<span class="sd">    &gt;&gt;&gt; all(n in objs.dtype.names for n in (&#39;x&#39;, &#39;y&#39;, &#39;a&#39;, &#39;b&#39;, &#39;theta&#39;))</span>
+<span class="sd">    True</span>
+
+<span class="sd">    Solved FITS (compressed .fz supported by astropy):</span>
+
+<span class="sd">    &gt;&gt;&gt; fits_fn = getfixture(&#39;solved_fits_file&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; objs = fits_utils.detect_sources(fits_fn)</span>
+<span class="sd">    &gt;&gt;&gt; all(n in objs.dtype.names for n in (&#39;x&#39;, &#39;y&#39;))</span>
+<span class="sd">    True</span>
+
+<span class="sd">    You can also pass a pre-loaded data array directly:</span>
+
+<span class="sd">    &gt;&gt;&gt; data = fits_utils.getdata(getfixture(&#39;solved_fits_file&#39;)).astype(float)</span>
+<span class="sd">    &gt;&gt;&gt; objs2 = fits_utils.detect_sources(data=data)</span>
+<span class="sd">    &gt;&gt;&gt; len(objs2) == len(objs)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fits_fname: Name of a FITS file. Can be a string path, pathlib.Path object, or open filehandle.</span>
+<span class="sd">        data (ndarray, optional):  If provided, use this data array instead of reading from fits_fname.</span>
+<span class="sd">        subtract_background (bool, optional): Whether to subtract the background, default True.</span>
+<span class="sd">        background_params (dict, optional): Parameters to pass to `sep.Background`.</span>
+<span class="sd">        extract_params (dict, optional): Parameters to pass to `sep.extract`.</span>
+<span class="sd">        **kwargs: Args that can be passed to detect.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        NDArray: Structured numpy array of detected sources as returned from `detect`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">fits_fname</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either &#39;fits_fname&#39; or &#39;data&#39; must be provided to detect_sources.&quot;</span><span class="p">)</span>
+
+    <span class="n">background_params</span> <span class="o">=</span> <span class="n">background_params</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">extract_params</span> <span class="o">=</span> <span class="n">extract_params</span> <span class="ow">or</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="n">fits_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Detecting sources in: </span><span class="si">{</span><span class="n">fits_fname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">getdata</span><span class="p">(</span><span class="n">fits_fname</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="n">bkg_globalrms</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">subtract_background</span><span class="p">:</span>
+        <span class="n">bkg</span> <span class="o">=</span> <span class="n">sep</span><span class="o">.</span><span class="n">Background</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">background_params</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Background mean: </span><span class="si">{</span><span class="n">bkg</span><span class="o">.</span><span class="n">globalback</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, std: </span><span class="si">{</span><span class="n">bkg</span><span class="o">.</span><span class="n">globalrms</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">bkg_globalrms</span> <span class="o">=</span> <span class="n">bkg</span><span class="o">.</span><span class="n">globalrms</span>
+        <span class="n">data_sub</span> <span class="o">=</span> <span class="n">data</span> <span class="o">-</span> <span class="n">bkg</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data_sub</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">sep</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">data_sub</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="n">bkg_globalrms</span><span class="p">,</span> <span class="o">**</span><span class="n">extract_params</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Detected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">objects</span><span class="p">)</span><span class="si">}</span><span class="s2"> sources&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">objects</span></div>
+
+
+
+<div class="viewcode-block" id="get_wcsinfo">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.get_wcsinfo">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_wcsinfo</span><span class="p">(</span><span class="n">fits_fname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the WCS information for a FITS file.</span>
+
+<span class="sd">    Uses the `wcsinfo` astrometry.net utility script to get the WCS information</span>
+<span class="sd">    from a plate-solved file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fits_fname: Name of a FITS file that contains a WCS. Can be a string path,</span>
+<span class="sd">                   pathlib.Path object, or open filehandle.</span>
+<span class="sd">        **kwargs: Args that can be passed to wcsinfo.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: Output as returned from `wcsinfo`.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        error.InvalidCommand: Raised if `wcsinfo` is not found (part of astrometry.net)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Normalize the file input to a string path</span>
+    <span class="n">fits_fname</span> <span class="o">=</span> <span class="n">normalize_file_input</span><span class="p">(</span><span class="n">fits_fname</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fits_fname</span><span class="p">),</span> <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No file exists at: </span><span class="si">{</span><span class="n">fits_fname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">wcsinfo</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s2">&quot;wcsinfo&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">wcsinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">InvalidCommand</span><span class="p">(</span><span class="s2">&quot;wcsinfo not found&quot;</span><span class="p">)</span>
+
+    <span class="n">run_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">wcsinfo</span><span class="p">,</span> <span class="n">fits_fname</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">fits_fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.fz&quot;</span><span class="p">):</span>
+        <span class="n">run_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;-e&quot;</span><span class="p">)</span>
+        <span class="n">run_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span>
+
+    <span class="n">proc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+        <span class="n">run_cmd</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">,</span> <span class="n">universal_newlines</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">errs</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">TimeoutExpired</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="n">proc</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">errs</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+
+    <span class="n">unit_lookup</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;crpix0&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">pixel</span><span class="p">,</span>
+        <span class="s2">&quot;crpix1&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">pixel</span><span class="p">,</span>
+        <span class="s2">&quot;crval0&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="s2">&quot;crval1&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="s2">&quot;cd11&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">deg</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">pixel</span><span class="p">),</span>
+        <span class="s2">&quot;cd12&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">deg</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">pixel</span><span class="p">),</span>
+        <span class="s2">&quot;cd21&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">deg</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">pixel</span><span class="p">),</span>
+        <span class="s2">&quot;cd22&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">deg</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">pixel</span><span class="p">),</span>
+        <span class="s2">&quot;imagew&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">pixel</span><span class="p">,</span>
+        <span class="s2">&quot;imageh&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">pixel</span><span class="p">,</span>
+        <span class="s2">&quot;pixscale&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">arcsec</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">pixel</span><span class="p">),</span>
+        <span class="s2">&quot;orientation&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="s2">&quot;ra_center&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="s2">&quot;dec_center&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="s2">&quot;orientation_center&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="s2">&quot;ra_center_h&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">hourangle</span><span class="p">,</span>
+        <span class="s2">&quot;ra_center_m&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+        <span class="s2">&quot;ra_center_s&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>
+        <span class="s2">&quot;dec_center_d&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="s2">&quot;dec_center_m&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+        <span class="s2">&quot;dec_center_s&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>
+        <span class="s2">&quot;fieldarea&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">degree</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">),</span>
+        <span class="s2">&quot;fieldw&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="s2">&quot;fieldh&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="s2">&quot;decmin&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="s2">&quot;decmax&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="s2">&quot;ramin&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="s2">&quot;ramax&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="s2">&quot;ra_min_merc&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="s2">&quot;ra_max_merc&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="s2">&quot;dec_min_merc&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="s2">&quot;dec_max_merc&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="s2">&quot;merc_diff&quot;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">wcs_info</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="n">wcs_info</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">*</span> <span class="n">unit_lookup</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">pass</span>
+            <span class="c1"># print(&quot;Error on line: {}&quot;.format(line))</span>
+
+    <span class="n">wcs_info</span><span class="p">[</span><span class="s2">&quot;wcs_file&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fits_fname</span>
+
+    <span class="k">return</span> <span class="n">wcs_info</span></div>
+
+
+
+<div class="viewcode-block" id="fpack">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.fpack">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fpack</span><span class="p">(</span><span class="n">fits_fname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compress/Decompress a FITS file</span>
+
+<span class="sd">    Uses `fpack` (or `funpack` if `unpack=True`) to compress a FITS file</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fits_fname: Name of a FITS file that contains a WCS. Can be a string path,</span>
+<span class="sd">                   pathlib.Path object, or open filehandle.</span>
+<span class="sd">        unpack ({bool}, optional): file should decompressed instead of compressed, default False.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Filename of compressed/decompressed file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Normalize the file input to a string path</span>
+    <span class="n">fits_fname</span> <span class="o">=</span> <span class="n">normalize_file_input</span><span class="p">(</span><span class="n">fits_fname</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fits_fname</span><span class="p">),</span> <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No file exists at: </span><span class="si">{</span><span class="n">fits_fname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">unpack</span><span class="p">:</span>
+        <span class="n">fpack</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s2">&quot;funpack&quot;</span><span class="p">)</span>
+        <span class="n">run_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">fpack</span><span class="p">,</span> <span class="s2">&quot;-D&quot;</span><span class="p">,</span> <span class="n">fits_fname</span><span class="p">]</span>
+        <span class="n">out_file</span> <span class="o">=</span> <span class="n">fits_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.fz&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fpack</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s2">&quot;fpack&quot;</span><span class="p">)</span>
+        <span class="n">run_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">fpack</span><span class="p">,</span> <span class="s2">&quot;-D&quot;</span><span class="p">,</span> <span class="s2">&quot;-Y&quot;</span><span class="p">,</span> <span class="n">fits_fname</span><span class="p">]</span>
+        <span class="n">out_file</span> <span class="o">=</span> <span class="n">fits_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.fits&quot;</span><span class="p">,</span> <span class="s2">&quot;.fits.fz&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">out_file</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="s2">&quot;Destination file already exists at location and overwrite=False&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">out_file</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">fpack</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;fpack not found (try installing cfitsio). File has not been changed&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fits_fname</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;fpack command: </span><span class="si">{</span><span class="n">run_cmd</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">proc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+        <span class="n">run_cmd</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">,</span> <span class="n">universal_newlines</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">errs</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">TimeoutExpired</span><span class="p">:</span>
+        <span class="n">proc</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">errs</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">out_file</span></div>
+
+
+
+<div class="viewcode-block" id="funpack">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.funpack">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">funpack</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Unpack a FITS file.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This is a thin-wrapper around the ~fpack function</span>
+<span class="sd">        with the `unpack=True` option specified. See ~fpack</span>
+<span class="sd">        documentation for details.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        *args: Arguments passed to ~fpack.</span>
+<span class="sd">        **kwargs: Keyword arguments passed to ~fpack.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Path to uncompressed FITS file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">fpack</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="write_fits">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.write_fits">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_fits</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">exposure_event</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write FITS file to requested location.</span>
+
+<span class="sd">    &gt;&gt;&gt; from panoptes.utils.images import fits as fits_utils</span>
+<span class="sd">    &gt;&gt;&gt; data = np.random.normal(size=100)</span>
+<span class="sd">    &gt;&gt;&gt; header = { &#39;FILE&#39;: &#39;delete_me&#39;, &#39;TEST&#39;: True }</span>
+<span class="sd">    &gt;&gt;&gt; filename = str(getfixture(&#39;tmpdir&#39;).join(&#39;temp.fits&#39;))</span>
+<span class="sd">    &gt;&gt;&gt; fits_utils.write_fits(data, header, filename)</span>
+<span class="sd">    &gt;&gt;&gt; assert os.path.exists(filename)</span>
+
+<span class="sd">    &gt;&gt;&gt; fits_utils.getval(filename, &#39;FILE&#39;)</span>
+<span class="sd">    &#39;delete_me&#39;</span>
+<span class="sd">    &gt;&gt;&gt; data2 = fits_utils.getdata(filename)</span>
+<span class="sd">    &gt;&gt;&gt; assert np.array_equal(data, data2)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (array_like): The data to be written.</span>
+<span class="sd">        header (dict): Dictionary of items to be saved in header.</span>
+<span class="sd">        filename: Path to filename for output. Can be a string path,</span>
+<span class="sd">                 pathlib.Path object, or open filehandle.</span>
+<span class="sd">        exposure_event (None|`threading.Event`, optional): A `threading.Event` that</span>
+<span class="sd">            can be triggered when the image is written.</span>
+<span class="sd">        kwargs (dict): Options that are passed to the `astropy.io.fits.PrimaryHDU.writeto`</span>
+<span class="sd">            method.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Normalize the file input to a string path</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">normalize_file_input</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">fits</span><span class="o">.</span><span class="n">Header</span><span class="p">):</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+
+    <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">)</span>
+
+    <span class="c1"># Create directories if required.</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="mo">0o775</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error writing image to </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">err</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Image written to </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">exposure_event</span><span class="p">:</span>
+            <span class="n">exposure_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="update_observation_headers">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.update_observation_headers">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_observation_headers</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update FITS headers with items from the Observation status.</span>
+
+<span class="sd">    &gt;&gt;&gt; # Check the headers</span>
+<span class="sd">    &gt;&gt;&gt; from panoptes.utils.images import fits as fits_utils</span>
+<span class="sd">    &gt;&gt;&gt; fits_fn = getfixture(&#39;unsolved_fits_file&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; # Show original value</span>
+<span class="sd">    &gt;&gt;&gt; fits_utils.getval(fits_fn, &#39;FIELD&#39;)</span>
+<span class="sd">    &#39;KIC 8462852&#39;</span>
+
+<span class="sd">    &gt;&gt;&gt; info = {&#39;field_name&#39;: &#39;Tabbys Star&#39;}</span>
+<span class="sd">    &gt;&gt;&gt; update_observation_headers(fits_fn, info)</span>
+<span class="sd">    &gt;&gt;&gt; # Show new value</span>
+<span class="sd">    &gt;&gt;&gt; fits_utils.getval(fits_fn, &#39;FIELD&#39;)</span>
+<span class="sd">    &#39;Tabbys Star&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        file_path: Path to a FITS file. Can be a string path,</span>
+<span class="sd">                  pathlib.Path object, or open filehandle.</span>
+<span class="sd">        info (dict): The return dict from `pocs.observatory.Observation.status`,</span>
+<span class="sd">            which includes basic information about the observation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Normalize the file input to a string path</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="n">normalize_file_input</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">hdu</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;IMAGEID&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;image_id&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;SEQID&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sequence_id&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;FIELD&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;field_name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;RA-MNT&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ra_mnt&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="s2">&quot;Degrees&quot;</span><span class="p">)</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;HA-MNT&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ha_mnt&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="s2">&quot;Degrees&quot;</span><span class="p">)</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;DEC-MNT&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dec_mnt&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="s2">&quot;Degrees&quot;</span><span class="p">)</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;EQUINOX&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;equinox&quot;</span><span class="p">,</span> <span class="mf">2000.0</span><span class="p">))</span>  <span class="c1"># Assume J2000</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;AIRMASS&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;airmass&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="s2">&quot;Sec(z)&quot;</span><span class="p">)</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;FILTER&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;filter&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;LAT-OBS&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;latitude&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="s2">&quot;Degrees&quot;</span><span class="p">)</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;LONG-OBS&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;longitude&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="s2">&quot;Degrees&quot;</span><span class="p">)</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;ELEV-OBS&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;elevation&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="s2">&quot;Meters&quot;</span><span class="p">)</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;MOONSEP&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;moon_separation&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="s2">&quot;Degrees&quot;</span><span class="p">)</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;MOONFRAC&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;moon_fraction&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;CREATOR&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;creator&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="s2">&quot;POCS Software version&quot;</span><span class="p">)</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;INSTRUME&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;camera_uid&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="s2">&quot;Camera ID&quot;</span><span class="p">)</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;OBSERVER&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;observer&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="s2">&quot;PANOPTES Unit ID&quot;</span><span class="p">)</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;ORIGIN&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;origin&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;RA-RATE&quot;</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tracking_rate_ra&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="s2">&quot;RA Tracking Rate&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="extract_metadata">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.extract_metadata">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_metadata</span><span class="p">(</span><span class="n">header</span><span class="p">:</span> <span class="n">fits</span><span class="o">.</span><span class="n">Header</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get metadata from a FITS image header.</span>
+
+<span class="sd">    This parses common PANOPTES FITS headers (including those written by</span>
+<span class="sd">    `update_observation_headers`) into a nested dictionary with convenient</span>
+<span class="sd">    Python types (e.g. datetimes for dates). If the file is plate-solved,</span>
+<span class="sd">    the returned metadata will include celestial coordinates and derived</span>
+<span class="sd">    quantities; otherwise the coordinates dict will be empty.</span>
+
+<span class="sd">    The returned dictionary has the following top-level keys:</span>
+<span class="sd">    - unit: Information about the observing unit (location, ids).</span>
+<span class="sd">    - sequence: Information about the capture sequence, mount, and camera.</span>
+<span class="sd">    - image: Information about this specific image (camera, environment,</span>
+<span class="sd">      timestamps, and coordinates if solved).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Unsolved FITS (no WCS):</span>
+
+<span class="sd">    &gt;&gt;&gt; from panoptes.utils.images import fits as fits_utils</span>
+<span class="sd">    &gt;&gt;&gt; fits_fn = getfixture(&#39;unsolved_fits_file&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; header = fits_utils.getheader(fits_fn)</span>
+<span class="sd">    &gt;&gt;&gt; metadata = extract_metadata(header)</span>
+<span class="sd">    &gt;&gt;&gt; metadata[&#39;unit&#39;][&#39;name&#39;]</span>
+<span class="sd">    &#39;PAN001&#39;</span>
+<span class="sd">    &gt;&gt;&gt; # Coordinates dict is empty for unsolved files</span>
+<span class="sd">    &gt;&gt;&gt; metadata[&#39;image&#39;][&#39;coordinates&#39;]</span>
+<span class="sd">    {}</span>
+
+<span class="sd">    Solved FITS (with WCS):</span>
+
+<span class="sd">    &gt;&gt;&gt; fits_fn = getfixture(&#39;solved_fits_file&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; header = fits_utils.getheader(fits_fn)</span>
+<span class="sd">    &gt;&gt;&gt; metadata = extract_metadata(header)</span>
+<span class="sd">    &gt;&gt;&gt; # Coordinates contain standard celestial/alt-az/airmass entries</span>
+<span class="sd">    &gt;&gt;&gt; coords = metadata[&#39;image&#39;][&#39;coordinates&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; all(k in coords for k in (&#39;ra&#39;, &#39;dec&#39;, &#39;ha&#39;, &#39;ha_deg&#39;, &#39;alt&#39;, &#39;az&#39;, &#39;airmass&#39;))</span>
+<span class="sd">    True</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        header (astropy.io.fits.Header): The Header object from a FITS file.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: Nested metadata dictionary with &#39;unit&#39;, &#39;sequence&#39;, and &#39;image&#39; keys.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path_info</span> <span class="o">=</span> <span class="n">ImagePathInfo</span><span class="o">.</span><span class="n">from_fits_header</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+
+    <span class="c1"># Extract the coordinate information and get AltAz and HA.</span>
+    <span class="n">coord_info</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">wcs</span> <span class="o">=</span> <span class="n">WCS</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+        <span class="n">is_solved</span> <span class="o">=</span> <span class="n">wcs</span><span class="o">.</span><span class="n">is_celestial</span>
+
+        <span class="k">if</span> <span class="n">is_solved</span><span class="p">:</span>
+            <span class="n">wcs_meta</span> <span class="o">=</span> <span class="n">wcs</span><span class="o">.</span><span class="n">to_header</span><span class="p">(</span><span class="n">relax</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">radec_coord</span> <span class="o">=</span> <span class="n">SkyCoord</span><span class="p">(</span>
+                <span class="n">ra</span><span class="o">=</span><span class="n">wcs_meta</span><span class="p">[</span><span class="s2">&quot;CRVAL1&quot;</span><span class="p">],</span>
+                <span class="n">dec</span><span class="o">=</span><span class="n">wcs_meta</span><span class="p">[</span><span class="s2">&quot;CRVAL2&quot;</span><span class="p">],</span>
+                <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;deg&quot;</span><span class="p">,</span>
+                <span class="n">frame</span><span class="o">=</span><span class="s2">&quot;icrs&quot;</span><span class="p">,</span>
+                <span class="n">obstime</span><span class="o">=</span><span class="n">path_info</span><span class="o">.</span><span class="n">image_time</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">timezone</span><span class="o">=</span><span class="n">UTC</span><span class="p">),</span>
+                <span class="n">location</span><span class="o">=</span><span class="n">EarthLocation</span><span class="p">(</span>
+                    <span class="n">lon</span><span class="o">=</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;LONG-OBS&quot;</span><span class="p">],</span> <span class="n">lat</span><span class="o">=</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;LAT-OBS&quot;</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;ELEV-OBS&quot;</span><span class="p">]</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">hadec_coord</span> <span class="o">=</span> <span class="n">radec_coord</span><span class="o">.</span><span class="n">transform_to</span><span class="p">(</span><span class="n">HADec</span><span class="p">)</span>
+
+            <span class="n">coord_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">ra</span><span class="o">=</span><span class="n">radec_coord</span><span class="o">.</span><span class="n">ra</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">dec</span><span class="o">=</span><span class="n">radec_coord</span><span class="o">.</span><span class="n">dec</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">ha</span><span class="o">=</span><span class="n">hadec_coord</span><span class="o">.</span><span class="n">ha</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">ha_deg</span><span class="o">=</span><span class="n">hadec_coord</span><span class="o">.</span><span class="n">ha</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;deg&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">alt</span><span class="o">=</span><span class="n">hadec_coord</span><span class="o">.</span><span class="n">altaz</span><span class="o">.</span><span class="n">alt</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">az</span><span class="o">=</span><span class="n">hadec_coord</span><span class="o">.</span><span class="n">altaz</span><span class="o">.</span><span class="n">az</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">airmass</span><span class="o">=</span><span class="n">hadec_coord</span><span class="o">.</span><span class="n">altaz</span><span class="o">.</span><span class="n">secz</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in extracting WCS coordinates: </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Add a units doc if it doesn&#39;t exist.</span>
+        <span class="n">unit_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">elevation</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ELEV-OBS&quot;</span><span class="p">)),</span>
+            <span class="n">latitude</span><span class="o">=</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LAT-OBS&quot;</span><span class="p">),</span>
+            <span class="n">longitude</span><span class="o">=</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LONG-OBS&quot;</span><span class="p">),</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;OBSERVER&quot;</span><span class="p">),</span>
+            <span class="n">unit_id</span><span class="o">=</span><span class="n">path_info</span><span class="o">.</span><span class="n">unit_id</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">sequence_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">sequence_id</span><span class="o">=</span><span class="n">path_info</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span>
+            <span class="n">sequence_time</span><span class="o">=</span><span class="n">path_info</span><span class="o">.</span><span class="n">sequence_time</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">timezone</span><span class="o">=</span><span class="n">UTC</span><span class="p">),</span>
+            <span class="n">coordinates</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">mount_dec</span><span class="o">=</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DEC-MNT&quot;</span><span class="p">),</span>
+                <span class="n">mount_ra</span><span class="o">=</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;RA-MNT&quot;</span><span class="p">),</span>
+                <span class="n">mount_ha</span><span class="o">=</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;HA-MNT&quot;</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">camera</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">camera_id</span><span class="o">=</span><span class="n">path_info</span><span class="o">.</span><span class="n">camera_id</span><span class="p">,</span>
+                <span class="n">lens_serial_number</span><span class="o">=</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;INTSN&quot;</span><span class="p">),</span>
+                <span class="n">serial_number</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CAMSN&quot;</span><span class="p">)),</span>
+            <span class="p">),</span>
+            <span class="n">field_name</span><span class="o">=</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;FIELD&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="n">software_version</span><span class="o">=</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CREATOR&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="n">unit_id</span><span class="o">=</span><span class="n">path_info</span><span class="o">.</span><span class="n">unit_id</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">measured_rggb</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MEASRGGB&quot;</span><span class="p">,</span> <span class="s2">&quot;0 0 0 0&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;DATE&quot;</span> <span class="ow">in</span> <span class="n">header</span><span class="p">:</span>
+            <span class="n">file_date</span> <span class="o">=</span> <span class="n">parse_date</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DATE&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">UTC</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">file_date</span> <span class="o">=</span> <span class="n">path_info</span><span class="o">.</span><span class="n">image_time</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">timezone</span><span class="o">=</span><span class="n">UTC</span><span class="p">)</span>
+        <span class="n">camera_date</span> <span class="o">=</span> <span class="n">parse_date</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DATE-OBS&quot;</span><span class="p">,</span> <span class="n">path_info</span><span class="o">.</span><span class="n">image_time</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">UTC</span><span class="p">)</span>
+
+        <span class="n">image_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">uid</span><span class="o">=</span><span class="n">path_info</span><span class="o">.</span><span class="n">get_full_id</span><span class="p">(</span><span class="n">sep</span><span class="o">=</span><span class="s2">&quot;_&quot;</span><span class="p">),</span>
+            <span class="n">camera</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">blue_balance</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;BLUEBAL&quot;</span><span class="p">)),</span>
+                <span class="n">circconf</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CIRCCONF&quot;</span><span class="p">,</span> <span class="s2">&quot;0.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span>
+                <span class="n">colortemp</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;COLORTMP&quot;</span><span class="p">)),</span>
+                <span class="n">dateobs</span><span class="o">=</span><span class="n">camera_date</span><span class="p">,</span>
+                <span class="n">exptime</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;EXPTIME&quot;</span><span class="p">)),</span>
+                <span class="n">iso</span><span class="o">=</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ISO&quot;</span><span class="p">),</span>
+                <span class="n">measured_b</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">measured_rggb</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
+                <span class="n">measured_ev2</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MEASEV2&quot;</span><span class="p">)),</span>
+                <span class="n">measured_ev</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MEASEV&quot;</span><span class="p">)),</span>
+                <span class="n">measured_g1</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">measured_rggb</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                <span class="n">measured_g2</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">measured_rggb</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                <span class="n">measured_r</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">measured_rggb</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                <span class="n">red_balance</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;REDBAL&quot;</span><span class="p">)),</span>
+                <span class="n">temperature</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CAMTEMP&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span>
+                <span class="n">white_lvln</span><span class="o">=</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;WHTLVLN&quot;</span><span class="p">),</span>
+                <span class="n">white_lvls</span><span class="o">=</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;WHTLVLS&quot;</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">coordinates</span><span class="o">=</span><span class="n">coord_info</span><span class="p">,</span>
+            <span class="n">environment</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">moonfrac</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MOONFRAC&quot;</span><span class="p">)),</span>
+                <span class="n">moonsep</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MOONSEP&quot;</span><span class="p">)),</span>
+            <span class="p">),</span>
+            <span class="n">file_creation_date</span><span class="o">=</span><span class="n">file_date</span><span class="p">,</span>
+            <span class="n">image_time</span><span class="o">=</span><span class="n">path_info</span><span class="o">.</span><span class="n">image_time</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">timezone</span><span class="o">=</span><span class="n">UTC</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="n">metadata</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">unit_info</span><span class="p">,</span>
+            <span class="n">sequence</span><span class="o">=</span><span class="n">sequence_info</span><span class="p">,</span>
+            <span class="n">image</span><span class="o">=</span><span class="n">image_info</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">PanError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in extracting metadata: </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="s2">&quot;Metadata extracted from header&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">metadata</span></div>
+
+
+
+<div class="viewcode-block" id="getdata">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.getdata">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">getdata</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the FITS data.</span>
+
+<span class="sd">    Small wrapper around `astropy.io.fits.getdata` to auto-determine</span>
+<span class="sd">    the FITS extension. This will return the data associated with the</span>
+<span class="sd">    image.</span>
+
+<span class="sd">    &gt;&gt;&gt; fits_fn = getfixture(&#39;solved_fits_file&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; d0 = getdata(fits_fn)</span>
+<span class="sd">    &gt;&gt;&gt; d0</span>
+<span class="sd">    array([[2215, 2169, 2200, ..., 2169, 2235, 2168],</span>
+<span class="sd">           [2123, 2191, 2133, ..., 2212, 2127, 2217],</span>
+<span class="sd">           [2208, 2154, 2209, ..., 2159, 2233, 2187],</span>
+<span class="sd">           ...,</span>
+<span class="sd">           [2120, 2201, 2120, ..., 2209, 2126, 2195],</span>
+<span class="sd">           [2219, 2151, 2199, ..., 2173, 2214, 2166],</span>
+<span class="sd">           [2114, 2194, 2122, ..., 2202, 2125, 2204]],</span>
+<span class="sd">          shape=(700, 700), dtype=uint16)</span>
+<span class="sd">    &gt;&gt;&gt; d1, h1 = getdata(fits_fn, header=True)</span>
+<span class="sd">    &gt;&gt;&gt; bool((d0 == d1).all())</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; h1[&#39;FIELD&#39;]</span>
+<span class="sd">    &#39;KIC 8462852&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fn: Path to FITS file. Can be a string path,</span>
+<span class="sd">            pathlib.Path object, or open filehandle.</span>
+<span class="sd">        *args: Passed to `astropy.io.fits.getdata`.</span>
+<span class="sd">        **kwargs: Passed to `astropy.io.fits.getdata`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        `np.ndarray`: The FITS data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Normalize the file input to a string path</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="n">normalize_file_input</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fits</span><span class="o">.</span><span class="n">getdata</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="getheader">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.getheader">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">getheader</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the FITS header.</span>
+
+<span class="sd">    Small wrapper around `astropy.io.fits.getheader` to auto-determine</span>
+<span class="sd">    the FITS extension. This will return the header associated with the</span>
+<span class="sd">    image. If you need the compression header information use the astropy</span>
+<span class="sd">    module directly.</span>
+
+<span class="sd">    &gt;&gt;&gt; fits_fn = getfixture(&#39;tiny_fits_file&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; os.path.basename(fits_fn)</span>
+<span class="sd">    &#39;tiny.fits&#39;</span>
+<span class="sd">    &gt;&gt;&gt; header = getheader(fits_fn)</span>
+<span class="sd">    &gt;&gt;&gt; header[&#39;IMAGEID&#39;]</span>
+<span class="sd">    &#39;PAN001_XXXXXX_20160909T081152&#39;</span>
+
+<span class="sd">    &gt;&gt;&gt; # Works with fpacked files</span>
+<span class="sd">    &gt;&gt;&gt; fits_fn = getfixture(&#39;solved_fits_file&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; os.path.basename(fits_fn)</span>
+<span class="sd">    &#39;solved.fits.fz&#39;</span>
+<span class="sd">    &gt;&gt;&gt; header = getheader(fits_fn)</span>
+<span class="sd">    &gt;&gt;&gt; header[&#39;IMAGEID&#39;]</span>
+<span class="sd">    &#39;PAN001_XXXXXX_20160909T081152&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fn: Path to FITS file. Can be a string path,</span>
+<span class="sd">            pathlib.Path object, or open filehandle.</span>
+<span class="sd">        *args: Passed to `astropy.io.fits.getheader`.</span>
+<span class="sd">        **kwargs: Passed to `astropy.io.fits.getheader`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        `astropy.io.fits.header.Header`: The FITS header for the data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Normalize the file input to a string path</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="n">normalize_file_input</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+    <span class="n">ext</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.fz&quot;</span><span class="p">):</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">fits</span><span class="o">.</span><span class="n">getheader</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="n">ext</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="getwcs">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.getwcs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">getwcs</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the WCS for the FITS file.</span>
+
+<span class="sd">    Small wrapper around `astropy.wcs.WCS`.</span>
+
+<span class="sd">    &gt;&gt;&gt; from panoptes.utils.images import fits as fits_utils</span>
+<span class="sd">    &gt;&gt;&gt; fits_fn = getfixture(&#39;solved_fits_file&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; wcs = fits_utils.getwcs(fits_fn)</span>
+<span class="sd">    &gt;&gt;&gt; wcs.is_celestial</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; fits_fn = getfixture(&#39;unsolved_fits_file&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; wcs = fits_utils.getwcs(fits_fn)</span>
+<span class="sd">    &gt;&gt;&gt; wcs.is_celestial</span>
+<span class="sd">    False</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fn: Path to FITS file. Can be a string path,</span>
+<span class="sd">            pathlib.Path object, or open filehandle.</span>
+<span class="sd">        *args: Passed to `astropy.io.fits.getheader`.</span>
+<span class="sd">        **kwargs: Passed to `astropy.io.fits.getheader`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        `astropy.wcs.WCS`: The World Coordinate System information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">WCS</span><span class="p">(</span><span class="n">getheader</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="getval">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.getval">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">getval</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a value from the FITS header.</span>
+
+<span class="sd">    Small wrapper around `astropy.io.fits.getval` to auto-determine</span>
+<span class="sd">    the FITS extension. This will return the value from the header</span>
+<span class="sd">    associated with the image (not the compression header). If you need</span>
+<span class="sd">    the compression header information use the astropy module directly.</span>
+
+<span class="sd">    &gt;&gt;&gt; fits_fn = getfixture(&#39;tiny_fits_file&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; getval(fits_fn, &#39;IMAGEID&#39;)</span>
+<span class="sd">    &#39;PAN001_XXXXXX_20160909T081152&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fn: Path to FITS file. Can be a string path,</span>
+<span class="sd">            pathlib.Path object, or open filehandle.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str or float: Value from header (with no type conversion).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Normalize the file input to a string path</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="n">normalize_file_input</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+    <span class="n">ext</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.fz&quot;</span><span class="p">):</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">fits</span><span class="o">.</span><span class="n">getval</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="n">ext</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="fits_to_jpg">
+<a class="viewcode-back" href="../../../../api/panoptes.utils.images.html#panoptes.utils.images.fits.fits_to_jpg">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fits_to_jpg</span><span class="p">(</span>
+    <span class="n">fname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">BinaryIO</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span> <span class="o">/</span> <span class="mf">1.325</span><span class="p">),</span>
+    <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+    <span class="n">number_ticks</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+    <span class="n">clip_percent</span><span class="o">=</span><span class="mf">99.9</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a FITS file to a JPG image.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fname: FITS file path or file-like object.</span>
+<span class="sd">        title (str, optional): Title for the image. Defaults to None.</span>
+<span class="sd">        figsize (tuple): Figure size as (width, height). Defaults to (10, 10/1.325).</span>
+<span class="sd">        dpi (int): DPI for output image. Defaults to 150.</span>
+<span class="sd">        alpha (float): Alpha transparency for overlays. Defaults to 0.2.</span>
+<span class="sd">        number_ticks (int): Number of coordinate ticks. Defaults to 7.</span>
+<span class="sd">        clip_percent (float): Percentage for data clipping. Defaults to 99.9.</span>
+<span class="sd">        **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Path to generated JPG file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Note: fname is used directly by getdata() and getheader() which now handle normalization</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">mask_saturated</span><span class="p">(</span><span class="n">getdata</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">getheader</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="n">wcs</span> <span class="o">=</span> <span class="n">WCS</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">title</span><span class="p">:</span>
+        <span class="n">field</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;FIELD&quot;</span><span class="p">,</span> <span class="s2">&quot;Unknown field&quot;</span><span class="p">)</span>
+        <span class="n">exptime</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;EXPTIME&quot;</span><span class="p">,</span> <span class="s2">&quot;Unknown exptime&quot;</span><span class="p">)</span>
+        <span class="n">filter_type</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;FILTER&quot;</span><span class="p">,</span> <span class="s2">&quot;Unknown filter&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">date_time</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="s2">&quot;DATE-OBS&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c1"># If we don&#39;t have DATE-OBS, check filename for date.</span>
+            <span class="c1"># Normalize fname to string for os.path operations</span>
+            <span class="n">fname_str</span> <span class="o">=</span> <span class="n">normalize_file_input</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">fname_str</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">date_time</span> <span class="o">=</span> <span class="n">parse_date</span><span class="p">(</span><span class="n">basename</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+
+        <span class="n">date_time</span> <span class="o">=</span> <span class="n">date_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">exptime</span><span class="si">}</span><span class="s2">s </span><span class="si">{</span><span class="n">filter_type</span><span class="si">}</span><span class="s2">) </span><span class="si">{</span><span class="n">date_time</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">ImageNormalize</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="n">PercentileInterval</span><span class="p">(</span><span class="n">clip_percent</span><span class="p">),</span> <span class="n">stretch</span><span class="o">=</span><span class="n">LogStretch</span><span class="p">())</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">Figure</span><span class="p">()</span>
+    <span class="n">FigureCanvas</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="o">*</span><span class="n">figsize</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span> <span class="o">=</span> <span class="n">dpi</span>
+
+    <span class="k">if</span> <span class="n">wcs</span><span class="o">.</span><span class="n">is_celestial</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="n">wcs</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">coords</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+
+        <span class="n">ra_axis</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="s2">&quot;ra&quot;</span><span class="p">]</span>
+        <span class="n">ra_axis</span><span class="o">.</span><span class="n">set_axislabel</span><span class="p">(</span><span class="s2">&quot;Right Ascension&quot;</span><span class="p">)</span>
+        <span class="n">ra_axis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="s2">&quot;hh:mm&quot;</span><span class="p">)</span>
+        <span class="n">ra_axis</span><span class="o">.</span><span class="n">set_ticks</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="n">number_ticks</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+        <span class="n">ra_axis</span><span class="o">.</span><span class="n">set_ticklabel</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">exclude_overlapping</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">dec_axis</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="s2">&quot;dec&quot;</span><span class="p">]</span>
+        <span class="n">dec_axis</span><span class="o">.</span><span class="n">set_axislabel</span><span class="p">(</span><span class="s2">&quot;Declination&quot;</span><span class="p">)</span>
+        <span class="n">dec_axis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="s2">&quot;dd:mm&quot;</span><span class="p">)</span>
+        <span class="n">dec_axis</span><span class="o">.</span><span class="n">set_ticks</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="n">number_ticks</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+        <span class="n">dec_axis</span><span class="o">.</span><span class="n">set_ticklabel</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">exclude_overlapping</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;X / pixels&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Y / pixels&quot;</span><span class="p">)</span>
+
+    <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">get_palette</span><span class="p">(),</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">)</span>
+    <span class="n">add_colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+
+    <span class="c1"># Normalize fname to string for regex and file operations</span>
+    <span class="n">fname_str</span> <span class="o">=</span> <span class="n">normalize_file_input</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="n">new_filename</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;.fits(.fz)?&quot;</span><span class="p">,</span> <span class="s2">&quot;.jpg&quot;</span><span class="p">,</span> <span class="n">fname_str</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">new_filename</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+
+    <span class="c1"># explicitly close and delete figure</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+    <span class="k">del</span> <span class="n">fig</span>
+
+    <span class="k">return</span> <span class="n">new_filename</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="clearer"></div>
+    </div>
+    <div class="button_nav_wrapper">
+        <div class="button_nav">
+            <div class="left">
+                
+            </div>
+
+            <div class="right">
+                
+            </div>
+        </div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2022, PANOPTES Team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    </div>
+
+<p id="theme_credit">Styled using the <a href="https://github.com/piccolo-orm/piccolo_theme">Piccolo Theme</a></p>
+  </body>
+</html>
