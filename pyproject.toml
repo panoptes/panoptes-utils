@@ -58,10 +58,8 @@ config = [
     "uvicorn>=0.34",
 ]
 docs = [
-    "myst-parser",
-    "piccolo-theme",
-    "pytest_mpl",
-    "sphinx",
+    "mkdocs-material",
+    "mkdocstrings[python]",
 ]
 examples = [
     "matplotlib",

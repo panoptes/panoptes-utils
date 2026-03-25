@@ -1,0 +1,28 @@
+site_name: panoptes-utils
+theme:
+  name: material
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+
+markdown_extensions:
+  - pymdownx.snippets:
+      base_path: "."
+  - pymdownx.superfences
+
+nav:
+  - Home: index.md
+  - CLI: cli.md
+  - Config Server: config-server.md
+  - Telemetry Server: telemetry.md
+  - API Reference: api.md
+  - Changelog: changelog.md
+  - Authors: authors.md
+  - License: license.md

@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 0.4.0 - 2026-03-24
+
+### Changed
+
+* **Documentation Migration:** Transitioned from Sphinx/reStructuredText to MkDocs/Markdown with the Material theme. #XXX
+* Updated `AGENTS.md` and `GEMINI.md` to mandate the use of Markdown and MkDocs for all future documentation.
+* Added GitHub Actions workflow for automated documentation deployment to GitHub Pages.
+
 ## 0.3.2 - 2026-03-20
 
 ### Changed
