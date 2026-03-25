@@ -2,8 +2,6 @@
 
 ## [Unreleased]
 
-## 0.4.0 - 2026-03-24
-
 ### Changed
 
 * **Documentation Migration:** Transitioned from Sphinx/reStructuredText to MkDocs/Markdown with the Material theme. #343
