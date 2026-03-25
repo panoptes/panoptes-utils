@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://panoptes.github.io/panoptes-utils/</loc>
+         <lastmod>2026-03-25</lastmod>
+    </url>
+    <url>
+         <loc>https://panoptes.github.io/panoptes-utils/api/</loc>
+         <lastmod>2026-03-25</lastmod>
+    </url>
+    <url>
+         <loc>https://panoptes.github.io/panoptes-utils/authors/</loc>
+         <lastmod>2026-03-25</lastmod>
+    </url>
+    <url>
+         <loc>https://panoptes.github.io/panoptes-utils/changelog/</loc>
+         <lastmod>2026-03-25</lastmod>
+    </url>
+    <url>
+         <loc>https://panoptes.github.io/panoptes-utils/cli/</loc>
+         <lastmod>2026-03-25</lastmod>
+    </url>
+    <url>
+         <loc>https://panoptes.github.io/panoptes-utils/config-server/</loc>
+         <lastmod>2026-03-25</lastmod>
+    </url>
+    <url>
+         <loc>https://panoptes.github.io/panoptes-utils/license/</loc>
+         <lastmod>2026-03-25</lastmod>
+    </url>
+    <url>
+         <loc>https://panoptes.github.io/panoptes-utils/telemetry/</loc>
+         <lastmod>2026-03-25</lastmod>
+    </url>
+</urlset>
