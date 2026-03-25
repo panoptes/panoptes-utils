@@ -137,11 +137,11 @@ panoptes-utils/
 - Format: `Brief description (#issue-number)`
 
 **CHANGELOG Updates:**
-- **Always update `CHANGELOG.md`** when submitting a PR
-- Add entry under the appropriate section (Added, Changed, Fixed, Removed)
-- Include PR number reference (e.g., `#123`)
-- Follow the existing format: `* Brief description of change. #PR-number`
-- Place new entries at the top of the file under a new version heading if starting a new release
+- **Always update `CHANGELOG.md`** when submitting a PR.
+- Add entry under the appropriate section (Added, Changed, Fixed, Removed) within an `## [Unreleased]` section at the top of the file. If this section does not exist, create it.
+- Include PR number reference (e.g., `#123`).
+- Follow the existing format: `* Brief description of change. #PR-number`.
+- Do NOT create a new version heading for individual PRs; new version headings should only be created when performing a release.
 
 ## Module Guidelines
 
@@ -408,7 +408,7 @@ panoptes-utils config run --host 0.0.0.0 --port 8765 --config-file tests/testing
 - **Test failures:** Fix on the release branch before merging to `main`.
 - **Twine check failures:** Usually due to missing or malformed metadata in `pyproject.toml`.
 
-**Automation Notes for AI Agents:**
+**Automation Notes for AI Agents (During Release Process):**
 - Parse version from `git describe --tags --abbrev=0`
 - Calculate next version based on changelog entries or commit messages
 - Extract date automatically: `date +%Y-%m-%d`
