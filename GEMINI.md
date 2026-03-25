@@ -13,6 +13,7 @@ This document provides specific instructions for the Gemini CLI agent. For all g
 - **Shell Commands:** When using `run_shell_command`, ensure that commands are compatible with the `uv` environment.
 
 ### Workflow Integration
+- **Documentation:** All documentation must be written in Markdown for MkDocs. Do not use reStructuredText (.rst) or Sphinx.
 - **Research Phase:** Use `grep_search` and `glob` to align with the patterns described in `AGENTS.md` before proposing changes.
 - **Validation:** Always run tests using `uv run pytest` after any modification. Note the specific testing markers and plot-blocking doctests mentioned in `AGENTS.md`.
 - **Changelog:** Rigorously follow the `CHANGELOG.md` update requirements specified in the "Making Changes" section of `AGENTS.md`.

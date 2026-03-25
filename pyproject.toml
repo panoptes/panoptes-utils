@@ -44,8 +44,8 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/panoptes/panoptes-utils"
-Documentation = "https://panoptes-utils.readthedocs.io"
-"POCS Documentation" = "https://pocs.readthedocs.io"
+Documentation = "https://panoptes.github.io/panoptes-utils/"
+"POCS Documentation" = "https://panoptes.github.io/POCS/"
 "Project PANOPTES" = "https://www.projectpanoptes.org"
 Forum = "https://forum.projectpanoptes.org"
 
@@ -58,10 +58,8 @@ config = [
     "uvicorn>=0.34",
 ]
 docs = [
-    "myst-parser",
-    "piccolo-theme",
-    "pytest_mpl",
-    "sphinx",
+    "mkdocs-material",
+    "mkdocstrings[python]",
 ]
 examples = [
     "matplotlib",

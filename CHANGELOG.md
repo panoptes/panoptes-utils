@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 0.4.0 - 2026-03-24
+
+### Changed
+
+* **Documentation Migration:** Transitioned from Sphinx/reStructuredText to MkDocs/Markdown with the Material theme. #343
+* Updated `AGENTS.md` and `GEMINI.md` to mandate the use of Markdown and MkDocs for all future documentation.
+* Added GitHub Actions workflow for automated documentation deployment to GitHub Pages.
+
 ## 0.3.2 - 2026-03-20
 
 ### Changed
@@ -880,7 +888,7 @@ that wasn't being used or was otherwise clutter. Overhauls the logging system to
 ### Added
 
 * Config Server
-* See the description in the [README](README.md)
+* See the description in the [README](https://github.com/panoptes/panoptes-utils/blob/main/README.md)
 * `Versioneer <https://github.com/warner/python-versioneer>`_ for version strings (#123).
 * Read the docs config (#123).
 

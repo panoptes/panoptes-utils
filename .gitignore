@@ -51,4 +51,6 @@ MANIFEST
 
 # Per-project virtualenvs
 .venv*/
-notebooks
+notebooks/
+site/
+plans/

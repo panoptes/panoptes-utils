@@ -47,7 +47,7 @@ panoptes-utils/
 │   ├── config/                 # Config tests
 │   ├── images/                 # Image processing tests
 │   └── data/                   # Test data files
-├── docs/                       # Sphinx documentation
+├── docs/                       # MkDocs documentation
 ├── examples/                   # Example notebooks and scripts
 └── pyproject.toml              # Project configuration and dependencies
 ```
@@ -120,7 +120,7 @@ panoptes-utils/
 - `config`: fastapi, uvicorn, scalpl for configuration server
 - `images`: matplotlib, photutils, pillow for image processing
 - `testing`: pytest, coverage, and testing tools
-- `docs`: Sphinx and documentation tools
+- `docs`: MkDocs and documentation tools
 
 ### 5. Making Changes
 
@@ -534,7 +534,7 @@ When making changes, update:
 - Changelog entries should be clear and concise, describing the change and its impact, ideally less than one line per PR.
 - Inline code comments for complex logic
 - Docstrings for API changes
-- Sphinx docs in `docs/` for major features
+- MkDocs docs in `docs/` for major features. All documentation must be written in Markdown for MkDocs. Do not use reStructuredText (.rst) or Sphinx.
 - README for installation/usage changes
 - Examples for new features
 
@@ -584,8 +584,8 @@ When making changes, update:
 
 ## Getting Help
 
-- **Documentation:** https://panoptes-utils.readthedocs.io
-- **POCS Documentation:** https://pocs.readthedocs.io
+- **Documentation:** https://panoptes.github.io/panoptes-utils/
+- **POCS Documentation:** https://panoptes.github.io/POCS/
 - **Forum:** https://forum.projectpanoptes.org
 - **Issues:** https://github.com/panoptes/panoptes-utils/issues
 - **Code of Conduct:** `CODE_OF_CONDUCT.md`

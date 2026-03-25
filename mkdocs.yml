@@ -1,0 +1,48 @@
+site_name: panoptes-utils
+site_url: https://panoptes.github.io/panoptes-utils/
+repo_url: https://github.com/panoptes/panoptes-utils
+repo_name: panoptes/panoptes-utils
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    primary: deep orange
+    accent: light blue
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - pymdownx.snippets:
+      base_path: "."
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+nav:
+  - Project PANOPTES Hub: https://panoptes.github.io/
+  - Home: index.md
+  - CLI Reference: cli.md
+  - Config Server: config-server.md
+  - Telemetry Server: telemetry.md
+  - API Reference: api.md
+  - Changelog: changelog.md
+  - Authors: authors.md
+  - License: license.md
