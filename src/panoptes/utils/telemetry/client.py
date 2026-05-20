@@ -9,7 +9,7 @@ from typing import Any
 import requests
 from loguru import logger
 
-from panoptes.utils.serializers import to_json
+from panoptes.utils.serializers import deserialize_all_objects, to_json
 
 
 class TelemetryClientError(RuntimeError):
@@ -149,6 +149,8 @@ class TelemetryClient:
         ``data`` is run through the PANOPTES custom serializer before
         transmission so that astropy Quantities, numpy arrays, and other
         non-JSON-native types are converted to JSON-safe primitives.
+        The returned envelope has its ``data`` field deserialized back to
+        astropy Quantities where the unit strings are recognised.
         """
         payload = {
             "type": event_type,
@@ -156,17 +158,24 @@ class TelemetryClient:
             "make_current": make_current,
             "meta": meta or {},
         }
-        return self._request("POST", "/event", json=payload)
+        return self._deserialize_event(self._request("POST", "/event", json=payload))
 
     def current(self) -> dict[str, Any]:
-        """Return the current snapshot for the public telemetry feed."""
+        """Return the current snapshot for the public telemetry feed.
 
-        return self._request("GET", "/current")
+        Each event envelope's ``data`` field is deserialized so that
+        Quantity strings are returned as ``astropy.units.Quantity`` objects.
+        """
+        response = self._request("GET", "/current")
+        return {k: self._deserialize_event(v) for k, v in response.items()}
 
     def current_event(self, event_type: str) -> dict[str, Any]:
-        """Return the current envelope for a single event type."""
+        """Return the current envelope for a single event type.
 
-        return self._request("GET", f"/current/{event_type}")
+        The ``data`` field is deserialized so that Quantity strings are
+        returned as ``astropy.units.Quantity`` objects.
+        """
+        return self._deserialize_event(self._request("GET", f"/current/{event_type}"))
 
     def shutdown(self) -> dict[str, Any]:
         """Request telemetry server shutdown."""
@@ -280,6 +289,18 @@ class TelemetryClient:
             "TelemetryClient.clear_current({!r}) called — no-op on telemetry server.",
             record_type,
         )
+
+    def _deserialize_event(self, event: dict[str, Any]) -> dict[str, Any]:
+        """Deserialize the ``data`` field of a telemetry event envelope.
+
+        Applies the PANOPTES custom deserializer to the ``data`` dict so that
+        serialized Quantity strings (e.g. ``"45.0 deg"``) are returned as
+        ``astropy.units.Quantity`` objects, matching the behaviour of PanDB.
+        """
+        if "data" in event and isinstance(event["data"], dict):
+            event = dict(event)
+            event["data"] = deserialize_all_objects(event["data"])
+        return event
 
     def _request(
         self,

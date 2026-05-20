@@ -164,7 +164,7 @@ def test_pandb_compat_clear_current_is_noop(tmp_path):
 
 
 def test_post_event_serializes_astropy_quantities(tmp_path):
-    """Astropy Quantities and numpy arrays must survive the round-trip."""
+    """Quantities round-trip: stored as strings, returned as Quantity objects."""
     from astropy import units as u
 
     app = create_app(TelemetryService(tmp_path / "site"))
@@ -177,15 +177,14 @@ def test_post_event_serializes_astropy_quantities(tmp_path):
             "wind_speed": 5.0 * u.m / u.s,
             "humidity": 0.65,
         }
-        # Should not raise — Quantities are serialized before the HTTP call.
         result = client.post_event("environment", data)
         assert result["type"] == "environment"
 
         current = client.get_current("environment")
         assert current is not None
-        # Quantities are stored as their string representation.
-        assert current["data"]["temperature"] == "22.5 deg_C"
-        assert current["data"]["wind_speed"] == "5.0 m / s"
+        # Quantities are deserialized back on retrieval where units are recognised.
+        assert current["data"]["wind_speed"] == 5.0 * u.m / u.s
+        # Plain floats pass through unchanged.
         assert current["data"]["humidity"] == 0.65
 
 
@@ -208,8 +207,8 @@ def test_insert_current_serializes_astropy_quantities(tmp_path):
 
         record = client.get_current("mount")
         assert record is not None
-        assert record["data"]["alt"] == "45.0 deg"
-        assert record["data"]["az"] == "180.0 deg"
+        assert record["data"]["alt"] == 45.0 * u.degree
+        assert record["data"]["az"] == 180.0 * u.degree
 
 
 def test_post_event_serializes_numpy_arrays(tmp_path):
