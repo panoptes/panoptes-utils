@@ -11,6 +11,30 @@ through migrating existing code and archived data.
 
 ---
 
+## What is a "run"?
+
+A **run** is the core concept that distinguishes the telemetry server from the
+old database mechanism. It represents a single observation session — one night
+of observing or a discrete target sequence — bounded by explicit `start_run()`
+and `stop_run()` calls.
+
+The server records telemetry continuously, but the run context controls *where*
+events land and how they are tagged:
+
+| Context | Storage file | Automatic label |
+|---|---|---|
+| No run active (site stream) | `telemetry/site_YYYYMMDD.ndjson` | — |
+| Run active (run stream) | `telemetry/<run_id>/telemetry.ndjson` | `meta.run_id` |
+
+Site-stream events (weather, environment) keep flowing even while a run is
+active. The two streams are always independent, so you never lose ambient data
+during an observation.
+
+`PanDB` had no equivalent concept — all records landed in the same flat files
+regardless of whether an observation was in progress.
+
+---
+
 ## Comparison at a glance
 
 | Aspect | `PanDB` / `PanFileDB` | Telemetry server |
