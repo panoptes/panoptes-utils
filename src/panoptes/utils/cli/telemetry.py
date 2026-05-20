@@ -21,7 +21,7 @@ from rich.table import Table
 from panoptes.utils.telemetry import TelemetryClient
 from panoptes.utils.telemetry.server import telemetry_server
 
-app = typer.Typer()
+app = typer.Typer(invoke_without_command=True, no_args_is_help=True)
 console = Console()
 
 
