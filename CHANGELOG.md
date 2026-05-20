@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## [Unreleased]
+
+### Added
+
+* Added `docs/database-to-telemetry.md` migration guide explaining differences between `PanDB`/`PanFileDB` and the telemetry server, with a full code mapping table and FAQ.
+* Added `scripts/migrate_json_store.py` conversion script to rewrite existing `json_store` flat-JSON records into telemetry-server NDJSON format.
+* Added "Database → Telemetry Migration" entry to MkDocs navigation.
+
 ## 0.3.3 - 2026-05-20
 
 ### Changed
