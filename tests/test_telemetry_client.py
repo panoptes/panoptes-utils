@@ -187,3 +187,67 @@ def test_post_event_serializes_astropy_quantities(tmp_path):
         assert current["data"]["temperature"] == "22.5 deg_C"
         assert current["data"]["wind_speed"] == "5.0 m / s"
         assert current["data"]["humidity"] == 0.65
+
+
+def test_insert_current_serializes_astropy_quantities(tmp_path):
+    """PanDB-compat insert_current must also handle Quantities (most common POCS path)."""
+    from astropy import units as u
+
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        data = {
+            "alt": 45.0 * u.degree,
+            "az": 180.0 * u.degree,
+            "ra": 10.5 * u.hourangle,
+        }
+        seq = client.insert_current("mount", data)
+        assert seq  # truthy sequence number string
+
+        record = client.get_current("mount")
+        assert record is not None
+        assert record["data"]["alt"] == "45.0 deg"
+        assert record["data"]["az"] == "180.0 deg"
+
+
+def test_post_event_serializes_numpy_arrays(tmp_path):
+    """numpy arrays inside data dicts must be serialized without error."""
+    import numpy as np
+
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        data = {"values": np.array([1.0, 2.0, 3.0]), "count": 3}
+        result = client.post_event("stats", data)
+        assert result["type"] == "stats"
+
+        current = client.get_current("stats")
+        assert current["data"]["values"] == [1.0, 2.0, 3.0]
+        assert current["data"]["count"] == 3
+
+
+def test_post_event_serializes_nested_quantities(tmp_path):
+    """Quantities nested inside sub-dicts must be serialized correctly."""
+    from astropy import units as u
+
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        data = {
+            "location": {
+                "latitude": 20.7 * u.degree,
+                "longitude": -156.3 * u.degree,
+                "elevation": 3055.0 * u.meter,
+            }
+        }
+        client.post_event("site", data)
+        current = client.get_current("site")
+        loc = current["data"]["location"]
+        assert loc["latitude"] == "20.7 deg"
+        assert loc["elevation"] == "3055.0 m"
