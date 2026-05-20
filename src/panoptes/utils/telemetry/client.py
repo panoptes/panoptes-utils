@@ -26,7 +26,7 @@ class TelemetryClientError(RuntimeError):
 
 
 class TelemetryClient:
-    """Simple Python client for the telemetry server.
+    """Python client for the telemetry server.
 
     The client wraps the telemetry HTTP API with small convenience methods for the
     common lifecycle: check readiness, optionally start a run, emit events, inspect
@@ -35,6 +35,35 @@ class TelemetryClient:
     `start_run` activates a run context. After that, `post_event(...)` calls are
     associated with the active run and stamped with `meta.run_id` until
     `stop_run()` is called.
+
+    ## PanDB drop-in replacement
+
+    `TelemetryClient` also implements the `panoptes.utils.database.AbstractPanDB`
+    interface so that code written against `PanDB` / `PanFileDB` can migrate to the
+    telemetry server by changing **only the instantiation line** — no other
+    call-site changes are required.
+
+    ```python
+    # Before
+    from panoptes.utils.database import PanDB
+    db = PanDB(db_type='file', db_name='panoptes')
+
+    # After — all existing db.insert_current / db.get_current calls work unchanged
+    from panoptes.utils.telemetry import TelemetryClient
+    db = TelemetryClient()
+    ```
+
+    The compatible methods and their behaviour:
+
+    | Method | Behaviour |
+    | --- | --- |
+    | `insert_current(col, obj)` | Posts an event and updates the current snapshot. Returns `str(seq)`. |
+    | `insert(col, obj)` | Posts an event without updating the current snapshot. Returns `str(seq)`. |
+    | `get_current(col)` | Returns `{_id, type, date, data}` — same shape as a PanDB record, or `None`. |
+    | `find(col, obj_id)` | Always `None`; no server-side historical lookup. Parse NDJSON files directly. |
+    | `clear_current(type)` | No-op; the server manages its own in-memory snapshot. |
+
+    See `docs/database-to-telemetry.md` for the full migration guide.
     """
 
     def __init__(
