@@ -10,7 +10,7 @@ import requests
 from loguru import logger
 
 from panoptes.utils.serializers import deserialize_all_objects, to_json
-from panoptes.utils.telemetry.models import PanDBRecord, TelemetryEvent
+from panoptes.utils.telemetry.models import TelemetryEvent
 
 
 class TelemetryClientError(RuntimeError):
@@ -63,7 +63,7 @@ class TelemetryClient:
     | --- | --- |
     | `insert_current(col, obj)` | Posts an event and updates the current snapshot. Returns `str(seq)`. |
     | `insert(col, obj)` | Posts an event without updating the current snapshot. Returns `str(seq)`. |
-    | `get_current(col)` | Returns a `PanDBRecord` (`_id`, `type`, `date`, `data`) or `None`. |
+    | `get_current(col)` | Returns a `TelemetryEvent` with `_id`/`date` aliases, or `None`. |
     | `find(col, obj_id)` | Always `None`; no server-side historical lookup. Parse NDJSON files directly. |
     | `clear_current(type)` | No-op; the server manages its own in-memory snapshot. |
 
@@ -238,30 +238,33 @@ class TelemetryClient:
         response = self.post_event(collection, obj, make_current=False)
         return str(response.seq)
 
-    def get_current(self, collection: str) -> PanDBRecord | None:
+    def get_current(self, collection: str) -> TelemetryEvent | None:
         """PanDB-compatible alias: return the most recent snapshot for a collection.
 
-        The returned :class:`~panoptes.utils.telemetry.models.PanDBRecord`
-        exposes the same keys as a PanDB record (``_id``, ``type``, ``date``,
-        ``data``) via both attribute and dict-style access so call-sites do
-        not need to change.
+        Returns the same :class:`~panoptes.utils.telemetry.models.TelemetryEvent`
+        as :meth:`current_event`, which also supports PanDB-compatible dict-style
+        access via ``_id`` (→ ``str(seq)``) and ``date`` (→ ``ts``) aliases::
+
+            record = client.get_current("weather")
+            record["_id"]    # sequence number as string (PanDB-compatible)
+            record["date"]   # ISO timestamp (PanDB-compatible)
+            record["data"]   # event data dict
+            record.seq       # native attribute
+            record.meta      # run metadata (not available in PanDB)
 
         Args:
             collection: Event type / collection name.
 
         Returns:
-            A :class:`~panoptes.utils.telemetry.models.PanDBRecord`, or
+            A :class:`~panoptes.utils.telemetry.models.TelemetryEvent`, or
             ``None`` if no current event exists for the collection.
         """
         try:
-            event = self.current_event(collection)
+            return self.current_event(collection)
         except TelemetryClientError as exc:
             if exc.status_code == 404:
                 return None
             raise
-        return PanDBRecord(
-            **{"_id": str(event.seq), "type": event.type, "date": event.ts, "data": event.data}
-        )
 
     def find(self, collection: str, obj_id: str) -> dict[str, Any] | None:
         """PanDB-compatible stub: look up a record by ID.

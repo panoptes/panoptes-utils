@@ -196,9 +196,7 @@ def test_migrate_command_converts_file_db_records(tmp_path):
     # Sequence numbers within each file must be contiguous from 1.
     for ndjson_file in ndjson_files:
         file_records = [
-            json.loads(line)
-            for line in ndjson_file.read_text(encoding="utf-8").splitlines()
-            if line.strip()
+            json.loads(line) for line in ndjson_file.read_text(encoding="utf-8").splitlines() if line.strip()
         ]
         assert [r["seq"] for r in file_records] == list(range(1, len(file_records) + 1))
 

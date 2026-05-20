@@ -166,43 +166,50 @@ curl -s \
 
 ## Return types
 
-`TelemetryClient` methods return typed Pydantic models rather than plain dicts:
+`TelemetryClient` methods return `TelemetryEvent` — a typed, frozen Pydantic v2
+model — rather than plain dicts. Both `current()` and `get_current()` return the
+same type, so there is no impedance mismatch between the two APIs.
 
 | Method | Return type |
 |---|---|
 | `post_event(...)` | `TelemetryEvent` |
 | `current_event(type)` | `TelemetryEvent` |
-| `current()` | `dict[str, TelemetryEvent]` |
-| `get_current(col)` | `PanDBRecord \| None` |
+| `current()` | `dict[str, TelemetryEvent]` (keyed by event type) |
+| `get_current(col)` | `TelemetryEvent \| None` |
 
-Both `TelemetryEvent` and `PanDBRecord` are frozen Pydantic v2 models.  They
-support attribute access (`event.seq`, `event.data`) **and** dict-style access
-(`event["seq"]`, `event.get("ts")`, `"seq" in event`) for backward
-compatibility with code that treats responses as plain dicts.
+`TelemetryEvent` supports attribute access **and** dict-style access.  It also
+exposes PanDB-compatible aliases (`_id` → `str(seq)`, `date` → `ts`) so that
+call-sites previously written against `PanFileDB` records work without change:
 
 ```python
 event = client.post_event("weather", {"sky": "clear"})
 
-# Attribute access
-print(event.seq, event.ts, event.type, event.data)
+# Native attribute access
+print(event.seq, event.ts, event.type, event.data, event.meta)
 
-# Dict-style access (backward compatible)
+# Dict-style access (native fields)
 print(event["seq"], event.get("ts"))
 print("type" in event)  # True
+
+# PanDB-compatible aliases (for migrated code)
+print(event["_id"])    # str(event.seq)
+print(event["date"])   # event.ts
+print("_id" in event)  # True
 
 # Serialization
 print(event.model_dump())
 print(event.model_dump_json())
 ```
 
-`PanDBRecord` exposes `_id` (the sequence number), `type`, `date`, and `data` —
-the same keys as a `PanFileDB` record — so existing code that reads
-`record["_id"]` or `"_id" in record` continues to work unchanged.
+`get_current()` returns the same `TelemetryEvent`, so you get the full envelope
+(including `meta` with `run_id`) rather than a lossy projection:
 
 ```python
 record = client.get_current("weather")
 if record is not None:
-    print(record["_id"], record["date"], record["data"])
+    # All of these work:
+    print(record["_id"], record["date"], record["data"])  # PanDB-compatible
+    print(record.seq, record.ts, record.meta)             # native fields
 ```
 
 

@@ -40,7 +40,7 @@ panoptes-utils/
 │   ├── telemetry/              # Telemetry server, client, and models
 │   │   ├── client.py           # TelemetryClient (HTTP client + PanDB-compat interface)
 │   │   ├── server.py           # FastAPI+uvicorn telemetry server
-│   │   ├── models.py           # TelemetryEvent and PanDBRecord Pydantic models
+│   │   ├── models.py           # TelemetryEvent Pydantic model
 │   │   └── migrate.py          # PanFileDB → NDJSON migration logic
 │   ├── time.py                 # Time utilities (CountdownTimer, etc.)
 │   ├── serializers.py          # Data serialization
@@ -259,17 +259,17 @@ The telemetry server is the preferred replacement for `PanDB`/`PanFileDB` for al
 **Components:**
 - `client.py`: `TelemetryClient` — HTTP client with PanDB-compatible interface
 - `server.py`: FastAPI+uvicorn telemetry server
-- `models.py`: `TelemetryEvent` and `PanDBRecord` Pydantic v2 models
+- `models.py`: `TelemetryEvent` Pydantic v2 model
 - `migrate.py`: Core logic for `panoptes-utils telemetry migrate`
 
 **Return types:**
-`TelemetryClient` methods return typed Pydantic models, not plain dicts:
+`TelemetryClient` methods all return `TelemetryEvent` (a frozen Pydantic v2 model), not plain dicts:
 - `post_event(...)` → `TelemetryEvent`
 - `current_event(type)` → `TelemetryEvent`
 - `current()` → `dict[str, TelemetryEvent]` (keyed by event type)
-- `get_current(col)` → `PanDBRecord | None`
+- `get_current(col)` → `TelemetryEvent | None`
 
-Both models support attribute access (`event.seq`) **and** dict-style access (`event["seq"]`, `"seq" in event`) for backward compatibility.
+`TelemetryEvent` supports attribute access (`event.seq`) **and** dict-style access (`event["seq"]`, `"seq" in event`) for backward compatibility. It also exposes PanDB-compatible aliases (`event["_id"]` → `str(event.seq)`, `event["date"]` → `event.ts`) so call-sites written against `PanFileDB` records work unchanged.
 
 **PanDB drop-in compatibility:**
 `TelemetryClient` implements `insert_current`, `insert`, `get_current`, `find`, and `clear_current` so that code written against `PanDB`/`PanFileDB` can migrate by changing only the instantiation line. See `docs/database-to-telemetry.md`.
@@ -281,7 +281,7 @@ Data posted via `post_event()` is serialized with `to_json()` before transmissio
 
 **When modifying:**
 - Preserve the PanDB-compatible interface in `client.py`
-- Keep `TelemetryEvent` and `PanDBRecord` in sync with the server envelope shape
+- Keep `TelemetryEvent` in sync with the server envelope shape
 - Test Quantity round-trips in `tests/test_telemetry_client.py`
 - The `current()` method returns `dict[str, TelemetryEvent]` directly (no `{"current": ...}` wrapper)
 

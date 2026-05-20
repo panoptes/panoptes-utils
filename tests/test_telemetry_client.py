@@ -126,8 +126,14 @@ def test_pandb_compat_get_current_returns_pandb_shape(tmp_path):
         assert record is not None
         assert record["data"] == {"temp_c": 15.2}
         assert record["type"] == "environment"
+        # PanDB-compatible aliases
         assert "_id" in record
         assert "date" in record
+        assert record["_id"] == str(record.seq)
+        assert record["date"] == record.ts
+        # Native fields also accessible
+        assert record.seq == 1
+        assert record.meta is not None
 
 
 def test_pandb_compat_get_current_returns_none_when_missing(tmp_path):

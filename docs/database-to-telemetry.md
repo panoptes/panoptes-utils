@@ -129,7 +129,7 @@ needs to change one line**: how the "database" is instantiated.
 
 After that, all existing `db.insert_current(...)`, `db.get_current(...)`, and
 `db.insert(...)` calls work unchanged. `get_current` returns a
-[`PanDBRecord`](telemetry.md#return-types) — a typed object that supports the
+[`TelemetryEvent`](telemetry.md#return-types) — a typed object that supports the
 same dict-style access as a plain PanDB record (`record["_id"]`,
 `record["data"]`, etc.) so no downstream code needs to change.
 
