@@ -203,7 +203,9 @@ def test_migrate_command_converts_file_db_records(tmp_path):
         assert [r["seq"] for r in file_records] == list(range(1, len(file_records) + 1))
 
     # current_*.json snapshot files must NOT be converted (they are ephemeral).
-    current_types = {r["type"] for r in all_records if r.get("meta", {}).get("original_id", "").startswith("current_")}
+    current_types = {
+        r["type"] for r in all_records if r.get("meta", {}).get("original_id", "").startswith("current_")
+    }
     assert not current_types
 
 
