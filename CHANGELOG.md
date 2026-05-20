@@ -8,6 +8,13 @@
 * Updated `AGENTS.md` and `GEMINI.md` to mandate the use of Markdown and MkDocs for all future documentation.
 * Added GitHub Actions workflow for automated documentation deployment to GitHub Pages.
 
+### Security
+
+* Bump urllib3 from 2.6.3 to 2.7.0. Closes #349
+* Bump tornado from 6.5.4 to 6.5.5. Closes #350
+* Bump requests from 2.32.5 to 2.33.0. Closes #351
+* Bump pygments from 2.19.2 to 2.20.0. Closes #352
+
 ## 0.3.2 - 2026-03-20
 
 ### Changed
