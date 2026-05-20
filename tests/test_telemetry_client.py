@@ -161,3 +161,29 @@ def test_pandb_compat_clear_current_is_noop(tmp_path):
         client.clear_current("weather")
         # Current snapshot is unchanged — clear_current is a no-op.
         assert client.get_current("weather") is not None
+
+
+def test_post_event_serializes_astropy_quantities(tmp_path):
+    """Astropy Quantities and numpy arrays must survive the round-trip."""
+    from astropy import units as u
+
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        data = {
+            "temperature": 22.5 * u.deg_C,
+            "wind_speed": 5.0 * u.m / u.s,
+            "humidity": 0.65,
+        }
+        # Should not raise — Quantities are serialized before the HTTP call.
+        result = client.post_event("environment", data)
+        assert result["type"] == "environment"
+
+        current = client.get_current("environment")
+        assert current is not None
+        # Quantities are stored as their string representation.
+        assert current["data"]["temperature"] == "22.5 deg_C"
+        assert current["data"]["wind_speed"] == "5.0 m / s"
+        assert current["data"]["humidity"] == 0.65

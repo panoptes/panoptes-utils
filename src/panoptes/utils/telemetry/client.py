@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import json
 import os
 from typing import Any
 
 import requests
 from loguru import logger
+
+from panoptes.utils.serializers import to_json
 
 
 class TelemetryClientError(RuntimeError):
@@ -141,11 +144,15 @@ class TelemetryClient:
         make_current: bool = True,
         meta: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Post a telemetry event to the current telemetry context."""
+        """Post a telemetry event to the current telemetry context.
 
+        ``data`` is run through the PANOPTES custom serializer before
+        transmission so that astropy Quantities, numpy arrays, and other
+        non-JSON-native types are converted to JSON-safe primitives.
+        """
         payload = {
             "type": event_type,
-            "data": data,
+            "data": json.loads(to_json(data)),
             "make_current": make_current,
             "meta": meta or {},
         }
