@@ -10,6 +10,7 @@ import requests
 from loguru import logger
 
 from panoptes.utils.serializers import deserialize_all_objects, to_json
+from panoptes.utils.telemetry.models import PanDBRecord, TelemetryEvent
 
 
 class TelemetryClientError(RuntimeError):
@@ -62,7 +63,7 @@ class TelemetryClient:
     | --- | --- |
     | `insert_current(col, obj)` | Posts an event and updates the current snapshot. Returns `str(seq)`. |
     | `insert(col, obj)` | Posts an event without updating the current snapshot. Returns `str(seq)`. |
-    | `get_current(col)` | Returns `{_id, type, date, data}` — same shape as a PanDB record, or `None`. |
+    | `get_current(col)` | Returns a `PanDBRecord` (`_id`, `type`, `date`, `data`) or `None`. |
     | `find(col, obj_id)` | Always `None`; no server-side historical lookup. Parse NDJSON files directly. |
     | `clear_current(type)` | No-op; the server manages its own in-memory snapshot. |
 
@@ -143,14 +144,15 @@ class TelemetryClient:
         data: Any,
         make_current: bool = True,
         meta: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    ) -> TelemetryEvent:
         """Post a telemetry event to the current telemetry context.
 
         ``data`` is run through the PANOPTES custom serializer before
         transmission so that astropy Quantities, numpy arrays, and other
         non-JSON-native types are converted to JSON-safe primitives.
-        The returned envelope has its ``data`` field deserialized back to
-        astropy Quantities where the unit strings are recognised.
+        The returned :class:`~panoptes.utils.telemetry.models.TelemetryEvent`
+        has its ``data`` field deserialized back to astropy Quantities where
+        the unit strings are recognised.
         """
         payload = {
             "type": event_type,
@@ -158,25 +160,32 @@ class TelemetryClient:
             "make_current": make_current,
             "meta": meta or {},
         }
-        return self._deserialize_event(self._request("POST", "/event", json=payload))
+        return self._to_event(self._request("POST", "/event", json=payload))
 
-    def current(self) -> dict[str, Any]:
+    def current(self) -> dict[str, TelemetryEvent]:
         """Return the current snapshot for the public telemetry feed.
 
-        Each event envelope's ``data`` field is deserialized so that
-        Quantity strings are returned as ``astropy.units.Quantity`` objects.
+        Returns a mapping of event type → :class:`~panoptes.utils.telemetry.models.TelemetryEvent`.
+        Each event's ``data`` field is deserialized so that Quantity strings
+        are returned as ``astropy.units.Quantity`` objects.
+
+        Example::
+
+            snapshot = client.current()
+            snapshot["weather"].data["wind_speed"]   # Quantity
+            snapshot["weather"]["data"]["wind_speed"] # dict-style access
         """
         response = self._request("GET", "/current")
         inner = response.get("current", {})
-        return {"current": {k: self._deserialize_event(v) for k, v in inner.items()}}
+        return {k: self._to_event(v) for k, v in inner.items()}
 
-    def current_event(self, event_type: str) -> dict[str, Any]:
+    def current_event(self, event_type: str) -> TelemetryEvent:
         """Return the current envelope for a single event type.
 
         The ``data`` field is deserialized so that Quantity strings are
         returned as ``astropy.units.Quantity`` objects.
         """
-        return self._deserialize_event(self._request("GET", f"/current/{event_type}"))
+        return self._to_event(self._request("GET", f"/current/{event_type}"))
 
     def shutdown(self) -> dict[str, Any]:
         """Request telemetry server shutdown."""
@@ -214,7 +223,7 @@ class TelemetryClient:
             The sequence number of the recorded event as a string.
         """
         response = self.post_event(collection, obj, make_current=True)
-        return str(response.get("seq", ""))
+        return str(response.seq)
 
     def insert(self, collection: str, obj: Any) -> str:
         """PanDB-compatible alias: record an event without updating the current snapshot.
@@ -227,33 +236,32 @@ class TelemetryClient:
             The sequence number of the recorded event as a string.
         """
         response = self.post_event(collection, obj, make_current=False)
-        return str(response.get("seq", ""))
+        return str(response.seq)
 
-    def get_current(self, collection: str) -> dict[str, Any] | None:
+    def get_current(self, collection: str) -> PanDBRecord | None:
         """PanDB-compatible alias: return the most recent snapshot for a collection.
 
-        The returned dict uses the same keys as a PanDB record (``_id``,
-        ``type``, ``date``, ``data``) so call-sites do not need to change.
+        The returned :class:`~panoptes.utils.telemetry.models.PanDBRecord`
+        exposes the same keys as a PanDB record (``_id``, ``type``, ``date``,
+        ``data``) via both attribute and dict-style access so call-sites do
+        not need to change.
 
         Args:
             collection: Event type / collection name.
 
         Returns:
-            A dict with keys ``_id``, ``type``, ``date``, and ``data``,
-            or ``None`` if no current event exists for the collection.
+            A :class:`~panoptes.utils.telemetry.models.PanDBRecord`, or
+            ``None`` if no current event exists for the collection.
         """
         try:
-            response = self.current_event(collection)
+            event = self.current_event(collection)
         except TelemetryClientError as exc:
             if exc.status_code == 404:
                 return None
             raise
-        return {
-            "_id": str(response.get("seq", "")),
-            "type": response.get("type", collection),
-            "date": response.get("ts", ""),
-            "data": response.get("data"),
-        }
+        return PanDBRecord(
+            **{"_id": str(event.seq), "type": event.type, "date": event.ts, "data": event.data}
+        )
 
     def find(self, collection: str, obj_id: str) -> dict[str, Any] | None:
         """PanDB-compatible stub: look up a record by ID.
@@ -291,17 +299,22 @@ class TelemetryClient:
             record_type,
         )
 
-    def _deserialize_event(self, event: dict[str, Any]) -> dict[str, Any]:
-        """Deserialize the ``data`` field of a telemetry event envelope.
+    def _to_event(self, envelope: dict[str, Any]) -> TelemetryEvent:
+        """Convert a raw server envelope dict to a typed :class:`TelemetryEvent`.
 
-        Applies the PANOPTES custom deserializer to the ``data`` dict so that
-        serialized Quantity strings (e.g. ``"45.0 deg"``) are returned as
-        ``astropy.units.Quantity`` objects, matching the behaviour of PanDB.
+        The ``data`` field is deserialized via :func:`deserialize_all_objects`
+        so that serialized Quantity strings (e.g. ``"45.0 deg"``) are returned
+        as ``astropy.units.Quantity`` objects.
         """
-        if "data" in event and isinstance(event["data"], dict):
-            event = dict(event)
-            event["data"] = deserialize_all_objects(event["data"])
-        return event
+        raw_data = envelope.get("data", {})
+        deserialized = deserialize_all_objects(raw_data) if isinstance(raw_data, dict) else raw_data
+        return TelemetryEvent(
+            seq=envelope["seq"],
+            ts=envelope["ts"],
+            type=envelope["type"],
+            data=deserialized,
+            meta=envelope.get("meta", {}),
+        )
 
     def _request(
         self,

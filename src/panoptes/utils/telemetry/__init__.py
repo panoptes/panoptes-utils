@@ -4,8 +4,10 @@ from importlib import import_module
 from typing import Any
 
 __all__: list[str] = [
+    "PanDBRecord",
     "TelemetryClient",
     "TelemetryClientError",
+    "TelemetryEvent",
     "TelemetryService",
     "create_app",
     "get_site_day_key",
@@ -16,6 +18,11 @@ __all__: list[str] = [
 _CLIENT_ATTRS = {
     "TelemetryClient",
     "TelemetryClientError",
+}
+
+_MODEL_ATTRS = {
+    "PanDBRecord",
+    "TelemetryEvent",
 }
 
 _SERVER_ATTRS = {
@@ -41,6 +48,17 @@ def __getattr__(name: str) -> Any:
         except ImportError as exc:
             msg = (
                 "Telemetry client is not available because optional dependencies are missing. "
+                'Install them with: pip install "panoptes-utils[telemetry]".'
+            )
+            raise ImportError(msg) from exc
+        return getattr(module, name)
+
+    if name in _MODEL_ATTRS:
+        try:
+            module = import_module("panoptes.utils.telemetry.models")
+        except ImportError as exc:
+            msg = (
+                "Telemetry models are not available because optional dependencies are missing. "
                 'Install them with: pip install "panoptes-utils[telemetry]".'
             )
             raise ImportError(msg) from exc

@@ -30,7 +30,7 @@ def test_telemetry_client_posts_and_reads_current(tmp_path):
         current = client.current()
         current_weather = client.current_event("weather")
 
-        assert current["current"]["weather"] == event
+        assert current["weather"] == event
         assert current_weather == event
 
 
@@ -79,10 +79,8 @@ def test_telemetry_client_current_merges_site_and_run_context(tmp_path):
         run_status = client.post_event("status", {"state": "idle"})
 
         assert client.current() == {
-            "current": {
-                "weather": site_weather,
-                "status": run_status,
-            },
+            "weather": site_weather,
+            "status": run_status,
         }
 
 
@@ -265,5 +263,5 @@ def test_current_deserializes_all_event_data(tmp_path):
         client.post_event("weather", {"wind_speed": 3.0 * u.m / u.s})
 
         snapshot = client.current()
-        assert snapshot["current"]["mount"]["data"]["alt"] == 45.0 * u.degree
-        assert snapshot["current"]["weather"]["data"]["wind_speed"] == 3.0 * u.m / u.s
+        assert snapshot["mount"]["data"]["alt"] == 45.0 * u.degree
+        assert snapshot["weather"]["data"]["wind_speed"] == 3.0 * u.m / u.s
