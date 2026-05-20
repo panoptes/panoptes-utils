@@ -167,7 +167,8 @@ class TelemetryClient:
         Quantity strings are returned as ``astropy.units.Quantity`` objects.
         """
         response = self._request("GET", "/current")
-        return {k: self._deserialize_event(v) for k, v in response.items()}
+        inner = response.get("current", {})
+        return {"current": {k: self._deserialize_event(v) for k, v in inner.items()}}
 
     def current_event(self, event_type: str) -> dict[str, Any]:
         """Return the current envelope for a single event type.

@@ -230,7 +230,7 @@ def test_post_event_serializes_numpy_arrays(tmp_path):
 
 
 def test_post_event_serializes_nested_quantities(tmp_path):
-    """Quantities nested inside sub-dicts must be serialized correctly."""
+    """Quantities nested inside sub-dicts must be serialized and deserialized correctly."""
     from astropy import units as u
 
     app = create_app(TelemetryService(tmp_path / "site"))
@@ -248,5 +248,22 @@ def test_post_event_serializes_nested_quantities(tmp_path):
         client.post_event("site", data)
         current = client.get_current("site")
         loc = current["data"]["location"]
-        assert loc["latitude"] == "20.7 deg"
-        assert loc["elevation"] == "3055.0 m"
+        assert loc["latitude"] == 20.7 * u.degree
+        assert loc["elevation"] == 3055.0 * u.meter
+
+
+def test_current_deserializes_all_event_data(tmp_path):
+    """current() must deserialize Quantities in every event in the snapshot."""
+    from astropy import units as u
+
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        client.post_event("mount", {"alt": 45.0 * u.degree, "az": 90.0 * u.degree})
+        client.post_event("weather", {"wind_speed": 3.0 * u.m / u.s})
+
+        snapshot = client.current()
+        assert snapshot["current"]["mount"]["data"]["alt"] == 45.0 * u.degree
+        assert snapshot["current"]["weather"]["data"]["wind_speed"] == 3.0 * u.m / u.s
