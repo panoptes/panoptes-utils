@@ -291,5 +291,54 @@ def current(
         print("[yellow]Stopped following telemetry.[/yellow]")
 
 
+@app.command("migrate")
+def migrate(
+    source: Path = typer.Option(
+        Path("json_store/panoptes"),
+        help="PanFileDB source directory (the db_name subdirectory inside json_store/).",
+        exists=True,
+        file_okay=False,
+        dir_okay=True,
+    ),
+    dest: Path = typer.Option(
+        Path("telemetry/migrated"),
+        help="Output directory for NDJSON telemetry files.",
+        file_okay=False,
+        dir_okay=True,
+    ),
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Print one line per converted record.",
+    ),
+) -> None:
+    """Convert PanFileDB json_store records to telemetry NDJSON files.
+
+    Reads <collection>.json files from SOURCE, groups records by date, and
+    writes day-partitioned site_YYYYMMDD.ndjson files under DEST using the
+    telemetry envelope format (seq, ts, type, data, meta).
+
+    Current-snapshot files (current_*.json) are ignored — they are ephemeral
+    state that is redundant once historical records are available.
+
+    See docs/database-to-telemetry.md for the full migration guide.
+    """
+    from panoptes.utils.telemetry.migrate import migrate as _migrate
+
+    print(f"Source : {source.resolve()}")
+    print(f"Dest   : {dest.resolve()}")
+    print()
+
+    total = _migrate(source.resolve(), dest.resolve(), verbose=verbose)
+
+    if total == 0:
+        print("[yellow]No collection files found in source directory.[/yellow]")
+        raise typer.Exit(code=1)
+
+    print()
+    print(f"[green]Done.[/green] {total} records written to {dest.resolve()}")
+
+
 if __name__ == "__main__":
     app()

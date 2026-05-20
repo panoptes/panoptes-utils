@@ -5,7 +5,7 @@
 ### Added
 
 * Added `docs/database-to-telemetry.md` migration guide explaining differences between `PanDB`/`PanFileDB` and the telemetry server, with a full code mapping table and FAQ.
-* Added `scripts/migrate_json_store.py` conversion script to rewrite existing `json_store` flat-JSON records into telemetry-server NDJSON format.
+* Added `panoptes-utils telemetry migrate` CLI subcommand (backed by `panoptes.utils.telemetry.migrate`) to convert `json_store` flat-JSON records into telemetry NDJSON format.
 * Added "Database → Telemetry Migration" entry to MkDocs navigation.
 * Added PanDB-compatible methods to `TelemetryClient` (`insert_current`, `insert`, `get_current`, `find`, `clear_current`) so POCS and other callers can migrate by changing only the instantiation line.
 

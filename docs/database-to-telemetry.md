@@ -183,16 +183,16 @@ process = telemetry_server(site_dir='/data/panoptes/telemetry')
 
 ### Migrating archived `json_store` data
 
-Use the bundled `scripts/migrate_json_store.py` script to convert existing
+Use the built-in `panoptes-utils telemetry migrate` command to convert existing
 `json_store` files into NDJSON telemetry files:
 
 ```bash
-python scripts/migrate_json_store.py \
+panoptes-utils telemetry migrate \
     --source json_store/panoptes \
     --dest telemetry/migrated
 ```
 
-The script:
+The command:
 
 1. Discovers all `<collection>.json` files under `--source`.
 2. Parses each newline-delimited record.
