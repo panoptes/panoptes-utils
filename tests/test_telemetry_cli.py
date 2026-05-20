@@ -140,6 +140,73 @@ def test_current_command_follow_prints_updates(monkeypatch):
     assert "Stopped following telemetry." in result.stdout
 
 
+def test_migrate_command_converts_file_db_records(tmp_path):
+    """migrate converts real PanFileDB json_store records into telemetry NDJSON files."""
+    import json
+    import random
+
+    from panoptes.utils.database import PanDB
+
+    # Build a PanFileDB with a handful of records across three collections.
+    source_root = tmp_path / "json_store"
+    db = PanDB(db_type="file", db_name="panoptes", storage_dir=str(source_root))
+    collections = ["weather", "mount", "environment"]
+    records_per_collection = 4
+    for collection in collections:
+        for i in range(records_per_collection):
+            db.insert_current(collection, {"value": round(random.random(), 4), "index": i})
+
+    source_dir = source_root / "panoptes"
+    dest_dir = tmp_path / "telemetry"
+
+    result = runner.invoke(
+        app,
+        ["migrate", "--source", str(source_dir), "--dest", str(dest_dir)],
+    )
+
+    assert result.exit_code == 0, result.stdout
+    assert "Done." in result.stdout
+
+    # At least one day-partitioned NDJSON file must be written.
+    ndjson_files = sorted(dest_dir.glob("site_*.ndjson"))
+    assert ndjson_files, "No NDJSON output files found"
+
+    # Read every record from every output file.
+    all_records = []
+    for ndjson_file in ndjson_files:
+        for line in ndjson_file.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                all_records.append(json.loads(line))
+
+    # Total records: 3 collections × 4 inserts.
+    expected_total = len(collections) * records_per_collection
+    assert len(all_records) == expected_total
+
+    # Every record must have the telemetry envelope shape.
+    for record in all_records:
+        assert "seq" in record
+        assert "ts" in record
+        assert "type" in record
+        assert "data" in record
+        assert record["meta"]["migrated_from"] == "PanFileDB"
+
+    # All three collection types must appear in the output.
+    assert {r["type"] for r in all_records} == set(collections)
+
+    # Sequence numbers within each file must be contiguous from 1.
+    for ndjson_file in ndjson_files:
+        file_records = [
+            json.loads(line)
+            for line in ndjson_file.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        assert [r["seq"] for r in file_records] == list(range(1, len(file_records) + 1))
+
+    # current_*.json snapshot files must NOT be converted (they are ephemeral).
+    current_types = {r["type"] for r in all_records if r.get("meta", {}).get("original_id", "").startswith("current_")}
+    assert not current_types
+
+
 def test_run_command_passes_verbose_to_server(monkeypatch):
     fake_process = _FakeProcess()
     captured_kwargs: dict[str, object] = {}
