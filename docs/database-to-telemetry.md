@@ -107,7 +107,9 @@ appropriate. For all production observing code, prefer the telemetry server.
 
 ### Code changes
 
-Every `PanDB` call maps to a `TelemetryClient` call:
+`TelemetryClient` implements the full `PanDB` interface — `insert_current`,
+`insert`, `get_current`, `find`, and `clear_current` — so **most code only
+needs to change one line**: how the "database" is instantiated.
 
 === "Old (PanDB)"
 
@@ -115,13 +117,6 @@ Every `PanDB` call maps to a `TelemetryClient` call:
     from panoptes.utils.database import PanDB
 
     db = PanDB(db_type='file', db_name='panoptes')
-
-    # Write a record and mark it current.
-    db.insert_current('weather', {'sky': 'clear', 'wind_mps': 2.1})
-
-    # Read the most-recent record.
-    record = db.get_current('weather')
-    print(record['data'])  # {'sky': 'clear', 'wind_mps': 2.1}
     ```
 
 === "New (TelemetryClient)"
@@ -129,38 +124,42 @@ Every `PanDB` call maps to a `TelemetryClient` call:
     ```python
     from panoptes.utils.telemetry import TelemetryClient
 
-    client = TelemetryClient()  # connects to localhost:6562
-
-    # Write an event (make_current=True is the default).
-    client.post_event('weather', {'sky': 'clear', 'wind_mps': 2.1})
-
-    # Read the most-recent event.
-    event = client.current_event('weather')
-    print(event['data'])  # {'sky': 'clear', 'wind_mps': 2.1}
+    db = TelemetryClient()  # connects to localhost:6562
     ```
 
-#### Mapping table
+After that, all existing `db.insert_current(...)`, `db.get_current(...)`, and
+`db.insert(...)` calls work unchanged. The returned record shape (`_id`, `type`,
+`date`, `data`) is identical to what `PanDB` returned, so no downstream code
+needs to change.
 
-| Old call | New call |
-|---|---|
-| `db.insert_current(col, data)` | `client.post_event(col, data)` |
-| `db.insert_current(col, data, store_permanently=False)` | `client.post_event(col, data, make_current=True)` |
-| `db.insert(col, data)` | `client.post_event(col, data, make_current=False)` |
-| `db.get_current(col)['data']` | `client.current_event(col)['data']` |
-| `db.find(col, obj_id)` | Parse the NDJSON file for the matching `seq` |
+```python
+# These calls work without modification after switching to TelemetryClient.
+db.insert_current('weather', {'sky': 'clear', 'wind_mps': 2.1})
+
+record = db.get_current('weather')
+print(record['data'])  # {'sky': 'clear', 'wind_mps': 2.1}
+```
+
+#### Differences to be aware of
+
+| Method | PanDB behaviour | TelemetryClient behaviour |
+|---|---|---|
+| `insert_current(..., store_permanently=False)` | Skips the permanent file, only updates current snapshot | `store_permanently` is accepted but ignored — all events are always written to NDJSON |
+| `find(col, obj_id)` | Returns the matching record | Always returns `None`; parse NDJSON files for historical queries |
+| `clear_current(type)` | Deletes `current_<type>.json` | No-op; the server manages its own in-memory snapshot |
 
 #### Observation run lifecycle
 
 If your code uses POCS observation sequences, wrap each sequence in a run:
 
 ```python
-client.start_run(run_id='20260520_001')
+db.start_run(run_id='20260520_001')
 # ... record events during the run ...
-client.stop_run()
+db.stop_run()
 ```
 
-All `post_event()` calls between `start_run()` and `stop_run()` are written to
-`<site_dir>/<run_id>/telemetry.ndjson` and automatically tagged with
+All `insert_current()` calls between `start_run()` and `stop_run()` are written
+to `<site_dir>/<run_id>/telemetry.ndjson` and automatically tagged with
 `meta.run_id`.
 
 #### Starting the server

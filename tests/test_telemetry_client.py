@@ -84,3 +84,80 @@ def test_telemetry_client_current_merges_site_and_run_context(tmp_path):
                 "status": run_status,
             },
         }
+
+
+# ---------------------------------------------------------------------------
+# PanDB-compatible interface
+# ---------------------------------------------------------------------------
+
+
+def test_pandb_compat_insert_current_returns_seq(tmp_path):
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        obj_id = client.insert_current("weather", {"sky": "clear"})
+        assert obj_id == "1"
+
+        obj_id2 = client.insert_current("weather", {"sky": "cloudy"}, store_permanently=False)
+        assert obj_id2 == "2"
+
+
+def test_pandb_compat_insert_returns_seq_and_does_not_update_current(tmp_path):
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        obj_id = client.insert("weather", {"sky": "overcast"})
+        assert obj_id == "1"
+        # make_current=False means no current snapshot exists yet.
+        assert client.get_current("weather") is None
+
+
+def test_pandb_compat_get_current_returns_pandb_shape(tmp_path):
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        client.insert_current("environment", {"temp_c": 15.2})
+        record = client.get_current("environment")
+
+        assert record is not None
+        assert record["data"] == {"temp_c": 15.2}
+        assert record["type"] == "environment"
+        assert "_id" in record
+        assert "date" in record
+
+
+def test_pandb_compat_get_current_returns_none_when_missing(tmp_path):
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        assert client.get_current("nonexistent") is None
+
+
+def test_pandb_compat_find_returns_none(tmp_path):
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        obj_id = client.insert_current("weather", {"sky": "clear"})
+        assert client.find("weather", obj_id) is None
+
+
+def test_pandb_compat_clear_current_is_noop(tmp_path):
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        client.insert_current("weather", {"sky": "clear"})
+        client.clear_current("weather")
+        # Current snapshot is unchanged — clear_current is a no-op.
+        assert client.get_current("weather") is not None

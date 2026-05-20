@@ -6,6 +6,7 @@ import os
 from typing import Any
 
 import requests
+from loguru import logger
 
 
 class TelemetryClientError(RuntimeError):
@@ -135,6 +136,114 @@ class TelemetryClient:
         """Request telemetry server shutdown."""
 
         return self._request("POST", "/shutdown")
+
+    # ------------------------------------------------------------------
+    # PanDB-compatible interface
+    #
+    # These methods mirror the AbstractPanDB API so that code written
+    # against panoptes.utils.database can switch to the telemetry server
+    # by replacing the PanDB instantiation with a TelemetryClient — no
+    # other call-site changes required.
+    # ------------------------------------------------------------------
+
+    def insert_current(
+        self,
+        collection: str,
+        obj: Any,
+        store_permanently: bool = True,
+    ) -> str:
+        """PanDB-compatible alias: record an event and mark it current.
+
+        The ``store_permanently`` flag is accepted for API compatibility but
+        has no effect — the telemetry server always appends events to the
+        NDJSON stream and always keeps the in-memory current snapshot.
+
+        Args:
+            collection: Event type / collection name (e.g. ``"weather"``).
+            obj: Data payload to record.
+            store_permanently: Accepted but ignored; included for PanDB
+                compatibility only.
+
+        Returns:
+            The sequence number of the recorded event as a string.
+        """
+        response = self.post_event(collection, obj, make_current=True)
+        return str(response.get("seq", ""))
+
+    def insert(self, collection: str, obj: Any) -> str:
+        """PanDB-compatible alias: record an event without updating the current snapshot.
+
+        Args:
+            collection: Event type / collection name.
+            obj: Data payload to record.
+
+        Returns:
+            The sequence number of the recorded event as a string.
+        """
+        response = self.post_event(collection, obj, make_current=False)
+        return str(response.get("seq", ""))
+
+    def get_current(self, collection: str) -> dict[str, Any] | None:
+        """PanDB-compatible alias: return the most recent snapshot for a collection.
+
+        The returned dict uses the same keys as a PanDB record (``_id``,
+        ``type``, ``date``, ``data``) so call-sites do not need to change.
+
+        Args:
+            collection: Event type / collection name.
+
+        Returns:
+            A dict with keys ``_id``, ``type``, ``date``, and ``data``,
+            or ``None`` if no current event exists for the collection.
+        """
+        try:
+            response = self.current_event(collection)
+        except TelemetryClientError as exc:
+            if exc.status_code == 404:
+                return None
+            raise
+        return {
+            "_id": str(response.get("seq", "")),
+            "type": response.get("type", collection),
+            "date": response.get("ts", ""),
+            "data": response.get("data"),
+        }
+
+    def find(self, collection: str, obj_id: str) -> dict[str, Any] | None:
+        """PanDB-compatible stub: look up a record by ID.
+
+        The telemetry server does not expose historical lookup by ID.
+        This method always returns ``None`` and logs a warning. To query
+        historical records, parse the NDJSON files directly with ``jq`` or
+        a DataFrame library.
+
+        Args:
+            collection: Event type / collection name.
+            obj_id: Record identifier (ignored).
+
+        Returns:
+            Always ``None``.
+        """
+        logger.warning(
+            "TelemetryClient.find() is not supported — "
+            "parse the NDJSON files directly for historical queries."
+        )
+        return None
+
+    def clear_current(self, record_type: str) -> None:
+        """PanDB-compatible no-op: clear the current snapshot for a type.
+
+        The telemetry server manages its current snapshot in memory and
+        does not support explicit clearing via the API. This method is a
+        no-op included for PanDB drop-in compatibility.
+
+        Args:
+            record_type: Event type to clear (accepted but ignored).
+        """
+        logger.debug(
+            "TelemetryClient.clear_current({!r}) called — no-op on telemetry server.",
+            record_type,
+        )
 
     def _request(
         self,
