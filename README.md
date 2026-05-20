@@ -141,14 +141,14 @@ client.post_event("weather", {"sky": "clear", "wind_mps": 2.1}, meta={"source": 
 # start_run() activates the run context for subsequent events.
 client.start_run(run_id="001")
 event = client.post_event("status", {"state": "running"})
-print(event["meta"]["run_id"])
+print(event.meta["run_id"])
 client.stop_run()
 
 # Or let the server create the next run automatically.
 next_run = client.start_run()
 print(next_run["run_id"], next_run["run_dir"])
 
-print(client.current()["current"])
+print(client.current())   # dict[str, TelemetryEvent]
 
 client.stop_run()
 client.shutdown()

@@ -128,9 +128,10 @@ needs to change one line**: how the "database" is instantiated.
     ```
 
 After that, all existing `db.insert_current(...)`, `db.get_current(...)`, and
-`db.insert(...)` calls work unchanged. The returned record shape (`_id`, `type`,
-`date`, `data`) is identical to what `PanDB` returned, so no downstream code
-needs to change.
+`db.insert(...)` calls work unchanged. `get_current` returns a
+[`PanDBRecord`](telemetry.md#return-types) — a typed object that supports the
+same dict-style access as a plain PanDB record (`record["_id"]`,
+`record["data"]`, etc.) so no downstream code needs to change.
 
 ```python
 # These calls work without modification after switching to TelemetryClient.
@@ -138,6 +139,7 @@ db.insert_current('weather', {'sky': 'clear', 'wind_mps': 2.1})
 
 record = db.get_current('weather')
 print(record['data'])  # {'sky': 'clear', 'wind_mps': 2.1}
+print(record['_id'])   # sequence number as string
 ```
 
 #### Differences to be aware of

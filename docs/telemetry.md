@@ -101,7 +101,7 @@ client = TelemetryClient()
 client.post_event("weather", {"sky": "clear"})
 client.start_run(run_id="001")
 client.post_event("status", {"state": "running"})
-print(client.current()["current"])
+print(client.current())   # dict[str, TelemetryEvent]
 client.stop_run()
 ```
 
@@ -164,7 +164,48 @@ curl -s \
   -d '{"type":"status","data":{"state":"running"}}'
 ```
 
-## Response shape
+## Return types
+
+`TelemetryClient` methods return typed Pydantic models rather than plain dicts:
+
+| Method | Return type |
+|---|---|
+| `post_event(...)` | `TelemetryEvent` |
+| `current_event(type)` | `TelemetryEvent` |
+| `current()` | `dict[str, TelemetryEvent]` |
+| `get_current(col)` | `PanDBRecord \| None` |
+
+Both `TelemetryEvent` and `PanDBRecord` are frozen Pydantic v2 models.  They
+support attribute access (`event.seq`, `event.data`) **and** dict-style access
+(`event["seq"]`, `event.get("ts")`, `"seq" in event`) for backward
+compatibility with code that treats responses as plain dicts.
+
+```python
+event = client.post_event("weather", {"sky": "clear"})
+
+# Attribute access
+print(event.seq, event.ts, event.type, event.data)
+
+# Dict-style access (backward compatible)
+print(event["seq"], event.get("ts"))
+print("type" in event)  # True
+
+# Serialization
+print(event.model_dump())
+print(event.model_dump_json())
+```
+
+`PanDBRecord` exposes `_id` (the sequence number), `type`, `date`, and `data` —
+the same keys as a `PanFileDB` record — so existing code that reads
+`record["_id"]` or `"_id" in record` continues to work unchanged.
+
+```python
+record = client.get_current("weather")
+if record is not None:
+    print(record["_id"], record["date"], record["data"])
+```
+
+
 
 Successful event responses include:
 
