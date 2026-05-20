@@ -136,7 +136,7 @@ def crop_data(
         >>> fig, ax = plt.subplots()
         >>> im = ax.imshow(cropped.data, origin='lower', cmap=get_palette())
         >>> add_colorbar(im)
-        >>> plt.show()
+        >>> plt.show()  # doctest: +SKIP
 
 
     Args:
@@ -201,7 +201,7 @@ def mask_saturated(
         >>> fig, ax = plt.subplots()
         >>> im = ax.imshow(masked, origin='lower', cmap=get_palette())
         >>> add_colorbar(im)
-        >>> fig.show()
+        >>> fig.show()  # doctest: +SKIP
 
 
     Args:

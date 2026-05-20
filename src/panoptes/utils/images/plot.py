@@ -54,7 +54,7 @@ def add_colorbar(axes_image, size="5%", pad=0.05, orientation="vertical"):
         >>> # Add the colorbar to the Image object (not the Axes).
         >>> add_colorbar(im1)
         >>>
-        >>> fig.show()
+        >>> fig.show()  # doctest: +SKIP
 
 
     Args:
@@ -95,7 +95,7 @@ def add_pixel_grid(
         >>> # Add the grid to the Axes object.
         >>> add_pixel_grid(ax, grid_height=10, grid_width=10, show_superpixel=True, show_axis_labels=False)
         >>>
-        >>> fig.show()
+        >>> fig.show()  # doctest: +SKIP
 
     Args:
         ax1 (`matplotlib.axes.Axes`): The axes to add the grid to.

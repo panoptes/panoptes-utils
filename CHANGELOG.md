@@ -8,6 +8,10 @@
 * Added `scripts/migrate_json_store.py` conversion script to rewrite existing `json_store` flat-JSON records into telemetry-server NDJSON format.
 * Added "Database → Telemetry Migration" entry to MkDocs navigation.
 
+### Fixed
+
+* Added `# doctest: +SKIP` to `fig.show()` / `plt.show()` calls in `images/plot.py` and `images/misc.py` doctests to prevent blocking GUI windows during `pytest --doctest-modules`.
+
 ## 0.3.3 - 2026-05-20
 
 ### Changed
