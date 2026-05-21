@@ -360,6 +360,8 @@ panoptes-utils config run --host 0.0.0.0 --port 8765 --config-file tests/testing
 
 ### Creating a Release
 
+**⚠️ IMPORTANT FOR AI AGENTS: Only perform a release (tag + push) when the user explicitly asks to "make a release", "cut a release", or similar. Never tag or push a version without an explicit release request.**
+
 **This process should be followed to create a new release of panoptes-utils.**
 
 **Prerequisites:**
@@ -395,10 +397,11 @@ panoptes-utils config run --host 0.0.0.0 --port 8765 --config-file tests/testing
    echo "New version: $NEW_VERSION"
    ```
 
-3. **Create release branch:**
+3. **Create release branch (skip if user asks to push directly to `main`):**
    ```bash
    git checkout -b release-${NEW_VERSION} origin/main
    ```
+   > If the user explicitly asks to skip the PR and push directly, omit this step and commit directly to `main`.
 
 4. **Update `CHANGELOG.md`:**
    - Add release header with version and date: `## X.Y.Z - YYYY-MM-DD`
@@ -416,13 +419,15 @@ panoptes-utils config run --host 0.0.0.0 --port 8765 --config-file tests/testing
      - Bug fix description. #124
      ```
 
-5. **Commit changelog updates:**
+5. **Commit changelog updates — include entries in the commit message body:**
    ```bash
+   CHANGELOG_BODY=$(sed -n "/^## ${NEW_VERSION#v}/,/^## /p" CHANGELOG.md | sed '1d;$d')
    git add CHANGELOG.md
-   git commit -m "Update CHANGELOG for ${NEW_VERSION}"
+   git commit -m "Update CHANGELOG for ${NEW_VERSION}" -m "${CHANGELOG_BODY}"
    ```
+   The commit message body must contain the full changelog entries for that version, not just the title line.
 
-6. **Create a Pull Request:**
+6. **Create a Pull Request (skip if user asks to push directly to `main`):**
    - Push the release branch to the repository and create a PR against `main`.
    ```bash
    git push -u origin release-${NEW_VERSION}
@@ -430,22 +435,22 @@ panoptes-utils config run --host 0.0.0.0 --port 8765 --config-file tests/testing
    - Get PR approved and merged into `main`.
 
 7. **Tag `main` with new version:**
-   - Once the PR is merged, switch to `main` and pull latest changes.
+   - If a release branch was used, switch to `main` and pull latest changes first.
    ```bash
    git checkout main
    git pull origin main
    ```
-   - Tag the release commit and push. **The tag message should include the relevant changelog entries for this release.**
+   - Tag the release commit and push. **The tag message must include the full changelog entries for this release.**
    ```bash
-   # Extract relevant changelog entries first
-   git tag -a ${NEW_VERSION} -m "Release ${NEW_VERSION}" -m "$(cat CHANGELOG.md | sed -n "/^## ${NEW_VERSION#v}/,/^## /p" | sed '1d;$d')"
+   CHANGELOG_BODY=$(sed -n "/^## ${NEW_VERSION#v}/,/^## /p" CHANGELOG.md | sed '1d;$d')
+   git tag -a ${NEW_VERSION} -m "Release ${NEW_VERSION}" -m "${CHANGELOG_BODY}"
+   git push origin main
    git push origin ${NEW_VERSION}
    ```
 
-8. **Clean up release branch:**
+8. **Clean up release branch (if one was created):**
    ```bash
    git branch -d release-${NEW_VERSION}
-   # Delete remote branch via GitHub or CLI
    git push origin --delete release-${NEW_VERSION}
    ```
 
@@ -461,13 +466,16 @@ panoptes-utils config run --host 0.0.0.0 --port 8765 --config-file tests/testing
 - **Twine check failures:** Usually due to missing or malformed metadata in `pyproject.toml`.
 
 **Automation Notes for AI Agents (During Release Process):**
+- **Never tag or push a release version without an explicit user request to do so.**
 - Parse version from `git describe --tags --abbrev=0`
 - Calculate next version based on changelog entries or commit messages
 - Extract date automatically: `date +%Y-%m-%d`
-- **Extract changelog entries for the release description:** Use the content under the version header in `CHANGELOG.md`.
+- **Always embed the full changelog entries** in both the CHANGELOG commit message body and the annotated tag message — not just the version title line.
+- The changelog body can be extracted with: `sed -n "/^## ${NEW_VERSION#v}/,/^## /p" CHANGELOG.md | sed '1d;$d'`
 - Validate version format matches `vX.Y.Z` pattern
 - Ensure CHANGELOG has proper section headers before merging
 - Verify all tests pass before tagging
+- Skip the release branch and PR steps only when the user explicitly requests it
 
 ## Error Handling
 
