@@ -282,6 +282,9 @@ The telemetry server is the preferred replacement for `PanDB`/`PanFileDB` for al
 **PanDB drop-in compatibility:**
 `TelemetryClient` implements `insert_current`, `insert`, `get_current`, `find`, and `clear_current` so that code written against `PanDB`/`PanFileDB` can migrate by changing only the instantiation line. See `docs/database-to-telemetry.md`.
 
+**Ephemeral (non-persistent) events:**
+Pass `store_permanently=False` to `post_event()` or `insert_current()` to update the in-memory current snapshot without writing to the NDJSON file on disk. This matches PanDB's `store_permanently=False` semantics and is intended for high-frequency transient updates (e.g. rapid status polling) where disk persistence is not needed. The sequence counter still increments, so NDJSON files may contain non-contiguous sequence numbers when ephemeral and permanent events are interleaved.
+
 **Astropy Quantity handling:**
 Data posted via `post_event()` is serialized with `to_json()` before transmission. Data retrieved via `current_event()`, `current()`, or `get_current()` is deserialized with `deserialize_all_objects()` so Quantities round-trip correctly (e.g. `45.0 * u.degree` → stored as `"45.0 deg"` → returned as `Quantity`).
 
