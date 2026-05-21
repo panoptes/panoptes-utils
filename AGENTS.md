@@ -100,7 +100,18 @@ panoptes-utils/
 @pytest.mark.slow             # Tests that take longer to run
 ```
 
-**Interactive image doctests:**
+**⚠️ Do NOT run tests by file path alone:**
+- `pyproject.toml` sets `testpaths = ["tests", "src"]`, so `uv run pytest tests/test_foo.py` still
+  collects **all** tests (including `src/` doctests and other test files). Some of those tests
+  (e.g. `test_cli_server`) can hang indefinitely.
+- **Always use `-k` to restrict test runs to a specific area**, e.g.:
+  ```bash
+  uv run pytest -k "telemetry"      # only telemetry-related tests
+  uv run pytest -k "config"         # only config-related tests
+  uv run pytest -k "not cli_server" # skip the hanging CLI server test
+  ```
+
+
 - `src/panoptes/utils/images/plot.py` and `src/panoptes/utils/images/misc.py` contain doctest examples that call `fig.show()` / `plt.show()`.
 - These can open blocking plot windows during `uv run pytest` because doctests are enabled for `src/`.
 - Unless you are actively working on those plotting/doc examples, prefer skipping them during local validation, e.g.:
