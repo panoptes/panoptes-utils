@@ -279,11 +279,11 @@ def test_post_event_hook_is_called_with_envelope_and_request(tmp_path):
         done.set()
 
     service = TelemetryService(tmp_path / "site", post_event_hooks=[my_hook])
-    result = service.append_event(EventRequest(type="weather", data={"sky": "clear"}))
+    service.append_event(EventRequest(type="weather", data={"sky": "clear"}))
 
     assert done.wait(timeout=1.0), "hook was not called within 1 second"
-    assert received["envelope"] == result
     assert received["envelope"]["type"] == "weather"
+    assert received["envelope"]["stream"] in ("site", "run")
     assert received["request"].type == "weather"
     assert received["request"].store_permanently is True
 
@@ -304,13 +304,16 @@ def test_post_event_hook_receives_store_permanently_flag(tmp_path):
 
 
 def test_post_event_hook_exception_is_non_fatal(tmp_path):
+    hook_ran = threading.Event()
+
     def bad_hook(envelope, request):
+        hook_ran.set()
         raise RuntimeError("boom")
 
     service = TelemetryService(tmp_path / "site", post_event_hooks=[bad_hook])
     result = service.append_event(EventRequest(type="weather", data={"sky": "clear"}))
 
-    time.sleep(0.05)  # give the daemon thread a moment to run
+    assert hook_ran.wait(timeout=1.0), "hook was not called within 1 second"
     assert result["seq"] == 1  # server still returned normally
 
 
@@ -348,13 +351,10 @@ def test_post_event_hook_does_not_block_server_response(tmp_path):
         slow_hook_finished.set()
 
     service = TelemetryService(tmp_path / "site", post_event_hooks=[slow_hook])
-
-    start = time.monotonic()
     result = service.append_event(EventRequest(type="weather", data={}))
-    elapsed = time.monotonic() - start
 
-    # append_event must return before the slow hook finishes
-    assert elapsed < 0.1, f"append_event blocked for {elapsed:.3f}s — hook was not non-blocking"
+    # The hook sleeps for 0.2 s; if append_event was synchronous it would have waited.
+    assert not slow_hook_finished.is_set(), "hook finished before append_event returned — was it blocking?"
     assert result["seq"] == 1
-    slow_hook_started.wait(timeout=1.0)
-    slow_hook_finished.wait(timeout=1.0)
+    assert slow_hook_started.wait(timeout=1.0), "hook thread never started"
+    assert slow_hook_finished.wait(timeout=1.0), "hook thread never completed"

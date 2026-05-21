@@ -8,12 +8,13 @@ import logging
 import os
 import sys
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, time, timedelta
 from multiprocessing import Process
 from pathlib import Path
 from platform import system
-from threading import Lock, Thread
+from threading import Lock
 from typing import Any, Literal
 
 import uvicorn
@@ -130,11 +131,14 @@ class TelemetryService:
             now_provider: Callable returning the current local datetime. Defaults to
                 ``datetime.now().astimezone()``.
             post_event_hooks: Optional list of callables invoked after every
-                ``append_event`` call.  Each hook receives the public event envelope
-                (``dict``) and the original ``EventRequest`` as positional arguments.
-                Hooks are executed in separate daemon threads so they are
-                **non-blocking**.  Any exception raised by a hook is caught and
-                logged as a warning so it can never interrupt the server.
+                ``append_event`` call.  Each hook receives the full event envelope
+                (``dict``, including the ``stream`` routing field) and a deep copy of
+                the original ``EventRequest`` as positional arguments, so mutations
+                inside one hook cannot affect other hooks or the server's return value.
+                Hooks are dispatched via a bounded ``ThreadPoolExecutor`` so they are
+                **non-blocking** and concurrent hook count is always capped.  Any
+                exception raised by a hook is caught and logged as a warning — it can
+                never interrupt the server.
         """
 
         self.site_dir = Path(site_dir).expanduser()
@@ -153,6 +157,7 @@ class TelemetryService:
         self._post_event_hooks: list[Callable[[dict[str, Any], EventRequest], None]] = list(
             post_event_hooks or []
         )
+        self._hook_executor = ThreadPoolExecutor(max_workers=4, thread_name_prefix="telemetry-hook")
 
     @property
     def run_active(self) -> bool:
@@ -294,7 +299,9 @@ class TelemetryService:
             result = self._public_event(envelope)
 
         for hook in self._post_event_hooks:
-            Thread(target=self._fire_hook, args=(hook, result, request), daemon=True).start()
+            self._hook_executor.submit(
+                self._fire_hook, hook, copy.deepcopy(envelope), request.model_copy(deep=True)
+            )
 
         return result
 
@@ -304,7 +311,11 @@ class TelemetryService:
         envelope: dict[str, Any],
         request: EventRequest,
     ) -> None:
-        """Invoke a single post-event hook, logging any exception as a warning."""
+        """Invoke a single post-event hook, logging any exception as a warning.
+
+        Both ``envelope`` and ``request`` are per-hook deep copies so mutations
+        inside a hook cannot affect other hooks or the server's return value.
+        """
         try:
             hook(envelope, request)
         except Exception as exc:
