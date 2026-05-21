@@ -210,7 +210,9 @@ def test_ephemeral_event_skips_file_write(tmp_path):
     site_dir = tmp_path / "site"
     client = TestClient(create_app(TelemetryService(site_dir, now_provider=lambda: fixed_now)))
 
-    response = client.post("/event", json={"type": "weather", "data": {"sky": "clear"}, "store_permanently": False})
+    response = client.post(
+        "/event", json={"type": "weather", "data": {"sky": "clear"}, "store_permanently": False}
+    )
 
     assert response.status_code == 200
     payload = response.json()
