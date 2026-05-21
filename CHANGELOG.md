@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.3.6 - 2026-05-21
+
+### Added
+
+* Added `post_event_hooks` parameter to `TelemetryService`, allowing callers to register callbacks that fire after every `append_event` call. Hooks run via a bounded `ThreadPoolExecutor` (non-blocking), receive deep copies of the envelope and request (mutation-safe), and have exceptions caught and logged as warnings (non-fatal). #358
+
 ## 0.3.5 - 2026-05-21
 
 ### Added
