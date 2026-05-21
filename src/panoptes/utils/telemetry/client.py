@@ -144,6 +144,7 @@ class TelemetryClient:
         data: Any,
         make_current: bool = True,
         meta: dict[str, Any] | None = None,
+        store_permanently: bool = True,
     ) -> TelemetryEvent:
         """Post a telemetry event to the current telemetry context.
 
@@ -153,11 +154,18 @@ class TelemetryClient:
         The returned :class:`~panoptes.utils.telemetry.models.TelemetryEvent`
         has its ``data`` field deserialized back to astropy Quantities where
         the unit strings are recognised.
+
+        When ``store_permanently`` is ``False`` the event updates the in-memory
+        current snapshot but is **not** written to the NDJSON file on disk.
+        The sequence counter still increments, so consumers of the NDJSON file
+        may see non-contiguous sequence numbers when ephemeral events are
+        interleaved with permanent ones.
         """
         payload = {
             "type": event_type,
             "data": json.loads(to_json(data)),
             "make_current": make_current,
+            "store_permanently": store_permanently,
             "meta": meta or {},
         }
         return self._to_event(self._request("POST", "/event", json=payload))
@@ -209,20 +217,20 @@ class TelemetryClient:
     ) -> str:
         """PanDB-compatible alias: record an event and mark it current.
 
-        The ``store_permanently`` flag is accepted for API compatibility but
-        has no effect — the telemetry server always appends events to the
-        NDJSON stream and always keeps the in-memory current snapshot.
+        When ``store_permanently`` is ``False`` the event updates the in-memory
+        current snapshot (visible via ``GET /current``) but is **not** written
+        to the NDJSON file on disk — matching the original PanDB semantics for
+        high-frequency ephemeral updates.
 
         Args:
             collection: Event type / collection name (e.g. ``"weather"``).
             obj: Data payload to record.
-            store_permanently: Accepted but ignored; included for PanDB
-                compatibility only.
+            store_permanently: If ``False``, skip the persistent NDJSON write.
 
         Returns:
             The sequence number of the recorded event as a string.
         """
-        response = self.post_event(collection, obj, make_current=True)
+        response = self.post_event(collection, obj, make_current=True, store_permanently=store_permanently)
         return str(response.seq)
 
     def insert(self, collection: str, obj: Any) -> str:
