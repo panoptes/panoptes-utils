@@ -136,6 +136,14 @@ panoptes-utils/
 4. Validate changes by checking for errors after editing
 5. Run relevant tests to confirm functionality
 
+**Before Committing or Pushing:**
+- Always run linting and formatting checks before committing or pushing:
+  ```bash
+  uv run ruff check .
+  uv run ruff format --check .
+  ```
+- Fix any errors before pushing. CI will fail on lint errors.
+
 **Commit Messages:**
 - Clear, descriptive commit messages
 - Reference issue numbers when applicable
