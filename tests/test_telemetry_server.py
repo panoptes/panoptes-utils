@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import threading
+import time
 from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
 
@@ -260,3 +262,99 @@ def test_site_rotation_uses_current_date_at_or_after_noon():
 
     assert get_site_day_key(at_noon) == "20260317"
     assert get_site_day_key(after_noon) == "20260317"
+
+
+# ---------------------------------------------------------------------------
+# Post-event hook tests
+# ---------------------------------------------------------------------------
+
+
+def test_post_event_hook_is_called_with_envelope_and_request(tmp_path):
+    received = {}
+    done = threading.Event()
+
+    def my_hook(envelope, request):
+        received["envelope"] = envelope
+        received["request"] = request
+        done.set()
+
+    service = TelemetryService(tmp_path / "site", post_event_hooks=[my_hook])
+    service.append_event(EventRequest(type="weather", data={"sky": "clear"}))
+
+    assert done.wait(timeout=1.0), "hook was not called within 1 second"
+    assert received["envelope"]["type"] == "weather"
+    assert received["envelope"]["stream"] in ("site", "run")
+    assert received["request"].type == "weather"
+    assert received["request"].store_permanently is True
+
+
+def test_post_event_hook_receives_store_permanently_flag(tmp_path):
+    received = []
+    done = threading.Event()
+
+    def my_hook(envelope, request):
+        received.append(request.store_permanently)
+        done.set()
+
+    service = TelemetryService(tmp_path / "site", post_event_hooks=[my_hook])
+    service.append_event(EventRequest(type="status", data={}, store_permanently=False))
+
+    assert done.wait(timeout=1.0), "hook was not called within 1 second"
+    assert received == [False]
+
+
+def test_post_event_hook_exception_is_non_fatal(tmp_path):
+    hook_ran = threading.Event()
+
+    def bad_hook(envelope, request):
+        hook_ran.set()
+        raise RuntimeError("boom")
+
+    service = TelemetryService(tmp_path / "site", post_event_hooks=[bad_hook])
+    result = service.append_event(EventRequest(type="weather", data={"sky": "clear"}))
+
+    assert hook_ran.wait(timeout=1.0), "hook was not called within 1 second"
+    assert result["seq"] == 1  # server still returned normally
+
+
+def test_multiple_post_event_hooks_all_fire(tmp_path):
+    calls = []
+    all_done = threading.Barrier(3)  # main thread + 2 hooks
+
+    def hook_a(envelope, request):
+        calls.append("a")
+        all_done.wait(timeout=1.0)
+
+    def hook_b(envelope, request):
+        calls.append("b")
+        all_done.wait(timeout=1.0)
+
+    service = TelemetryService(tmp_path / "site", post_event_hooks=[hook_a, hook_b])
+    service.append_event(EventRequest(type="weather", data={}))
+    all_done.wait(timeout=1.0)
+
+    assert sorted(calls) == ["a", "b"]
+
+
+def test_no_hooks_by_default(tmp_path):
+    service = TelemetryService(tmp_path / "site")
+    assert service._post_event_hooks == []
+
+
+def test_post_event_hook_does_not_block_server_response(tmp_path):
+    slow_hook_started = threading.Event()
+    slow_hook_finished = threading.Event()
+
+    def slow_hook(envelope, request):
+        slow_hook_started.set()
+        time.sleep(0.2)
+        slow_hook_finished.set()
+
+    service = TelemetryService(tmp_path / "site", post_event_hooks=[slow_hook])
+    result = service.append_event(EventRequest(type="weather", data={}))
+
+    # The hook sleeps for 0.2 s; if append_event was synchronous it would have waited.
+    assert not slow_hook_finished.is_set(), "hook finished before append_event returned — was it blocking?"
+    assert result["seq"] == 1
+    assert slow_hook_started.wait(timeout=1.0), "hook thread never started"
+    assert slow_hook_finished.wait(timeout=1.0), "hook thread never completed"
