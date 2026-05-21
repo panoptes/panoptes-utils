@@ -13,7 +13,7 @@ from datetime import UTC, datetime, time, timedelta
 from multiprocessing import Process
 from pathlib import Path
 from platform import system
-from threading import Lock
+from threading import Lock, Thread
 from typing import Any, Literal
 
 import uvicorn
@@ -121,6 +121,7 @@ class TelemetryService:
         self,
         site_dir: str | Path,
         now_provider: Callable[[], datetime] | None = None,
+        post_event_hooks: list[Callable[[dict[str, Any], EventRequest], None]] | None = None,
     ) -> None:
         """Create a telemetry service.
 
@@ -128,6 +129,12 @@ class TelemetryService:
             site_dir: Base directory for rotated site stream NDJSON files.
             now_provider: Callable returning the current local datetime. Defaults to
                 ``datetime.now().astimezone()``.
+            post_event_hooks: Optional list of callables invoked after every
+                ``append_event`` call.  Each hook receives the public event envelope
+                (``dict``) and the original ``EventRequest`` as positional arguments.
+                Hooks are executed in separate daemon threads so they are
+                **non-blocking**.  Any exception raised by a hook is caught and
+                logged as a warning so it can never interrupt the server.
         """
 
         self.site_dir = Path(site_dir).expanduser()
@@ -143,6 +150,9 @@ class TelemetryService:
             "run": 0,
         }
         self._active_run: ActiveRun | None = None
+        self._post_event_hooks: list[Callable[[dict[str, Any], EventRequest], None]] = list(
+            post_event_hooks or []
+        )
 
     @property
     def run_active(self) -> bool:
@@ -236,6 +246,10 @@ class TelemetryService:
     def append_event(self, request: EventRequest) -> dict[str, Any]:
         """Append an event to the current telemetry target and update the current view.
 
+        After the event is written and the internal lock is released, any registered
+        ``post_event_hooks`` are invoked in separate daemon threads.  Hook failures
+        are caught and logged as warnings and never affect the return value.
+
         Args:
             request: Event request payload.
 
@@ -277,7 +291,28 @@ class TelemetryService:
                 run_id=event_meta.get("run_id"),
             )
 
-            return self._public_event(envelope)
+            result = self._public_event(envelope)
+
+        for hook in self._post_event_hooks:
+            Thread(target=self._fire_hook, args=(hook, result, request), daemon=True).start()
+
+        return result
+
+    @staticmethod
+    def _fire_hook(
+        hook: Callable[[dict[str, Any], EventRequest], None],
+        envelope: dict[str, Any],
+        request: EventRequest,
+    ) -> None:
+        """Invoke a single post-event hook, logging any exception as a warning."""
+        try:
+            hook(envelope, request)
+        except Exception as exc:
+            logger.warning(
+                "Post-event hook {hook!r} raised an exception and was skipped: {exc!r}",
+                hook=hook,
+                exc=exc,
+            )
 
     def current_snapshot(self) -> dict[str, Any]:
         """Return the materialized current view for the public telemetry feed."""
