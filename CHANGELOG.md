@@ -8,7 +8,7 @@
 * Added `panoptes-utils telemetry migrate` CLI subcommand (backed by `panoptes.utils.telemetry.migrate`) to convert `json_store` flat-JSON records into telemetry NDJSON format.
 * Added "Database → Telemetry Migration" entry to MkDocs navigation.
 * Added PanDB-compatible methods to `TelemetryClient` (`insert_current`, `insert`, `get_current`, `find`, `clear_current`) so POCS and other callers can migrate by changing only the instantiation line.
-* Added `TelemetryEvent` and `PanDBRecord` Pydantic v2 models in `panoptes.utils.telemetry.models`. `TelemetryClient` methods now return typed objects instead of plain dicts; both support attribute access (`event.seq`) and backward-compatible dict-style access (`event["seq"]`, `event.get("seq")`).
+* Added `TelemetryEvent` Pydantic v2 model in `panoptes.utils.telemetry.models`. `TelemetryClient` methods now return typed objects instead of plain dicts; supports attribute access (`event.seq`) and backward-compatible dict-style access (`event["seq"]`, `event.get("seq")`).
 * `TelemetryClient.current()` now returns `dict[str, TelemetryEvent]` directly (previously returned `{"current": {...}}`), removing the HTTP response shape from the client API.
 
 ### Fixed
