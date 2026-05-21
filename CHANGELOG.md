@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 0.3.5 - 2026-05-21
+
+### Added
+
+* `TelemetryClient.post_event()` and `insert_current()` now honour `store_permanently=False`, skipping the NDJSON file write while still updating the in-memory current snapshot — matching PanDB semantics for high-frequency ephemeral updates. #357
+* Updated `AGENTS.md` to document the `store_permanently` flag and to require running `ruff check` / `ruff format --check` before every commit or push. #357
+
 ## 0.3.4 - 2026-05-20
 
 ### Added
