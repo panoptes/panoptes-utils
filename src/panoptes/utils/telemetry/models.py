@@ -51,9 +51,14 @@ class TelemetryEvent(BaseModel):
     data: dict[str, Any] = Field(default_factory=dict)
     meta: dict[str, Any] = Field(default_factory=dict)
 
-    @field_serializer("data", mode="plain")
+    @field_serializer("data", when_used="json")
     def _serialize_data(self, v: dict[str, Any]) -> dict[str, Any]:
-        """Convert non-JSON-native values (e.g. Quantities) to JSON-safe primitives."""
+        """Convert non-JSON-native values (e.g. Quantities) to JSON-safe primitives.
+
+        Only called during JSON serialization (model_dump_json / model_dump(mode="json")),
+        so Python-level access (event.data, event["data"]) always returns the original
+        deserialized values including Quantity objects.
+        """
         return json.loads(json.dumps(v, default=str))
 
     def _resolve_alias(self, key: str) -> Any:
@@ -70,21 +75,24 @@ class TelemetryEvent(BaseModel):
     def __getitem__(self, key: str) -> Any:
         if key in _PANDB_ALIASES:
             return self._resolve_alias(key)
-        return self.model_dump()[key]
+        try:
+            return getattr(self, key)
+        except AttributeError:
+            raise KeyError(key)
 
     def __contains__(self, key: object) -> bool:
-        return key in _PANDB_ALIASES or key in self.model_dump()
+        return key in _PANDB_ALIASES or key in self.model_fields
 
     def get(self, key: str, default: Any = None) -> Any:
         if key in _PANDB_ALIASES:
             return self._resolve_alias(key)
-        return self.model_dump().get(key, default)
+        return getattr(self, key, default)
 
     def keys(self):
-        return self.model_dump().keys()
+        return self.model_fields.keys()
 
     def items(self):
-        return self.model_dump().items()
+        return ((k, getattr(self, k)) for k in self.model_fields)
 
     def values(self):
-        return self.model_dump().values()
+        return (getattr(self, k) for k in self.model_fields)

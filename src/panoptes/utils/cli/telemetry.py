@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import time
 from copy import deepcopy
 from pathlib import Path
@@ -19,6 +20,7 @@ from rich.panel import Panel
 from rich.table import Table
 
 from panoptes.utils.telemetry import TelemetryClient
+from panoptes.utils.telemetry.models import TelemetryEvent
 from panoptes.utils.telemetry.server import telemetry_server
 
 app = typer.Typer(invoke_without_command=True, no_args_is_help=True)
@@ -65,24 +67,21 @@ def _payload_panel(
     )
 
 
-def _render_payload(payload: dict[str, Any]):
+def _render_payload(payload: dict[str, TelemetryEvent] | TelemetryEvent):
     """Render telemetry payloads with structured envelope fields plus JSON payloads."""
 
-    current_payload = payload.get("current")
-    if isinstance(current_payload, dict):
-        event_panels = [
-            _event_panel(event_type, event_payload)
-            for event_type, event_payload in current_payload.items()
-            if isinstance(event_payload, dict)
-        ]
-        if not event_panels:
-            return Markdown("_No current telemetry values_")
-        return Group(*event_panels)
+    # Single event (from current_event())
+    if isinstance(payload, TelemetryEvent):
+        return _event_panel(payload.type, payload)
 
-    return _event_panel(str(payload.get("type", "event")), payload)
+    # Full snapshot (from current()) — dict[str, TelemetryEvent]
+    event_panels = [_event_panel(event_type, event) for event_type, event in payload.items()]
+    if not event_panels:
+        return Markdown("_No current telemetry values_")
+    return Group(*event_panels)
 
 
-def _event_panel(event_name: str, event_payload: dict[str, Any]) -> Panel:
+def _event_panel(event_name: str, event_payload: TelemetryEvent | dict[str, Any]) -> Panel:
     """Render one telemetry event envelope."""
 
     envelope_items: list[tuple[str, str]] = []
@@ -114,10 +113,12 @@ def _event_panel(event_name: str, event_payload: dict[str, Any]) -> Panel:
 
     data_payload = event_payload.get("data")
     if data_payload is not None:
+        # Serialize safely — data may contain non-JSON-native values (e.g. Quantities)
+        safe_data = json.loads(json.dumps(data_payload, default=str))
         sections.extend(
             [
                 Markdown("**data**"),
-                JSON.from_data(data_payload),
+                JSON.from_data(safe_data),
             ]
         )
 
@@ -128,7 +129,9 @@ def _event_panel(event_name: str, event_payload: dict[str, Any]) -> Panel:
     )
 
 
-def _get_current_payload(client: TelemetryClient, event_type: str | None) -> dict[str, Any]:
+def _get_current_payload(
+    client: TelemetryClient, event_type: str | None
+) -> dict[str, TelemetryEvent] | TelemetryEvent:
     """Fetch the current telemetry payload."""
 
     if event_type is not None:

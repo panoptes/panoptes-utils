@@ -3,6 +3,7 @@ from __future__ import annotations
 from typer.testing import CliRunner
 
 from panoptes.utils.cli.telemetry import app
+from panoptes.utils.telemetry.models import TelemetryEvent
 
 runner = CliRunner()
 
@@ -14,29 +15,27 @@ class _FakeTelemetryClient:
         self.current_calls = 0
         self.current_event_calls = 0
 
-    def current(self) -> dict[str, object]:
+    def current(self) -> dict[str, TelemetryEvent]:
         self.current_calls += 1
         return {
-            "current": {
-                "weather": {
-                    "type": "weather",
-                    "seq": 4,
-                    "ts": "2026-03-18T18:00:00.000Z",
-                    "data": {"sky": "clear"},
-                    "meta": {"source": "sensor", "run_id": "001"},
-                }
-            }
+            "weather": TelemetryEvent(
+                seq=4,
+                ts="2026-03-18T18:00:00.000Z",
+                type="weather",
+                data={"sky": "clear"},
+                meta={"source": "sensor", "run_id": "001"},
+            )
         }
 
-    def current_event(self, event_type: str) -> dict[str, object]:
+    def current_event(self, event_type: str) -> TelemetryEvent:
         self.current_event_calls += 1
-        return {
-            "type": event_type,
-            "seq": 5,
-            "ts": "2026-03-18T18:00:01.000Z",
-            "data": {"state": "running"},
-            "meta": {"source": "mount"},
-        }
+        return TelemetryEvent(
+            seq=5,
+            ts="2026-03-18T18:00:01.000Z",
+            type=event_type,
+            data={"state": "running"},
+            meta={"source": "mount"},
+        )
 
 
 class _FollowTelemetryClient:
@@ -45,31 +44,27 @@ class _FollowTelemetryClient:
         self.port = port
         self._payloads = [
             {
-                "current": {
-                    "status": {
-                        "type": "status",
-                        "seq": 1,
-                        "ts": "2026-03-18T18:00:00.000Z",
-                        "data": {"state": "idle"},
-                        "meta": {"run_id": "001"},
-                    }
-                }
+                "status": TelemetryEvent(
+                    seq=1,
+                    ts="2026-03-18T18:00:00.000Z",
+                    type="status",
+                    data={"state": "idle"},
+                    meta={"run_id": "001"},
+                )
             },
             {
-                "current": {
-                    "status": {
-                        "type": "status",
-                        "seq": 2,
-                        "ts": "2026-03-18T18:00:01.000Z",
-                        "data": {"state": "running"},
-                        "meta": {"run_id": "001"},
-                    }
-                }
+                "status": TelemetryEvent(
+                    seq=2,
+                    ts="2026-03-18T18:00:01.000Z",
+                    type="status",
+                    data={"state": "running"},
+                    meta={"run_id": "001"},
+                )
             },
         ]
         self._index = 0
 
-    def current(self) -> dict[str, object]:
+    def current(self) -> dict[str, TelemetryEvent]:
         payload = self._payloads[min(self._index, len(self._payloads) - 1)]
         self._index += 1
         return payload
