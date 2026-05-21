@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
 
 from fastapi.testclient import TestClient
@@ -90,7 +91,8 @@ def test_telemetry_client_current_merges_site_and_run_context(tmp_path):
 
 
 def test_pandb_compat_insert_current_returns_seq(tmp_path):
-    app = create_app(TelemetryService(tmp_path / "site"))
+    site_dir = tmp_path / "site"
+    app = create_app(TelemetryService(site_dir))
 
     with TestClient(app) as test_client:
         client = TelemetryClient(base_url="http://testserver", session=test_client)
@@ -100,6 +102,29 @@ def test_pandb_compat_insert_current_returns_seq(tmp_path):
 
         obj_id2 = client.insert_current("weather", {"sky": "cloudy"}, store_permanently=False)
         assert obj_id2 == "2"
+
+        ndjson_files = list(site_dir.glob("*.ndjson"))
+        assert len(ndjson_files) == 1
+        lines = ndjson_files[0].read_text(encoding="utf-8").splitlines()
+        assert len(lines) == 1
+        assert json.loads(lines[0])["seq"] == 1
+
+
+def test_post_event_store_permanently_false_skips_file_write(tmp_path):
+    site_dir = tmp_path / "site"
+    app = create_app(TelemetryService(site_dir))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        event = client.post_event("weather", {"sky": "clear"}, store_permanently=False)
+        assert event.seq == 1
+
+        current = client.current()
+        assert "weather" in current
+
+        ndjson_files = list(site_dir.glob("*.ndjson"))
+        assert ndjson_files == []
 
 
 def test_pandb_compat_insert_returns_seq_and_does_not_update_current(tmp_path):

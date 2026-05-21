@@ -110,6 +110,7 @@ class EventRequest(BaseModel):
     type: str
     data: Any
     make_current: bool = True
+    store_permanently: bool = True
     meta: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -257,10 +258,11 @@ class TelemetryService:
                 "meta": event_meta,
             }
 
-            output_path = self._stream_path(target, now)
-            output_path.parent.mkdir(parents=True, exist_ok=True)
-            with output_path.open("a", encoding="utf-8") as output_file:
-                output_file.write(json.dumps(envelope, separators=(",", ":")) + "\n")
+            if request.store_permanently:
+                output_path = self._stream_path(target, now)
+                output_path.parent.mkdir(parents=True, exist_ok=True)
+                with output_path.open("a", encoding="utf-8") as output_file:
+                    output_file.write(json.dumps(envelope, separators=(",", ":")) + "\n")
 
             self._seq[target] = envelope["seq"]
 

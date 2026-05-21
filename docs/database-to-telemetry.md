@@ -146,7 +146,7 @@ print(record['_id'])   # sequence number as string
 
 | Method | PanDB behaviour | TelemetryClient behaviour |
 |---|---|---|
-| `insert_current(..., store_permanently=False)` | Skips the permanent file, only updates current snapshot | `store_permanently` is accepted but ignored — all events are always written to NDJSON |
+| `insert_current(..., store_permanently=False)` | Skips the permanent file, only updates current snapshot | Skips the NDJSON file write, only updates the in-memory current snapshot — matching PanDB semantics |
 | `find(col, obj_id)` | Returns the matching record | Always returns `None`; parse NDJSON files for historical queries |
 | `clear_current(type)` | Deletes `current_<type>.json` | No-op; the server manages its own in-memory snapshot |
 

@@ -205,6 +205,47 @@ def test_append_event_does_not_advance_sequence_on_write_failure(tmp_path, monke
     assert third_event["seq"] == 2
 
 
+def test_ephemeral_event_skips_file_write(tmp_path):
+    fixed_now = datetime(2026, 3, 17, 14, 15, tzinfo=UTC)
+    site_dir = tmp_path / "site"
+    client = TestClient(create_app(TelemetryService(site_dir, now_provider=lambda: fixed_now)))
+
+    response = client.post("/event", json={"type": "weather", "data": {"sky": "clear"}, "store_permanently": False})
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["seq"] == 1
+
+    current_response = client.get("/current")
+    assert "weather" in current_response.json()["current"]
+
+    ndjson_files = list(site_dir.glob("*.ndjson"))
+    assert ndjson_files == []
+
+
+def test_mixed_permanent_and_ephemeral_events(tmp_path):
+    fixed_now = datetime(2026, 3, 17, 14, 20, tzinfo=UTC)
+    site_dir = tmp_path / "site"
+    client = TestClient(create_app(TelemetryService(site_dir, now_provider=lambda: fixed_now)))
+
+    permanent = client.post("/event", json={"type": "weather", "data": {"sky": "clear"}}).json()
+    ephemeral = client.post(
+        "/event", json={"type": "weather", "data": {"sky": "cloudy"}, "store_permanently": False}
+    ).json()
+
+    assert permanent["seq"] == 1
+    assert ephemeral["seq"] == 2
+
+    current_response = client.get("/current")
+    assert current_response.json()["current"]["weather"] == ephemeral
+
+    output_path = site_dir / "site_20260317.ndjson"
+    assert output_path.exists()
+    records = _read_ndjson(output_path)
+    assert len(records) == 1
+    assert records[0]["seq"] == 1
+
+
 def test_site_rotation_uses_previous_date_before_noon():
     before_noon = datetime(2026, 3, 17, 11, 59, tzinfo=timezone(timedelta(hours=-7)))
 
