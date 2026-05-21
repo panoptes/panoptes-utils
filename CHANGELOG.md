@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## [Unreleased]
+
+### Added
+
+* Added `docs/database-to-telemetry.md` migration guide explaining differences between `PanDB`/`PanFileDB` and the telemetry server, with a full code mapping table and FAQ.
+* Added `panoptes-utils telemetry migrate` CLI subcommand (backed by `panoptes.utils.telemetry.migrate`) to convert `json_store` flat-JSON records into telemetry NDJSON format.
+* Added "Database → Telemetry Migration" entry to MkDocs navigation.
+* Added PanDB-compatible methods to `TelemetryClient` (`insert_current`, `insert`, `get_current`, `find`, `clear_current`) so POCS and other callers can migrate by changing only the instantiation line.
+* Added `TelemetryEvent` Pydantic v2 model in `panoptes.utils.telemetry.models`. `TelemetryClient` methods now return typed objects instead of plain dicts; supports attribute access (`event.seq`) and backward-compatible dict-style access (`event["seq"]`, `event.get("seq")`).
+* `TelemetryClient.current()` now returns `dict[str, TelemetryEvent]` directly (previously returned `{"current": {...}}`), removing the HTTP response shape from the client API.
+
+### Fixed
+
+* Added `# doctest: +SKIP` to `fig.show()` / `plt.show()` calls in `images/plot.py` and `images/misc.py` doctests to prevent blocking GUI windows during `pytest --doctest-modules`.
+
 ## 0.3.3 - 2026-05-20
 
 ### Changed

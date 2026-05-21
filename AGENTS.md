@@ -36,7 +36,12 @@ panoptes-utils/
 │   │   └── server.py           # Config server implementation
 │   ├── images/                 # Image processing utilities
 │   ├── serial/                 # Serial device communication
-│   ├── database/               # Database utilities
+│   ├── database/               # Legacy database utilities (PanDB/PanFileDB)
+│   ├── telemetry/              # Telemetry server, client, and models
+│   │   ├── client.py           # TelemetryClient (HTTP client + PanDB-compat interface)
+│   │   ├── server.py           # FastAPI+uvicorn telemetry server
+│   │   ├── models.py           # TelemetryEvent Pydantic model
+│   │   └── migrate.py          # PanFileDB → NDJSON migration logic
 │   ├── time.py                 # Time utilities (CountdownTimer, etc.)
 │   ├── serializers.py          # Data serialization
 │   ├── horizon.py              # Horizon calculations
@@ -185,6 +190,7 @@ Command-line tools built with Typer.
 **Available commands:**
 - `panoptes-utils image`: Image processing commands
 - `panoptes-utils config`: Configuration server management
+- `panoptes-utils telemetry`: Telemetry server management and migration
 
 ### Image Processing Module
 
@@ -244,6 +250,41 @@ Utilities for standard data serialization, handling astronomical objects like `a
 - Note that `from_json` automatic reconstruction is limited to specific units; for others, you may need manual conversion using `astropy.units`.
 - `serialize_all_objects` is the idiomatic way to prepare complex objects for transmission over REST/FastAPI.
 
+### Telemetry Module
+
+**Location:** `src/panoptes/utils/telemetry/`
+
+The telemetry server is the preferred replacement for `PanDB`/`PanFileDB` for all production observing code. It provides a lightweight HTTP API and Python client for recording time-series observatory data. See `docs/database-to-telemetry.md` for the migration guide.
+
+**Components:**
+- `client.py`: `TelemetryClient` — HTTP client with PanDB-compatible interface
+- `server.py`: FastAPI+uvicorn telemetry server
+- `models.py`: `TelemetryEvent` Pydantic v2 model
+- `migrate.py`: Core logic for `panoptes-utils telemetry migrate`
+
+**Return types:**
+`TelemetryClient` methods all return `TelemetryEvent` (a frozen Pydantic v2 model), not plain dicts:
+- `post_event(...)` → `TelemetryEvent`
+- `current_event(type)` → `TelemetryEvent`
+- `current()` → `dict[str, TelemetryEvent]` (keyed by event type)
+- `get_current(col)` → `TelemetryEvent | None`
+
+`TelemetryEvent` supports attribute access (`event.seq`) **and** dict-style access (`event["seq"]`, `"seq" in event`) for backward compatibility. It also exposes PanDB-compatible aliases (`event["_id"]` → `str(event.seq)`, `event["date"]` → `event.ts`) so call-sites written against `PanFileDB` records work unchanged.
+
+**PanDB drop-in compatibility:**
+`TelemetryClient` implements `insert_current`, `insert`, `get_current`, `find`, and `clear_current` so that code written against `PanDB`/`PanFileDB` can migrate by changing only the instantiation line. See `docs/database-to-telemetry.md`.
+
+**Astropy Quantity handling:**
+Data posted via `post_event()` is serialized with `to_json()` before transmission. Data retrieved via `current_event()`, `current()`, or `get_current()` is deserialized with `deserialize_all_objects()` so Quantities round-trip correctly (e.g. `45.0 * u.degree` → stored as `"45.0 deg"` → returned as `Quantity`).
+
+**Default port:** `6562`. Start with `panoptes-utils telemetry run --site-dir <path>`.
+
+**When modifying:**
+- Preserve the PanDB-compatible interface in `client.py`
+- Keep `TelemetryEvent` in sync with the server envelope shape
+- Test Quantity round-trips in `tests/test_telemetry_client.py`
+- The `current()` method returns `dict[str, TelemetryEvent]` directly (no `{"current": ...}` wrapper)
+
 ## Configuration
 
 **Configuration files:** `tests/testing.yaml` (for testing)
@@ -287,7 +328,7 @@ panoptes-utils config run --host 0.0.0.0 --port 8765 --config-file tests/testing
 2. Use Typer decorators for command definition
 3. Add help text, examples, and type hints
 4. Write tests for the command
-5. Update documentation in `docs/cli.rst`
+5. Update documentation in `docs/`
 
 ### Adding a New Utility Function
 

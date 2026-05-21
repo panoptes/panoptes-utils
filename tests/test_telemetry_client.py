@@ -30,7 +30,7 @@ def test_telemetry_client_posts_and_reads_current(tmp_path):
         current = client.current()
         current_weather = client.current_event("weather")
 
-        assert current["current"]["weather"] == event
+        assert current["weather"] == event
         assert current_weather == event
 
 
@@ -79,8 +79,195 @@ def test_telemetry_client_current_merges_site_and_run_context(tmp_path):
         run_status = client.post_event("status", {"state": "idle"})
 
         assert client.current() == {
-            "current": {
-                "weather": site_weather,
-                "status": run_status,
-            },
+            "weather": site_weather,
+            "status": run_status,
         }
+
+
+# ---------------------------------------------------------------------------
+# PanDB-compatible interface
+# ---------------------------------------------------------------------------
+
+
+def test_pandb_compat_insert_current_returns_seq(tmp_path):
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        obj_id = client.insert_current("weather", {"sky": "clear"})
+        assert obj_id == "1"
+
+        obj_id2 = client.insert_current("weather", {"sky": "cloudy"}, store_permanently=False)
+        assert obj_id2 == "2"
+
+
+def test_pandb_compat_insert_returns_seq_and_does_not_update_current(tmp_path):
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        obj_id = client.insert("weather", {"sky": "overcast"})
+        assert obj_id == "1"
+        # make_current=False means no current snapshot exists yet.
+        assert client.get_current("weather") is None
+
+
+def test_pandb_compat_get_current_returns_pandb_shape(tmp_path):
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        client.insert_current("environment", {"temp_c": 15.2})
+        record = client.get_current("environment")
+
+        assert record is not None
+        assert record["data"] == {"temp_c": 15.2}
+        assert record["type"] == "environment"
+        # PanDB-compatible aliases
+        assert "_id" in record
+        assert "date" in record
+        assert record["_id"] == str(record.seq)
+        assert record["date"] == record.ts
+        # Native fields also accessible
+        assert record.seq == 1
+        assert record.meta is not None
+
+
+def test_pandb_compat_get_current_returns_none_when_missing(tmp_path):
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        assert client.get_current("nonexistent") is None
+
+
+def test_pandb_compat_find_returns_none(tmp_path):
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        obj_id = client.insert_current("weather", {"sky": "clear"})
+        assert client.find("weather", obj_id) is None
+
+
+def test_pandb_compat_clear_current_is_noop(tmp_path):
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        client.insert_current("weather", {"sky": "clear"})
+        client.clear_current("weather")
+        # Current snapshot is unchanged — clear_current is a no-op.
+        assert client.get_current("weather") is not None
+
+
+def test_post_event_serializes_astropy_quantities(tmp_path):
+    """Quantities round-trip: stored as strings, returned as Quantity objects."""
+    from astropy import units as u
+
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        data = {
+            "temperature": 22.5 * u.deg_C,
+            "wind_speed": 5.0 * u.m / u.s,
+            "humidity": 0.65,
+        }
+        result = client.post_event("environment", data)
+        assert result["type"] == "environment"
+
+        current = client.get_current("environment")
+        assert current is not None
+        # Quantities are deserialized back on retrieval where units are recognised.
+        assert current["data"]["wind_speed"] == 5.0 * u.m / u.s
+        # Plain floats pass through unchanged.
+        assert current["data"]["humidity"] == 0.65
+
+
+def test_insert_current_serializes_astropy_quantities(tmp_path):
+    """PanDB-compat insert_current must also handle Quantities (most common POCS path)."""
+    from astropy import units as u
+
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        data = {
+            "alt": 45.0 * u.degree,
+            "az": 180.0 * u.degree,
+            "ra": 10.5 * u.hourangle,
+        }
+        seq = client.insert_current("mount", data)
+        assert seq  # truthy sequence number string
+
+        record = client.get_current("mount")
+        assert record is not None
+        assert record["data"]["alt"] == 45.0 * u.degree
+        assert record["data"]["az"] == 180.0 * u.degree
+
+
+def test_post_event_serializes_numpy_arrays(tmp_path):
+    """numpy arrays inside data dicts must be serialized without error."""
+    import numpy as np
+
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        data = {"values": np.array([1.0, 2.0, 3.0]), "count": 3}
+        result = client.post_event("stats", data)
+        assert result["type"] == "stats"
+
+        current = client.get_current("stats")
+        assert current["data"]["values"] == [1.0, 2.0, 3.0]
+        assert current["data"]["count"] == 3
+
+
+def test_post_event_serializes_nested_quantities(tmp_path):
+    """Quantities nested inside sub-dicts must be serialized and deserialized correctly."""
+    from astropy import units as u
+
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        data = {
+            "location": {
+                "latitude": 20.7 * u.degree,
+                "longitude": -156.3 * u.degree,
+                "elevation": 3055.0 * u.meter,
+            }
+        }
+        client.post_event("site", data)
+        current = client.get_current("site")
+        loc = current["data"]["location"]
+        assert loc["latitude"] == 20.7 * u.degree
+        assert loc["elevation"] == 3055.0 * u.meter
+
+
+def test_current_deserializes_all_event_data(tmp_path):
+    """current() must deserialize Quantities in every event in the snapshot."""
+    from astropy import units as u
+
+    app = create_app(TelemetryService(tmp_path / "site"))
+
+    with TestClient(app) as test_client:
+        client = TelemetryClient(base_url="http://testserver", session=test_client)
+
+        client.post_event("mount", {"alt": 45.0 * u.degree, "az": 90.0 * u.degree})
+        client.post_event("weather", {"wind_speed": 3.0 * u.m / u.s})
+
+        snapshot = client.current()
+        assert snapshot["mount"]["data"]["alt"] == 45.0 * u.degree
+        assert snapshot["weather"]["data"]["wind_speed"] == 3.0 * u.m / u.s

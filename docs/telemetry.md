@@ -3,6 +3,40 @@
 The telemetry server provides a lightweight local HTTP API plus a Python client
 for recording observatory telemetry.
 
+## What is a "run"?
+
+A **run** represents a single observation session — typically one night's worth
+of observing, or a discrete target sequence within a night. Concretely, it is
+the period between calling `start_run()` and `stop_run()`.
+
+The server always records telemetry, but the run context changes *where* events
+are stored and how they are labelled:
+
+* **Outside a run (site stream):** Events are written to a rotating daily file,
+  `site_YYYYMMDD.ndjson`, and represent persistent, site-wide readings such as
+  weather conditions and ambient environment data.
+* **Inside a run (run stream):** Events are written to a dedicated per-run file,
+  `<run_id>/telemetry.ndjson`, and are automatically stamped with
+  `meta.run_id`. This keeps each night's observation data neatly isolated.
+
+Only one run can be active at a time. Starting a run does not interrupt
+site-stream recording; both streams are active concurrently while a run is open.
+
+```python
+client = TelemetryClient()
+
+# Site-wide event — goes to site_YYYYMMDD.ndjson
+client.post_event("weather", {"sky": "clear"})
+
+# Start an observation run for tonight
+client.start_run(run_id="20260520_M42")
+
+# Run-scoped event — goes to 20260520_M42/telemetry.ndjson, tagged with run_id
+client.post_event("status", {"state": "observing", "target": "M42"})
+
+client.stop_run()
+```
+
 ## Public telemetry model
 
 The public model is intentionally simple:
@@ -67,7 +101,7 @@ client = TelemetryClient()
 client.post_event("weather", {"sky": "clear"})
 client.start_run(run_id="001")
 client.post_event("status", {"state": "running"})
-print(client.current()["current"])
+print(client.current())   # dict[str, TelemetryEvent]
 client.stop_run()
 ```
 
@@ -130,7 +164,55 @@ curl -s \
   -d '{"type":"status","data":{"state":"running"}}'
 ```
 
-## Response shape
+## Return types
+
+`TelemetryClient` methods return `TelemetryEvent` — a typed, frozen Pydantic v2
+model — rather than plain dicts. Both `current()` and `get_current()` return the
+same type, so there is no impedance mismatch between the two APIs.
+
+| Method | Return type |
+|---|---|
+| `post_event(...)` | `TelemetryEvent` |
+| `current_event(type)` | `TelemetryEvent` |
+| `current()` | `dict[str, TelemetryEvent]` (keyed by event type) |
+| `get_current(col)` | `TelemetryEvent \| None` |
+
+`TelemetryEvent` supports attribute access **and** dict-style access.  It also
+exposes PanDB-compatible aliases (`_id` → `str(seq)`, `date` → `ts`) so that
+call-sites previously written against `PanFileDB` records work without change:
+
+```python
+event = client.post_event("weather", {"sky": "clear"})
+
+# Native attribute access
+print(event.seq, event.ts, event.type, event.data, event.meta)
+
+# Dict-style access (native fields)
+print(event["seq"], event.get("ts"))
+print("type" in event)  # True
+
+# PanDB-compatible aliases (for migrated code)
+print(event["_id"])    # str(event.seq)
+print(event["date"])   # event.ts
+print("_id" in event)  # True
+
+# Serialization
+print(event.model_dump())
+print(event.model_dump_json())
+```
+
+`get_current()` returns the same `TelemetryEvent`, so you get the full envelope
+(including `meta` with `run_id`) rather than a lossy projection:
+
+```python
+record = client.get_current("weather")
+if record is not None:
+    # All of these work:
+    print(record["_id"], record["date"], record["data"])  # PanDB-compatible
+    print(record.seq, record.ts, record.meta)             # native fields
+```
+
+
 
 Successful event responses include:
 

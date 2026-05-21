@@ -59,6 +59,7 @@ nav:
   - CLI Reference: cli.md
   - Config Server: config-server.md
   - Telemetry Server: telemetry.md
+  - Database → Telemetry Migration: database-to-telemetry.md
   - API Reference: api.md
   - Changelog: changelog.md
   - Authors: authors.md
