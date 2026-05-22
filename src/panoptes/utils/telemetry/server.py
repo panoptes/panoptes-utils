@@ -23,6 +23,7 @@ from loguru import logger
 from pydantic import BaseModel, Field
 
 from panoptes.utils import __version__
+from panoptes.utils.time import current_time
 
 if system() == "Darwin":
     import multiprocessing
@@ -41,9 +42,12 @@ StorageTarget = Literal["site", "run"]
 
 
 def utc_iso_z(now: datetime | None = None) -> str:
-    """Return a UTC ISO-8601 timestamp with a trailing ``Z``."""
+    """Return a UTC ISO-8601 timestamp with a trailing ``Z``.
 
-    current = now or datetime.now(UTC)
+    Uses ``current_time()`` by default so that ``$POCSTIME`` is respected
+    during testing.
+    """
+    current = now or current_time().to_datetime(UTC)
     return current.astimezone(UTC).isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
 
@@ -143,7 +147,7 @@ class TelemetryService:
 
         self.site_dir = Path(site_dir).expanduser()
         self.site_dir.mkdir(parents=True, exist_ok=True)
-        self._now_provider = now_provider or (lambda: datetime.now().astimezone())
+        self._now_provider = now_provider or (lambda: current_time().to_datetime(UTC).astimezone())
         self._lock = Lock()
         self._current: dict[StorageTarget, dict[str, dict[str, Any]]] = {
             "site": {},
