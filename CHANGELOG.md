@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [Unreleased]
+
+### Fixed
+
+* Telemetry client now generates timestamps using `current_time()` (respecting `$POCSTIME`) and sends them to the server as part of each event request. The server uses the client-supplied timestamp when present, falling back to its own clock otherwise. This fixes age-calculation errors in POCS tests where `$POCSTIME` is changed mid-test but the telemetry subprocess cannot see those changes.
+
 ## 0.3.6 - 2026-05-21
 
 ### Added

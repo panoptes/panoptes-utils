@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+from datetime import UTC
 from typing import Any
 
 import requests
@@ -11,6 +12,13 @@ from loguru import logger
 
 from panoptes.utils.serializers import deserialize_all_objects, to_json
 from panoptes.utils.telemetry.models import TelemetryEvent
+from panoptes.utils.time import current_time
+
+
+def _client_utc_iso_z() -> str:
+    """Return a UTC ISO-8601 timestamp using ``current_time()`` so that ``$POCSTIME`` is respected."""
+    ts = current_time().to_datetime(UTC).astimezone(UTC)
+    return ts.isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
 
 class TelemetryClientError(RuntimeError):
@@ -167,6 +175,7 @@ class TelemetryClient:
             "make_current": make_current,
             "store_permanently": store_permanently,
             "meta": meta or {},
+            "ts": _client_utc_iso_z(),
         }
         return self._to_event(self._request("POST", "/event", json=payload))
 

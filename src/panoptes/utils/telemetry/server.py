@@ -117,6 +117,15 @@ class EventRequest(BaseModel):
     make_current: bool = True
     store_permanently: bool = True
     meta: dict[str, Any] = Field(default_factory=dict)
+    ts: str | None = Field(
+        default=None,
+        description=(
+            "Optional client-supplied UTC timestamp (ISO-8601 with trailing 'Z'). "
+            "When provided the server uses this value instead of generating its own, "
+            "ensuring that ``$POCSTIME`` overrides made in the calling process "
+            "(e.g. during tests) are reflected in the stored event."
+        ),
+    )
 
 
 class TelemetryService:
@@ -274,7 +283,7 @@ class TelemetryService:
                 event_meta["run_id"] = self._active_run.run_id
             envelope = {
                 "seq": self._seq[target] + 1,
-                "ts": utc_iso_z(now),
+                "ts": request.ts if request.ts is not None else utc_iso_z(now),
                 "stream": target,
                 "type": request.type,
                 "data": request.data,
