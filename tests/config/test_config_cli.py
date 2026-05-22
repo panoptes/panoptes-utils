@@ -1,3 +1,4 @@
+import sys
 import time
 from multiprocessing import Process
 
@@ -17,11 +18,9 @@ def cli_config_port():
     return 12345
 
 
+@pytest.mark.skipif(sys.platform == "darwin", reason="forking CliRunner on macOS causes fatal abort")
 def test_cli_server(runner, config_path, cli_config_port):
     def run_cli():
-        # Typer/Click runner handles some of the sys.argv but for a full server
-        # subprocess we use the runner.invoke which is usually synchronous.
-        # Here we are running it in a Process, which can be tricky with CliRunner.
         result = runner.invoke(
             app,
             [
