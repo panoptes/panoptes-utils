@@ -430,13 +430,13 @@ panoptes-utils config run --host 0.0.0.0 --port 8765 --config-file tests/testing
      - Bug fix description. #124
      ```
 
-5. **Commit changelog updates — include entries in the commit message body:**
+5. **Commit changelog updates — include a succinct summary in the commit message body:**
    ```bash
    CHANGELOG_BODY=$(sed -n "/^## ${NEW_VERSION#v}/,/^## /p" CHANGELOG.md | sed '1d;$d')
    git add CHANGELOG.md
    git commit -m "Update CHANGELOG for ${NEW_VERSION}" -m "${CHANGELOG_BODY}"
    ```
-   The commit message body must contain the full changelog entries for that version, not just the title line.
+   Keep entries brief — one short line per item (≤ 80 chars). The goal is a scannable summary, not full documentation.
 
 6. **Create a Pull Request (skip if user asks to push directly to `main`):**
    - Push the release branch to the repository and create a PR against `main`.
@@ -451,7 +451,7 @@ panoptes-utils config run --host 0.0.0.0 --port 8765 --config-file tests/testing
    git checkout main
    git pull origin main
    ```
-   - Tag the release commit and push. **The tag message must include the full changelog entries for this release.** The GitHub Release body is also extracted directly from `CHANGELOG.md` by the CI workflow (`.github/workflows/create-release.yml`), so the CHANGELOG must be accurate and complete before tagging.
+   - Tag the release commit and push. **The tag message should be a succinct summary of the changelog entries** (one short line per item). The GitHub Release body is extracted directly from `CHANGELOG.md` by the CI workflow (`.github/workflows/create-release.yml`), so the CHANGELOG must be accurate and complete before tagging.
    ```bash
    CHANGELOG_BODY=$(sed -n "/^## ${NEW_VERSION#v}/,/^## /p" CHANGELOG.md | sed '1d;$d')
    git tag -a ${NEW_VERSION} -m "Release ${NEW_VERSION}" -m "${CHANGELOG_BODY}"
@@ -481,7 +481,7 @@ panoptes-utils config run --host 0.0.0.0 --port 8765 --config-file tests/testing
 - Parse version from `git describe --tags --abbrev=0`
 - Calculate next version based on changelog entries or commit messages
 - Extract date automatically: `date +%Y-%m-%d`
-- **Always embed the full changelog entries** in both the CHANGELOG commit message body and the annotated tag message — not just the version title line.
+- **Keep tag/commit messages succinct** — one short line per changelog item (≤ 80 chars), no inline code, no long explanations. Scannable summaries only.
 - The changelog body can be extracted with: `sed -n "/^## ${NEW_VERSION#v}/,/^## /p" CHANGELOG.md | sed '1d;$d'`
 - Validate version format matches `vX.Y.Z` pattern
 - Ensure CHANGELOG has proper section headers before merging
