@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## 0.4.0 - 2026-05-26
+
 ### Added
 
 * Added Pydantic v2 config models (`LocationConfig`, `DirectoriesConfig`, `DatabaseConfig`, `UnitConfig`) in `panoptes.utils.config.models` for typed, validated access to the shared config sections.
