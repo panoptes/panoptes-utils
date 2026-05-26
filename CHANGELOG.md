@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## [Unreleased]
+
+### Added
+
+* Added Pydantic v2 config models (`LocationConfig`, `DirectoriesConfig`, `DatabaseConfig`, `PANOPTESBaseConfig`) in `panoptes.utils.config.models` for typed, validated access to the shared config sections.
+* Added `ConfigWatcher` in `panoptes.utils.config.watcher` — watches a YAML config file with `watchdog` and fires per-key callbacks when values change. Supports context manager usage.
+* `load_config()` now accepts an optional `model=` parameter; when provided, the loaded dict is validated and returned as a model instance instead of a raw dict.
+* Added `pydantic` and `watchdog` to core dependencies.
+
 ## 0.3.7 - 2026-05-21
 
 ### Fixed

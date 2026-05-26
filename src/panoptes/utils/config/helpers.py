@@ -1,5 +1,6 @@
 from contextlib import suppress
 from pathlib import Path
+from typing import Any
 
 from loguru import logger
 
@@ -9,8 +10,11 @@ from panoptes.utils.utils import listify
 
 
 def load_config(
-    config_files: str | Path | list | None = None, parse: bool = True, load_local: bool = True
-) -> dict:
+    config_files: str | Path | list | None = None,
+    parse: bool = True,
+    load_local: bool = True,
+    model: type | None = None,
+) -> dict | Any:
     """Loads configuration information from one or more YAML files.
 
     This function is used by the config server; normal config usage should
@@ -28,9 +32,13 @@ def load_config(
             Defaults to True.
         load_local (bool, optional): Whether to load local override files (ending with `_local.yaml`)
             if present. Defaults to True.
+        model (type[BaseModel] | None, optional): If provided, the loaded config dict is passed
+            to ``model.model_validate(config)`` and the model instance is returned instead of
+            the raw dict. Defaults to None.
 
     Returns:
-        dict: Dictionary of configuration items.
+        dict | BaseModel: Dictionary of configuration items, or a validated model instance
+            if ``model`` is provided.
 
     Raises:
         ruamel.yaml.parser.ParserError: If a YAML file cannot be parsed.
@@ -62,6 +70,9 @@ def load_config(
         with suppress(KeyError):
             config["directories"] = parse_config_directories(config["directories"])
             logger.trace(f"Config directories parsed: config={config!r}")
+
+    if model is not None:
+        return model.model_validate(config)
 
     return config
 
