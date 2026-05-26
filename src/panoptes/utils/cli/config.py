@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import time
-from importlib.resources import files
+from importlib.resources import as_file, files
 from pathlib import Path
 
 import typer
@@ -18,7 +18,7 @@ app = typer.Typer()
 
 @app.command("init")
 def config_init(
-    output: Path = typer.Option(
+    output: Path | None = typer.Option(
         None,
         help="Destination path for the config file. Defaults to ~/.panoptes/config.yaml.",
     ),
@@ -66,9 +66,12 @@ def config_init(
         raise typer.Exit(code=1)
 
     # Load template as the base.
-    template_path = files("panoptes.utils.config").joinpath("default_config.yaml")
+    # Use as_file() to materialise a real filesystem path, which is necessary in
+    # zipped/wheel installs where Traversable resources are not real file paths.
+    template_ref = files("panoptes.utils.config").joinpath("default_config.yaml")
     base_config: dict = {}
-    _add_to_conf(base_config, Path(str(template_path)), parse=False)
+    with as_file(template_ref) as template_path:
+        _add_to_conf(base_config, template_path, parse=False)
 
     # Resolve the override source.
     override_path: Path | None = None

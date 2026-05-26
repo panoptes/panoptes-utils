@@ -65,7 +65,15 @@ def load_config[M: BaseModel](
     if config_files is None:
         env_path = os.environ.get("PANOPTES_CONFIG_FILE")
         if env_path:
-            config_files = [env_path]
+            env_file = Path(env_path).expanduser()
+            if env_file.exists():
+                config_files = [env_file]
+            else:
+                logger.warning(
+                    f"$PANOPTES_CONFIG_FILE={env_path!r} does not exist. "
+                    f"Check the path and re-run `panoptes-utils config init` if needed."
+                )
+                config_files = []
         elif DEFAULT_CONFIG_PATH.exists():
             config_files = [DEFAULT_CONFIG_PATH]
         else:
@@ -108,7 +116,7 @@ def load_config[M: BaseModel](
     return config
 
 
-def save_config(save_path: Path | None = None, config: dict = None, overwrite: bool = True) -> bool:
+def save_config(save_path: Path | None = None, config: dict | None = None, overwrite: bool = True) -> bool:
     """Save config to a YAML file.
 
     Saves the given config dict to ``save_path``. If ``save_path`` is ``None``,
@@ -131,15 +139,16 @@ def save_config(save_path: Path | None = None, config: dict = None, overwrite: b
 
     Raises:
          FileExistsError: If the path already exists and ``overwrite=False``.
+         ValueError: If ``config`` is ``None``.
     """
     import os
 
     if config is None:
-        config = {}
+        raise ValueError("config must be a dict; pass {} explicitly if you intend to write an empty file.")
 
     if save_path is None:
         env_path = os.environ.get("PANOPTES_CONFIG_FILE")
-        save_path = Path(env_path) if env_path else DEFAULT_CONFIG_PATH
+        save_path = Path(env_path).expanduser() if env_path else DEFAULT_CONFIG_PATH
 
     save_path = Path(save_path)
 

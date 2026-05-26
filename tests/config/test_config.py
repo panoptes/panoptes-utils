@@ -119,7 +119,20 @@ def test_load_config_default_path(tmp_path, monkeypatch):
     assert cfg["name"] == "from_default"
 
 
-def test_load_config_no_file_warns(tmp_path, monkeypatch):
+def test_save_config_raises_on_none_config(tmp_path):
+    """save_config raises ValueError when config is None."""
+    with pytest.raises(ValueError, match="config must be a dict"):
+        save_config(tmp_path / "config.yaml", None)
+
+
+def test_load_config_env_var_missing_file(tmp_path, monkeypatch):
+    """$PANOPTES_CONFIG_FILE set to a non-existent path returns empty dict and warns."""
+    nonexistent = tmp_path / "missing_config.yaml"
+    monkeypatch.setenv("PANOPTES_CONFIG_FILE", str(nonexistent))
+    monkeypatch.setattr("panoptes.utils.config.helpers.DEFAULT_CONFIG_PATH", nonexistent)
+    cfg = load_config(load_local=False)
+    assert cfg == {}
+
     """load_config(None) with no resolvable file returns empty dict and logs a warning."""
     monkeypatch.delenv("PANOPTES_CONFIG_FILE", raising=False)
     nonexistent = tmp_path / "nonexistent.yaml"
