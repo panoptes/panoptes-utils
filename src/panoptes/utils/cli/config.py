@@ -3,14 +3,116 @@
 from __future__ import annotations
 
 import time
+from importlib.resources import as_file, files
+from pathlib import Path
 
 import typer
 from loguru import logger
 from rich import print
 
+from panoptes.utils.config import DEFAULT_CONFIG_PATH
 from panoptes.utils.config.client import get_config, server_is_running, set_config
 
 app = typer.Typer()
+
+
+@app.command("init")
+def config_init(
+    output: Path | None = typer.Option(
+        None,
+        help="Destination path for the config file. Defaults to ~/.panoptes/config.yaml.",
+    ),
+    merge_from: Path = typer.Option(
+        None,
+        "--from",
+        help=(
+            "Path to an existing config or _local.yaml file whose values are merged "
+            "on top of the template. If not given, any *_local.yaml files in the "
+            "current directory are detected automatically."
+        ),
+    ),
+    force: bool = typer.Option(False, "--force", "-f", help="Overwrite an existing config file."),
+) -> None:
+    """Create a starter config file at ~/.panoptes/config.yaml.
+
+    Starts from the built-in default template and optionally merges in values
+    from an existing config or _local.yaml override file, so your current
+    settings are preserved.
+
+    Examples::
+
+        # Plain init — write the template
+        panoptes-utils config init
+
+        # Merge an existing override file
+        panoptes-utils config init --from pocs_local.yaml
+
+        # Auto-detect *_local.yaml in the current directory and merge
+        panoptes-utils config init
+
+        # Write to a custom path
+        panoptes-utils config init --output /etc/panoptes/config.yaml
+    """
+    from panoptes.utils.config import deep_merge
+    from panoptes.utils.config.helpers import _add_to_conf
+
+    dest = Path(output) if output else DEFAULT_CONFIG_PATH
+
+    if dest.exists() and not force:
+        print(
+            f"[yellow]Config file already exists at {dest}.[/yellow]\n"
+            f"Use [bold]--force[/bold] to overwrite it."
+        )
+        raise typer.Exit(code=1)
+
+    # Load template as the base.
+    # Use as_file() to materialise a real filesystem path, which is necessary in
+    # zipped/wheel installs where Traversable resources are not real file paths.
+    template_ref = files("panoptes.utils.config").joinpath("default_config.yaml")
+    base_config: dict = {}
+    with as_file(template_ref) as template_path:
+        _add_to_conf(base_config, template_path, parse=False)
+
+    # Resolve the override source.
+    override_path: Path | None = None
+    if merge_from:
+        override_path = Path(merge_from)
+        if not override_path.exists():
+            print(f"[red]Override file not found:[/red] {override_path}")
+            raise typer.Exit(code=1)
+    else:
+        # Auto-detect *_local.yaml in the current directory.
+        candidates = sorted(Path.cwd().glob("*_local.yaml"))
+        if len(candidates) == 1:
+            override_path = candidates[0]
+            print(f"[dim]Auto-detected override file:[/dim] {override_path}")
+        elif len(candidates) > 1:
+            names = ", ".join(str(p.name) for p in candidates)
+            print(
+                f"[yellow]Multiple _local.yaml files found ({names}).[/yellow]\n"
+                f"Use [bold]--from <path>[/bold] to specify which one to merge."
+            )
+            raise typer.Exit(code=1)
+
+    # Merge overrides on top of the template.
+    final_config = base_config
+    if override_path:
+        overrides: dict = {}
+        _add_to_conf(overrides, override_path, parse=False)
+        final_config = deep_merge(base_config, overrides)
+        merged_keys = sorted(overrides.keys())
+        print(f"[dim]Merged keys from {override_path.name}:[/dim] {', '.join(merged_keys)}")
+
+    # Write the result.
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    from panoptes.utils.serializers import to_yaml
+
+    with dest.open("w") as fh:
+        to_yaml(final_config, stream=fh)
+
+    print(f"[green]Created config file:[/green] {dest}")
+    print("Edit it to match your hardware and location, then set:")
+    print(f"  [bold]export PANOPTES_CONFIG_FILE={dest}[/bold]")
 
 
 @app.command("run")

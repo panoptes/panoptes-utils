@@ -1,0 +1,44 @@
+---
+##############################################################################
+# PANOPTES Unit Configuration
+#
+# This is the main configuration file for your PANOPTES unit.
+# Edit this file to match your hardware and location.
+#
+# Full documentation: https://panoptes.github.io/panoptes-utils/config/
+##############################################################################
+
+# A friendly name for your unit (displayed in logs and dashboards).
+name: My PANOPTES Unit
+
+# Official PANOPTES unit ID assigned by the team.
+# Leave as PAN000 until you have been assigned an official ID.
+pan_id: PAN000
+
+location:
+  # Observatory name (optional, for display only).
+  name: My Observatory
+
+  # Geographic coordinates.
+  latitude: 0.0 deg
+  longitude: 0.0 deg
+  elevation: 0.0 m
+
+  # Horizon limits (degrees).
+  horizon: 30 deg          # Targets must be above this to observe.
+  flat_horizon: -6 deg     # Sun angle range for flat frames.
+  focus_horizon: -12 deg   # Dark enough to focus on stars.
+  observe_horizon: -18 deg # Sun must be below this to observe.
+
+  # Timezone name (pytz / IANA format, e.g. "US/Hawaii", "UTC", "Europe/Berlin").
+  timezone: UTC
+  gmt_offset: 0  # Offset from GMT in minutes.
+
+directories:
+  base: .
+  images: images
+  data: data
+
+db:
+  name: panoptes
+  type: file
