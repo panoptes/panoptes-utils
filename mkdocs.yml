@@ -57,6 +57,7 @@ nav:
   - Project PANOPTES Hub: https://panoptes.github.io/
   - Home: index.md
   - CLI Reference: cli.md
+  - Configuration: config.md
   - Config Server: config-server.md
   - Telemetry Server: telemetry.md
   - Database → Telemetry Migration: database-to-telemetry.md
