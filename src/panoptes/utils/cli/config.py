@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import shutil
 import time
 from importlib.resources import files
 from pathlib import Path
@@ -23,13 +22,40 @@ def config_init(
         None,
         help="Destination path for the config file. Defaults to ~/.panoptes/config.yaml.",
     ),
+    merge_from: Path = typer.Option(
+        None,
+        "--from",
+        help=(
+            "Path to an existing config or _local.yaml file whose values are merged "
+            "on top of the template. If not given, any *_local.yaml files in the "
+            "current directory are detected automatically."
+        ),
+    ),
     force: bool = typer.Option(False, "--force", "-f", help="Overwrite an existing config file."),
 ) -> None:
     """Create a starter config file at ~/.panoptes/config.yaml.
 
-    Copies the built-in default config template to the destination path.
-    Edit the resulting file to match your hardware and location.
+    Starts from the built-in default template and optionally merges in values
+    from an existing config or _local.yaml override file, so your current
+    settings are preserved.
+
+    Examples::
+
+        # Plain init — write the template
+        panoptes-utils config init
+
+        # Merge an existing override file
+        panoptes-utils config init --from pocs_local.yaml
+
+        # Auto-detect *_local.yaml in the current directory and merge
+        panoptes-utils config init
+
+        # Write to a custom path
+        panoptes-utils config init --output /etc/panoptes/config.yaml
     """
+    from panoptes.utils.config import deep_merge
+    from panoptes.utils.config.helpers import _add_to_conf
+
     dest = Path(output) if output else DEFAULT_CONFIG_PATH
 
     if dest.exists() and not force:
@@ -39,9 +65,48 @@ def config_init(
         )
         raise typer.Exit(code=1)
 
-    template = files("panoptes.utils.config").joinpath("default_config.yaml")
+    # Load template as the base.
+    template_path = files("panoptes.utils.config").joinpath("default_config.yaml")
+    base_config: dict = {}
+    _add_to_conf(base_config, Path(str(template_path)), parse=False)
+
+    # Resolve the override source.
+    override_path: Path | None = None
+    if merge_from:
+        override_path = Path(merge_from)
+        if not override_path.exists():
+            print(f"[red]Override file not found:[/red] {override_path}")
+            raise typer.Exit(code=1)
+    else:
+        # Auto-detect *_local.yaml in the current directory.
+        candidates = sorted(Path.cwd().glob("*_local.yaml"))
+        if len(candidates) == 1:
+            override_path = candidates[0]
+            print(f"[dim]Auto-detected override file:[/dim] {override_path}")
+        elif len(candidates) > 1:
+            names = ", ".join(str(p.name) for p in candidates)
+            print(
+                f"[yellow]Multiple _local.yaml files found ({names}).[/yellow]\n"
+                f"Use [bold]--from <path>[/bold] to specify which one to merge."
+            )
+            raise typer.Exit(code=1)
+
+    # Merge overrides on top of the template.
+    final_config = base_config
+    if override_path:
+        overrides: dict = {}
+        _add_to_conf(overrides, override_path, parse=False)
+        final_config = deep_merge(base_config, overrides)
+        merged_keys = sorted(overrides.keys())
+        print(f"[dim]Merged keys from {override_path.name}:[/dim] {', '.join(merged_keys)}")
+
+    # Write the result.
     dest.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy(str(template), dest)
+    from panoptes.utils.serializers import to_yaml
+
+    with dest.open("w") as fh:
+        to_yaml(final_config, stream=fh)
+
     print(f"[green]Created config file:[/green] {dest}")
     print("Edit it to match your hardware and location, then set:")
     print(f"  [bold]export PANOPTES_CONFIG_FILE={dest}[/bold]")

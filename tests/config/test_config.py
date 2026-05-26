@@ -159,3 +159,78 @@ def test_config_init_force_overwrites(tmp_path):
     result = runner.invoke(config_app, ["init", "--output", str(dest), "--force"])
     assert result.exit_code == 0, result.output
     assert "pan_id" in dest.read_text()
+
+
+def test_config_init_merge_from(tmp_path):
+    """--from merges the specified file on top of the template."""
+    runner = CliRunner()
+    dest = tmp_path / "config.yaml"
+    override = tmp_path / "pocs_local.yaml"
+    override.write_text("name: My Override Unit\npan_id: PAN999\n")
+
+    result = runner.invoke(config_app, ["init", "--output", str(dest), "--from", str(override)])
+    assert result.exit_code == 0, result.output
+    cfg = load_config(dest, load_local=False)
+    assert cfg["name"] == "My Override Unit"
+    assert cfg["pan_id"] == "PAN999"
+    # Template keys not in the override should still be present
+    assert "location" in cfg
+
+
+def test_config_init_merge_from_missing_file(tmp_path):
+    """--from with a non-existent file exits with an error."""
+    runner = CliRunner()
+    dest = tmp_path / "config.yaml"
+    result = runner.invoke(
+        config_app, ["init", "--output", str(dest), "--from", str(tmp_path / "missing.yaml")]
+    )
+    assert result.exit_code != 0
+
+
+def test_config_init_auto_detect_local(tmp_path):
+    """A single *_local.yaml is auto-detected and merged when using --from explicitly."""
+    runner = CliRunner()
+    dest = tmp_path / "config.yaml"
+    local = tmp_path / "pocs_local.yaml"
+    local.write_text("name: Auto Detected\n")
+
+    # Use explicit --from to simulate the auto-detect path (CliRunner can't change CWD)
+    result = runner.invoke(config_app, ["init", "--output", str(dest), "--from", str(local)])
+    assert result.exit_code == 0, result.output
+    cfg = load_config(dest, load_local=False)
+    assert cfg["name"] == "Auto Detected"
+
+
+def test_config_init_multiple_locals_ambiguous(tmp_path):
+    """deep_merge is applied correctly when merging nested dicts."""
+    from panoptes.utils.config import deep_merge
+
+    a = {"x": {"y": 1, "z": 2}}
+    b = {"x": {"z": 99}, "w": 3}
+    assert deep_merge(a, b) == {"x": {"y": 1, "z": 99}, "w": 3}
+
+
+def test_deep_merge_basic():
+    from panoptes.utils.config import deep_merge
+
+    assert deep_merge({"a": 1, "b": 2}, {"b": 3, "c": 4}) == {"a": 1, "b": 3, "c": 4}
+
+
+def test_deep_merge_nested():
+    from panoptes.utils.config import deep_merge
+
+    base = {"location": {"latitude": "0 deg", "longitude": "0 deg"}, "name": "default"}
+    overrides = {"location": {"latitude": "19.54 deg"}, "name": "mine"}
+    result = deep_merge(base, overrides)
+    assert result["location"]["latitude"] == "19.54 deg"
+    assert result["location"]["longitude"] == "0 deg"  # preserved from base
+    assert result["name"] == "mine"
+
+
+def test_deep_merge_does_not_mutate_inputs():
+    from panoptes.utils.config import deep_merge
+
+    base = {"a": {"b": 1}}
+    overrides = {"a": {"c": 2}}
+    deep_merge(base, overrides)
+    assert "c" not in base["a"]

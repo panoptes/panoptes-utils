@@ -222,6 +222,33 @@ def parse_config_directories(directories: dict[str, str]) -> dict:
     return resolved_dirs
 
 
+def deep_merge(base: dict, overrides: dict) -> dict:
+    """Recursively merge *overrides* into *base*, returning a new dict.
+
+    Nested dicts are merged recursively; all other values in *overrides*
+    replace those in *base*.
+
+    .. doctest::
+
+        >>> deep_merge({"a": 1, "b": {"x": 10, "y": 20}}, {"b": {"y": 99}, "c": 3})
+        {'a': 1, 'b': {'x': 10, 'y': 99}, 'c': 3}
+
+    Args:
+        base: The starting dict (e.g. a template config).
+        overrides: Values to apply on top of *base*.
+
+    Returns:
+        A new dict with *overrides* merged into *base*.
+    """
+    result = base.copy()
+    for key, value in overrides.items():
+        if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+            result[key] = deep_merge(result[key], value)
+        else:
+            result[key] = value
+    return result
+
+
 def _add_to_conf(config: dict, conf_fn: Path, parse: bool = False) -> None:
     """Add configuration from file to existing config dictionary.
 
