@@ -72,14 +72,24 @@ class LocationConfig(BaseModel):
     )
     @classmethod
     def parse_angle(cls, v: Any) -> Quantity:
-        """Accept string or Quantity for angle fields."""
-        return _parse_quantity(v)
+        """Accept string or Quantity for angle fields; must be convertible to degrees."""
+        q = _parse_quantity(v)
+        try:
+            q.to(u.deg)
+        except u.UnitConversionError as e:
+            raise ValueError(f"Angle field must be convertible to degrees, got {q.unit!r}") from e
+        return q
 
     @field_validator("elevation", mode="before")
     @classmethod
     def parse_distance(cls, v: Any) -> Quantity:
-        """Accept string or Quantity for distance fields."""
-        return _parse_quantity(v)
+        """Accept string or Quantity for elevation; must be convertible to meters."""
+        q = _parse_quantity(v)
+        try:
+            q.to(u.m)
+        except u.UnitConversionError as e:
+            raise ValueError(f"Elevation must be convertible to meters, got {q.unit!r}") from e
+        return q
 
 
 class DirectoriesConfig(BaseModel):

@@ -48,7 +48,22 @@ def test_location_config_accepts_strings():
     assert loc.elevation.to(u.m).value == pytest.approx(3400.0)
 
 
-def test_location_config_accepts_quantities():
+def test_location_config_rejects_wrong_units_for_angle():
+    import astropy.units as u
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError, match="degrees"):
+        LocationConfig(latitude=3400 * u.m, longitude="-155.58 deg", elevation="3400 m")
+
+
+def test_location_config_rejects_wrong_units_for_elevation():
+    import astropy.units as u
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError, match="meters"):
+        LocationConfig(latitude="19.54 deg", longitude="-155.58 deg", elevation=19.54 * u.deg)
+
+
     import astropy.units as u
 
     loc = LocationConfig(
