@@ -14,10 +14,15 @@ Usage::
     print(config.name)                # 'My PANOPTES Unit'
 """
 
-from typing import Any
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 from astropy import units as u
 from astropy.units import Quantity
+
+if TYPE_CHECKING:
+    from astropy.coordinates import EarthLocation
 from pydantic import BaseModel, ConfigDict, field_validator
 
 
@@ -168,7 +173,7 @@ class UnitConfig(BaseModel):
         return DatabaseConfig(**v)
 
     @property
-    def earth_location(self):
+    def earth_location(self) -> EarthLocation | None:
         """Return an ``astropy.coordinates.EarthLocation`` for the site.
 
         Returns:
