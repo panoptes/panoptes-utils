@@ -1,3 +1,4 @@
+import warnings
 from contextlib import suppress
 from pathlib import Path
 
@@ -7,6 +8,9 @@ from pydantic import BaseModel
 from panoptes.utils import error
 from panoptes.utils.serializers import from_yaml, to_yaml
 from panoptes.utils.utils import listify
+
+#: Default user config location, overridden by ``$PANOPTES_CONFIG_FILE``.
+DEFAULT_CONFIG_PATH = Path.home() / ".panoptes" / "config.yaml"
 
 
 def load_config[M: BaseModel](
@@ -20,18 +24,27 @@ def load_config[M: BaseModel](
     This function is used by the config server; normal config usage should
     be via a running config server.
 
-    If no options are passed to `config_files`, the default `$PANOPTES_CONFIG_FILE`
-    will be loaded. Multiple files can be specified and are loaded in order,
-    with later files overwriting values from earlier ones. Local versions of files
-    (named `<name>_local.yaml`) can override built-in versions if present.
+    If ``config_files`` is ``None``, the path is resolved in this order:
+
+    1. The ``$PANOPTES_CONFIG_FILE`` environment variable (if set).
+    2. ``~/.panoptes/config.yaml`` (the standard user config location).
+    3. An empty dict with a warning if neither exists.
+
+    Multiple files can be specified and are loaded in order, with later files
+    overwriting values from earlier ones.
+
+    .. deprecated::
+        The automatic loading of ``<name>_local.yaml`` companion files
+        (controlled by ``load_local``) is deprecated.  Place all user
+        overrides in ``~/.panoptes/config.yaml`` instead.
 
     Args:
         config_files (str | Path | List | None, optional): A path or list of paths to config files.
-            If None, uses the default config file. Files are loaded in order.
+            If None, resolves to ``$PANOPTES_CONFIG_FILE`` or ``~/.panoptes/config.yaml``.
         parse (bool, optional): Whether to parse objects such as dates and astropy units.
             Defaults to True.
-        load_local (bool, optional): Whether to load local override files (ending with `_local.yaml`)
-            if present. Defaults to True.
+        load_local (bool, optional): Whether to load legacy ``<name>_local.yaml`` override
+            files if present. Deprecated — will be removed in a future release. Defaults to True.
         model (type[BaseModel] | None, optional): If provided, the loaded config dict is passed
             to ``model.model_validate(config)`` and the model instance is returned instead of
             the raw dict. Defaults to None.
@@ -44,12 +57,23 @@ def load_config[M: BaseModel](
         ruamel.yaml.parser.ParserError: If a YAML file cannot be parsed.
         IOError: If a config file cannot be read.
         TypeError: If a config file contains invalid data types.
-
-    Notes:
-        Local files are automatically loaded if they exist alongside the specified config path.
-        Local files can be ignored by setting `load_local=False`.
     """
+    import os
+
     config = dict()
+
+    if config_files is None:
+        env_path = os.environ.get("PANOPTES_CONFIG_FILE")
+        if env_path:
+            config_files = [env_path]
+        elif DEFAULT_CONFIG_PATH.exists():
+            config_files = [DEFAULT_CONFIG_PATH]
+        else:
+            logger.warning(
+                f"No config file found. Set $PANOPTES_CONFIG_FILE or create {DEFAULT_CONFIG_PATH}. "
+                f"Run `panoptes-utils config init` to create a starter config."
+            )
+            config_files = []
 
     config_files = listify(config_files)
     logger.debug(f"Loading config files: config_files={config_files!r}")
@@ -58,10 +82,17 @@ def load_config[M: BaseModel](
         logger.debug(f"Adding config_file={config_file!r} to config dict")
         _add_to_conf(config, config_file, parse=parse)
 
-        # Load local version of config
+        # Legacy _local.yaml support — deprecated.
         if load_local:
             local_version = config_file.parent / Path(config_file.stem + "_local.yaml")
             if local_version.exists():
+                warnings.warn(
+                    f"Loading {local_version} via the _local.yaml convention is deprecated. "
+                    f"Merge your overrides into {DEFAULT_CONFIG_PATH} and set $PANOPTES_CONFIG_FILE. "
+                    f"Pass load_local=False to suppress this warning.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
                 _add_to_conf(config, local_version, parse=parse)
 
     # parse_config_directories currently only corrects directory names.
@@ -77,39 +108,56 @@ def load_config[M: BaseModel](
     return config
 
 
-def save_config(save_path: Path, config: dict, overwrite: bool = True) -> bool:
-    """Save config to local yaml file.
+def save_config(save_path: Path | None = None, config: dict = None, overwrite: bool = True) -> bool:
+    """Save config to a YAML file.
+
+    Saves the given config dict to ``save_path``. If ``save_path`` is ``None``,
+    the file is written to ``~/.panoptes/config.yaml`` (or ``$PANOPTES_CONFIG_FILE``
+    if set).
+
+    .. deprecated::
+        Passing a path that ends in ``_local.yaml`` is deprecated.  Use a plain
+        config path such as ``~/.panoptes/config.yaml`` instead.
 
     Args:
-        save_path (str): Path to save, can be relative or absolute. See Notes in
-            ``load_config``.
+        save_path (Path | None, optional): Destination file path. Defaults to
+            ``$PANOPTES_CONFIG_FILE`` or ``~/.panoptes/config.yaml``.
         config (dict): Config to save.
         overwrite (bool, optional): True if file should be updated, False
-            to generate a warning for existing config. Defaults to True
-            for updates.
+            to generate an error for an existing config. Defaults to True.
 
     Returns:
         bool: If the save was successful.
 
     Raises:
-         FileExistsError: If the local path already exists and ``overwrite=False``.
+         FileExistsError: If the path already exists and ``overwrite=False``.
     """
-    # Make sure it's a path.
+    import os
+
+    if config is None:
+        config = {}
+
+    if save_path is None:
+        env_path = os.environ.get("PANOPTES_CONFIG_FILE")
+        save_path = Path(env_path) if env_path else DEFAULT_CONFIG_PATH
+
     save_path = Path(save_path)
 
-    # Make sure ends with '_local.yaml'.
-    if save_path.stem.endswith("_local") is False:
-        save_path = save_path.with_name(save_path.stem + "_local.yaml")
+    if save_path.stem.endswith("_local"):
+        warnings.warn(
+            f"Saving to a _local.yaml file ({save_path}) is deprecated. Use {DEFAULT_CONFIG_PATH} instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
     if save_path.exists() and overwrite is False:
         raise FileExistsError(f"Path exists and overwrite=False: {save_path}")
-    else:
-        # Create directory if it does not exist.
-        save_path.parent.mkdir(parents=True, exist_ok=True)
-        logger.info(f"Saving config to {save_path}")
-        with save_path.open("w") as fn:
-            to_yaml(config, stream=fn)
-        logger.success(f"Config info saved to {save_path}")
+
+    save_path.parent.mkdir(parents=True, exist_ok=True)
+    logger.info(f"Saving config to {save_path}")
+    with save_path.open("w") as fn:
+        to_yaml(config, stream=fn)
+    logger.success(f"Config info saved to {save_path}")
 
     return True
 

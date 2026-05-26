@@ -10,20 +10,67 @@ typed Pydantic models and a file watcher.  For the legacy HTTP config server, se
 
 ---
 
+## Getting started
+
+Create a starter config file with:
+
+```bash
+panoptes-utils config init
+```
+
+This writes `~/.panoptes/config.yaml` from the built-in template.  Edit it to match
+your hardware and location, then point the software to it:
+
+```bash
+export PANOPTES_CONFIG_FILE=~/.panoptes/config.yaml
+```
+
+To write to a different location, use `--output`:
+
+```bash
+panoptes-utils config init --output /path/to/my_unit.yaml
+```
+
+---
+
 ## Loading config
 
-`load_config` reads one or more YAML files and returns a plain dict:
+`load_config` reads one or more YAML files and returns a plain dict.  When called
+with no arguments it resolves the config file automatically:
+
+1. `$PANOPTES_CONFIG_FILE` environment variable (if set)
+2. `~/.panoptes/config.yaml`
+3. Empty dict with a warning if neither exists
 
 ```python
 from panoptes.utils.config import load_config
 
-config = load_config("path/to/config.yaml")
+# Uses $PANOPTES_CONFIG_FILE or ~/.panoptes/config.yaml automatically
+config = load_config()
 print(config["location"]["latitude"])  # <Quantity 19.54 deg>
+
+# Or supply an explicit path
+config = load_config("path/to/config.yaml")
 ```
 
 Multiple files are merged in order, with later files overriding earlier ones.
-A `*_local.yaml` companion is automatically loaded when present (pass
-`load_local=False` to skip this).
+
+> **Deprecated:** The automatic loading of `<name>_local.yaml` companion files
+> (`load_local=True`) is deprecated.  Consolidate all overrides into your
+> single user config file instead.
+
+---
+
+## Saving config
+
+`save_config` writes a config dict to a YAML file.  When called with no path
+it writes to `$PANOPTES_CONFIG_FILE` or `~/.panoptes/config.yaml`:
+
+```python
+from panoptes.utils.config import save_config
+
+save_config(config={"name": "My Unit"})
+```
 
 ---
 

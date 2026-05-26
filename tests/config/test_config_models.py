@@ -63,7 +63,6 @@ def test_location_config_rejects_wrong_units_for_elevation():
     with pytest.raises(ValidationError, match="meters"):
         LocationConfig(latitude="19.54 deg", longitude="-155.58 deg", elevation=19.54 * u.deg)
 
-
     import astropy.units as u
 
     loc = LocationConfig(

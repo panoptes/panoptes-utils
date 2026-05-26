@@ -8,6 +8,15 @@
 * Added `ConfigWatcher` in `panoptes.utils.config.watcher` — watches a YAML config file with `watchdog` and fires per-key callbacks when values change. Supports context manager usage.
 * `load_config()` now accepts an optional `model=` parameter; when provided, the loaded dict is validated and returned as a model instance instead of a raw dict.
 * Added `pydantic` and `watchdog` to core dependencies.
+* `load_config(config_files=None)` now resolves the config file from `$PANOPTES_CONFIG_FILE` then `~/.panoptes/config.yaml`, with a warning if neither exists.
+* `save_config(save_path=None, ...)` defaults to `$PANOPTES_CONFIG_FILE` or `~/.panoptes/config.yaml`.
+* Added `panoptes-utils config init` CLI command to create a starter `~/.panoptes/config.yaml` from the built-in template.
+* Added `DEFAULT_CONFIG_PATH` constant (`~/.panoptes/config.yaml`) exported from `panoptes.utils.config`.
+
+### Deprecated
+
+* Auto-loading of `<name>_local.yaml` companion files in `load_config()` is deprecated. Consolidate overrides into `~/.panoptes/config.yaml` and set `$PANOPTES_CONFIG_FILE`.
+* Saving to a path ending in `_local.yaml` via `save_config()` is deprecated for the same reason.
 
 ## 0.3.7 - 2026-05-21
 

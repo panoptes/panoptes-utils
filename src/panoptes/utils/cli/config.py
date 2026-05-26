@@ -2,15 +2,49 @@
 
 from __future__ import annotations
 
+import shutil
 import time
+from importlib.resources import files
+from pathlib import Path
 
 import typer
 from loguru import logger
 from rich import print
 
+from panoptes.utils.config import DEFAULT_CONFIG_PATH
 from panoptes.utils.config.client import get_config, server_is_running, set_config
 
 app = typer.Typer()
+
+
+@app.command("init")
+def config_init(
+    output: Path = typer.Option(
+        None,
+        help="Destination path for the config file. Defaults to ~/.panoptes/config.yaml.",
+    ),
+    force: bool = typer.Option(False, "--force", "-f", help="Overwrite an existing config file."),
+) -> None:
+    """Create a starter config file at ~/.panoptes/config.yaml.
+
+    Copies the built-in default config template to the destination path.
+    Edit the resulting file to match your hardware and location.
+    """
+    dest = Path(output) if output else DEFAULT_CONFIG_PATH
+
+    if dest.exists() and not force:
+        print(
+            f"[yellow]Config file already exists at {dest}.[/yellow]\n"
+            f"Use [bold]--force[/bold] to overwrite it."
+        )
+        raise typer.Exit(code=1)
+
+    template = files("panoptes.utils.config").joinpath("default_config.yaml")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy(str(template), dest)
+    print(f"[green]Created config file:[/green] {dest}")
+    print("Edit it to match your hardware and location, then set:")
+    print(f"  [bold]export PANOPTES_CONFIG_FILE={dest}[/bold]")
 
 
 @app.command("run")
