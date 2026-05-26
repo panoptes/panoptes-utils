@@ -451,7 +451,7 @@ panoptes-utils config run --host 0.0.0.0 --port 8765 --config-file tests/testing
    git checkout main
    git pull origin main
    ```
-   - Tag the release commit and push. **The tag message must include the full changelog entries for this release.**
+   - Tag the release commit and push. **The tag message must include the full changelog entries for this release.** The GitHub Release body is also extracted directly from `CHANGELOG.md` by the CI workflow (`.github/workflows/create-release.yml`), so the CHANGELOG must be accurate and complete before tagging.
    ```bash
    CHANGELOG_BODY=$(sed -n "/^## ${NEW_VERSION#v}/,/^## /p" CHANGELOG.md | sed '1d;$d')
    git tag -a ${NEW_VERSION} -m "Release ${NEW_VERSION}" -m "${CHANGELOG_BODY}"
