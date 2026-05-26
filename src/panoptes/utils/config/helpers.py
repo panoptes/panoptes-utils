@@ -1,20 +1,20 @@
 from contextlib import suppress
 from pathlib import Path
-from typing import Any
 
 from loguru import logger
+from pydantic import BaseModel
 
 from panoptes.utils import error
 from panoptes.utils.serializers import from_yaml, to_yaml
 from panoptes.utils.utils import listify
 
 
-def load_config(
+def load_config[M: BaseModel](
     config_files: str | Path | list | None = None,
     parse: bool = True,
     load_local: bool = True,
-    model: type | None = None,
-) -> dict | Any:
+    model: type[M] | None = None,
+) -> dict | M:
     """Loads configuration information from one or more YAML files.
 
     This function is used by the config server; normal config usage should

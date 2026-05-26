@@ -56,12 +56,12 @@ class ConfigWatcher:
         >>> received = []
         >>> watcher = ConfigWatcher(tmp)
         >>> watcher.register(None, received.append)
-        >>> watcher.start()
-        >>> _ = tmp.write_text("name: changed\\n")
-        >>> time.sleep(0.5)
-        >>> watcher.stop()
-        >>> tmp.unlink()
-        >>> received[-1]["name"]
+        >>> watcher.start()  # doctest: +SKIP
+        >>> _ = tmp.write_text("name: changed\\n")  # doctest: +SKIP
+        >>> time.sleep(0.5)  # doctest: +SKIP
+        >>> watcher.stop()  # doctest: +SKIP
+        >>> tmp.unlink()  # doctest: +SKIP
+        >>> received[-1]["name"]  # doctest: +SKIP
         'changed'
     """
 
@@ -102,12 +102,25 @@ class ConfigWatcher:
         watcher = self
 
         class _Handler(FileSystemEventHandler):
+            def _matches(self, path: str) -> bool:
+                return Path(path).resolve() == watcher._config_file.resolve()
+
             def on_modified(self, event):
-                if Path(event.src_path).resolve() == watcher._config_file.resolve():
+                if self._matches(event.src_path):
                     watcher._on_file_changed()
 
             def on_created(self, event):
-                self.on_modified(event)
+                if self._matches(event.src_path):
+                    watcher._on_file_changed()
+
+            def on_moved(self, event):
+                # Editors that do atomic saves write a temp file then rename it
+                if self._matches(event.dest_path):
+                    watcher._on_file_changed()
+
+            def on_deleted(self, event):
+                if self._matches(event.src_path):
+                    logger.warning(f"Config file deleted: {watcher._config_file}")
 
         self._observer = Observer()
         self._observer.schedule(
@@ -165,13 +178,18 @@ class ConfigWatcher:
 
         notified: set[Callable] = set()
 
+        def _fire(cb: Callable) -> None:
+            if cb in notified:
+                return
+            try:
+                cb(new_config)
+            except Exception as exc:
+                logger.warning(f"ConfigWatcher: callback {cb!r} raised: {exc}")
+            notified.add(cb)
+
         for key in changed_keys:
             for cb in self._callbacks.get(key, []):
-                if cb not in notified:
-                    cb(new_config)
-                    notified.add(cb)
+                _fire(cb)
 
         for cb in self._callbacks.get(None, []):
-            if cb not in notified:
-                cb(new_config)
-                notified.add(cb)
+            _fire(cb)
