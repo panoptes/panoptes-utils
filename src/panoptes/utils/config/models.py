@@ -7,9 +7,9 @@ are defined in POCS.
 Usage::
 
     from panoptes.utils.config.helpers import load_config
-    from panoptes.utils.config.models import PANOPTESBaseConfig
+    from panoptes.utils.config.models import UnitConfig
 
-    config = load_config('path/to/config.yaml', model=PANOPTESBaseConfig)
+    config = load_config('path/to/config.yaml', model=UnitConfig)
     print(config.location.latitude)   # <Quantity 19.54 deg>
     print(config.name)                # 'My PANOPTES Unit'
 """
@@ -116,7 +116,7 @@ class DatabaseConfig(BaseModel):
     type: str = "file"
 
 
-class PANOPTESBaseConfig(BaseModel):
+class UnitConfig(BaseModel):
     """Top-level configuration shared by all PANOPTES components.
 
     This model covers the sections defined in ``panoptes-utils``.
@@ -128,8 +128,8 @@ class PANOPTESBaseConfig(BaseModel):
 
     Examples:
         >>> from panoptes.utils.config.helpers import load_config
-        >>> from panoptes.utils.config.models import PANOPTESBaseConfig
-        >>> cfg = load_config('tests/testing.yaml', model=PANOPTESBaseConfig)
+        >>> from panoptes.utils.config.models import UnitConfig
+        >>> cfg = load_config('tests/testing.yaml', model=UnitConfig)
         >>> cfg.pan_id
         'PAN000'
         >>> cfg.location.timezone

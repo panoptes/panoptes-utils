@@ -1,5 +1,5 @@
 from panoptes.utils.config.helpers import load_config, save_config
-from panoptes.utils.config.models import DatabaseConfig, DirectoriesConfig, LocationConfig, PANOPTESBaseConfig
+from panoptes.utils.config.models import DatabaseConfig, DirectoriesConfig, LocationConfig, UnitConfig
 from panoptes.utils.config.watcher import ConfigWatcher
 
 __all__ = [
@@ -8,6 +8,6 @@ __all__ = [
     "DatabaseConfig",
     "DirectoriesConfig",
     "LocationConfig",
-    "PANOPTESBaseConfig",
+    "UnitConfig",
     "ConfigWatcher",
 ]
