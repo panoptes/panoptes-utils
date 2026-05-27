@@ -60,6 +60,9 @@ config-server = [
     "scalpl",
     "uvicorn>=0.34",
 ]
+config = [
+    "panoptes-utils[config-server]",
+]
 docs = [
     "mkdocs-material",
     "mkdocstrings[python]",

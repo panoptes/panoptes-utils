@@ -82,14 +82,46 @@ def _set_nested(d: dict[str, Any], keys: list[str], value: Any) -> None:
 
     Args:
         d: The top-level dict to update (mutated in-place).
-        keys: Key path as a list of strings (result of ``key.split(".")``)
+        keys: Key path as a list of dotted-key segments.
         value: The value to store at the leaf.
     """
-    for key in keys[:-1]:
-        if key not in d or not isinstance(d[key], dict):
-            d[key] = {}
-        d = d[key]
-    d[keys[-1]] = value
+    current: Any = d
+    for i, part in enumerate(keys):
+        if match := re.fullmatch(r"([^\[\]]+)(\[(-?\d+)\])?", part):
+            name = match.group(1)
+            index = match.group(3)
+        else:  # pragma: no cover — every non-empty string matches
+            name = part
+            index = None
+
+        is_last = i == len(keys) - 1
+        if index is None:
+            if not isinstance(current, dict):
+                raise TypeError(f"Cannot set key {part!r} on non-dict path segment")
+            if is_last:
+                current[name] = value
+                return
+            if name not in current or not isinstance(current[name], dict):
+                current[name] = {}
+            current = current[name]
+            continue
+
+        if not isinstance(current, dict):
+            raise TypeError(f"Cannot index key {name!r} on non-dict path segment")
+        if name not in current or not isinstance(current[name], list):
+            current[name] = []
+        values = current[name]
+        idx = int(index)
+        if idx < 0:
+            raise IndexError("Negative list indices are not supported for set_config")
+        while len(values) <= idx:
+            values.append({})
+        if is_last:
+            values[idx] = value
+            return
+        if not isinstance(values[idx], dict):
+            values[idx] = {}
+        current = values[idx]
 
 
 def init_config(config_file: str | Path | None = None) -> dict[str, Any]:
@@ -168,7 +200,8 @@ def set_config(key: str, new_value: Any, persist: bool = True, **kwargs) -> Any:
             the old HTTP config-client signature.
 
     Returns:
-        *new_value* as stored (mirrors the old HTTP client behaviour).
+        *new_value* as stored. Unlike the deprecated HTTP client this does not
+        return ``{key: value}``.
     """
     del kwargs
     global _CONFIG

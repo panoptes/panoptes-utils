@@ -22,6 +22,6 @@ def config_path(tmp_path):
 
 @pytest.fixture(autouse=True)
 def reset_config_store(config_path):
-    """Reset the in-memory config store to a clean state after each test."""
-    yield
+    """Reset the in-memory config store to a clean state for each test."""
     _store_mod.init_config(config_path)
+    yield

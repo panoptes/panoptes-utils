@@ -56,6 +56,12 @@ def test_get_config_list_index(config_path):
     assert get_config("cameras.devices[1].model") == "canon_gphoto2"
 
 
+def test_set_config_list_index(config_path):
+    init_config(config_path)
+    set_config("cameras.devices[0].model", "updated-model", persist=False)
+    assert get_config("cameras.devices[0].model") == "updated-model"
+
+
 def test_get_config_none_key_returns_full_dict(config_path):
     init_config(config_path)
     cfg = get_config(None)

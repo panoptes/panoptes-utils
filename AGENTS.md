@@ -127,13 +127,14 @@ panoptes-utils/
 - Use `uv sync --extra <package>` to install optional extras
 - Add to `[dependency-groups]` for development dependencies (testing, lint, etc.)
 - Consider which extras group the dependency belongs to:
-  - `config`: Configuration server dependencies
+  - `config-server`: Configuration server dependencies
   - `images`: Image processing dependencies
   - `testing`: Testing tools
   - `docs`: Documentation building
 
 **Optional Dependencies:**
-- `config`: fastapi, uvicorn, scalpl for deprecated HTTP config server (no new dependencies needed for config store)
+- `config-server`: fastapi, uvicorn, scalpl for deprecated HTTP config server (no new dependencies needed for config store)
+- `config`: backward-compatible alias for `config-server`
 - `images`: matplotlib, photutils, pillow for image processing
 - `testing`: pytest, coverage, and testing tools
 - `docs`: MkDocs and documentation tools
