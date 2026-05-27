@@ -27,6 +27,7 @@ from typing import Any
 from loguru import logger
 
 from panoptes.utils.config.helpers import load_config as _load_config_file
+from panoptes.utils.config.helpers import save_config as _save_config
 
 _CONFIG: dict[str, Any] = {}
 _CONFIG_FILE: Path | None = None
@@ -151,16 +152,18 @@ def get_config(key: str | None = None, default: Any = None, **kwargs) -> Any:
     return value
 
 
-def set_config(key: str, new_value: Any, **kwargs) -> Any:
-    """Set a config value by dotted-key name (in-memory only).
+def set_config(key: str, new_value: Any, persist: bool = True, **kwargs) -> Any:
+    """Set a config value by dotted-key name.
 
-    Updates the in-memory store.  Changes are **not** written to disk
-    automatically; call :func:`panoptes.utils.config.helpers.save_config` to
-    persist them.
+    Updates the in-memory store. When *persist* is ``True`` (the default) the
+    change is also written back to the config file that was passed to
+    :func:`init_config`, preserving backward compatibility with the old HTTP
+    client which persisted changes to the server by default.
 
     Args:
         key: Dotted key, e.g. ``"location.latitude"``.
         new_value: The value to store.
+        persist: Write the updated config back to disk. Defaults to ``True``.
         **kwargs: Accepted but ignored — present for drop-in compatibility with
             the old HTTP config-client signature.
 
@@ -173,4 +176,7 @@ def set_config(key: str, new_value: Any, **kwargs) -> Any:
         init_config()
     _set_nested(_CONFIG, key.split("."), new_value)
     logger.trace(f"set_config {key!r} = {new_value!r}")
+    if persist:
+        _save_config(_CONFIG_FILE, _CONFIG)
+        logger.trace(f"set_config persisted to {_CONFIG_FILE!r}")
     return new_value

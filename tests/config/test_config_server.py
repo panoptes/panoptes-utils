@@ -44,7 +44,7 @@ def test_get_config_default(config_path):
 def test_reload_config_restores_value(config_path):
     init_config(config_path)
     original = get_config("location.horizon")
-    set_config("location.horizon", 99 * u.degree)
+    set_config("location.horizon", 99 * u.degree, persist=False)
     assert get_config("location.horizon") == 99 * u.degree
 
     reload_config()
@@ -125,3 +125,30 @@ def test_set_config_auto_inits_when_empty(config_path, monkeypatch):
     monkeypatch.setattr(_store_mod, "_CONFIG_FILE", config_path)
     set_config("name", "Auto Init Test")
     assert get_config("name") == "Auto Init Test"
+
+
+# --- persist behaviour ---
+
+
+def test_set_config_persists_to_file_by_default(config_path):
+    """set_config should write to disk when persist=True (the default)."""
+    init_config(config_path)
+
+    set_config("name", "Persisted Name")
+
+    # Reload from disk to confirm the write happened.
+    reload_config()
+    assert get_config("name") == "Persisted Name"
+
+
+def test_set_config_no_persist_skips_file(config_path):
+    """set_config with persist=False should NOT write to disk."""
+    init_config(config_path)
+
+    original_name = get_config("name")
+    set_config("name", "In Memory Only", persist=False)
+    assert get_config("name") == "In Memory Only"
+
+    # Reload from disk — original value should be restored.
+    reload_config()
+    assert get_config("name") == original_name

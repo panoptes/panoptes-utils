@@ -12,7 +12,6 @@ from loguru import logger
 from rich import print
 
 from panoptes.utils.config import DEFAULT_CONFIG_PATH
-from panoptes.utils.config.helpers import save_config
 from panoptes.utils.config.store import get_config, init_config, set_config
 
 app = typer.Typer()
@@ -295,9 +294,8 @@ def config_setter(
     """
     init_config(config_file)
     logger.debug(f"Setting config key={key!r} new_value={new_value!r}")
-    set_config(key, new_value)
+    set_config(key, new_value, persist=persist)
     if persist:
-        save_config(config_file, get_config())
         logger.debug(f"Config saved to {config_file or 'default path'}")
     print(f"Set [bold]{key}[/bold] = {new_value!r}")
 
