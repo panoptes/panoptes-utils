@@ -2,7 +2,15 @@
 
 from astropy import units as u
 
-from panoptes.utils.config.store import get_config, init_config, reload_config, set_config
+import panoptes.utils.config.store as _store_mod
+from panoptes.utils.config.store import (
+    _get_nested,
+    _set_nested,
+    get_config,
+    init_config,
+    reload_config,
+    set_config,
+)
 
 
 def test_get_config_returns_dict(config_path):
@@ -58,3 +66,62 @@ def test_get_config_none_key_returns_full_dict(config_path):
 def test_get_name(config_path):
     init_config(config_path)
     assert get_config("name") == "Testing PANOPTES Unit"
+
+
+# --- _get_nested edge cases ---
+
+
+def test_get_nested_empty_key_returns_dict():
+    d = {"a": 1}
+    assert _get_nested(d, "") is d
+
+
+def test_get_nested_non_dict_intermediate():
+    # "name" is a string, not a dict — navigating further returns default.
+    d = {"name": "Test"}
+    assert _get_nested(d, "name.sub", default="x") == "x"
+
+
+def test_get_nested_list_index_out_of_bounds(config_path):
+    init_config(config_path)
+    assert get_config("cameras.devices[99]", default="missing") == "missing"
+
+
+def test_get_nested_list_on_non_list():
+    # Index accessor on a non-list value returns default.
+    d = {"a": {"b": "not-a-list"}}
+    assert _get_nested(d, "a.b[0]", default="nope") == "nope"
+
+
+# --- _set_nested ---
+
+
+def test_set_nested_creates_intermediate_dicts():
+    d: dict = {}
+    _set_nested(d, ["new", "deeply", "nested"], "value")
+    assert d == {"new": {"deeply": {"nested": "value"}}}
+
+
+def test_set_config_creates_new_nested_key(config_path):
+    init_config(config_path)
+    set_config("brand.new.key", "hello")
+    assert get_config("brand.new.key") == "hello"
+
+
+# --- auto-init behaviour ---
+
+
+def test_get_config_auto_inits_when_empty(config_path, monkeypatch):
+    """get_config should call init_config() automatically when the store is empty."""
+    monkeypatch.setattr(_store_mod, "_CONFIG", {})
+    monkeypatch.setattr(_store_mod, "_CONFIG_FILE", config_path)
+    result = get_config("name")
+    assert result == "Testing PANOPTES Unit"
+
+
+def test_set_config_auto_inits_when_empty(config_path, monkeypatch):
+    """set_config should call init_config() automatically when the store is empty."""
+    monkeypatch.setattr(_store_mod, "_CONFIG", {})
+    monkeypatch.setattr(_store_mod, "_CONFIG_FILE", config_path)
+    set_config("name", "Auto Init Test")
+    assert get_config("name") == "Auto Init Test"
