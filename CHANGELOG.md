@@ -11,6 +11,7 @@
 * `panoptes-utils config get` and `panoptes-utils config set` now read/write directly from the YAML file via the config store. The `--host`/`--port` options are removed; use `--config-file` (or `$PANOPTES_CONFIG_FILE`) instead.
 * Root `conftest.py` now initialises the config store from `tests/testing.yaml` instead of starting an HTTP server.
 * `tests/config/test_config_server.py` now tests the in-memory store (not the HTTP server).
+* Split `config` optional-dependency extra into `config-server` (fastapi, uvicorn, scalpl, PyYAML — for the deprecated HTTP server) and `config` (alias for backward compatibility). The config store requires no extras.
 
 ### Deprecated
 
