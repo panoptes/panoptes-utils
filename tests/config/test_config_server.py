@@ -1,76 +1,60 @@
-import pytest
-import requests
+"""Tests for panoptes.utils.config.store (in-memory config store)."""
+
 from astropy import units as u
 
-from panoptes.utils import serializers
-from panoptes.utils.config.client import get_config, set_config
+from panoptes.utils.config.store import get_config, init_config, reload_config, set_config
 
 
-@pytest.fixture(scope="module")
-def config_host():
-    return "localhost"
-
-
-@pytest.fixture(scope="module")
-def config_port():
-    return 8765
-
-
-def test_config_client():
+def test_get_config_returns_dict(config_path):
+    init_config(config_path)
     assert isinstance(get_config(), dict)
 
+
+def test_get_config_dotted_key(config_path):
+    init_config(config_path)
     assert get_config("location.horizon") == 30 * u.degree
-    assert set_config("location.horizon", 47 * u.degree) == {"location.horizon": 47 * u.degree}
+
+
+def test_set_config_updates_value(config_path):
+    init_config(config_path)
+    set_config("location.horizon", 47 * u.degree)
     assert get_config("location.horizon") == 47 * u.degree
 
-    # Without parsing the result contains the double-quotes since that's what the raw
-    # response has.
-    assert get_config("location.horizon", parse=False) == '"47.0 deg"'
 
-    assert set_config("location.horizon", 42 * u.degree, parse=False) == {"location.horizon": "42.0 deg"}
-
-
-def test_config_client_bad(caplog):
-    # Bad host will return `None` but also throw error
-    assert set_config("foo", 42, host="foobaz") is None
-    assert caplog.records[-1].levelname == "WARNING"
-    assert caplog.records[-1].message.startswith("Problem with set_config")
-
-    # Bad host will return `None`; with verbose=True the connection error is logged at DEBUG.
-    assert get_config("foo", host="foobaz", verbose=True) is None
-    found_log = False
-    for rec in caplog.records[-5:]:
-        if rec.levelname == "DEBUG" and rec.message.startswith("Bad connection to config-server"):
-            found_log = True
-
-    assert found_log
+def test_set_config_returns_value(config_path):
+    init_config(config_path)
+    result = set_config("location.horizon", 42 * u.degree)
+    assert result == 42 * u.degree
 
 
-def test_config_reset(config_host, config_port):
-    # Reset config via url
-    url = f"http://{config_host}:{config_port}/reset-config"
+def test_get_config_default(config_path):
+    init_config(config_path)
+    assert get_config("nonexistent.key", default="fallback") == "fallback"
+    assert get_config("nonexistent.key") is None
 
-    def reset_conf():
-        response = requests.post(
-            url,
-            data=serializers.to_json({"reset": True}),
-            headers={"Content-Type": "application/json"},
-        )
-        assert response.ok
 
-    reset_conf()
+def test_reload_config_restores_value(config_path):
+    init_config(config_path)
+    original = get_config("location.horizon")
+    set_config("location.horizon", 99 * u.degree)
+    assert get_config("location.horizon") == 99 * u.degree
 
-    # Check we are at default value.
-    assert get_config("location.horizon") == 30 * u.degree
+    reload_config()
+    assert get_config("location.horizon") == original
 
-    # Set to new value.
-    set_config_return = set_config("location.horizon", 3 * u.degree)
-    assert set_config_return == {"location.horizon": 3 * u.degree}
 
-    # Check we have changed.
-    assert get_config("location.horizon") == 3 * u.degree
+def test_get_config_list_index(config_path):
+    init_config(config_path)
+    assert get_config("cameras.devices[1].model") == "canon_gphoto2"
 
-    reset_conf()
 
-    # Check we are at default again.
-    assert get_config("location.horizon") == 30 * u.degree
+def test_get_config_none_key_returns_full_dict(config_path):
+    init_config(config_path)
+    cfg = get_config(None)
+    assert isinstance(cfg, dict)
+    assert "name" in cfg
+
+
+def test_get_name(config_path):
+    init_config(config_path)
+    assert get_config("name") == "Testing PANOPTES Unit"
