@@ -5,8 +5,8 @@ The file is human-editable and is the only place a user needs to look when setti
 or adjusting their unit.
 
 This page covers the **file-based** configuration helpers provided by `panoptes-utils`:
-typed Pydantic models and a file watcher.  For the legacy HTTP config server, see
-[Config Server](config-server.md).
+typed Pydantic models and a file watcher.  For the deprecated HTTP config server, see
+[Config Server (Deprecated)](config-server.md).
 
 ---
 

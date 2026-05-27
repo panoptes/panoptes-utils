@@ -17,7 +17,7 @@ Options:
   --help                    Show this message and exit.
 
 Commands:
-  config    Manage the config server.
+  config    Manage configuration (get/set/init).
   image     Process an image.
   telemetry  Run the telemetry server.
 ```
@@ -30,23 +30,24 @@ Commands:
 
 ## config
 
-See [Config Server](config-server.md) for full documentation of the config subcommand.
+See [Configuration](config.md) for full documentation of the config store and CLI subcommand.
 
 Quick reference:
 
 ```bash
-# Start the config server
-panoptes-utils config run --config-file /path/to/config.yaml
+# Initialise a config file (writes ~/.panoptes/config.yaml from the built-in template)
+panoptes-utils config init
 
-# Read a value
+# Read a value (no server required)
 panoptes-utils config get location.elevation
 
 # Update a value
 panoptes-utils config set name "My Observatory"
-
-# Stop the server
-panoptes-utils config stop
 ```
+
+> **Note:** The `run` and `stop` subcommands (HTTP config server) are **deprecated** and will
+> be removed in a future release. Use the file-based store and the `$PANOPTES_CONFIG_FILE`
+> environment variable instead.
 
 ## image
 
