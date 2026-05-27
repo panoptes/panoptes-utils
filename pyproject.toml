@@ -52,12 +52,16 @@ Documentation = "https://panoptes.github.io/panoptes-utils/"
 Forum = "https://forum.projectpanoptes.org"
 
 [project.optional-dependencies]
-config = [
+# config-server: deps for the deprecated HTTP config server/client only.
+# The file-based config store (panoptes.utils.config.store) requires no extras.
+config-server = [
     "fastapi>=0.115",
     "PyYAML",
-    "requests",
     "scalpl",
     "uvicorn>=0.34",
+]
+config = [
+    "panoptes-utils[config-server]",
 ]
 docs = [
     "mkdocs-material",

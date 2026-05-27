@@ -1,5 +1,24 @@
+"""HTTP config server — deprecated.
+
+The HTTP config server is deprecated in favour of
+:mod:`panoptes.utils.config.store`, which loads config directly from the YAML
+file without requiring a running server process.  This module will be removed
+in a future release.
+
+Migration::
+
+    # Old: start a server in conftest.py / startup code
+    from panoptes.utils.config.server import config_server
+    config_server("path/to/config.yaml", port=6563)
+
+    # New: initialise the in-process store once
+    from panoptes.utils.config.store import init_config
+    init_config("path/to/config.yaml")
+"""
+
 import logging
 import os
+import warnings
 from multiprocessing import Process
 from sys import platform
 
@@ -11,6 +30,13 @@ from ruamel.yaml.parser import ParserError
 from scalpl import Cut
 
 from panoptes.utils.config.helpers import load_config, save_config
+
+warnings.warn(
+    "panoptes.utils.config.server is deprecated and will be removed in a future release. "
+    "Use panoptes.utils.config.store instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 # Platform-specific multiprocessing setup.
 if platform == "darwin" or platform == "win32":

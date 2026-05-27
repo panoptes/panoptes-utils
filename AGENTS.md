@@ -4,7 +4,7 @@ This document provides guidelines for AI coding agents working with the PANOPTES
 
 ## Project Overview
 
-PANOPTES Utilities is a Python library providing astronomical utilities for the PANOPTES ecosystem. It includes CLI tools for image processing, a configuration server, and various utility modules for astronomical data processing. This library serves as the foundation for other PANOPTES projects like [POCS](https://github.com/panoptes/POCS).
+PANOPTES Utilities is a Python library providing astronomical utilities for the PANOPTES ecosystem. It includes CLI tools for image processing, a file-based configuration store, a telemetry server, and various utility modules for astronomical data processing. This library serves as the foundation for other PANOPTES projects like [POCS](https://github.com/panoptes/POCS).
 
 **Key Characteristics:**
 - **Language:** Python 3.12+ (type hints expected)
@@ -127,13 +127,14 @@ panoptes-utils/
 - Use `uv sync --extra <package>` to install optional extras
 - Add to `[dependency-groups]` for development dependencies (testing, lint, etc.)
 - Consider which extras group the dependency belongs to:
-  - `config`: Configuration server dependencies
+  - `config-server`: Configuration server dependencies
   - `images`: Image processing dependencies
   - `testing`: Testing tools
   - `docs`: Documentation building
 
 **Optional Dependencies:**
-- `config`: fastapi, uvicorn, scalpl for configuration server
+- `config-server`: fastapi, uvicorn, scalpl for deprecated HTTP config server (no new dependencies needed for config store)
+- `config`: backward-compatible alias for `config-server`
 - `images`: matplotlib, photutils, pillow for image processing
 - `testing`: pytest, coverage, and testing tools
 - `docs`: MkDocs and documentation tools
@@ -173,23 +174,53 @@ panoptes-utils/
 
 **Location:** `src/panoptes/utils/config/`
 
-The configuration system provides centralized configuration management through a client-server architecture.
+The configuration system provides a lightweight, **file-based in-memory config store** as
+the single source of truth for runtime configuration.  No server process is required.
 
-**Components:**
-- `server.py`: FastAPI+uvicorn configuration server
-- `client.py`: Configuration client for accessing server
-- CLI is now under `panoptes-utils config` (see `src/panoptes/utils/cli/config.py`)
+**Key components:**
+- `store.py`: Module-level in-memory store — **the canonical config API** (new, preferred)
+- `models.py`: Pydantic v2 typed models (`UnitConfig`, `LocationConfig`, etc.)
+- `watcher.py`: `ConfigWatcher` — watches a YAML file and fires callbacks on change
+- `server.py` / `client.py`: **Deprecated** HTTP server/client — do not use for new code
+- CLI is under `panoptes-utils config` (`src/panoptes/utils/cli/config.py`)
+
+**Using the config store:**
+```python
+from panoptes.utils.config.store import init_config, get_config, set_config
+
+# Initialise once at process startup (idempotent)
+init_config("path/to/config.yaml")
+
+# Read a value using dotted notation
+horizon = get_config("location.horizon")          # e.g. 30.0
+
+# Write a value (persists back to the YAML file by default)
+set_config("location.horizon", 45)
+```
+
+The store is a **module-level singleton** — all code in the same process shares the same
+loaded dict.  Tests must use the `reset_config_store` autouse fixture
+(defined in `tests/config/conftest.py`) to isolate state between test cases.
+
+**Environment variable:**
+```bash
+export PANOPTES_CONFIG_FILE=~/.panoptes/config.yaml
+```
+When set, `init_config()` with no arguments resolves this path automatically.
+
+**CLI quick reference (no server required):**
+```bash
+panoptes-utils config init                         # create starter config file
+panoptes-utils config get location.elevation       # read a value
+panoptes-utils config set location.horizon '30 deg'  # write a value
+```
 
 **When modifying:**
-- Understand client-server communication protocol
-- Preserve backward compatibility with POCS and other clients
+- The store is a module-level singleton; ensure tests use the `reset_config_store` fixture
+- Preserve the `get_config` / `set_config` / `init_config` public API
 - Test with `tests/testing.yaml` configuration
-- Ensure thread safety for concurrent access
-
-**Starting the config server:**
-```bash
-panoptes-utils config run --config-file tests/testing.yaml
-```
+- `server.py` and `client.py` are deprecated — do not add new features to them
+- Track full removal of the HTTP server/client in issue #366
 
 ### CLI Module
 
@@ -208,7 +239,7 @@ Command-line tools built with Typer.
 
 **Available commands:**
 - `panoptes-utils image`: Image processing commands
-- `panoptes-utils config`: Configuration server management
+- `panoptes-utils config`: Configuration store (get/set/init)
 - `panoptes-utils telemetry`: Telemetry server management and migration
 
 ### Image Processing Module
@@ -317,30 +348,26 @@ Data posted via `post_event()` is serialized with `to_json()` before transmissio
 - `directories`: Data storage locations
 - Custom sections for specific modules
 
-### Config Server
+### Config Store
 
-The configuration server provides a REST API for centralized configuration management.
+The config store (`panoptes.utils.config.store`) is the standard way to access
+configuration at runtime.  It loads a YAML file into memory once and exposes a simple
+get/set API to all code in the same process.
 
-**Starting the config server locally:**
-```bash
-# For development
-panoptes-utils config run --config-file tests/testing.yaml
-
-# With custom host/port
-panoptes-utils config run --host 0.0.0.0 --port 8765 --config-file tests/testing.yaml
+**Initialise once at process startup:**
+```python
+from panoptes.utils.config.store import init_config
+init_config("tests/testing.yaml")   # or from $PANOPTES_CONFIG_FILE
 ```
 
-**Notes:**
-- Default port is 8765
-- Server provides REST API for configuration access
-- Used by POCS and other PANOPTES components
+> **Deprecated:** `panoptes-utils config run / stop` (HTTP server) and
+> `panoptes.utils.config.client` are deprecated.  Use the store instead.
 
 **When modifying configuration:**
 - Maintain backward compatibility when possible
 - Update example configs in `tests/`
 - Document new configuration options
 - Validate configuration structure
-- Restart config server after modifying config files
 
 ## Common Tasks
 
@@ -630,7 +657,7 @@ When making changes, update:
 ## Common Pitfalls
 
 1. **System Dependencies:** Not all systems have astrometry.net, dcraw installed
-2. **Config Server Availability:** Code should handle missing config server gracefully
+2. **Config Store Init:** Call `init_config()` at process startup; check `PANOPTES_CONFIG_FILE` is set
 3. **Optional Dependencies:** Features using optional deps should fail gracefully
 4. **File Paths:** Use `pathlib.Path`, handle both absolute and relative paths
 5. **Time Zones:** Use UTC for all astronomical calculations
@@ -743,8 +770,8 @@ uv run ruff format --check .
 # Build package
 uv build
 
-# Start config server
-panoptes-utils config run --config-file tests/testing.yaml
+# Initialise config store
+panoptes-utils config init   # creates ~/.panoptes/config.yaml from template
 
 # View CLI help
 panoptes-utils --help

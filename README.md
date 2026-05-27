@@ -72,31 +72,27 @@ panoptes-utils image cr2 to-fits <file.cr2>
 panoptes-utils image fits solve <file.fits>
 ```
 
-### `config` — Configuration server
+### `config` — Configuration store
 
-Requires the `config` extra (`pip install "panoptes-utils[config]"`).
-
-Start a local key-value configuration server backed by a YAML file:
+Read and write configuration values from the YAML config file. No server process required.
 
 ```bash
-# Start the server
-panoptes-utils config run --config-file <path-to-file.yaml>
+# Initialise the config file from the built-in template
+panoptes-utils config init
 
 # Read a value (returns entire config if no key given)
 panoptes-utils config get location.elevation
 
 # Update a value
 panoptes-utils config set name "My Observatory"
-
-# Stop the server
-panoptes-utils config stop
 ```
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `PANOPTES_CONFIG_HOST` | Config server host address | `localhost` |
-| `PANOPTES_CONFIG_PORT` | Config server port | `6563` |
-| `PANOPTES_CONFIG_FILE` | YAML config file to load (CLI only) | — |
+| `PANOPTES_CONFIG_FILE` | Path to the YAML config file | `~/.panoptes/config.yaml` |
+
+> **Deprecated:** `panoptes-utils config run` / `config stop` (HTTP server) are deprecated.
+> Use `$PANOPTES_CONFIG_FILE` and the store directly instead.
 
 ### `telemetry` — Telemetry server
 

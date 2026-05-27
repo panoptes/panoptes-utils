@@ -268,7 +268,7 @@ Each line in an NDJSON file:
 
 Yes, the server must be running for client calls to succeed. It is a lightweight
 uvicorn process with negligible CPU and memory overhead. Start it at system boot
-alongside the config server.
+alongside your main observatory process.
 
 **What happens if I call `post_event()` when the server is not running?**
 
@@ -281,8 +281,8 @@ The server does not expose historical queries — it only serves the current
 in-memory snapshot. For historical analysis, parse the NDJSON files directly
 with `jq`, `pandas`, `DuckDB`, or any NDJSON-aware tool.
 
-**Does the telemetry server replace the config server?**
+**Does the telemetry server replace the config store?**
 
-No. The config server (`panoptes-utils config run`) manages configuration
-key-value state and is still the right place for settings. The telemetry server
+No. The config store (`panoptes.utils.config.store`) manages configuration
+key-value state and is the right place for settings. The telemetry server
 is for time-series observational data.

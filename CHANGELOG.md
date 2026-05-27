@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+### Added
+
+* Added `panoptes.utils.config.store` — an in-memory config store with `init_config`, `reload_config`, `get_config`, and `set_config`. Replaces the HTTP config server/client for all local config access.
+
+### Changed
+
+* `panoptes-utils config get` and `panoptes-utils config set` now read/write directly from the YAML file via the config store. The `--host`/`--port` options are removed; use `--config-file` (or `$PANOPTES_CONFIG_FILE`) instead.
+* Root `conftest.py` now initialises the config store from `tests/testing.yaml` instead of starting an HTTP server.
+* `tests/config/test_config_server.py` now tests the in-memory store (not the HTTP server).
+* Split `config` optional-dependency extra into `config-server` (fastapi, uvicorn, scalpl, PyYAML — for the deprecated HTTP server). The config store requires no extras.
+
+### Deprecated
+
+* `panoptes.utils.config.client` — HTTP config client. Use `panoptes.utils.config.store` instead. Module emits a `DeprecationWarning` on import.
+* `panoptes.utils.config.server` — HTTP config server. Module emits a `DeprecationWarning` on import.
+* `panoptes-utils config run` and `panoptes-utils config stop` — emit `DeprecationWarning` at runtime. The HTTP server is no longer needed.
+
 ## 0.4.0 - 2026-05-26
 
 ### Added

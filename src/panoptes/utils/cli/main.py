@@ -8,7 +8,6 @@ from panoptes.utils.cli import image
 
 try:
     from panoptes.utils.cli import config as config_cli
-    from panoptes.utils.config import server as _config_server  # noqa: F401  # requires "config" extra
 except ImportError:
     config_cli = None
 
