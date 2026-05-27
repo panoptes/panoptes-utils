@@ -1,21 +1,4 @@
-"""HTTP config client — deprecated.
-
-The HTTP config server/client is deprecated in favour of
-:mod:`panoptes.utils.config.store`, which loads config directly from the YAML
-file without requiring a running server process.  This module will be removed
-in a future release.
-
-Migration::
-
-    # Old
-    from panoptes.utils.config.client import get_config, set_config
-
-    # New
-    from panoptes.utils.config.store import get_config, set_config
-"""
-
 import os
-import warnings
 
 import requests
 from loguru import logger
@@ -23,13 +6,6 @@ from requests.exceptions import ConnectionError
 
 from panoptes.utils.error import InvalidConfig
 from panoptes.utils.serializers import from_json, to_json
-
-warnings.warn(
-    "panoptes.utils.config.client is deprecated and will be removed in a future release. "
-    "Use panoptes.utils.config.store instead.",
-    DeprecationWarning,
-    stacklevel=2,
-)
 
 
 def server_is_running(*args, **kwargs):  # pragma: no cover
@@ -55,34 +31,34 @@ def get_config(
 
     .. doctest::
 
-        >>> get_config(key='name')  # doctest: +SKIP
+        >>> get_config(key='name')
         'Testing PANOPTES Unit'
 
-        >>> get_config(key='location.horizon')  # doctest: +SKIP
+        >>> get_config(key='location.horizon')
         <Quantity 30. deg>
 
         >>> # With no parsing, the raw string (including quotes) is returned.
-        >>> get_config(key='location.horizon', parse=False)  # doctest: +SKIP
+        >>> get_config(key='location.horizon', parse=False)
         '"30 deg"'
-        >>> get_config(key='cameras.devices[1].model')  # doctest: +SKIP
+        >>> get_config(key='cameras.devices[1].model')
         'canon_gphoto2'
 
         >>> # Returns `None` if key is not found.
-        >>> foobar = get_config(key='foobar')  # doctest: +SKIP
-        >>> foobar is None  # doctest: +SKIP
+        >>> foobar = get_config(key='foobar')
+        >>> foobar is None
         True
 
         >>> # But you can supply a default.
-        >>> get_config(key='foobar', default='baz')  # doctest: +SKIP
+        >>> get_config(key='foobar', default='baz')
         'baz'
 
         >>> # key and default are first two parameters.
-        >>> get_config('foobar', 'baz')  # doctest: +SKIP
+        >>> get_config('foobar', 'baz')
         'baz'
 
         >>> # Can use Quantities as well.
-        >>> from astropy import units as u  # doctest: +SKIP
-        >>> get_config('foobar', 42 * u.meter)  # doctest: +SKIP
+        >>> from astropy import units as u
+        >>> get_config('foobar', 42 * u.meter)
         <Quantity 42. m>
 
 
@@ -161,17 +137,17 @@ def set_config(key, new_value, host=None, port=None, parse=True):
 
     .. doctest::
 
-        >>> from astropy import units as u  # doctest: +SKIP
+        >>> from astropy import units as u
 
         >>> # Can use astropy units.
-        >>> set_config('location.horizon', 35 * u.degree)  # doctest: +SKIP
+        >>> set_config('location.horizon', 35 * u.degree)
         {'location.horizon': <Quantity 35. deg>}
 
-        >>> get_config(key='location.horizon')  # doctest: +SKIP
+        >>> get_config(key='location.horizon')
         <Quantity 35. deg>
 
         >>> # String equivalent works for 'deg', 'm', 's'.
-        >>> set_config('location.horizon', '30 deg')  # doctest: +SKIP
+        >>> set_config('location.horizon', '30 deg')
         {'location.horizon': <Quantity 30. deg>}
 
     Args:

@@ -21,6 +21,9 @@ def load_config[M: BaseModel](
 ) -> dict | M:
     """Loads configuration information from one or more YAML files.
 
+    This function is used by the config server; normal config usage should
+    be via a running config server.
+
     If ``config_files`` is ``None``, the path is resolved in this order:
 
     1. The ``$PANOPTES_CONFIG_FILE`` environment variable (if set).
