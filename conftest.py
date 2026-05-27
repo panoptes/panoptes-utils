@@ -10,7 +10,7 @@ import pytest
 from loguru import logger
 from matplotlib import pyplot as plt
 
-from panoptes.utils.config.server import config_server
+from panoptes.utils.config.store import init_config
 from panoptes.utils.database import PanDB
 
 _all_databases = ["file", "memory"]
@@ -46,17 +46,9 @@ logger.log("testing", "*" * 25 + startup_message + "*" * 25)
 
 def pytest_configure(config) -> None:  # noqa: ANN001
     """Set up the testing."""
-    logger.info("Setting up the config server.")
-    config_file = "tests/testing.yaml"
-
-    host = "localhost"
-    port = "8765"
-
-    os.environ["PANOPTES_CONFIG_HOST"] = host
-    os.environ["PANOPTES_CONFIG_PORT"] = port
-
-    config_server(config_file, host="localhost", port=8765, load_local=False, save_local=False)
-    logger.success("Config server set up")
+    logger.info("Initialising config store from tests/testing.yaml.")
+    init_config("tests/testing.yaml")
+    logger.success("Config store initialised.")
 
     config.addinivalue_line("markers", "plate_solve: Tests that require astrometry.net")
 
