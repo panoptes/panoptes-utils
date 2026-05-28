@@ -220,8 +220,7 @@ def parse_config_directories(directories: dict[str, str]) -> dict:
             sub_dir = (base_dir / dir_path).absolute()
 
             if sub_dir.exists() is False:
-                sub_dir.mkdir(parents=True, exist_ok=True)
-                logger.info(f"Created missing {dir_name} directory: {sub_dir!r}")
+                logger.warning(f"{sub_dir!r} does not exist.")
 
             logger.trace(f"Setting {dir_name} to {sub_dir}")
             resolved_dirs[dir_name] = str(sub_dir)
