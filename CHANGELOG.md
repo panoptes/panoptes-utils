@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [Unreleased]
+
+### Changed
+
+- `parse_config_directories` now auto-creates missing subdirectories (e.g. `images`, `resources`) instead of emitting a warning, logging creation at INFO level.
+
 ## 0.5.0 - 2026-05-27
 
 ### Added
