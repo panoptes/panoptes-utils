@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.5.1 - 2026-06-04
+
+### Changed
+
+* Bumped `fastapi` version constraint to `>=0.136.3` for the `config-server` extra to enable new Starlette features.
+
 ## 0.5.0 - 2026-05-27
 
 ### Added
