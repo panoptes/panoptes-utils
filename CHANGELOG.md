@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 0.5.2 - 2026-06-18
+
+### Changed
+
+* Bumped `fastapi` version constraint to `>=0.137.2` to update `starlette`.
+* Updated all package dependencies in the `uv.lock` file.
+
 ## 0.5.1 - 2026-06-04
 
 ### Changed
