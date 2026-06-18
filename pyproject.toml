@@ -42,6 +42,7 @@ dependencies = [
     "typer",
     "pydantic>=2.12.5",
     "watchdog>=6.0.0",
+    "fastapi>=0.137.2",
 ]
 
 [project.urls]
