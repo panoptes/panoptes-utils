@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.5.3 - 2026-07-21
+
+### Changed
+
+* Upgrade Pillow to >=12.3.0.
+
 ## 0.5.2 - 2026-06-18
 
 ### Changed

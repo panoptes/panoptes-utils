@@ -77,7 +77,7 @@ examples = [
 images = [
     "matplotlib",
     "photutils",
-    "pillow>=9.1.1",
+    "pillow>=12.3.0",
     "scipy",
     "sep",
     "watchfiles",
