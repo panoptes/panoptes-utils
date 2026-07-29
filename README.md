@@ -47,7 +47,7 @@ apt-get update && apt-get install --no-install-recommends --yes \
   libffi-dev libssl-dev \
   astrometry.net astrometry-data-tycho2 \
   dcraw exiftool libcfitsio-dev libcfitsio-bin \
-  libfreetype6-dev libpng-dev libjpeg-dev libffi-dev
+  imagemagick
 ```
 
 Command Line
