@@ -10,7 +10,6 @@ import numpy as np
 from astropy.io import fits
 from dateutil.parser import parse as date_parse
 from loguru import logger
-from PIL import Image, ImageDraw, ImageFont
 
 from panoptes.utils import error
 from panoptes.utils.images import fits as fits_utils
@@ -309,23 +308,26 @@ def cr2_to_jpg(
         raise error.InvalidSystemCommand(f"{comp_proc.returncode}")
 
     if title and title > "":
-        try:
-            im = Image.open(jpg_fname)
-            id = ImageDraw.Draw(im)
-
-            im.info["title"] = title
-
-            try:
-                fnt = ImageFont.truetype("FreeMono.ttf", 120)
-            except Exception:  # pragma: no cover
-                fnt = ImageFont.load_default()
-            bottom_padding = 25
-            position = (im.size[0] / 2, im.size[1] - bottom_padding)
-            id.text(position, title, font=fnt, fill=(255, 0, 0), anchor="ms")
-
-            logger.debug(f"Adding title={title} to {jpg_fname.as_posix()}")
-            im.save(jpg_fname)
-        except Exception:
+        magick = shutil.which("magick")
+        if not magick:  # pragma: no cover
+            raise error.InvalidSystemCommand("imagemagick 'magick' not found")
+        cmd = [
+            magick,
+            jpg_fname.as_posix(),
+            "-gravity",
+            "South",
+            "-pointsize",
+            "40",
+            "-fill",
+            "red",
+            "-annotate",
+            "+0+25",
+            title,
+            jpg_fname.as_posix(),
+        ]
+        logger.debug(f"Adding title={title} to {jpg_fname.as_posix()}")
+        comp_proc = subprocess.run(cmd, check=True)
+        if comp_proc.returncode != 0:  # pragma: no cover
             raise error.InvalidSystemCommand(f"Error adding title to {jpg_fname.as_posix()}")
 
     if remove_cr2:
