@@ -1087,7 +1087,6 @@ examples = [
 images = [
     { name = "matplotlib" },
     { name = "photutils" },
-    { name = "pillow" },
     { name = "scipy" },
     { name = "sep" },
     { name = "watchfiles" },
@@ -1145,7 +1144,6 @@ requires-dist = [
     { name = "pandas", marker = "extra == 'examples'" },
     { name = "panoptes-utils", extras = ["config-server"], marker = "extra == 'config'" },
     { name = "photutils", marker = "extra == 'images'" },
-    { name = "pillow", marker = "extra == 'images'", specifier = ">=12.3.0" },
     { name = "pydantic", specifier = ">=2.12.5" },
     { name = "pyserial", specifier = ">=3.4" },
     { name = "pytest-loguru" },

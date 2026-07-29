@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [Unreleased]
+
+### Changed
+
+* Replaced `Pillow` with `imagemagick` (`magick`) for adding titles in `cr2_to_jpg`. `Pillow` removed from the `images` optional dependencies; `imagemagick` is now a system dependency.
+
 ## 0.5.3 - 2026-07-21
 
 ### Changed

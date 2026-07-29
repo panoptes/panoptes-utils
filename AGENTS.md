@@ -135,7 +135,7 @@ panoptes-utils/
 **Optional Dependencies:**
 - `config-server`: fastapi, uvicorn, scalpl for deprecated HTTP config server (no new dependencies needed for config store)
 - `config`: backward-compatible alias for `config-server`
-- `images`: matplotlib, photutils, pillow for image processing
+- `images`: matplotlib, photutils, scipy, sep for image processing (title annotation in `cr2_to_jpg` requires system `imagemagick`)
 - `testing`: pytest, coverage, and testing tools
 - `docs`: MkDocs and documentation tools
 

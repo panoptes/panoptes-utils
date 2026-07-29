@@ -1,7 +1,11 @@
 import os
 import tempfile
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
+import pytest
+
+from panoptes.utils import error
 from panoptes.utils.images import cr2 as cr2_utils
 
 
@@ -135,3 +139,90 @@ def test_cr2_to_jpg_filehandle(cr2_file):
 
         assert os.path.exists(jpg_path)
         assert result == jpg_path
+
+
+def _make_fake_run(magick_calls=None):
+    """Return a fake subprocess.run that stubs exiftool and optionally captures magick calls."""
+
+    def fake_run(cmd, **kwargs):
+        # Detect the exiftool preview-extraction call by its distinctive flags.
+        if "-PreviewImage" in cmd:
+            stdout = kwargs.get("stdout")
+            if stdout is not None:
+                stdout.write(b"FAKEJPG")
+            result = MagicMock()
+            result.returncode = 0
+            return result
+        # Everything else is a magick annotation call.
+        if magick_calls is not None:
+            magick_calls.append(cmd)
+        result = MagicMock()
+        result.returncode = 0
+        return result
+
+    return fake_run
+
+
+def test_cr2_to_jpg_with_title(tmp_path):
+    """Test cr2_to_jpg adds a title annotation via magick when title is provided."""
+    cr2_fake = tmp_path / "test.cr2"
+    cr2_fake.touch()
+    jpg_path = tmp_path / "titled.jpg"
+
+    with (
+        patch("panoptes.utils.images.cr2.shutil.which", return_value="/usr/bin/magick"),
+        patch("panoptes.utils.images.cr2.subprocess.run", side_effect=_make_fake_run()),
+    ):
+        result = cr2_utils.cr2_to_jpg(str(cr2_fake), jpg_path, title="Test Title")
+
+    assert result == jpg_path
+    assert jpg_path.exists()
+
+
+def test_cr2_to_jpg_with_title_calls_magick(tmp_path):
+    """Test that cr2_to_jpg invokes magick with the correct arguments when a title is given."""
+    cr2_fake = tmp_path / "test.cr2"
+    cr2_fake.touch()
+    jpg_path = tmp_path / "titled2.jpg"
+
+    magick_calls = []
+    with (
+        patch("panoptes.utils.images.cr2.shutil.which", return_value="/usr/bin/magick"),
+        patch("panoptes.utils.images.cr2.subprocess.run", side_effect=_make_fake_run(magick_calls)),
+    ):
+        cr2_utils.cr2_to_jpg(str(cr2_fake), jpg_path, title="My Title")
+
+    assert len(magick_calls) == 1
+    magick_cmd = magick_calls[0]
+    assert magick_cmd[0] == "/usr/bin/magick"
+    assert "-annotate" in magick_cmd
+    assert "My Title" in magick_cmd
+    assert "-fill" in magick_cmd
+    assert "red" in magick_cmd
+
+
+def test_cr2_to_jpg_no_title_skips_magick(tmp_path):
+    """Test that cr2_to_jpg does not call magick when no title is provided."""
+    cr2_fake = tmp_path / "test.cr2"
+    cr2_fake.touch()
+    jpg_path = tmp_path / "no_title.jpg"
+
+    magick_calls = []
+    with (
+        patch("panoptes.utils.images.cr2.shutil.which", return_value="/usr/bin/magick"),
+        patch("panoptes.utils.images.cr2.subprocess.run", side_effect=_make_fake_run(magick_calls)),
+    ):
+        cr2_utils.cr2_to_jpg(str(cr2_fake), jpg_path, title="")
+
+    assert len(magick_calls) == 0
+
+
+def test_cr2_to_jpg_already_exists_raises(tmp_path):
+    """Test that cr2_to_jpg raises AlreadyExists when output exists and overwrite=False."""
+    cr2_fake = tmp_path / "test.cr2"
+    cr2_fake.touch()
+    jpg_path = tmp_path / "existing.jpg"
+    jpg_path.touch()
+
+    with pytest.raises(error.AlreadyExists):
+        cr2_utils.cr2_to_jpg(str(cr2_fake), jpg_path, overwrite=False)
